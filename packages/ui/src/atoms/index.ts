@@ -6,4 +6,5 @@ export * from "./badge"
 export * from "./tag"
 export * from "./skeleton"
 export * from "./spinner"
+export * from "./divider"
 
