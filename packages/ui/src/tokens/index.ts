@@ -66,7 +66,8 @@ export type DurationToken =
 	| "slow"
 	| "xslow"
 	| "glacial"
-	| "loop";
+	| "loop"
+	| "loop-fast";
 
 export type EasingToken =
 	| "linear"
@@ -249,6 +250,7 @@ export const tokens: DesignTokens = {
 		xslow: "600ms",
 		glacial: "1000ms",
 		loop: "2000ms",
+		"loop-fast": "800ms",
 	},
 	easing: {
 		linear: "linear",

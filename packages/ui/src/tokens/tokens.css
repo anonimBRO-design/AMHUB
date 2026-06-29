@@ -161,7 +161,7 @@
 	--dur-xslow: 600ms;
 	--dur-glacial: 1000ms;
 	--dur-loop: 2000ms;
-
+	--dur-loop-fast: 800ms;
 	/* ─── EASINGS ─────────────────────────────────────────────── */
 	--ease-linear: linear;
 	--ease-in: cubic-bezier(0.4, 0.0, 1.0, 1.0);
