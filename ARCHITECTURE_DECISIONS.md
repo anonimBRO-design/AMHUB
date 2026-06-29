@@ -129,7 +129,7 @@ Option (a) carries a data-usage cost that is material to the Indonesian primary 
 **Options:**
 1. Add a `/creators` page spec to the Product Specification before this is implementable (preferred — it's a missing page spec, not a component decision)
 2. Infer: standard 2–4 column grid matching the general preset grid column counts, with `CreatorCard variant="card"` — document as an assumption  
-**Status:** OPEN — missing page spec in Product Specification §6. **Decision (kept OPEN):** this is a Product Specification gap, not a Component Library issue — do not infer a `/creators` layout in the Component Library. Action item: Product Specification §6 UI Pages needs a new `/creators` page entry added (grid structure, column density, CreatorCard variant used, any filter/sort controls) before M2's Responsive Behavior section can be completed. Tracked as a pending Product Spec addition; revisit this ADR once that section exists.
+**Status:** RESOLVED: Option 1. Added §6.9 Creator Directory page specification to Product Specification with 3 cols desktop / 2 cols tablet / 1 col mobile grid, M2 CreatorCard usage, filter/sort controls, and sidebar featuring Creator of the Week + Rising Creators.
 
 ---
 
@@ -450,8 +450,10 @@ Responsive layout: 4-column grid at `lg+`; 2-column grid at `md`; single-column 
 **Options:**
 1. Define a new F7 Popover component (richer content, optional close button, can contain more than 80 characters of text, but still non-modal) — closes the gap properly but introduces a net-new overlay component not in Design System §17, requiring design review before it could be added to the system
 2. Relax the 80-character guidance specifically for M9 BadgeChip's tooltip on a case-by-case basis, treating it as a documented exception rather than building a new component
-3. Keep tooltips strictly at 80 characters and require all badge descriptions to be authored/truncated to fit — pushes the constraint to content/copy rather than UI  
-**Status:** OPEN — requires design decision on whether a Popover component is in scope
+3. Keep tooltips strictly at 80 characters and require all badge descriptions to be authored/truncated to fit — pushes the constraint to content/copy rather than UI
+4. Allow tooltip text to wrap onto multiple lines when content exceeds 80 characters — no new component required, preserves existing tooltip behavior while accommodating longer badge descriptions  
+**Decision:** Option 4 selected. Tooltips will wrap text to multiple lines as needed. This resolves the gap without introducing a new Popover component. Updated in Design System §17 F4 spec.  
+**Status:** RESOLVED — text wrapping enables longer badge descriptions without architectural changes
 
 ---
 

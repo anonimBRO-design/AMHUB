@@ -1181,14 +1181,14 @@ All four segments are optional. Use only as many as needed for clarity.
 --ease-spring
 
 /* Z-index */
---z-base:       0
---z-raised:     10
---z-dropdown:   100
---z-sticky:     200
---z-overlay:    300
---z-modal:      400
---z-notification: 500
---z-tooltip:    600
+--z-base:           0     ← Page background
+--z-raised:         10    ← Cards, panels
+--z-dropdown:       100   ← F3 Dropdown Menu
+--z-sticky:         200   ← Navigation, TopBar
+--z-overlay:        300   ← F2 Modal backdrop, F5 Badge Unlock backdrop
+--z-modal:          400   ← F2 Modal panel, F5 Badge Unlock panel, F6 Confirmation Dialog
+--z-notification:   500   ← F1 Toast
+--z-tooltip:        600   ← F4 Tooltip (always on top — never obscured by modal or toast)
 ```
 
 ### Anti-Patterns
@@ -2061,7 +2061,7 @@ interface XPProgressBarProps {
 1. Default: label per `fileType` (ADR-014, RESOLVED) — `xml`: "Download Preset", `qr`: "Get QR Code", `link`: "Open in Alight Motion"
 2. Loading: Spinner + "Getting your file..."
 3. Success: "✓ Downloaded"
-4. Login required: Redirects to auth — applies only to user-specific features (bookmarks, collections, download history); the download action itself remains guest-accessible (ADR-013, RESOLVED)
+4. Guest download: Shows default label; authentication prompts appear only for user-specific features post-download (bookmarks, collections, download history) — download action itself is guest-accessible (ADR-013, RESOLVED)
 
 **Behavior:** On click → records download → returns signed URL → triggers browser download or redirects to AM link.
 
@@ -2470,7 +2470,7 @@ Presets Table (12 cols):
 - Appears after 500ms hover delay
 - Disappears immediately on mouse leave
 - Never on touch devices
-- Max 80 characters (longer → use Popover)
+- Max 80 characters; longer text wraps to multiple lines (no Popover component required)
 
 ---
 

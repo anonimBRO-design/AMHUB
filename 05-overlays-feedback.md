@@ -9,7 +9,7 @@
 
 Overlays and feedback components render above the page z-stack. They are never structural layout elements — they float over whatever template and organism is currently active, summoned by user actions or system events, and dismissed without triggering a route change.
 
-The z-index ladder for this layer (from Design System §15 CSS Variable Naming Conventions):
+The z-index ladder for this layer (canonical values from Design System §15 CSS Variable Naming Conventions):
 
 ```
 --z-base:           0     ← Page background
@@ -22,7 +22,7 @@ The z-index ladder for this layer (from Design System §15 CSS Variable Naming C
 --z-tooltip:        600   ← F4 Tooltip (always on top — never obscured by a modal or toast)
 ```
 
-No component in this file may render at a z-index below `--z-dropdown`. Every component here dismisses on `Escape` unless otherwise specified. Every backdrop that blocks the page must have `aria-hidden="true"` on the page content behind it (or use the `inert` attribute on the non-modal DOM) while the overlay is open.
+These tokens are defined in Design System §15. No component in this file may render at a z-index below `--z-dropdown`. Every component here dismisses on `Escape` unless otherwise specified. Every backdrop that blocks the page must have `aria-hidden="true"` on the page content behind it (or use the `inert` attribute on the non-modal DOM) while the overlay is open.
 
 **Component IDs F1–F6** are inherited from Design System §17. All six are defined there; this file fills the missing nine-part template dimensions.
 
@@ -489,13 +489,13 @@ Brief explanation for icon buttons and abbreviated content.
 - Appears after 500ms hover delay
 - Disappears immediately on mouse leave
 - Never on touch devices
-- Max 80 characters (longer → use Popover)
+- Max 80 characters; longer text wraps to multiple lines (no Popover component required — ADR-031, RESOLVED)
 
 ### Props — *[GAP FILL — not specified in source]*
 
 ```typescript
 interface TooltipProps {
-  content: string                      // Max 80 characters
+  content: string                      // Max 80 characters; longer text wraps to multiple lines (ADR-031, RESOLVED)
   placement?: 'top' | 'bottom' | 'left' | 'right'
                                        // Default: 'top'
   delayMs?: number                     // Default: 500ms (verbatim spec); can be reduced for
@@ -505,7 +505,7 @@ interface TooltipProps {
 }
 ```
 
-**[OPEN QUESTION → ADR-031]:** The source docs do not specify whether Tooltip supports rich content (e.g. badge name + description as a two-line tooltip used in M9 BadgeChip). The Design System §17 says "Max 80 characters (longer → use Popover)" — but no Popover component is defined. This creates a gap for the BadgeChip tooltip which, per Product Spec §19, should "explain how to earn them" — a sentence that may exceed 80 characters. See ADR-031.
+**Resolution (ADR-031):** Text wrapping enables longer badge descriptions without requiring a new Popover component. Tooltips will wrap onto multiple lines as needed.
 
 ### States — *[GAP FILL]*
 
@@ -526,7 +526,7 @@ interface TooltipProps {
 - **"Never on touch devices"** *(verbatim):* on touch-only devices, tooltips must not interfere with interaction. The hover-trigger path is naturally absent. For keyboard access via an attached Bluetooth keyboard on a touch device, the `focus` trigger still applies. The `delayMs` on focus trigger is `0` (immediate) — keyboard users should not experience the hover delay.
 - Tooltip content should not duplicate the trigger's accessible name — it should add new information. E.g. for an icon button `aria-label="Download preset"`, the tooltip adding "Download preset" is redundant. Instead the tooltip might clarify file format: "Downloads as XML file."
 - Tooltip `max-width: 240px` with text wrapping — avoids single-line tooltips exceeding the 80-character max-width at small font sizes.
-- Tooltip must not contain interactive elements (links, buttons). If interactive content is needed, use a Popover (not yet defined in this library — see ADR-031).
+- Tooltip must not contain interactive elements (links, buttons). If interactive content is needed, use a Popover (not defined in this library — ADR-031 resolved via text wrapping instead).
 - Tooltip must not be the sole mechanism for conveying critical information — it is hidden on touch, hidden until hover/focus, and not announced on mobile screen readers without focus. Important information must be in the main UI.
 
 ### Responsive Behavior — *[GAP FILL]*
@@ -565,7 +565,7 @@ Tier 1 — Feedback (near-instant appearance on focus), Tier 2 — Transition (d
 |---|---|---|
 | O1 Navigation Sidebar (collapsed, `md` breakpoint) | Icon-only nav item | Nav item label ("Home", "Explore", "Trending", etc.) |
 | A1 Button `variant="icon"` (all icon buttons) | Icon button | Button action description |
-| M9 BadgeChip `showTooltip` | Badge chip | Badge name + how-to-earn description — **[OPEN QUESTION → ADR-031]:** may exceed 80 chars |
+| M9 BadgeChip `showTooltip` | Badge chip | Badge name + how-to-earn description — wraps to multiple lines if needed (ADR-031, RESOLVED) |
 | M11 DownloadButton `file_type: "qr"` | Download button | "Tap to reveal QR code" — supplementary |
 | O9 Dashboard table sortable column header | Column header | Sort instructions ("Click to sort ascending") |
 | A4 Avatar `isVerified` badge indicator | Verified `BadgeCheck` icon | "Verified Creator" |
