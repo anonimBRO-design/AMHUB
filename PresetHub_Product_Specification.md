@@ -137,6 +137,7 @@ PresetHub
 ├── /trending                  → Trending presets
 ├── /challenges                → Weekly challenges & contests
 ├── /creators                  → Creator directory
+├── /leaderboard               → Global leaderboard
 │
 ├── /preset/:slug              → Single preset page
 ├── /collection/:slug          → Curated collection page
@@ -762,6 +763,67 @@ PAST CHALLENGES
 
 UPCOMING CHALLENGES
   Calendar preview
+```
+
+## 6.9 Creator Directory Page
+
+**Purpose:** Browse and discover creators by category, location, or popularity.
+
+```
+HERO SEARCH BAR
+  "Search 50,000+ creators..."
+  
+FILTER BAR (horizontal scroll, pill chips)
+  All · Velocity Experts · Transition Masters · Color Artists · Anime · Gaming · Lyric
+  
+SORT BAR
+  [Top Followers] [Most Downloads] [Trending] [Newest]
+
+SECONDARY FILTERS (expandable panel)
+  Country: [Indonesia] [USA] [Brazil] [Philippines] [All]
+  Verification: [Verified Only]
+  Activity: [Active This Week]
+
+CREATOR GRID
+  3 cols desktop, 2 cols tablet, 1 col mobile
+  Each cell: M2 CreatorCard
+  Infinite scroll with skeleton loading
+
+SIDEBAR (desktop only)
+  Featured Creator of the Week
+  Top 5 Rising Creators (fastest follower growth)
+```
+
+## 6.10 Leaderboard Page
+
+**Purpose:** Display top creators by XP or downloads across time periods.
+
+```
+HERO HEADER
+  Title: "Leaderboard"
+  Period selector: [All Time ▾] · Monthly resets on 1st
+  
+MAIN CONTENT — THREE SECTIONS
+
+GLOBAL LEADERBOARD (All-Time XP)
+  Top 50 creators ranked by total XP
+  Rank | Avatar | Creator | Level | Total XP
+  Gold/silver/bronze styling for top 3
+  
+MONTHLY LEADERBOARD (Downloads This Month)
+  Top 20 creators by downloads in current month
+  Resets on 1st of each month
+  Shows download count + trend indicator (↑↓)
+  
+CATEGORY LEADERBOARDS (Downloads Per Category)
+  Top 10 in each category (Velocity, Transition, Color, etc.)
+  Tabbed interface for category selection
+  Shows category-specific download counts
+  
+SIDEBAR (desktop only)
+  Your current rank (if logged in)
+  Badges earned this month
+  [View Full Stats →] link to dashboard
 ```
 
 ---
