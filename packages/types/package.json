@@ -1,0 +1,24 @@
+{
+  "name": "@presethub/types",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "license": "MIT",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./database": "./src/database.ts",
+    "./api": "./src/api.ts",
+    "./components": "./src/components.ts"
+  },
+  "scripts": {
+    "lint": "biome check src/",
+    "format": "biome format --write src/",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@presethub/typescript-config": "workspace:*",
+    "typescript": "^5.4.0"
+  }
+}

@@ -1,50 +1,36 @@
 ```
-# Logs and temp files
-*.log
-*.tmp
-*.swp
+# Dependencies
+node_modules/
+.pnpm-store/
 
-# Environment
-.env
+# Build outputs
+dist/
+build/
+.next/
+out/
+
+# TypeScript/JavaScript
+*.tsbuildinfo
+*.js.map
+*.ts.map
+
+# Development
 .env.local
-*.env.*
+.env.development
+.env.test
 
 # Editors
 .vscode/
 .idea/
 
-# Python
-__pycache__/
-*.pyc
-*.pyo
-*.pyd
-.Python
-venv/
-.venv/
-.env
-.env.local
-.env.*
-.python-version
-pip-log.txt
-pip-delete-this-directory.txt
-
-# Build artifacts
-dist/
-build/
-*.egg-info/
-.coverage
-htmlcov/
-.mypy_cache/
-.pytest_cache/
-.tox/
-.cover/
-
-# OS generated files
+# OS
 .DS_Store
-.DS_Store?
-._*
-.Spotlight-V100
-.Trashes
-ehthumbs.db
 Thumbs.db
+
+# Logs
+*.log
+
+# Coverage
+coverage/
+.nyc_output/
 ```
