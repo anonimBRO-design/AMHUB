@@ -1,0 +1,19 @@
+{
+  "name": "@presethub/prettier-config",
+  "version": "0.0.0",
+  "private": true,
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public"
+  },
+  "main": "index.json",
+  "files": [
+    "index.json"
+  ],
+  "peerDependencies": {
+    "prettier": "^3.0.0"
+  },
+  "devDependencies": {
+    "prettier": "^3.0.0"
+  }
+}
