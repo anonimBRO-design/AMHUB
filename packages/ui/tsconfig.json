@@ -1,6 +1,7 @@
 {
   "extends": "@presethub/typescript-config/base.json",
   "compilerOptions": {
+    "jsx": "react-jsx",
     "baseUrl": ".",
     "paths": {
       "@presethub/ui/*": ["../../packages/ui/src/*"],
