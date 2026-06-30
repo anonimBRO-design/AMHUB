@@ -1,6 +1,6 @@
 {
-  "extends": "./base.json",
-  "compilerOptions": {
-    "jsx": "react-jsx"
-  }
+	"extends": "./base.json",
+	"compilerOptions": {
+		"jsx": "react-jsx"
+	}
 }

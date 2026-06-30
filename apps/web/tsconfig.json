@@ -1,14 +1,14 @@
 {
-  "extends": "@presethub/typescript-config/next.json",
-  "compilerOptions": {
-    "baseUrl": ".",
-    "paths": {
-      "@/*": ["./src/*"],
-      "@presethub/ui": ["../../packages/ui/src"],
-      "@presethub/types": ["../../packages/types/src"],
-      "@presethub/config": ["../../packages/config/src"]
-    }
-  },
-  "include": ["src/**/*.ts", "src/**/*.tsx", "next-env.d.ts"],
-  "exclude": ["node_modules"]
+	"extends": "@presethub/typescript-config/next.json",
+	"compilerOptions": {
+		"baseUrl": ".",
+		"paths": {
+			"@/*": ["./src/*"],
+			"@presethub/ui": ["../../packages/ui/src"],
+			"@presethub/types": ["../../packages/types/src"],
+			"@presethub/config": ["../../packages/config/src"]
+		}
+	},
+	"include": ["src/**/*.ts", "src/**/*.tsx", "next-env.d.ts"],
+	"exclude": ["node_modules"]
 }

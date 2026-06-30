@@ -1,14 +1,14 @@
 {
-  "extends": "@presethub/typescript-config/base.json",
-  "compilerOptions": {
-    "jsx": "react-jsx",
-    "baseUrl": ".",
-    "paths": {
-      "@presethub/ui/*": ["../../packages/ui/src/*"],
-      "@presethub/config/*": ["../../packages/config/src/*"],
-      "@presethub/types/*": ["../../packages/types/src/*"]
-    }
-  },
-  "include": ["src/**/*"],
-  "exclude": ["node_modules", "dist"]
+	"extends": "@presethub/typescript-config/base.json",
+	"compilerOptions": {
+		"jsx": "react-jsx",
+		"baseUrl": ".",
+		"paths": {
+			"@presethub/ui/*": ["../../packages/ui/src/*"],
+			"@presethub/config/*": ["../../packages/config/src/*"],
+			"@presethub/types/*": ["../../packages/types/src/*"]
+		}
+	},
+	"include": ["src/**/*"],
+	"exclude": ["node_modules", "dist"]
 }
