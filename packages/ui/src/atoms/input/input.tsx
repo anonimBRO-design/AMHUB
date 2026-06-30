@@ -1,3 +1,5 @@
+"use client";
+
 import { type VariantProps, cva } from "class-variance-authority";
 import { type LucideIcon, Search, X } from "lucide-react";
 import * as React from "react";
@@ -166,7 +168,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
 						</p>
 					)}
 					{showCount && maxLength && (
-						<span className="text-[var(--font-size-body-xs)] text-[var(--color-text-secondary)]">
+						<span className="ml-auto text-[var(--font-size-body-xs)] text-[var(--color-text-secondary)]">
 							{value.length}/{maxLength}
 						</span>
 					)}

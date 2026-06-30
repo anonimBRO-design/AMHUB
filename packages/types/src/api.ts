@@ -1,5 +1,7 @@
 // API types for REST endpoints
 
+import type { PresetFileType } from "./database";
+
 export interface ApiResponse<T> {
 	data: T;
 	error?: string;
@@ -21,8 +23,9 @@ export interface PaginatedResponse<T> {
 export type SortOrder = "asc" | "desc";
 export type SortField =
 	| "created_at"
-	| "downloads_count"
-	| "likes_count"
+	| "download_count"
+	| "like_count"
+	| "view_count"
 	| "title";
 
 export interface ListQueryParams {
@@ -32,5 +35,5 @@ export interface ListQueryParams {
 	order?: SortOrder;
 	search?: string;
 	tags?: string[];
-	fileType?: "flstudio" | "ableton" | "logic" | "studioone";
+	fileType?: PresetFileType;
 }
