@@ -2,18 +2,14 @@
 
 import { FilterChip, PresetGrid, SearchBar } from "@presethub/ui";
 
-export default function HomePage() {
+export default function ExplorePage() {
 	return (
 		<div className="space-y-8">
-			<div className="flex justify-center">
-				<SearchBar value="" onChange={() => {}} onSubmit={() => {}} />
-			</div>
-
-			<div className="flex gap-2 justify-center">
+			<h1 className="text-2xl font-bold">Explore Presets</h1>
+			<SearchBar value="" onChange={() => {}} onSubmit={() => {}} />
+			<div className="flex gap-2">
 				<FilterChip label="All" isActive={true} onClick={() => {}} />
-				<FilterChip label="FL Studio" isActive={false} onClick={() => {}} />
 			</div>
-
 			<PresetGrid
 				presets={[]}
 				isLoading={false}
