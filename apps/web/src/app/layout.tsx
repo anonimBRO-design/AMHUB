@@ -1,46 +1,27 @@
-"use client";
-
-import { NavigationSidebar } from "@presethub/ui";
-import { MobileBottomNav } from "@presethub/ui";
-import { TopBar } from "@presethub/ui";
+import { LayoutShell } from "./_components/layout-shell";
+import { getCurrentProfile } from "@/lib/supabase/auth";
+import { createSupabaseServerClient } from "@/lib/supabase/client";
+import { getUnreadNotificationCount } from "@/data/notifications";
 import "../styles/globals.css";
 
-export default function RootLayout({
+export default async function RootLayout({
 	children,
 }: {
 	children: React.ReactNode;
 }) {
-	// Placeholder user/state for shell
-	const currentUser = {
-		username: "johndoe",
-		displayName: "John Doe",
-		level: 1,
-		levelName: "Beginner",
-	};
+	const currentUser = await getCurrentProfile();
+	const supabase = await createSupabaseServerClient();
+
+	const unreadNotificationCount = currentUser
+		? await getUnreadNotificationCount(supabase, currentUser.id)
+		: 0;
 
 	return (
 		<html lang="en">
 			<body className="bg-[var(--color-bg-surface)] text-[var(--color-text-primary)]">
-				<div className="flex min-h-screen">
-					<NavigationSidebar
-						currentUser={currentUser}
-						activeRoute="/"
-						recentActivity={[]}
-						trendingTags={[]}
-					/>
-					<div className="flex-1 flex flex-col lg:pl-[220px]">
-						<TopBar
-							unreadNotificationCount={0}
-							isScrolled={false}
-							onSearchSubmit={() => {}}
-						/>
-						<main className="flex-1 p-6 pb-20 lg:pb-6">{children}</main>
-						<MobileBottomNav
-							activeRoute="/"
-							currentUser={{ displayName: "John Doe" }}
-						/>
-					</div>
-				</div>
+				<LayoutShell currentUser={currentUser} unreadNotificationCount={unreadNotificationCount}>
+					{children}
+				</LayoutShell>
 			</body>
 		</html>
 	);

@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import { createSupabaseServerClient } from "./client";
+import type { User } from "@presethub/types";
 
 export async function getCurrentUser() {
 	const supabase = await createSupabaseServerClient();
@@ -25,7 +26,7 @@ export async function requireUser() {
 	return user;
 }
 
-export async function getCurrentProfile() {
+export async function getCurrentProfile(): Promise<User | null> {
 	const user = await getCurrentUser();
 
 	if (!user) {
