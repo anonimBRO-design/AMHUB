@@ -1,6 +1,11 @@
 import type { PresetHubSupabaseClient } from "@/lib/supabase/client";
 import type { ListQueryParams } from "@presethub/types";
 
+// Local extension of ListQueryParams to support category
+export type ExtendedListQueryParams = ListQueryParams & {
+	category?: string;
+};
+
 export type PresetWithCreator = {
 	id: string;
 	slug: string;
@@ -59,7 +64,7 @@ const presetSelect = `
 
 export async function listPublishedPresets(
 	supabase: PresetHubSupabaseClient,
-	params: ListQueryParams = {},
+	params: ExtendedListQueryParams = {},
 ) {
 	const limit = params.limit ?? 24;
 	const page = params.page ?? 1;
@@ -74,6 +79,10 @@ export async function listPublishedPresets(
 
 	if (params.search) {
 		query = query.ilike("title", `%${params.search}%`);
+	}
+
+	if (params.category) {
+		query = query.eq("category", params.category);
 	}
 
 	if (params.fileType) {
