@@ -1,16 +1,60 @@
-// API types for REST endpoints
+// Shared API types for App Router route handlers and clients.
 
 import type { PresetFileType } from "./database";
 
-export interface ApiResponse<T> {
-	data: T;
-	error?: string;
-	meta?: {
-		page?: number;
-		limit?: number;
-		total?: number;
-	};
+export type ApiErrorCode =
+	| "bad_request"
+	| "unauthorized"
+	| "forbidden"
+	| "not_found"
+	| "conflict"
+	| "unprocessable_entity"
+	| "rate_limited"
+	| "payload_too_large"
+	| "unsupported_media_type"
+	| "internal_server_error";
+
+export interface ApiErrorBody {
+	code: ApiErrorCode;
+	message: string;
+	details?: unknown;
+	requestId?: string;
 }
+
+export interface PaginationMeta {
+	page: number;
+	limit: number;
+	offset: number;
+	total?: number;
+	hasMore?: boolean;
+}
+
+export interface CursorPaginationMeta {
+	limit: number;
+	nextCursor?: string;
+	previousCursor?: string;
+	hasMore: boolean;
+}
+
+export interface ApiMeta {
+	pagination?: PaginationMeta;
+	cursor?: CursorPaginationMeta;
+	requestId?: string;
+}
+
+export interface ApiSuccessResponse<T> {
+	data: T;
+	error: null;
+	meta?: ApiMeta;
+}
+
+export interface ApiFailureResponse {
+	data: null;
+	error: ApiErrorBody;
+	meta?: ApiMeta;
+}
+
+export type ApiResponse<T> = ApiSuccessResponse<T> | ApiFailureResponse;
 
 export interface PaginatedResponse<T> {
 	items: T[];
