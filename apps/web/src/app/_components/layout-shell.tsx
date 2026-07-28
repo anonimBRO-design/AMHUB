@@ -1,12 +1,12 @@
 "use client";
 
+import type { User } from "@presethub/types";
 import {
 	AppLayoutTemplate,
 	MobileBottomNav,
 	NavigationSidebar,
 	TopBar,
 } from "@presethub/ui";
-import type { User } from "@presethub/types";
 import { useRouter } from "next/navigation";
 import type React from "react";
 
@@ -23,7 +23,7 @@ export const LayoutShell: React.FC<LayoutShellProps> = ({
 }) => {
 	const router = useRouter();
 
-	// Normalize user data for component props if necessary, 
+	// Normalize user data for component props if necessary,
 	// or create a mapper function if schemas diverge.
 	const navUser = currentUser
 		? {

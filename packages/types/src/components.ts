@@ -1,6 +1,14 @@
 // Component props types aligned with Design System §17
 
-import type { Badge, Preset, User } from "./database";
+import type { Preset, User } from "./database";
+
+export interface BadgeChipBadge {
+	key: string;
+	name: string;
+	description?: string;
+	iconUrl?: string;
+	rarity: "common" | "rare" | "epic" | "legendary";
+}
 
 export interface AvatarProps {
 	user: Pick<User, "avatar_url" | "username">;
@@ -23,7 +31,7 @@ export interface ButtonProps {
 }
 
 export interface BadgeChipProps {
-	badge: Badge;
+	badge: BadgeChipBadge;
 	size?: "sm" | "md";
 	showTooltip?: boolean;
 }

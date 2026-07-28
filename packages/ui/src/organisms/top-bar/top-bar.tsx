@@ -29,27 +29,30 @@ export const TopBar = ({
 	onSearchSubmit,
 }: TopBarProps) => {
 	const [isMenuOpen, setIsMenuOpen] = React.useState(false);
+	const navigateTo = (path: string) => {
+		window.location.href = path;
+	};
 
 	const menuItems: DropdownMenuItem[] = [
 		{
 			type: "item",
 			label: "Profile",
-			onClick: () => {},
+			onClick: () => currentUser && navigateTo(`/u/${currentUser.username}`),
 		} as DropdownMenuActionItem,
 		{
 			type: "item",
 			label: "Dashboard",
-			onClick: () => {},
+			onClick: () => navigateTo("/dashboard"),
 		} as DropdownMenuActionItem,
 		{
 			type: "item",
 			label: "Settings",
-			onClick: () => {},
+			onClick: () => navigateTo("/settings"),
 		} as DropdownMenuActionItem,
 		{
 			type: "item",
 			label: "Sign out",
-			onClick: () => {},
+			onClick: () => navigateTo("/auth/logout"),
 		} as DropdownMenuActionItem,
 	];
 

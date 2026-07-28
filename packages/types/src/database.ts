@@ -1,4 +1,4 @@
-// Supabase database types aligned with Product Specification §4.
+// Supabase database types aligned with the Database Foundation migration.
 
 export type Json =
 	| string
@@ -12,23 +12,12 @@ export type PresetFileType = "xml" | "qr" | "link";
 export type PresetDifficulty = "beginner" | "intermediate" | "advanced";
 export type PresetStatus = "pending" | "published" | "rejected" | "removed";
 export type DeviceSupport = "android" | "ios" | "both";
-export type BadgeRarity = "common" | "rare" | "epic" | "legendary";
 export type NotificationType =
 	| "like"
 	| "comment"
 	| "follow"
 	| "download"
-	| "badge"
-	| "challenge"
 	| "system";
-export type ChallengeStatus = "upcoming" | "active" | "judging" | "ended";
-export type ReportReason = "spam" | "stolen" | "inappropriate" | "misleading";
-export type ReportStatus = "open" | "reviewed" | "resolved";
-export type AnalyticsEventName =
-	| "page_view"
-	| "preset_view"
-	| "download"
-	| "search";
 
 type Nullable<T> = T | null;
 
@@ -60,7 +49,7 @@ export interface Database {
 					updated_at: string;
 				};
 				Insert: {
-					id?: string;
+					id: string;
 					username: string;
 					display_name: string;
 					email: string;
@@ -83,6 +72,59 @@ export interface Database {
 					updated_at?: string;
 				};
 				Update: Partial<Database["public"]["Tables"]["users"]["Insert"]>;
+				Relationships: [
+					{
+						foreignKeyName: "users_id_fkey";
+						columns: ["id"];
+						referencedRelation: "users";
+						referencedColumns: ["id"];
+					},
+				];
+			};
+			categories: {
+				Row: {
+					id: string;
+					slug: string;
+					label: string;
+					description: Nullable<string>;
+					color_token: Nullable<string>;
+					sort_order: number;
+					is_active: boolean;
+					created_at: string;
+					updated_at: string;
+				};
+				Insert: {
+					id?: string;
+					slug: string;
+					label: string;
+					description?: Nullable<string>;
+					color_token?: Nullable<string>;
+					sort_order?: number;
+					is_active?: boolean;
+					created_at?: string;
+					updated_at?: string;
+				};
+				Update: Partial<Database["public"]["Tables"]["categories"]["Insert"]>;
+				Relationships: [];
+			};
+			tags: {
+				Row: {
+					id: string;
+					slug: string;
+					label: string;
+					usage_count: number;
+					created_at: string;
+					updated_at: string;
+				};
+				Insert: {
+					id?: string;
+					slug: string;
+					label: string;
+					usage_count?: number;
+					created_at?: string;
+					updated_at?: string;
+				};
+				Update: Partial<Database["public"]["Tables"]["tags"]["Insert"]>;
 				Relationships: [];
 			};
 			presets: {
@@ -158,99 +200,40 @@ export interface Database {
 						referencedRelation: "users";
 						referencedColumns: ["id"];
 					},
+					{
+						foreignKeyName: "presets_category_fkey";
+						columns: ["category"];
+						referencedRelation: "categories";
+						referencedColumns: ["slug"];
+					},
 				];
 			};
-			preset_likes: {
-				Row: { preset_id: string; user_id: string; created_at: string };
-				Insert: { preset_id: string; user_id: string; created_at?: string };
-				Update: Partial<Database["public"]["Tables"]["preset_likes"]["Insert"]>;
-				Relationships: [];
-			};
-			preset_bookmarks: {
+			preset_tags: {
 				Row: {
 					preset_id: string;
-					user_id: string;
-					collection_id: Nullable<string>;
+					tag_id: string;
 					created_at: string;
 				};
 				Insert: {
 					preset_id: string;
-					user_id: string;
-					collection_id?: Nullable<string>;
+					tag_id: string;
 					created_at?: string;
 				};
-				Update: Partial<
-					Database["public"]["Tables"]["preset_bookmarks"]["Insert"]
-				>;
-				Relationships: [];
-			};
-			preset_downloads: {
-				Row: {
-					id: string;
-					preset_id: string;
-					user_id: Nullable<string>;
-					ip_hash: Nullable<string>;
-					country: Nullable<string>;
-					created_at: string;
-				};
-				Insert: {
-					id?: string;
-					preset_id: string;
-					user_id?: Nullable<string>;
-					ip_hash?: Nullable<string>;
-					country?: Nullable<string>;
-					created_at?: string;
-				};
-				Update: Partial<
-					Database["public"]["Tables"]["preset_downloads"]["Insert"]
-				>;
-				Relationships: [];
-			};
-			comments: {
-				Row: {
-					id: string;
-					preset_id: string;
-					user_id: string;
-					parent_id: Nullable<string>;
-					body: string;
-					like_count: number;
-					is_pinned: boolean;
-					is_removed: boolean;
-					created_at: string;
-					updated_at: string;
-				};
-				Insert: {
-					id?: string;
-					preset_id: string;
-					user_id: string;
-					parent_id?: Nullable<string>;
-					body: string;
-					like_count?: number;
-					is_pinned?: boolean;
-					is_removed?: boolean;
-					created_at?: string;
-					updated_at?: string;
-				};
-				Update: Partial<Database["public"]["Tables"]["comments"]["Insert"]>;
-				Relationships: [];
-			};
-			comment_likes: {
-				Row: { comment_id: string; user_id: string };
-				Insert: { comment_id: string; user_id: string };
-				Update: Partial<
-					Database["public"]["Tables"]["comment_likes"]["Insert"]
-				>;
-				Relationships: [];
-			};
-			follows: {
-				Row: { follower_id: string; following_id: string; created_at: string };
-				Insert: {
-					follower_id: string;
-					following_id: string;
-					created_at?: string;
-				};
-				Update: Partial<Database["public"]["Tables"]["follows"]["Insert"]>;
-				Relationships: [];
+				Update: Partial<Database["public"]["Tables"]["preset_tags"]["Insert"]>;
+				Relationships: [
+					{
+						foreignKeyName: "preset_tags_preset_id_fkey";
+						columns: ["preset_id"];
+						referencedRelation: "presets";
+						referencedColumns: ["id"];
+					},
+					{
+						foreignKeyName: "preset_tags_tag_id_fkey";
+						columns: ["tag_id"];
+						referencedRelation: "tags";
+						referencedColumns: ["id"];
+					},
+				];
 			};
 			collections: {
 				Row: {
@@ -278,7 +261,14 @@ export interface Database {
 					updated_at?: string;
 				};
 				Update: Partial<Database["public"]["Tables"]["collections"]["Insert"]>;
-				Relationships: [];
+				Relationships: [
+					{
+						foreignKeyName: "collections_owner_id_fkey";
+						columns: ["owner_id"];
+						referencedRelation: "users";
+						referencedColumns: ["id"];
+					},
+				];
 			};
 			collection_items: {
 				Row: {
@@ -296,89 +286,158 @@ export interface Database {
 				Update: Partial<
 					Database["public"]["Tables"]["collection_items"]["Insert"]
 				>;
-				Relationships: [];
+				Relationships: [
+					{
+						foreignKeyName: "collection_items_collection_id_fkey";
+						columns: ["collection_id"];
+						referencedRelation: "collections";
+						referencedColumns: ["id"];
+					},
+					{
+						foreignKeyName: "collection_items_preset_id_fkey";
+						columns: ["preset_id"];
+						referencedRelation: "presets";
+						referencedColumns: ["id"];
+					},
+				];
 			};
-			badges: {
+			follows: {
 				Row: {
-					id: string;
-					key: string;
-					name: string;
-					description: Nullable<string>;
-					icon_url: Nullable<string>;
-					rarity: BadgeRarity;
-					xp_reward: number;
-				};
-				Insert: {
-					id?: string;
-					key: string;
-					name: string;
-					description?: Nullable<string>;
-					icon_url?: Nullable<string>;
-					rarity?: BadgeRarity;
-					xp_reward?: number;
-				};
-				Update: Partial<Database["public"]["Tables"]["badges"]["Insert"]>;
-				Relationships: [];
-			};
-			user_badges: {
-				Row: { user_id: string; badge_id: string; earned_at: string };
-				Insert: { user_id: string; badge_id: string; earned_at?: string };
-				Update: Partial<Database["public"]["Tables"]["user_badges"]["Insert"]>;
-				Relationships: [];
-			};
-			challenges: {
-				Row: {
-					id: string;
-					slug: string;
-					title: string;
-					description: Nullable<string>;
-					banner_url: Nullable<string>;
-					theme: Nullable<string>;
-					starts_at: string;
-					ends_at: string;
-					status: ChallengeStatus;
-					prize_xp: number;
-					entry_count: number;
+					follower_id: string;
+					following_id: string;
 					created_at: string;
 				};
 				Insert: {
-					id?: string;
-					slug: string;
-					title: string;
-					description?: Nullable<string>;
-					banner_url?: Nullable<string>;
-					theme?: Nullable<string>;
-					starts_at: string;
-					ends_at: string;
-					status?: ChallengeStatus;
-					prize_xp?: number;
-					entry_count?: number;
+					follower_id: string;
+					following_id: string;
 					created_at?: string;
 				};
-				Update: Partial<Database["public"]["Tables"]["challenges"]["Insert"]>;
-				Relationships: [];
+				Update: Partial<Database["public"]["Tables"]["follows"]["Insert"]>;
+				Relationships: [
+					{
+						foreignKeyName: "follows_follower_id_fkey";
+						columns: ["follower_id"];
+						referencedRelation: "users";
+						referencedColumns: ["id"];
+					},
+					{
+						foreignKeyName: "follows_following_id_fkey";
+						columns: ["following_id"];
+						referencedRelation: "users";
+						referencedColumns: ["id"];
+					},
+				];
 			};
-			challenge_entries: {
+			preset_likes: {
 				Row: {
-					challenge_id: string;
 					preset_id: string;
 					user_id: string;
-					vote_count: number;
-					rank: Nullable<number>;
-					submitted_at: string;
+					created_at: string;
 				};
 				Insert: {
-					challenge_id: string;
 					preset_id: string;
 					user_id: string;
-					vote_count?: number;
-					rank?: Nullable<number>;
-					submitted_at?: string;
+					created_at?: string;
+				};
+				Update: Partial<Database["public"]["Tables"]["preset_likes"]["Insert"]>;
+				Relationships: [
+					{
+						foreignKeyName: "preset_likes_preset_id_fkey";
+						columns: ["preset_id"];
+						referencedRelation: "presets";
+						referencedColumns: ["id"];
+					},
+					{
+						foreignKeyName: "preset_likes_user_id_fkey";
+						columns: ["user_id"];
+						referencedRelation: "users";
+						referencedColumns: ["id"];
+					},
+				];
+			};
+			preset_bookmarks: {
+				Row: {
+					preset_id: string;
+					user_id: string;
+					collection_id: Nullable<string>;
+					created_at: string;
+				};
+				Insert: {
+					preset_id: string;
+					user_id: string;
+					collection_id?: Nullable<string>;
+					created_at?: string;
 				};
 				Update: Partial<
-					Database["public"]["Tables"]["challenge_entries"]["Insert"]
+					Database["public"]["Tables"]["preset_bookmarks"]["Insert"]
 				>;
-				Relationships: [];
+				Relationships: [
+					{
+						foreignKeyName: "preset_bookmarks_preset_id_fkey";
+						columns: ["preset_id"];
+						referencedRelation: "presets";
+						referencedColumns: ["id"];
+					},
+					{
+						foreignKeyName: "preset_bookmarks_user_id_fkey";
+						columns: ["user_id"];
+						referencedRelation: "users";
+						referencedColumns: ["id"];
+					},
+					{
+						foreignKeyName: "preset_bookmarks_collection_id_fkey";
+						columns: ["collection_id"];
+						referencedRelation: "collections";
+						referencedColumns: ["id"];
+					},
+				];
+			};
+			comments: {
+				Row: {
+					id: string;
+					preset_id: string;
+					user_id: string;
+					parent_id: Nullable<string>;
+					body: string;
+					like_count: number;
+					is_pinned: boolean;
+					is_removed: boolean;
+					created_at: string;
+					updated_at: string;
+				};
+				Insert: {
+					id?: string;
+					preset_id: string;
+					user_id: string;
+					parent_id?: Nullable<string>;
+					body: string;
+					like_count?: number;
+					is_pinned?: boolean;
+					is_removed?: boolean;
+					created_at?: string;
+					updated_at?: string;
+				};
+				Update: Partial<Database["public"]["Tables"]["comments"]["Insert"]>;
+				Relationships: [
+					{
+						foreignKeyName: "comments_preset_id_fkey";
+						columns: ["preset_id"];
+						referencedRelation: "presets";
+						referencedColumns: ["id"];
+					},
+					{
+						foreignKeyName: "comments_user_id_fkey";
+						columns: ["user_id"];
+						referencedRelation: "users";
+						referencedColumns: ["id"];
+					},
+					{
+						foreignKeyName: "comments_parent_id_fkey";
+						columns: ["parent_id"];
+						referencedRelation: "comments";
+						referencedColumns: ["id"];
+					},
+				];
 			};
 			notifications: {
 				Row: {
@@ -387,7 +446,6 @@ export interface Database {
 					type: NotificationType;
 					actor_id: Nullable<string>;
 					preset_id: Nullable<string>;
-					badge_id: Nullable<string>;
 					message: Nullable<string>;
 					is_read: boolean;
 					created_at: string;
@@ -398,7 +456,6 @@ export interface Database {
 					type: NotificationType;
 					actor_id?: Nullable<string>;
 					preset_id?: Nullable<string>;
-					badge_id?: Nullable<string>;
 					message?: Nullable<string>;
 					is_read?: boolean;
 					created_at?: string;
@@ -406,63 +463,35 @@ export interface Database {
 				Update: Partial<
 					Database["public"]["Tables"]["notifications"]["Insert"]
 				>;
-				Relationships: [];
-			};
-			reports: {
-				Row: {
-					id: string;
-					reporter_id: string;
-					preset_id: string;
-					comment_id: Nullable<string>;
-					reason: ReportReason;
-					details: Nullable<string>;
-					status: ReportStatus;
-					reviewed_by: Nullable<string>;
-					created_at: string;
-				};
-				Insert: {
-					id?: string;
-					reporter_id: string;
-					preset_id: string;
-					comment_id?: Nullable<string>;
-					reason: ReportReason;
-					details?: Nullable<string>;
-					status?: ReportStatus;
-					reviewed_by?: Nullable<string>;
-					created_at?: string;
-				};
-				Update: Partial<Database["public"]["Tables"]["reports"]["Insert"]>;
-				Relationships: [];
-			};
-			analytics_events: {
-				Row: {
-					id: string;
-					event: AnalyticsEventName;
-					user_id: Nullable<string>;
-					preset_id: Nullable<string>;
-					session_id: Nullable<string>;
-					properties: Nullable<Json>;
-					country: Nullable<string>;
-					created_at: string;
-				};
-				Insert: {
-					id?: string;
-					event: AnalyticsEventName;
-					user_id?: Nullable<string>;
-					preset_id?: Nullable<string>;
-					session_id?: Nullable<string>;
-					properties?: Nullable<Json>;
-					country?: Nullable<string>;
-					created_at?: string;
-				};
-				Update: Partial<
-					Database["public"]["Tables"]["analytics_events"]["Insert"]
-				>;
-				Relationships: [];
+				Relationships: [
+					{
+						foreignKeyName: "notifications_user_id_fkey";
+						columns: ["user_id"];
+						referencedRelation: "users";
+						referencedColumns: ["id"];
+					},
+					{
+						foreignKeyName: "notifications_actor_id_fkey";
+						columns: ["actor_id"];
+						referencedRelation: "users";
+						referencedColumns: ["id"];
+					},
+					{
+						foreignKeyName: "notifications_preset_id_fkey";
+						columns: ["preset_id"];
+						referencedRelation: "presets";
+						referencedColumns: ["id"];
+					},
+				];
 			};
 		};
 		Views: Record<string, never>;
-		Functions: Record<string, never>;
+		Functions: {
+			is_staff: {
+				Args: { user_id?: string };
+				Returns: boolean;
+			};
+		};
 		Enums: Record<string, never>;
 		CompositeTypes: Record<string, never>;
 	};
@@ -480,11 +509,14 @@ export type UserMini = {
 	username: string;
 	avatar_url?: string;
 };
+export type Category = Tables<"categories">;
+export type Tag = Tables<"tags">;
 export type Preset = Tables<"presets">;
-export type PresetDownload = Tables<"preset_downloads">;
+export type PresetTag = Tables<"preset_tags">;
 export type PresetLike = Tables<"preset_likes">;
 export type Bookmark = Tables<"preset_bookmarks">;
+export type Collection = Tables<"collections">;
+export type CollectionItem = Tables<"collection_items">;
+export type Comment = Tables<"comments">;
 export type Notification = Tables<"notifications">;
 export type Follower = Tables<"follows">;
-export type Badge = Tables<"badges">;
-export type UserBadge = Tables<"user_badges">;

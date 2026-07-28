@@ -1,7 +1,7 @@
-import { LayoutShell } from "./_components/layout-shell";
+import { getUnreadNotificationCount } from "@/data/notifications";
 import { getCurrentProfile } from "@/lib/supabase/auth";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
-import { getUnreadNotificationCount } from "@/data/notifications";
+import { LayoutShell } from "./_components/layout-shell";
 import "../styles/globals.css";
 
 export default async function RootLayout({
@@ -19,7 +19,10 @@ export default async function RootLayout({
 	return (
 		<html lang="en">
 			<body className="bg-[var(--color-bg-surface)] text-[var(--color-text-primary)]">
-				<LayoutShell currentUser={currentUser} unreadNotificationCount={unreadNotificationCount}>
+				<LayoutShell
+					currentUser={currentUser}
+					unreadNotificationCount={unreadNotificationCount}
+				>
 					{children}
 				</LayoutShell>
 			</body>

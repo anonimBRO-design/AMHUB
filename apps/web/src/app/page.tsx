@@ -1,8 +1,8 @@
+import { type PresetWithCreator, listPublishedPresets } from "@/data/presets";
+import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { PresetGrid } from "@presethub/ui";
 import type { PresetCardPreset } from "@presethub/ui";
 import { HomeSearchControls } from "./_components/home-search-controls";
-import { createSupabaseServerClient } from "@/lib/supabase/server";
-import { listPublishedPresets, type PresetWithCreator } from "@/data/presets";
 
 interface HomePageProps {
 	searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
@@ -37,8 +37,10 @@ export default async function HomePage({ searchParams }: HomePageProps) {
 	const params = await searchParams;
 	const supabase = await createSupabaseServerClient();
 
-	const searchQuery = typeof params.search === "string" ? params.search : undefined;
-	const category = typeof params.category === "string" ? params.category : undefined;
+	const searchQuery =
+		typeof params.search === "string" ? params.search : undefined;
+	const category =
+		typeof params.category === "string" ? params.category : undefined;
 
 	const rawPresets = await listPublishedPresets(supabase, {
 		search: searchQuery,

@@ -1,10 +1,18 @@
 "use client";
 
-import { AuthLayout, Button, Input } from "@presethub/ui";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
-import { useRouter } from "next/navigation";
-import { useState, type FormEvent } from "react";
+import { AuthLayout, Button, Input } from "@presethub/ui";
 import { cn } from "@presethub/ui/lib/utils";
+import { useRouter, useSearchParams } from "next/navigation";
+import { type FormEvent, useMemo, useState } from "react";
+
+const getSafeRedirectPath = (value: string | null) => {
+	if (!value || !value.startsWith("/") || value.startsWith("//")) {
+		return "/";
+	}
+
+	return value;
+};
 
 export default function LoginPage() {
 	const [email, setEmail] = useState("");
@@ -12,7 +20,16 @@ export default function LoginPage() {
 	const [isLoading, setIsLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
 	const router = useRouter();
-	const supabase = createSupabaseBrowserClient();
+	const searchParams = useSearchParams();
+	const supabase = useMemo(() => createSupabaseBrowserClient(), []);
+	const redirectTo = getSafeRedirectPath(searchParams.get("redirectTo"));
+	const statusMessage =
+		searchParams.get("status") === "check_email"
+			? "Check your email to confirm your account, then sign in."
+			: null;
+	const callbackError = searchParams.get("error")
+		? "We could not complete that sign-in. Please try again."
+		: null;
 
 	const handleLogin = async (e: FormEvent) => {
 		e.preventDefault();
@@ -28,16 +45,52 @@ export default function LoginPage() {
 			setError(error.message);
 			setIsLoading(false);
 		} else {
-			router.push("/");
+			router.replace(redirectTo);
 			router.refresh();
+		}
+	};
+
+	const handleOAuthLogin = async (provider: "google" | "discord") => {
+		setIsLoading(true);
+		setError(null);
+
+		const callbackUrl = new URL("/auth/callback", window.location.origin);
+		callbackUrl.searchParams.set("next", redirectTo);
+
+		const { error } = await supabase.auth.signInWithOAuth({
+			provider,
+			options: {
+				redirectTo: callbackUrl.toString(),
+			},
+		});
+
+		if (error) {
+			setError(error.message);
+			setIsLoading(false);
 		}
 	};
 
 	return (
 		<AuthLayout>
-			<h1 className={cn("text-xl font-bold mb-[var(--space-6)] text-[var(--color-text-primary)]")}>
+			<h1
+				className={cn(
+					"text-xl font-bold mb-[var(--space-6)] text-[var(--color-text-primary)]",
+				)}
+			>
 				Sign in to PresetHub
 			</h1>
+			{(statusMessage || callbackError) && (
+				<p
+					className={cn(
+						"mb-[var(--space-4)] text-sm",
+						callbackError
+							? "text-[var(--color-text-error)]"
+							: "text-[var(--color-text-secondary)]",
+					)}
+				>
+					{callbackError ?? statusMessage}
+				</p>
+			)}
 			<form onSubmit={handleLogin} className={cn("space-y-[var(--space-4)]")}>
 				<Input
 					label="Email"
@@ -62,10 +115,32 @@ export default function LoginPage() {
 					</p>
 				)}
 			</form>
-			<p className={cn("mt-[var(--space-4)] text-sm text-[var(--color-text-secondary)]")}>
+			<div className={cn("mt-[var(--space-4)] grid grid-cols-2 gap-2")}>
+				<Button
+					type="button"
+					variant="secondary"
+					onClick={() => handleOAuthLogin("google")}
+					isDisabled={isLoading}
+				>
+					Google
+				</Button>
+				<Button
+					type="button"
+					variant="secondary"
+					onClick={() => handleOAuthLogin("discord")}
+					isDisabled={isLoading}
+				>
+					Discord
+				</Button>
+			</div>
+			<p
+				className={cn(
+					"mt-[var(--space-4)] text-sm text-[var(--color-text-secondary)]",
+				)}
+			>
 				Don't have an account?{" "}
 				<a
-					href="/auth/register"
+					href={`/auth/register?redirectTo=${encodeURIComponent(redirectTo)}`}
 					className={cn("text-[var(--color-text-accent)] hover:underline")}
 				>
 					Register

@@ -3,9 +3,8 @@ import { createSupabaseServerClient } from "./server";
 
 export const storageBuckets = {
 	avatars: "avatars",
-	banners: "banners",
+	thumbnails: "thumbnails",
 	presetFiles: "preset-files",
-	presetMedia: "preset-media",
 } as const;
 
 export type StorageBucket =
@@ -14,10 +13,7 @@ export type StorageBucket =
 export function getPresetStorageBucket(
 	fileType: PresetFileType,
 ): StorageBucket {
-	if (fileType === "qr") {
-		return storageBuckets.presetMedia;
-	}
-
+	void fileType;
 	return storageBuckets.presetFiles;
 }
 
