@@ -1,5 +1,5 @@
 import type { PresetFileType } from "@presethub/types";
-import { createSupabaseServerClient } from "./client";
+import { createSupabaseServerClient } from "./server";
 
 export const storageBuckets = {
 	avatars: "avatars",

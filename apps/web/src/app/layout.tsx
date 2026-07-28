@@ -1,6 +1,6 @@
 import { LayoutShell } from "./_components/layout-shell";
 import { getCurrentProfile } from "@/lib/supabase/auth";
-import { createSupabaseServerClient } from "@/lib/supabase/client";
+import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { getUnreadNotificationCount } from "@/data/notifications";
 import "../styles/globals.css";
 

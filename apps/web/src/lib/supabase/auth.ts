@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
-import { createSupabaseServerClient } from "./client";
+import { createSupabaseServerClient } from "./server";
 import type { User } from "@presethub/types";
 
 export async function getCurrentUser() {

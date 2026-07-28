@@ -1,7 +1,7 @@
 import { PresetGrid } from "@presethub/ui";
 import type { PresetCardPreset } from "@presethub/ui";
 import { HomeSearchControls } from "./_components/home-search-controls";
-import { createSupabaseServerClient } from "@/lib/supabase/client";
+import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { listPublishedPresets, type PresetWithCreator } from "@/data/presets";
 
 interface HomePageProps {
