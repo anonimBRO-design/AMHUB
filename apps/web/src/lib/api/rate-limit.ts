@@ -1,3 +1,5 @@
+import { ApiError } from "./errors";
+
 export interface RateLimitOptions {
 	key: string;
 	limit: number;
@@ -25,6 +27,16 @@ export interface RateLimitStore {
 		windowMs: number,
 		now: number,
 	): Promise<RateLimitRecord>;
+}
+
+export interface RouteRateLimitOptions {
+	request: Request;
+	scope: string;
+	limit: number;
+	windowMs: number;
+	userId?: string;
+	store?: RateLimitStore;
+	now?: number;
 }
 
 class MemoryRateLimitStore implements RateLimitStore {
@@ -81,6 +93,62 @@ export async function checkRateLimit({
 		resetAt: new Date(record.resetAt),
 		retryAfter,
 	};
+}
+
+export function getClientIp(request: Request): string {
+	const forwardedFor = request.headers.get("x-forwarded-for");
+
+	if (forwardedFor) {
+		return forwardedFor.split(",")[0]?.trim() || "unknown";
+	}
+
+	return (
+		request.headers.get("cf-connecting-ip") ??
+		request.headers.get("x-real-ip") ??
+		"unknown"
+	);
+}
+
+export function createRateLimitKey({
+	request,
+	scope,
+	userId,
+}: Pick<RouteRateLimitOptions, "request" | "scope" | "userId">): string {
+	const identity = userId ? `user:${userId}` : `ip:${getClientIp(request)}`;
+
+	return `${scope}:${identity}`;
+}
+
+export async function enforceRateLimit({
+	request,
+	scope,
+	limit,
+	windowMs,
+	userId,
+	store,
+	now,
+}: RouteRateLimitOptions): Promise<RateLimitResult> {
+	const result = await checkRateLimit({
+		key: createRateLimitKey({ request, scope, userId }),
+		limit,
+		windowMs,
+		store,
+		now,
+	});
+
+	if (!result.allowed) {
+		throw new ApiError({
+			code: "rate_limited",
+			details: {
+				limit: result.limit,
+				remaining: result.remaining,
+				resetAt: result.resetAt.toISOString(),
+				retryAfter: result.retryAfter,
+			},
+		});
+	}
+
+	return result;
 }
 
 export function rateLimitHeaders(result: RateLimitResult): HeadersInit {

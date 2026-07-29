@@ -58,7 +58,7 @@ export class ApiError extends Error {
 		return {
 			code: this.code,
 			message: this.message,
-			details: this.details,
+			details: this.status < 500 ? this.details : undefined,
 			requestId,
 		};
 	}
