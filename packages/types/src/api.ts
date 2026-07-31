@@ -125,3 +125,42 @@ export interface FollowUserResponse {
 	following: boolean;
 }
 
+export interface CollectionOwner {
+	id: string;
+	username: string;
+	display_name: string;
+	avatar_url: string | null;
+	is_verified: boolean;
+}
+
+export interface CollectionResponse {
+	id: string;
+	slug: string;
+	owner_id: string;
+	title: string;
+	description: string | null;
+	cover_url: string | null;
+	is_public: boolean;
+	preset_count: number;
+	created_at: string;
+	updated_at: string;
+	owner?: CollectionOwner;
+}
+
+export interface CreateCollectionInput {
+	title: string;
+	slug?: string;
+	description?: string | null;
+	cover_url?: string | null;
+	is_public?: boolean;
+}
+
+export interface UpdateCollectionInput {
+	title?: string;
+	slug?: string;
+	description?: string | null;
+	cover_url?: string | null;
+	is_public?: boolean;
+}
+
+
