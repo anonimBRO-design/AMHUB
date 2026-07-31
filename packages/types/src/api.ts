@@ -163,4 +163,24 @@ export interface UpdateCollectionInput {
 	is_public?: boolean;
 }
 
+export type PresetUploadType = "xml" | "qr" | "thumbnail";
+
+export interface PresignedUploadResponse {
+	/** Direct PUT URL the client uses to upload the file to Supabase Storage. */
+	upload_url: string;
+	/** Opaque token required alongside the upload URL by the Supabase SDK. */
+	token: string;
+	/** Object path inside the bucket. Persist this when creating the resource. */
+	storage_path: string;
+	/** Bucket the file was allocated in. */
+	bucket: string;
+	/** Sanitised original filename (for display metadata only). */
+	original_filename: string;
+}
+
+export interface PresetUploadResponse extends PresignedUploadResponse {
+	upload_type: PresetUploadType;
+}
+
+
 

@@ -5,4 +5,5 @@ export * from "./logger";
 export * from "./pagination";
 export * from "./rate-limit";
 export * from "./responses";
+export * from "./uploads";
 export * from "./validation";
