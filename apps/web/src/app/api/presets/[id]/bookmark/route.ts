@@ -4,7 +4,7 @@ import { validateJson, validateRouteParams } from "@/lib/api/validation";
 import { requireApiProfile } from "@/lib/api/auth";
 import { enforceRateLimit } from "@/lib/api/rate-limit";
 import { apiCreated, apiNoContent, apiErrorResponse } from "@/lib/api/responses";
-import { ApiError } from "@/lib/api/errors";
+import { bookmarkPreset, unbookmarkPreset } from "@/dal/bookmarks.dal";
 
 const routeParamsSchema = z.object({
 	id: z.string().uuid(),
@@ -41,36 +41,9 @@ export async function POST(
 			}
 		}
 
-		const { data: preset, error: selectError } = await supabase
-			.from("presets")
-			.select("id")
-			.eq("id", id)
-			.maybeSingle();
+		const result = await bookmarkPreset(supabase, id, profile.id, collectionId);
 
-		if (selectError) throw selectError;
-		if (!preset) {
-			throw new ApiError({ code: "not_found", message: "Preset was not found." });
-		}
-
-		const { error: insertError } = await supabase
-			.from("preset_bookmarks")
-			.upsert(
-				{ preset_id: id, user_id: profile.id, collection_id: collectionId },
-				{ onConflict: "preset_id,user_id" }
-			);
-
-		if (insertError) throw insertError;
-
-		const { count, error: countError } = await supabase
-			.from("preset_bookmarks")
-			.select("*", { count: "exact", head: true })
-			.eq("preset_id", id);
-
-		if (!countError && count !== null) {
-			await supabase.from("presets").update({ bookmark_count: count }).eq("id", id);
-		}
-
-		return apiCreated({ preset_id: id, bookmarked: true, collection_id: collectionId });
+		return apiCreated(result);
 	} catch (error) {
 		return apiErrorResponse(error);
 	}
@@ -92,22 +65,7 @@ export async function DELETE(
 			userId: profile.id,
 		});
 
-		const { error: deleteError } = await supabase
-			.from("preset_bookmarks")
-			.delete()
-			.eq("preset_id", id)
-			.eq("user_id", profile.id);
-
-		if (deleteError) throw deleteError;
-
-		const { count, error: countError } = await supabase
-			.from("preset_bookmarks")
-			.select("*", { count: "exact", head: true })
-			.eq("preset_id", id);
-
-		if (!countError && count !== null) {
-			await supabase.from("presets").update({ bookmark_count: count }).eq("id", id);
-		}
+		await unbookmarkPreset(supabase, id, profile.id);
 
 		return apiNoContent();
 	} catch (error) {

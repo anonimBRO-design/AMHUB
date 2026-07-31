@@ -5,8 +5,8 @@ import { requireApiProfile } from "@/lib/api/auth";
 import { enforceRateLimit } from "@/lib/api/rate-limit";
 import { apiResponse, apiCreated, apiErrorResponse } from "@/lib/api/responses";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
-import { ApiError } from "@/lib/api/errors";
 import { createPaginationMeta } from "@/lib/api/pagination";
+import { createComment, listComments } from "@/dal/comments.dal";
 
 const routeParamsSchema = z.object({
 	id: z.string().uuid(),
@@ -22,26 +22,6 @@ const createCommentSchema = z.object({
 	parent_id: z.string().uuid().nullable().optional(),
 });
 
-const commentSelect = `
-	id,
-	preset_id,
-	user_id,
-	parent_id,
-	body,
-	like_count,
-	is_pinned,
-	is_removed,
-	created_at,
-	updated_at,
-	user:users!comments_user_id_fkey (
-		id,
-		username,
-		display_name,
-		avatar_url,
-		is_verified
-	)
-`;
-
 export async function GET(
 	request: NextRequest,
 	{ params }: { params: Promise<{ id: string }> }
@@ -51,40 +31,15 @@ export async function GET(
 		const { page, limit } = validateQuery(request.nextUrl.searchParams, listCommentsQuerySchema);
 		const supabase = await createSupabaseServerClient();
 
-		const { data: preset, error: selectError } = await supabase
-			.from("presets")
-			.select("id")
-			.eq("id", id)
-			.maybeSingle();
+		const result = await listComments(supabase, id, { page, limit });
 
-		if (selectError) throw selectError;
-		if (!preset) {
-			throw new ApiError({ code: "not_found", message: "Preset was not found." });
-		}
-
-		const offset = (page - 1) * limit;
-		const to = offset + limit - 1;
-
-		const { data: comments, count, error } = await supabase
-			.from("comments")
-			.select(commentSelect, { count: "exact" })
-			.eq("preset_id", id)
-			.eq("is_removed", false)
-			.range(offset, to)
-			.order("is_pinned", { ascending: false })
-			.order("created_at", { ascending: false });
-
-		if (error) throw error;
-
-		const total = count ?? 0;
-
-		return apiResponse(comments ?? [], {
+		return apiResponse(result.items, {
 			meta: {
 				pagination: createPaginationMeta({
 					page,
 					limit,
-					offset,
-					total,
+					offset: result.offset,
+					total: result.total,
 				}),
 			},
 		});
@@ -111,41 +66,7 @@ export async function POST(
 
 		const bodyInput = await validateJson(request, createCommentSchema);
 
-		const { data: preset, error: selectError } = await supabase
-			.from("presets")
-			.select("id")
-			.eq("id", id)
-			.maybeSingle();
-
-		if (selectError) throw selectError;
-		if (!preset) {
-			throw new ApiError({ code: "not_found", message: "Preset was not found." });
-		}
-
-		const { data: comment, error: insertError } = await supabase
-			.from("comments")
-			.insert([
-				{
-					preset_id: id,
-					user_id: profile.id,
-					body: bodyInput.body,
-					parent_id: bodyInput.parent_id ?? null,
-				},
-			])
-			.select(commentSelect)
-			.single();
-
-		if (insertError) throw insertError;
-
-		const { count, error: countError } = await supabase
-			.from("comments")
-			.select("*", { count: "exact", head: true })
-			.eq("preset_id", id)
-			.eq("is_removed", false);
-
-		if (!countError && count !== null) {
-			await supabase.from("presets").update({ comment_count: count }).eq("id", id);
-		}
+		const comment = await createComment(supabase, id, profile.id, bodyInput);
 
 		return apiCreated(comment);
 	} catch (error) {

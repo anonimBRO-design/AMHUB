@@ -4,7 +4,7 @@ import { validateRouteParams } from "@/lib/api/validation";
 import { requireApiProfile } from "@/lib/api/auth";
 import { enforceRateLimit } from "@/lib/api/rate-limit";
 import { apiResponse, apiNoContent, apiErrorResponse } from "@/lib/api/responses";
-import { ApiError } from "@/lib/api/errors";
+import { likePreset, unlikePreset } from "@/dal/likes.dal";
 
 const routeParamsSchema = z.object({
 	id: z.string().uuid(),
@@ -26,33 +26,9 @@ export async function POST(
 			userId: profile.id,
 		});
 
-		const { data: preset, error: selectError } = await supabase
-			.from("presets")
-			.select("id")
-			.eq("id", id)
-			.maybeSingle();
+		const result = await likePreset(supabase, id, profile.id);
 
-		if (selectError) throw selectError;
-		if (!preset) {
-			throw new ApiError({ code: "not_found", message: "Preset was not found." });
-		}
-
-		const { error: insertError } = await supabase
-			.from("preset_likes")
-			.upsert({ preset_id: id, user_id: profile.id }, { onConflict: "preset_id,user_id" });
-
-		if (insertError) throw insertError;
-
-		const { count, error: countError } = await supabase
-			.from("preset_likes")
-			.select("*", { count: "exact", head: true })
-			.eq("preset_id", id);
-
-		if (!countError && count !== null) {
-			await supabase.from("presets").update({ like_count: count }).eq("id", id);
-		}
-
-		return apiResponse({ preset_id: id, liked: true });
+		return apiResponse(result);
 	} catch (error) {
 		return apiErrorResponse(error);
 	}
@@ -74,22 +50,7 @@ export async function DELETE(
 			userId: profile.id,
 		});
 
-		const { error: deleteError } = await supabase
-			.from("preset_likes")
-			.delete()
-			.eq("preset_id", id)
-			.eq("user_id", profile.id);
-
-		if (deleteError) throw deleteError;
-
-		const { count, error: countError } = await supabase
-			.from("preset_likes")
-			.select("*", { count: "exact", head: true })
-			.eq("preset_id", id);
-
-		if (!countError && count !== null) {
-			await supabase.from("presets").update({ like_count: count }).eq("id", id);
-		}
+		await unlikePreset(supabase, id, profile.id);
 
 		return apiNoContent();
 	} catch (error) {

@@ -3,3 +3,7 @@ export * from "./helpers";
 export * from "./presets.dal";
 export * from "./users.dal";
 export * from "./collections.dal";
+export * from "./comments.dal";
+export * from "./likes.dal";
+export * from "./bookmarks.dal";
+export * from "./notifications.dal";
