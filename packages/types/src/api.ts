@@ -81,3 +81,47 @@ export interface ListQueryParams {
 	tags?: string[];
 	fileType?: PresetFileType;
 }
+
+export interface UserProfileResponse {
+	id: string;
+	username: string;
+	display_name: string;
+	avatar_url: string | null;
+	banner_url: string | null;
+	bio: string | null;
+	website_url: string | null;
+	tiktok_handle: string | null;
+	instagram_handle: string | null;
+	discord_handle: string | null;
+	youtube_url: string | null;
+	xp: number;
+	level: number;
+	is_verified: boolean;
+	is_staff: boolean;
+	country_code: string | null;
+	created_at: string;
+	updated_at: string;
+	follower_count: number;
+	following_count: number;
+	is_following?: boolean;
+}
+
+export interface UpdateUserProfileInput {
+	display_name?: string;
+	bio?: string | null;
+	avatar_url?: string | null;
+	banner_url?: string | null;
+	website_url?: string | null;
+	tiktok_handle?: string | null;
+	instagram_handle?: string | null;
+	discord_handle?: string | null;
+	youtube_url?: string | null;
+	country_code?: string | null;
+}
+
+export interface FollowUserResponse {
+	following_id: string;
+	following_username: string;
+	following: boolean;
+}
+
