@@ -3,7 +3,7 @@ import { z } from "zod";
 import { validateRouteParams } from "@/lib/api/validation";
 import { apiResponse, apiErrorResponse } from "@/lib/api/responses";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
-import { ApiError } from "@/lib/api/errors";
+import { getPresetById } from "@/dal/presets.dal";
 
 const routeParamsSchema = z.object({
     id: z.string().uuid(),
@@ -17,19 +17,7 @@ export async function GET(
         const { id } = validateRouteParams(await params, routeParamsSchema);
         const supabase = await createSupabaseServerClient();
 
-        const { data: preset, error } = await supabase
-            .from("presets")
-            .select("*")
-            .eq("id", id)
-            .single();
-
-        if (error) {
-            // PGRST116: Result contains 0 rows (Supabase empty result)
-            if (error.code === "PGRST116") {
-                throw new ApiError({ code: "not_found" });
-            }
-            throw error;
-        }
+        const preset = await getPresetById(supabase, id);
 
         return apiResponse(preset);
     } catch (error) {

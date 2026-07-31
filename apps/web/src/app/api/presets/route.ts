@@ -5,6 +5,7 @@ import { requireApiProfile } from "@/lib/api/auth";
 import { enforceRateLimit } from "@/lib/api/rate-limit";
 import { apiCreated, apiResponse, apiErrorResponse } from "@/lib/api/responses";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { createPreset, listPresets } from "@/dal/presets.dal";
 
 const createPresetSchema = z.object({
     slug: z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/),
@@ -38,16 +39,7 @@ export async function POST(request: NextRequest) {
 
         const data = await validateJson(request, createPresetSchema);
 
-        const { data: preset, error } = await supabase
-            .from("presets")
-            .insert([{
-                ...data,
-                creator_id: profile.id,
-            }])
-            .select()
-            .single();
-
-        if (error) throw error;
+        const preset = await createPreset(supabase, profile.id, data);
 
         return apiCreated(preset);
     } catch (error) {
@@ -58,7 +50,7 @@ export async function POST(request: NextRequest) {
 const listPresetsSchema = z.object({
     page: z.coerce.number().int().min(1).default(1),
     limit: z.coerce.number().int().min(1).max(50).default(20),
-    category: z.string().optional(), // Maps to categories.slug
+    category: z.string().optional(),
 });
 
 export async function GET(request: NextRequest) {
@@ -66,34 +58,16 @@ export async function GET(request: NextRequest) {
         const { page, limit, category } = validateQuery(request.nextUrl.searchParams, listPresetsSchema);
         const supabase = await createSupabaseServerClient();
 
-        const offset = (page - 1) * limit;
-        const to = offset + limit - 1;
+        const result = await listPresets(supabase, { page, limit, category });
 
-        let query = supabase
-            .from("presets")
-            .select("*", { count: "exact" })
-            .range(offset, to)
-            .order("created_at", { ascending: false });
-
-        if (category) {
-            query = query.eq("category", category);
-        }
-
-        const { data: presets, count, error } = await query;
-
-        if (error) throw error;
-
-        const total = count ?? 0;
-        const hasMore = (offset + (presets?.length ?? 0)) < total;
-
-        return apiResponse(presets ?? [], {
+        return apiResponse(result.items, {
             meta: {
                 pagination: {
                     page,
                     limit,
-                    offset,
-                    total,
-                    hasMore,
+                    offset: result.offset,
+                    total: result.total,
+                    hasMore: result.hasMore,
                 },
             },
         });
