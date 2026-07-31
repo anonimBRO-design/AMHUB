@@ -6,10 +6,7 @@ import { enforceRateLimit } from "@/lib/api/rate-limit";
 import { apiResponse, apiCreated, apiErrorResponse } from "@/lib/api/responses";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { createPaginationMeta } from "@/lib/api/pagination";
-import { ApiError } from "@/lib/api/errors";
-import type { Database } from "@presethub/types";
-
-type CollectionInsert = Database["public"]["Tables"]["collections"]["Insert"];
+import { createCollection, listCollections } from "@/dal/collections.dal";
 
 const listCollectionsQuerySchema = z.object({
 	page: z.coerce.number().int().min(1).default(1),
@@ -32,37 +29,6 @@ const createCollectionSchema = z.object({
 	is_public: z.boolean().default(true),
 });
 
-const collectionSelect = `
-	id,
-	slug,
-	owner_id,
-	title,
-	description,
-	cover_url,
-	is_public,
-	preset_count,
-	created_at,
-	updated_at,
-	owner:users!collections_owner_id_fkey (
-		id,
-		username,
-		display_name,
-		avatar_url,
-		is_verified
-	)
-`;
-
-function generateSlug(title: string): string {
-	const normalized = title
-		.toLowerCase()
-		.trim()
-		.replace(/[^a-z0-9]+/g, "-")
-		.replace(/^-+|-+$/g, "")
-		.slice(0, 50);
-
-	return normalized || `collection-${Date.now()}`;
-}
-
 export async function GET(request: NextRequest) {
 	try {
 		const { page, limit, owner_id, search } = validateQuery(
@@ -72,41 +38,21 @@ export async function GET(request: NextRequest) {
 		const authContext = await getApiUser();
 		const supabase = await createSupabaseServerClient();
 
-		const offset = (page - 1) * limit;
-		const to = offset + limit - 1;
+		const result = await listCollections(supabase, {
+			page,
+			limit,
+			owner_id,
+			search,
+			currentUserId: authContext?.user?.id,
+		});
 
-		let query = supabase
-			.from("collections")
-			.select(collectionSelect, { count: "exact" })
-			.range(offset, to)
-			.order("created_at", { ascending: false });
-
-		if (owner_id) {
-			query = query.eq("owner_id", owner_id);
-			if (owner_id !== authContext?.user?.id) {
-				query = query.eq("is_public", true);
-			}
-		} else {
-			query = query.eq("is_public", true);
-		}
-
-		if (search) {
-			query = query.ilike("title", `%${search}%`);
-		}
-
-		const { data: collections, count, error } = await query;
-
-		if (error) throw error;
-
-		const total = count ?? 0;
-
-		return apiResponse(collections ?? [], {
+		return apiResponse(result.items, {
 			meta: {
 				pagination: createPaginationMeta({
 					page,
 					limit,
-					offset,
-					total,
+					offset: result.offset,
+					total: result.total,
 				}),
 			},
 		});
@@ -128,32 +74,8 @@ export async function POST(request: NextRequest) {
 		});
 
 		const input = await validateJson(request, createCollectionSchema);
-		const slug = input.slug ? input.slug : generateSlug(input.title);
 
-		const insertData = {
-			owner_id: profile.id,
-			title: input.title,
-			slug,
-			description: input.description ?? null,
-			cover_url: input.cover_url ?? null,
-			is_public: input.is_public,
-		} satisfies CollectionInsert;
-
-		const { data: collection, error } = await supabase
-			.from("collections")
-			.insert([insertData as never])
-			.select(collectionSelect)
-			.single();
-
-		if (error) {
-			if (error.code === "23505") {
-				throw new ApiError({
-					code: "conflict",
-					message: "A collection with this slug already exists for your account.",
-				});
-			}
-			throw error;
-		}
+		const collection = await createCollection(supabase, profile.id, input);
 
 		return apiCreated(collection);
 	} catch (error) {

@@ -6,10 +6,12 @@ import { assertOwnerOrStaff } from "@/lib/api/authorization";
 import { enforceRateLimit } from "@/lib/api/rate-limit";
 import { apiResponse, apiNoContent, apiErrorResponse } from "@/lib/api/responses";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
-import { ApiError } from "@/lib/api/errors";
-import type { Database } from "@presethub/types";
-
-type CollectionUpdate = Database["public"]["Tables"]["collections"]["Update"];
+import {
+  deleteCollection,
+  getCollectionById,
+  getCollectionOwner,
+  updateCollection,
+} from "@/dal/collections.dal";
 
 const collectionIdParamsSchema = z.object({
 	id: z.string().uuid(),
@@ -29,26 +31,6 @@ const updateCollectionSchema = z.object({
 	is_public: z.boolean().optional(),
 });
 
-const collectionSelect = `
-	id,
-	slug,
-	owner_id,
-	title,
-	description,
-	cover_url,
-	is_public,
-	preset_count,
-	created_at,
-	updated_at,
-	owner:users!collections_owner_id_fkey (
-		id,
-		username,
-		display_name,
-		avatar_url,
-		is_verified
-	)
-`;
-
 export async function GET(
 	request: NextRequest,
 	{ params }: { params: Promise<{ id: string }> }
@@ -58,21 +40,11 @@ export async function GET(
 		const authContext = await getApiUser();
 		const supabase = await createSupabaseServerClient();
 
-		const { data: collection, error } = await supabase
-			.from("collections")
-			.select(collectionSelect)
-			.eq("id", id)
-			.maybeSingle();
-
-		if (error) throw error;
-		if (!collection) {
-			throw new ApiError({ code: "not_found", message: "Collection was not found." });
-		}
-
-		const isOwner = authContext?.user?.id === collection.owner_id;
-		if (!collection.is_public && !isOwner) {
-			throw new ApiError({ code: "not_found", message: "Collection was not found." });
-		}
+		const collection = await getCollectionById(
+			supabase,
+			id,
+			authContext?.user?.id
+		);
 
 		return apiResponse(collection);
 	} catch (error) {
@@ -96,42 +68,12 @@ export async function PATCH(
 			userId: profile.id,
 		});
 
-		const { data: existing, error: selectError } = await supabase
-			.from("collections")
-			.select("id, owner_id")
-			.eq("id", id)
-			.maybeSingle();
-
-		if (selectError) throw selectError;
-		if (!existing) {
-			throw new ApiError({ code: "not_found", message: "Collection was not found." });
-		}
-
+		const existing = await getCollectionOwner(supabase, id);
 		assertOwnerOrStaff(profile.id, existing.owner_id, profile);
 
 		const input = await validateJson(request, updateCollectionSchema);
 
-		const updatePayload: CollectionUpdate = {
-			...input,
-			updated_at: new Date().toISOString(),
-		};
-
-		const { data: updatedCollection, error: updateError } = await supabase
-			.from("collections")
-			.update(updatePayload as never)
-			.eq("id", id)
-			.select(collectionSelect)
-			.single();
-
-		if (updateError) {
-			if (updateError.code === "23505") {
-				throw new ApiError({
-					code: "conflict",
-					message: "A collection with this slug already exists for your account.",
-				});
-			}
-			throw updateError;
-		}
+		const updatedCollection = await updateCollection(supabase, id, input);
 
 		return apiResponse(updatedCollection);
 	} catch (error) {
@@ -155,25 +97,10 @@ export async function DELETE(
 			userId: profile.id,
 		});
 
-		const { data: existing, error: selectError } = await supabase
-			.from("collections")
-			.select("id, owner_id")
-			.eq("id", id)
-			.maybeSingle();
-
-		if (selectError) throw selectError;
-		if (!existing) {
-			throw new ApiError({ code: "not_found", message: "Collection was not found." });
-		}
-
+		const existing = await getCollectionOwner(supabase, id);
 		assertOwnerOrStaff(profile.id, existing.owner_id, profile);
 
-		const { error: deleteError } = await supabase
-			.from("collections")
-			.delete()
-			.eq("id", id);
-
-		if (deleteError) throw deleteError;
+		await deleteCollection(supabase, id);
 
 		return apiNoContent();
 	} catch (error) {
