@@ -1,6 +1,24 @@
 import type { DalClient } from "./types";
 import { syncPresetCounter } from "./helpers";
-import { assertPresetExists } from "./presets.dal";
+import { assertPresetExists, PRESET_SELECT_WITH_CREATOR } from "./presets.dal";
+import type { PresetWithCreator } from "@/data/presets";
+
+export async function listUserLikedPresets(
+  client: DalClient,
+  userId: string
+): Promise<PresetWithCreator[]> {
+  const { data, error } = await client
+    .from("presets")
+    .select(
+      `${PRESET_SELECT_WITH_CREATOR}, preset_likes!inner (user_id)`
+    )
+    .eq("preset_likes.user_id", userId)
+    .eq("status", "published")
+    .order("created_at", { ascending: false });
+
+  if (error) throw error;
+  return (data ?? []) as unknown as PresetWithCreator[];
+}
 
 export async function likePreset(
   client: DalClient,
