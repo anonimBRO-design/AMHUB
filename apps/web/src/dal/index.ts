@@ -7,3 +7,4 @@ export * from "./comments.dal";
 export * from "./likes.dal";
 export * from "./bookmarks.dal";
 export * from "./notifications.dal";
+export * from "./uploads.dal";

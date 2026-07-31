@@ -4,15 +4,8 @@ import { validateJson } from "@/lib/api/validation";
 import { requireApiProfile } from "@/lib/api/auth";
 import { enforceRateLimit } from "@/lib/api/rate-limit";
 import { apiResponse, apiErrorResponse } from "@/lib/api/responses";
-import {
-	UPLOAD_LIMITS,
-	prepareUpload,
-	storageBuckets,
-} from "@/lib/api/uploads";
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Request body schema
-// ─────────────────────────────────────────────────────────────────────────────
+import { UPLOAD_LIMITS } from "@/lib/api/uploads";
+import { preparePresetUpload } from "@/dal/uploads.dal";
 
 const presetUploadRequestSchema = z.discriminatedUnion("upload_type", [
 	z.object({
@@ -35,12 +28,6 @@ const presetUploadRequestSchema = z.discriminatedUnion("upload_type", [
 	}),
 ]);
 
-type PresetUploadRequest = z.infer<typeof presetUploadRequestSchema>;
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Route handler
-// ─────────────────────────────────────────────────────────────────────────────
-
 export async function POST(request: NextRequest) {
 	try {
 		const { profile } = await requireApiProfile();
@@ -54,7 +41,13 @@ export async function POST(request: NextRequest) {
 		});
 
 		const body = await validateJson(request, presetUploadRequestSchema);
-		const prepared = await resolvePresetUpload(body, profile.id);
+
+		const prepared = await preparePresetUpload(profile.id, {
+			upload_type: body.upload_type,
+			content_type: body.content_type,
+			filename: body.filename,
+			size: body.size,
+		});
 
 		return apiResponse({
 			upload_url: prepared.upload_url,
@@ -66,41 +59,5 @@ export async function POST(request: NextRequest) {
 		});
 	} catch (error) {
 		return apiErrorResponse(error);
-	}
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Internal helpers
-// ─────────────────────────────────────────────────────────────────────────────
-
-async function resolvePresetUpload(body: PresetUploadRequest, ownerId: string) {
-	const fileInput = {
-		content_type: body.content_type,
-		filename: body.filename,
-		size: body.size,
-	};
-
-	switch (body.upload_type) {
-		case "xml":
-			return prepareUpload(
-				storageBuckets.presetFiles,
-				ownerId,
-				fileInput,
-				UPLOAD_LIMITS.presetXml,
-			);
-		case "qr":
-			return prepareUpload(
-				storageBuckets.presetFiles,
-				ownerId,
-				fileInput,
-				UPLOAD_LIMITS.presetQr,
-			);
-		case "thumbnail":
-			return prepareUpload(
-				storageBuckets.thumbnails,
-				ownerId,
-				fileInput,
-				UPLOAD_LIMITS.thumbnail,
-			);
 	}
 }

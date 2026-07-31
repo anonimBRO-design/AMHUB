@@ -1,5 +1,10 @@
 import type { PresetHubSupabaseClient } from "@/lib/supabase/client";
 import type { ListQueryParams } from "@presethub/types";
+import {
+  listPublishedPresets as listPublishedPresetsDal,
+  getPresetBySlug as getPresetBySlugDal,
+  listCreatorPresets as listCreatorPresetsDal,
+} from "@/dal/presets.dal";
 
 // Local extension of ListQueryParams to support category
 export type ExtendedListQueryParams = ListQueryParams & {
@@ -34,110 +39,23 @@ export type PresetWithCreator = {
 	};
 };
 
-const presetSelect = `
-	id,
-	slug,
-	title,
-	description,
-	thumbnail_url,
-	preview_video_url,
-	file_type,
-	file_url,
-	am_link,
-	category,
-	difficulty,
-	download_count,
-	view_count,
-	like_count,
-	bookmark_count,
-	comment_count,
-	is_featured,
-	created_at,
-	creator:users!presets_creator_id_fkey (
-		id,
-		username,
-		display_name,
-		avatar_url,
-		is_verified
-	)
-`;
-
 export async function listPublishedPresets(
 	supabase: PresetHubSupabaseClient,
 	params: ExtendedListQueryParams = {},
 ) {
-	const limit = params.limit ?? 24;
-	const page = params.page ?? 1;
-	const from = (page - 1) * limit;
-	const to = from + limit - 1;
-
-	let query = supabase
-		.from("presets")
-		.select(presetSelect)
-		.eq("status", "published")
-		.range(from, to);
-
-	if (params.search) {
-		query = query.ilike("title", `%${params.search}%`);
-	}
-
-	if (params.category) {
-		query = query.eq("category", params.category);
-	}
-
-	if (params.fileType) {
-		query = query.eq("file_type", params.fileType);
-	}
-
-	if (params.tags && params.tags.length > 0) {
-		query = query.contains("tags", params.tags);
-	}
-
-	const sort = params.sort ?? "created_at";
-	const order = params.order ?? "desc";
-	const { data, error } = await query.order(sort, {
-		ascending: order === "asc",
-	});
-
-	if (error) {
-		throw error;
-	}
-
-	return (data ?? []) as unknown as PresetWithCreator[];
+	return listPublishedPresetsDal(supabase, params);
 }
 
 export async function getPresetBySlug(
 	supabase: PresetHubSupabaseClient,
 	slug: string,
 ) {
-	const { data, error } = await supabase
-		.from("presets")
-		.select(presetSelect)
-		.eq("slug", slug)
-		.eq("status", "published")
-		.maybeSingle();
-
-	if (error) {
-		throw error;
-	}
-
-	return data as unknown as PresetWithCreator | null;
+	return getPresetBySlugDal(supabase, slug);
 }
 
 export async function listCreatorPresets(
 	supabase: PresetHubSupabaseClient,
 	creatorId: string,
 ) {
-	const { data, error } = await supabase
-		.from("presets")
-		.select(presetSelect)
-		.eq("creator_id", creatorId)
-		.eq("status", "published")
-		.order("created_at", { ascending: false });
-
-	if (error) {
-		throw error;
-	}
-
-	return (data ?? []) as unknown as PresetWithCreator[];
+	return listCreatorPresetsDal(supabase, creatorId);
 }
