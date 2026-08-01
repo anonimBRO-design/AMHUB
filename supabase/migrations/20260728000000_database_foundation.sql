@@ -13,21 +13,6 @@ begin
 end;
 $$;
 
-create or replace function public.is_staff(user_id uuid default auth.uid())
-returns boolean
-language sql
-stable
-security definer
-set search_path = public
-as $$
-	select exists (
-		select 1
-		from public.users
-		where id = user_id
-			and is_staff = true
-	);
-$$;
-
 create table public.users (
 	id uuid primary key references auth.users(id) on delete cascade,
 	username text not null,
@@ -65,6 +50,21 @@ create trigger users_set_updated_at
 	before update on public.users
 	for each row
 	execute function public.set_updated_at();
+
+create or replace function public.is_staff(user_id uuid default auth.uid())
+returns boolean
+language sql
+stable
+security definer
+set search_path = public
+as $$
+	select exists (
+		select 1
+		from public.users
+		where id = user_id
+			and is_staff = true
+	);
+$$;
 
 create table public.categories (
 	id uuid primary key default gen_random_uuid(),
