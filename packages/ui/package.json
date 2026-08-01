@@ -15,6 +15,8 @@
 			"types": "./src/tokens/index.ts",
 			"import": "./src/tokens/index.ts"
 		},
+		"./tokens/tokens.css": "./src/tokens/tokens.css",
+		"./tokens/*": "./src/tokens/*",
 		"./atoms": {
 			"types": "./src/atoms/index.ts",
 			"import": "./src/atoms/index.ts"
