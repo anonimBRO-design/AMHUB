@@ -1,36 +1,11 @@
-import { type PresetWithCreator, listPublishedPresets } from "@/data/presets";
+import { listPublishedPresets } from "@/data/presets";
+import { mapPresetToCardPreset } from "@/lib/mappers";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { PresetGrid } from "@presethub/ui";
-import type { PresetCardPreset } from "@presethub/ui";
 import { HomeSearchControls } from "./_components/home-search-controls";
 
 interface HomePageProps {
 	searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
-}
-
-function mapPresetToCardPreset(preset: PresetWithCreator): PresetCardPreset {
-	return {
-		id: preset.id,
-		slug: preset.slug,
-		title: preset.title,
-		description: preset.description ?? undefined,
-		thumbnailUrl: preset.thumbnail_url,
-		previewVideoUrl: preset.preview_video_url ?? undefined,
-		category: preset.category,
-		difficulty: preset.difficulty as "beginner" | "intermediate" | "advanced",
-		downloadCount: preset.download_count,
-		likeCount: preset.like_count,
-		commentCount: preset.comment_count,
-		viewCount: preset.view_count,
-		creator: {
-			username: preset.creator.username,
-			displayName: preset.creator.display_name,
-			avatarUrl: preset.creator.avatar_url ?? undefined,
-			isVerified: preset.creator.is_verified,
-		},
-		isFeatured: preset.is_featured,
-		createdAt: preset.created_at,
-	};
 }
 
 export default async function HomePage({ searchParams }: HomePageProps) {
