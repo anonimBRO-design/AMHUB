@@ -1,10 +1,10 @@
+import {
+	getPresetBySlug as getPresetBySlugDal,
+	listCreatorPresets as listCreatorPresetsDal,
+	listPublishedPresets as listPublishedPresetsDal,
+} from "@/dal/presets.dal";
 import type { PresetHubSupabaseClient } from "@/lib/supabase/client";
 import type { ListQueryParams } from "@presethub/types";
-import {
-  listPublishedPresets as listPublishedPresetsDal,
-  getPresetBySlug as getPresetBySlugDal,
-  listCreatorPresets as listCreatorPresetsDal,
-} from "@/dal/presets.dal";
 
 // Local extension of ListQueryParams to support category
 export type ExtendedListQueryParams = ListQueryParams & {

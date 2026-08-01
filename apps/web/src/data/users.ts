@@ -1,8 +1,8 @@
-import type { PresetHubSupabaseClient } from "@/lib/supabase/client";
 import {
-  getUserByUsernameOrNull,
-  getFollowerCount as getFollowerCountDal,
+	getFollowerCount as getFollowerCountDal,
+	getUserByUsernameOrNull,
 } from "@/dal/users.dal";
+import type { PresetHubSupabaseClient } from "@/lib/supabase/client";
 
 export async function getProfileByUsername(
 	supabase: PresetHubSupabaseClient,

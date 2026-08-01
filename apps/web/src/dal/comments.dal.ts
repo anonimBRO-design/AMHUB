@@ -1,6 +1,6 @@
-import type { DalClient } from "./types";
 import { syncPresetCounter } from "./helpers";
 import { assertPresetExists } from "./presets.dal";
+import type { DalClient } from "./types";
 
 export const COMMENT_SELECT_WITH_USER = `
 	id,
@@ -23,70 +23,74 @@ export const COMMENT_SELECT_WITH_USER = `
 `;
 
 export interface ListCommentsFilter {
-  page: number;
-  limit: number;
+	page: number;
+	limit: number;
 }
 
 export interface CreateCommentData {
-  body: string;
-  parent_id?: string | null;
+	body: string;
+	parent_id?: string | null;
 }
 
 export async function listComments(
-  client: DalClient,
-  presetId: string,
-  filter: ListCommentsFilter
+	client: DalClient,
+	presetId: string,
+	filter: ListCommentsFilter,
 ) {
-  await assertPresetExists(client, presetId);
+	await assertPresetExists(client, presetId);
 
-  const { page, limit } = filter;
-  const offset = (page - 1) * limit;
-  const to = offset + limit - 1;
+	const { page, limit } = filter;
+	const offset = (page - 1) * limit;
+	const to = offset + limit - 1;
 
-  const { data: comments, count, error } = await client
-    .from("comments")
-    .select(COMMENT_SELECT_WITH_USER, { count: "exact" })
-    .eq("preset_id", presetId)
-    .eq("is_removed", false)
-    .range(offset, to)
-    .order("is_pinned", { ascending: false })
-    .order("created_at", { ascending: false });
+	const {
+		data: comments,
+		count,
+		error,
+	} = await client
+		.from("comments")
+		.select(COMMENT_SELECT_WITH_USER, { count: "exact" })
+		.eq("preset_id", presetId)
+		.eq("is_removed", false)
+		.range(offset, to)
+		.order("is_pinned", { ascending: false })
+		.order("created_at", { ascending: false });
 
-  if (error) throw error;
+	if (error) throw error;
 
-  const total = count ?? 0;
+	const total = count ?? 0;
 
-  return {
-    items: comments ?? [],
-    total,
-    offset,
-  };
+	return {
+		items: comments ?? [],
+		total,
+		offset,
+	};
 }
 
 export async function createComment(
-  client: DalClient,
-  presetId: string,
-  userId: string,
-  data: CreateCommentData
+	client: DalClient,
+	presetId: string,
+	userId: string,
+	data: CreateCommentData,
 ) {
-  await assertPresetExists(client, presetId);
+	await assertPresetExists(client, presetId);
 
-  const { data: comment, error: insertError } = await client
-    .from("comments")
-    .insert([
-      {
-        preset_id: presetId,
-        user_id: userId,
-        body: data.body,
-        parent_id: data.parent_id ?? null,
-      },
-    ])
-    .select(COMMENT_SELECT_WITH_USER)
-    .single();
+	const { data: comment, error: insertError } = await client
+		.from("comments")
+		.insert([
+			{
+				preset_id: presetId,
+				user_id: userId,
+				body: data.body,
+				parent_id: data.parent_id ?? null,
+			},
+		] as never)
+		.select(COMMENT_SELECT_WITH_USER)
+		.single();
 
-  if (insertError) throw insertError;
+	if (insertError) throw insertError;
 
-  await syncPresetCounter(client, presetId, "comments", "comment_count");
+	await syncPresetCounter(client, presetId, "comments", "comment_count");
 
-  return comment;
+	return comment;
 }

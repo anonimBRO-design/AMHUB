@@ -18,15 +18,21 @@ export default async function NotificationsPage() {
 
 	const rawNotifications = await listNotifications(supabase, user.id);
 
-	const initialNotifications: NotificationListItem[] = rawNotifications.map(
-		(n) => ({
-			id: n.id,
-			type: n.type as NotificationListItem["type"],
-			message: n.message ?? undefined,
-			isRead: n.is_read,
-			createdAt: new Date(n.created_at).toLocaleDateString(),
-		}),
-	);
+	const initialNotifications: NotificationListItem[] = (
+		rawNotifications as unknown as Array<{
+			id: string;
+			type: string;
+			message: string | null;
+			is_read: boolean;
+			created_at: string;
+		}>
+	).map((n) => ({
+		id: n.id,
+		type: n.type as NotificationListItem["type"],
+		message: n.message ?? undefined,
+		isRead: n.is_read,
+		createdAt: new Date(n.created_at).toLocaleDateString(),
+	}));
 
 	return (
 		<div className="space-y-6 max-w-2xl mx-auto">

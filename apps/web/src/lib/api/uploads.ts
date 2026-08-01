@@ -5,10 +5,10 @@
  * path generation, and filename sanitisation so that route
  * handlers stay thin and share zero duplicated logic.
  */
-import { randomUUID } from "crypto";
+import { randomUUID } from "node:crypto";
 import { ApiError } from "@/lib/api/errors";
 import { createSignedUploadUrl } from "@/lib/supabase/storage";
-import { storageBuckets, type StorageBucket } from "@/lib/supabase/storage";
+import { type StorageBucket, storageBuckets } from "@/lib/supabase/storage";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Constraints
@@ -108,7 +108,8 @@ export function validateFileMetadata(
 	}
 
 	// 2. MIME type check (allowlist)
-	const contentType = file.content_type.toLowerCase().split(";")[0]?.trim() ?? "";
+	const contentType =
+		file.content_type.toLowerCase().split(";")[0]?.trim() ?? "";
 	if (!constraints.allowedMimeTypes.includes(contentType)) {
 		throw new ApiError({
 			code: "unsupported_media_type",
@@ -200,7 +201,8 @@ export async function prepareUpload(
 ): Promise<PreparedUpload> {
 	validateFileMetadata(file, constraints);
 
-	const contentType = file.content_type.toLowerCase().split(";")[0]?.trim() ?? "";
+	const contentType =
+		file.content_type.toLowerCase().split(";")[0]?.trim() ?? "";
 	const storagePath = buildStoragePath(ownerId, contentType);
 	const { signedUrl, token } = await createSignedUploadUrl(bucket, storagePath);
 

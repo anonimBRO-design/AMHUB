@@ -1,10 +1,14 @@
-import { NextRequest } from "next/server";
-import { z } from "zod";
-import { validateJson, validateRouteParams } from "@/lib/api/validation";
+import { bookmarkPreset, unbookmarkPreset } from "@/dal/bookmarks.dal";
 import { requireApiProfile } from "@/lib/api/auth";
 import { enforceRateLimit } from "@/lib/api/rate-limit";
-import { apiCreated, apiNoContent, apiErrorResponse } from "@/lib/api/responses";
-import { bookmarkPreset, unbookmarkPreset } from "@/dal/bookmarks.dal";
+import {
+	apiCreated,
+	apiErrorResponse,
+	apiNoContent,
+} from "@/lib/api/responses";
+import { validateJson, validateRouteParams } from "@/lib/api/validation";
+import type { NextRequest } from "next/server";
+import { z } from "zod";
 
 const routeParamsSchema = z.object({
 	id: z.string().uuid(),
@@ -18,7 +22,7 @@ const bookmarkBodySchema = z
 
 export async function POST(
 	request: NextRequest,
-	{ params }: { params: Promise<{ id: string }> }
+	{ params }: { params: Promise<{ id: string }> },
 ) {
 	try {
 		const { id } = validateRouteParams(await params, routeParamsSchema);
@@ -34,7 +38,7 @@ export async function POST(
 
 		let collectionId: string | null = null;
 		const contentType = request.headers.get("content-type");
-		if (contentType && contentType.includes("application/json")) {
+		if (contentType?.includes("application/json")) {
 			const body = await validateJson(request, bookmarkBodySchema);
 			if (body?.collection_id) {
 				collectionId = body.collection_id;
@@ -51,7 +55,7 @@ export async function POST(
 
 export async function DELETE(
 	request: NextRequest,
-	{ params }: { params: Promise<{ id: string }> }
+	{ params }: { params: Promise<{ id: string }> },
 ) {
 	try {
 		const { id } = validateRouteParams(await params, routeParamsSchema);

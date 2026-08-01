@@ -26,6 +26,10 @@ function assertRequired(
 	keys: readonly string[],
 	context: string,
 ) {
+	// Skip validation during Next.js build phase — env vars are only required at runtime.
+	const isBuildPhase = process.env.NEXT_PHASE === "phase-production-build";
+	if (isBuildPhase) return;
+
 	const missing = keys.filter((key) => !values[key]);
 
 	if (missing.length > 0 && env.NODE_ENV !== "test") {

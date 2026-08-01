@@ -1,12 +1,16 @@
-import { NextRequest } from "next/server";
-import { z } from "zod";
-import { validateJson, validateQuery, validateRouteParams } from "@/lib/api/validation";
-import { requireApiProfile } from "@/lib/api/auth";
-import { enforceRateLimit } from "@/lib/api/rate-limit";
-import { apiResponse, apiCreated, apiErrorResponse } from "@/lib/api/responses";
-import { createSupabaseServerClient } from "@/lib/supabase/server";
-import { createPaginationMeta } from "@/lib/api/pagination";
 import { createComment, listComments } from "@/dal/comments.dal";
+import { requireApiProfile } from "@/lib/api/auth";
+import { createPaginationMeta } from "@/lib/api/pagination";
+import { enforceRateLimit } from "@/lib/api/rate-limit";
+import { apiCreated, apiErrorResponse, apiResponse } from "@/lib/api/responses";
+import {
+	validateJson,
+	validateQuery,
+	validateRouteParams,
+} from "@/lib/api/validation";
+import { createSupabaseServerClient } from "@/lib/supabase/server";
+import type { NextRequest } from "next/server";
+import { z } from "zod";
 
 const routeParamsSchema = z.object({
 	id: z.string().uuid(),
@@ -24,11 +28,14 @@ const createCommentSchema = z.object({
 
 export async function GET(
 	request: NextRequest,
-	{ params }: { params: Promise<{ id: string }> }
+	{ params }: { params: Promise<{ id: string }> },
 ) {
 	try {
 		const { id } = validateRouteParams(await params, routeParamsSchema);
-		const { page, limit } = validateQuery(request.nextUrl.searchParams, listCommentsQuerySchema);
+		const { page, limit } = validateQuery(
+			request.nextUrl.searchParams,
+			listCommentsQuerySchema,
+		);
 		const supabase = await createSupabaseServerClient();
 
 		const result = await listComments(supabase, id, { page, limit });
@@ -50,7 +57,7 @@ export async function GET(
 
 export async function POST(
 	request: NextRequest,
-	{ params }: { params: Promise<{ id: string }> }
+	{ params }: { params: Promise<{ id: string }> },
 ) {
 	try {
 		const { id } = validateRouteParams(await params, routeParamsSchema);

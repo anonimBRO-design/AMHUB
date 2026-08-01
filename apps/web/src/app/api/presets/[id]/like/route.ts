@@ -1,10 +1,14 @@
-import { NextRequest } from "next/server";
-import { z } from "zod";
-import { validateRouteParams } from "@/lib/api/validation";
+import { likePreset, unlikePreset } from "@/dal/likes.dal";
 import { requireApiProfile } from "@/lib/api/auth";
 import { enforceRateLimit } from "@/lib/api/rate-limit";
-import { apiResponse, apiNoContent, apiErrorResponse } from "@/lib/api/responses";
-import { likePreset, unlikePreset } from "@/dal/likes.dal";
+import {
+	apiErrorResponse,
+	apiNoContent,
+	apiResponse,
+} from "@/lib/api/responses";
+import { validateRouteParams } from "@/lib/api/validation";
+import type { NextRequest } from "next/server";
+import { z } from "zod";
 
 const routeParamsSchema = z.object({
 	id: z.string().uuid(),
@@ -12,7 +16,7 @@ const routeParamsSchema = z.object({
 
 export async function POST(
 	request: NextRequest,
-	{ params }: { params: Promise<{ id: string }> }
+	{ params }: { params: Promise<{ id: string }> },
 ) {
 	try {
 		const { id } = validateRouteParams(await params, routeParamsSchema);
@@ -36,7 +40,7 @@ export async function POST(
 
 export async function DELETE(
 	request: NextRequest,
-	{ params }: { params: Promise<{ id: string }> }
+	{ params }: { params: Promise<{ id: string }> },
 ) {
 	try {
 		const { id } = validateRouteParams(await params, routeParamsSchema);

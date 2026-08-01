@@ -1,15 +1,20 @@
-import { NextRequest } from "next/server";
-import { z } from "zod";
-import { validateJson, validateRouteParams } from "@/lib/api/validation";
+import { getUserByUsername, updateUserProfile } from "@/dal/users.dal";
 import { getApiUser, requireApiProfile } from "@/lib/api/auth";
 import { assertOwnerOrStaff } from "@/lib/api/authorization";
 import { enforceRateLimit } from "@/lib/api/rate-limit";
-import { apiResponse, apiErrorResponse } from "@/lib/api/responses";
+import { apiErrorResponse, apiResponse } from "@/lib/api/responses";
+import { validateJson, validateRouteParams } from "@/lib/api/validation";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
-import { getUserByUsername, updateUserProfile } from "@/dal/users.dal";
+import type { NextRequest } from "next/server";
+import { z } from "zod";
 
 const usernameRouteParamsSchema = z.object({
-	username: z.string().trim().min(3).max(24).regex(/^[a-zA-Z0-9_]+$/),
+	username: z
+		.string()
+		.trim()
+		.min(3)
+		.max(24)
+		.regex(/^[a-zA-Z0-9_]+$/),
 });
 
 const updateUserProfileSchema = z.object({
@@ -27,14 +32,21 @@ const updateUserProfileSchema = z.object({
 
 export async function GET(
 	request: NextRequest,
-	{ params }: { params: Promise<{ username: string }> }
+	{ params }: { params: Promise<{ username: string }> },
 ) {
 	try {
-		const { username } = validateRouteParams(await params, usernameRouteParamsSchema);
+		const { username } = validateRouteParams(
+			await params,
+			usernameRouteParamsSchema,
+		);
 		const supabase = await createSupabaseServerClient();
 		const authContext = await getApiUser();
 
-		const result = await getUserByUsername(supabase, username, authContext?.user?.id);
+		const result = await getUserByUsername(
+			supabase,
+			username,
+			authContext?.user?.id,
+		);
 
 		return apiResponse(result);
 	} catch (error) {
@@ -44,10 +56,13 @@ export async function GET(
 
 export async function PATCH(
 	request: NextRequest,
-	{ params }: { params: Promise<{ username: string }> }
+	{ params }: { params: Promise<{ username: string }> },
 ) {
 	try {
-		const { username } = validateRouteParams(await params, usernameRouteParamsSchema);
+		const { username } = validateRouteParams(
+			await params,
+			usernameRouteParamsSchema,
+		);
 		const { supabase, profile } = await requireApiProfile();
 
 		await enforceRateLimit({
@@ -62,21 +77,30 @@ export async function PATCH(
 
 		// We use a helper from DAL to get targetUser ID first for authorization check
 		const { targetUser, updatedUser } = await (async () => {
-			const { data: tUser, error: selectError } = await supabase
+			const { data: rawTUser, error: selectError } = await supabase
 				.from("users")
 				.select("id, username")
 				.ilike("username", username)
 				.maybeSingle();
 
+			const tUser = rawTUser as { id: string; username: string } | null;
+
 			if (selectError) throw selectError;
 			if (!tUser) {
 				const { ApiError } = await import("@/lib/api/errors");
-				throw new ApiError({ code: "not_found", message: "User was not found." });
+				throw new ApiError({
+					code: "not_found",
+					message: "User was not found.",
+				});
 			}
 
 			assertOwnerOrStaff(profile.id, tUser.id, profile);
 
-			const { updatedUser } = await updateUserProfile(supabase, username, input);
+			const { updatedUser } = await updateUserProfile(
+				supabase,
+				username,
+				input,
+			);
 			return { targetUser: tUser, updatedUser };
 		})();
 

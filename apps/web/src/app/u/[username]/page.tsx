@@ -1,5 +1,5 @@
-import { listCreatorPresets } from "@/data/presets";
 import { getUserByUsername, getUserByUsernameOrNull } from "@/dal/users.dal";
+import { listCreatorPresets } from "@/data/presets";
 import { mapPresetToCardPreset } from "@/lib/mappers";
 import { getCurrentUser } from "@/lib/supabase/auth";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
@@ -17,7 +17,12 @@ export async function generateMetadata({
 }: PageProps): Promise<Metadata> {
 	const { username } = await params;
 	const supabase = await createSupabaseServerClient();
-	const user = await getUserByUsernameOrNull(supabase, username);
+	const rawUser = await getUserByUsernameOrNull(supabase, username);
+	const user = rawUser as unknown as {
+		display_name: string;
+		username: string;
+		bio: string | null;
+	} | null;
 
 	if (!user) {
 		return {
@@ -27,7 +32,9 @@ export async function generateMetadata({
 
 	return {
 		title: `${user.display_name} (@${user.username}) | PresetHub`,
-		description: user.bio ?? `Check out Alight Motion presets by ${user.display_name} on PresetHub.`,
+		description:
+			user.bio ??
+			`Check out Alight Motion presets by ${user.display_name} on PresetHub.`,
 	};
 }
 

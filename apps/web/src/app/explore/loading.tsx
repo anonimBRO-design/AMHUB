@@ -1,5 +1,8 @@
 import { Skeleton } from "@presethub/ui";
 
+const FILTER_IDS = ["f1", "f2", "f3", "f4", "f5", "f6", "f7"];
+const PRESET_IDS = ["ep1", "ep2", "ep3", "ep4", "ep5", "ep6", "ep7", "ep8"];
+
 export default function ExploreLoading() {
 	return (
 		<div className="space-y-8">
@@ -8,16 +11,16 @@ export default function ExploreLoading() {
 				<div className="h-12 w-full max-w-2xl rounded-lg bg-[var(--color-bg-elevated)] animate-pulse" />
 			</div>
 			<div className="flex flex-wrap gap-2 justify-center">
-				{Array.from({ length: 7 }).map((_, i) => (
+				{FILTER_IDS.map((id) => (
 					<div
-						key={`filter-${i}`}
+						key={id}
 						className="h-8 w-20 rounded-full bg-[var(--color-bg-elevated)] animate-pulse"
 					/>
 				))}
 			</div>
 			<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-				{Array.from({ length: 8 }).map((_, i) => (
-					<Skeleton key={`preset-${i}`} variant="card" />
+				{PRESET_IDS.map((id) => (
+					<Skeleton key={id} variant="card" />
 				))}
 			</div>
 		</div>

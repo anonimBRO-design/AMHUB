@@ -181,6 +181,3 @@ export interface PresignedUploadResponse {
 export interface PresetUploadResponse extends PresignedUploadResponse {
 	upload_type: PresetUploadType;
 }
-
-
-

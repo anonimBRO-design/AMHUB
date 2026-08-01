@@ -1,17 +1,21 @@
-import { NextRequest } from "next/server";
-import { z } from "zod";
-import { validateJson, validateRouteParams } from "@/lib/api/validation";
+import {
+	deleteCollection,
+	getCollectionById,
+	getCollectionOwner,
+	updateCollection,
+} from "@/dal/collections.dal";
 import { getApiUser, requireApiProfile } from "@/lib/api/auth";
 import { assertOwnerOrStaff } from "@/lib/api/authorization";
 import { enforceRateLimit } from "@/lib/api/rate-limit";
-import { apiResponse, apiNoContent, apiErrorResponse } from "@/lib/api/responses";
-import { createSupabaseServerClient } from "@/lib/supabase/server";
 import {
-  deleteCollection,
-  getCollectionById,
-  getCollectionOwner,
-  updateCollection,
-} from "@/dal/collections.dal";
+	apiErrorResponse,
+	apiNoContent,
+	apiResponse,
+} from "@/lib/api/responses";
+import { validateJson, validateRouteParams } from "@/lib/api/validation";
+import { createSupabaseServerClient } from "@/lib/supabase/server";
+import type { NextRequest } from "next/server";
+import { z } from "zod";
 
 const collectionIdParamsSchema = z.object({
 	id: z.string().uuid(),
@@ -33,7 +37,7 @@ const updateCollectionSchema = z.object({
 
 export async function GET(
 	request: NextRequest,
-	{ params }: { params: Promise<{ id: string }> }
+	{ params }: { params: Promise<{ id: string }> },
 ) {
 	try {
 		const { id } = validateRouteParams(await params, collectionIdParamsSchema);
@@ -43,7 +47,7 @@ export async function GET(
 		const collection = await getCollectionById(
 			supabase,
 			id,
-			authContext?.user?.id
+			authContext?.user?.id,
 		);
 
 		return apiResponse(collection);
@@ -54,7 +58,7 @@ export async function GET(
 
 export async function PATCH(
 	request: NextRequest,
-	{ params }: { params: Promise<{ id: string }> }
+	{ params }: { params: Promise<{ id: string }> },
 ) {
 	try {
 		const { id } = validateRouteParams(await params, collectionIdParamsSchema);
@@ -83,7 +87,7 @@ export async function PATCH(
 
 export async function DELETE(
 	request: NextRequest,
-	{ params }: { params: Promise<{ id: string }> }
+	{ params }: { params: Promise<{ id: string }> },
 ) {
 	try {
 		const { id } = validateRouteParams(await params, collectionIdParamsSchema);

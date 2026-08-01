@@ -1,8 +1,8 @@
-import type { PresetHubSupabaseClient } from "@/lib/supabase/client";
 import {
-  listNotifications as listNotificationsDal,
-  getUnreadNotificationCount as getUnreadNotificationCountDal,
+	getUnreadNotificationCount as getUnreadNotificationCountDal,
+	listNotifications as listNotificationsDal,
 } from "@/dal/notifications.dal";
+import type { PresetHubSupabaseClient } from "@/lib/supabase/client";
 
 export async function listNotifications(
 	supabase: PresetHubSupabaseClient,

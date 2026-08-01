@@ -1,21 +1,33 @@
-import { NextRequest } from "next/server";
-import { z } from "zod";
-import { validateRouteParams } from "@/lib/api/validation";
+import { followUser, unfollowUser } from "@/dal/users.dal";
 import { requireApiProfile } from "@/lib/api/auth";
 import { enforceRateLimit } from "@/lib/api/rate-limit";
-import { apiResponse, apiNoContent, apiErrorResponse } from "@/lib/api/responses";
-import { followUser, unfollowUser } from "@/dal/users.dal";
+import {
+	apiErrorResponse,
+	apiNoContent,
+	apiResponse,
+} from "@/lib/api/responses";
+import { validateRouteParams } from "@/lib/api/validation";
+import type { NextRequest } from "next/server";
+import { z } from "zod";
 
 const usernameRouteParamsSchema = z.object({
-	username: z.string().trim().min(3).max(24).regex(/^[a-zA-Z0-9_]+$/),
+	username: z
+		.string()
+		.trim()
+		.min(3)
+		.max(24)
+		.regex(/^[a-zA-Z0-9_]+$/),
 });
 
 export async function POST(
 	request: NextRequest,
-	{ params }: { params: Promise<{ username: string }> }
+	{ params }: { params: Promise<{ username: string }> },
 ) {
 	try {
-		const { username } = validateRouteParams(await params, usernameRouteParamsSchema);
+		const { username } = validateRouteParams(
+			await params,
+			usernameRouteParamsSchema,
+		);
 		const { supabase, profile } = await requireApiProfile();
 
 		await enforceRateLimit({
@@ -36,10 +48,13 @@ export async function POST(
 
 export async function DELETE(
 	request: NextRequest,
-	{ params }: { params: Promise<{ username: string }> }
+	{ params }: { params: Promise<{ username: string }> },
 ) {
 	try {
-		const { username } = validateRouteParams(await params, usernameRouteParamsSchema);
+		const { username } = validateRouteParams(
+			await params,
+			usernameRouteParamsSchema,
+		);
 		const { supabase, profile } = await requireApiProfile();
 
 		await enforceRateLimit({

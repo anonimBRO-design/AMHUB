@@ -2,7 +2,7 @@
 
 import { Button, Input } from "@presethub/ui";
 import { useRouter } from "next/navigation";
-import { useState, type FormEvent, type ChangeEvent } from "react";
+import { type ChangeEvent, type FormEvent, useState } from "react";
 
 const CATEGORIES = [
 	"velocity",
@@ -24,19 +24,21 @@ export function UploadForm() {
 	const [description, setDescription] = useState("");
 	const [category, setCategory] = useState("velocity");
 	const [fileType, setFileType] = useState<"xml" | "qr" | "link">("xml");
-	const [difficulty, setDifficulty] = useState<"beginner" | "intermediate" | "advanced">("beginner");
+	const [difficulty, setDifficulty] = useState<
+		"beginner" | "intermediate" | "advanced"
+	>("beginner");
 	const [presetFile, setPresetFile] = useState<File | null>(null);
 	const [thumbnailFile, setThumbnailFile] = useState<File | null>(null);
 	const [amLink, setAmLink] = useState("");
 
 	const handlePresetFileChange = (e: ChangeEvent<HTMLInputElement>) => {
-		if (e.target.files && e.target.files[0]) {
+		if (e.target.files?.[0]) {
 			setPresetFile(e.target.files[0]);
 		}
 	};
 
 	const handleThumbnailFileChange = (e: ChangeEvent<HTMLInputElement>) => {
-		if (e.target.files && e.target.files[0]) {
+		if (e.target.files?.[0]) {
 			setThumbnailFile(e.target.files[0]);
 		}
 	};
@@ -90,7 +92,9 @@ export function UploadForm() {
 
 				const thumbJson = await thumbRes.json();
 				if (!thumbRes.ok) {
-					throw new Error(thumbJson.error?.message || "Failed to prepare thumbnail upload");
+					throw new Error(
+						thumbJson.error?.message || "Failed to prepare thumbnail upload",
+					);
 				}
 
 				await fetch(thumbJson.data.upload_url, {
@@ -111,19 +115,27 @@ export function UploadForm() {
 					body: JSON.stringify({
 						upload_type: uploadType,
 						filename: presetFile.name,
-						content_type: presetFile.type || (uploadType === "xml" ? "text/xml" : "image/jpeg"),
+						content_type:
+							presetFile.type ||
+							(uploadType === "xml" ? "text/xml" : "image/jpeg"),
 						size: presetFile.size,
 					}),
 				});
 
 				const fileJson = await fileRes.json();
 				if (!fileRes.ok) {
-					throw new Error(fileJson.error?.message || "Failed to prepare file upload");
+					throw new Error(
+						fileJson.error?.message || "Failed to prepare file upload",
+					);
 				}
 
 				await fetch(fileJson.data.upload_url, {
 					method: "PUT",
-					headers: { "Content-Type": presetFile.type || (uploadType === "xml" ? "text/xml" : "image/jpeg") },
+					headers: {
+						"Content-Type":
+							presetFile.type ||
+							(uploadType === "xml" ? "text/xml" : "image/jpeg"),
+					},
 					body: presetFile,
 				});
 
@@ -131,10 +143,10 @@ export function UploadForm() {
 			}
 
 			// 3. Create Preset record
-			const slug = title
+			const slug = `${title
 				.toLowerCase()
 				.replace(/[^a-z0-9]+/g, "-")
-				.replace(/^-+|-+$/g, "") + "-" + Date.now().toString().slice(-4);
+				.replace(/^-+|-+$/g, "")}-${Date.now().toString().slice(-4)}`;
 
 			const createRes = await fetch("/api/presets", {
 				method: "POST",
@@ -159,7 +171,9 @@ export function UploadForm() {
 
 			router.push(`/preset/${slug}`);
 		} catch (err: unknown) {
-			setError(err instanceof Error ? err.message : "An unexpected error occurred.");
+			setError(
+				err instanceof Error ? err.message : "An unexpected error occurred.",
+			);
 			setIsLoading(false);
 		}
 	};
@@ -197,10 +211,18 @@ export function UploadForm() {
 			{step === 1 && (
 				<div className="space-y-4">
 					<div>
-						<label className="block text-sm font-medium mb-1">Preset Format</label>
+						<label
+							htmlFor="file-type-select"
+							className="block text-sm font-medium mb-1"
+						>
+							Preset Format
+						</label>
 						<select
+							id="file-type-select"
 							value={fileType}
-							onChange={(e) => setFileType(e.target.value as "xml" | "qr" | "link")}
+							onChange={(e) =>
+								setFileType(e.target.value as "xml" | "qr" | "link")
+							}
 							className="w-full rounded-md border border-[var(--color-border-subtle)] bg-[var(--color-bg-base)] p-2 text-sm"
 						>
 							<option value="xml">XML File (.xml)</option>
@@ -211,10 +233,14 @@ export function UploadForm() {
 
 					{fileType !== "link" ? (
 						<div>
-							<label className="block text-sm font-medium mb-1">
+							<label
+								htmlFor="preset-file-input"
+								className="block text-sm font-medium mb-1"
+							>
 								Preset File ({fileType.toUpperCase()})
 							</label>
 							<input
+								id="preset-file-input"
 								type="file"
 								accept={fileType === "xml" ? ".xml" : "image/*"}
 								onChange={handlePresetFileChange}
@@ -232,8 +258,14 @@ export function UploadForm() {
 					)}
 
 					<div>
-						<label className="block text-sm font-medium mb-1">Thumbnail Preview Image</label>
+						<label
+							htmlFor="thumbnail-file-input"
+							className="block text-sm font-medium mb-1"
+						>
+							Thumbnail Preview Image
+						</label>
 						<input
+							id="thumbnail-file-input"
 							type="file"
 							accept="image/jpeg,image/png,image/webp"
 							onChange={handleThumbnailFileChange}
@@ -258,8 +290,14 @@ export function UploadForm() {
 					/>
 
 					<div>
-						<label className="block text-sm font-medium mb-1">Description</label>
+						<label
+							htmlFor="description-input"
+							className="block text-sm font-medium mb-1"
+						>
+							Description
+						</label>
 						<textarea
+							id="description-input"
 							value={description}
 							onChange={(e) => setDescription(e.target.value)}
 							rows={3}
@@ -269,8 +307,14 @@ export function UploadForm() {
 					</div>
 
 					<div>
-						<label className="block text-sm font-medium mb-1">Category</label>
+						<label
+							htmlFor="category-select"
+							className="block text-sm font-medium mb-1"
+						>
+							Category
+						</label>
 						<select
+							id="category-select"
 							value={category}
 							onChange={(e) => setCategory(e.target.value)}
 							className="w-full rounded-md border border-[var(--color-border-subtle)] bg-[var(--color-bg-base)] p-2 text-sm text-[var(--color-text-primary)]"
@@ -284,10 +328,20 @@ export function UploadForm() {
 					</div>
 
 					<div>
-						<label className="block text-sm font-medium mb-1">Difficulty</label>
+						<label
+							htmlFor="difficulty-select"
+							className="block text-sm font-medium mb-1"
+						>
+							Difficulty
+						</label>
 						<select
+							id="difficulty-select"
 							value={difficulty}
-							onChange={(e) => setDifficulty(e.target.value as "beginner" | "intermediate" | "advanced")}
+							onChange={(e) =>
+								setDifficulty(
+									e.target.value as "beginner" | "intermediate" | "advanced",
+								)
+							}
 							className="w-full rounded-md border border-[var(--color-border-subtle)] bg-[var(--color-bg-base)] p-2 text-sm text-[var(--color-text-primary)]"
 						>
 							<option value="beginner">Beginner</option>
@@ -297,7 +351,9 @@ export function UploadForm() {
 					</div>
 
 					<div className="flex justify-between pt-4">
-						<Button variant="ghost" onClick={() => setStep(1)}>Back</Button>
+						<Button variant="ghost" onClick={() => setStep(1)}>
+							Back
+						</Button>
 						<Button onClick={handleNextStep}>Next: Publish</Button>
 					</div>
 				</div>
@@ -307,7 +363,9 @@ export function UploadForm() {
 				<form onSubmit={handleSubmit} className="space-y-4">
 					<div className="p-4 bg-[var(--color-bg-elevated)] rounded-lg space-y-2">
 						<h3 className="font-semibold text-lg">{title}</h3>
-						<p className="text-sm text-[var(--color-text-secondary)]">{description || "No description."}</p>
+						<p className="text-sm text-[var(--color-text-secondary)]">
+							{description || "No description."}
+						</p>
 						<div className="flex gap-2 text-xs text-[var(--color-text-tertiary)] pt-2">
 							<span className="capitalize">Category: {category}</span>
 							<span>•</span>
@@ -318,7 +376,12 @@ export function UploadForm() {
 					</div>
 
 					<div className="flex justify-between pt-4">
-						<Button type="button" variant="ghost" onClick={() => setStep(2)} isDisabled={isLoading}>
+						<Button
+							type="button"
+							variant="ghost"
+							onClick={() => setStep(2)}
+							isDisabled={isLoading}
+						>
 							Back
 						</Button>
 						<Button type="submit" isLoading={isLoading}>

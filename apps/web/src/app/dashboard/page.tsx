@@ -1,5 +1,5 @@
-import { listCreatorPresets } from "@/data/presets";
 import { getFollowerCount } from "@/dal/users.dal";
+import { listCreatorPresets } from "@/data/presets";
 import { mapPresetToCardPreset } from "@/lib/mappers";
 import { requireUser } from "@/lib/supabase/auth";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
@@ -8,7 +8,8 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = {
 	title: "Creator Dashboard | PresetHub",
-	description: "View your preset analytics, downloads, likes, and manage your published content.",
+	description:
+		"View your preset analytics, downloads, likes, and manage your published content.",
 };
 
 export default async function DashboardPage() {

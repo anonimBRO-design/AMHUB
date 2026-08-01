@@ -1,3 +1,5 @@
+const SKELETON_IDS = ["sk1", "sk2", "sk3", "sk4", "sk5", "sk6"];
+
 export default function ProfileLoading() {
 	return (
 		<div className="space-y-6 animate-pulse">
@@ -12,9 +14,9 @@ export default function ProfileLoading() {
 				</div>
 			</div>
 			<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-6">
-				{Array.from({ length: 6 }).map((_, i) => (
+				{SKELETON_IDS.map((id) => (
 					<div
-						key={`skeleton-${i}`}
+						key={id}
 						className="h-64 rounded-lg bg-[var(--color-bg-elevated)]"
 					/>
 				))}

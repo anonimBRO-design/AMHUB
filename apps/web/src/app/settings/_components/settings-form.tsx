@@ -3,7 +3,7 @@
 import type { User } from "@presethub/types";
 import { Avatar, Button, Input } from "@presethub/ui";
 import { useRouter } from "next/navigation";
-import { useState, type FormEvent, type ChangeEvent } from "react";
+import { type ChangeEvent, type FormEvent, useState } from "react";
 
 interface SettingsFormProps {
 	profile: User;
@@ -19,7 +19,9 @@ export function SettingsForm({ profile }: SettingsFormProps) {
 	const [bio, setBio] = useState(profile.bio ?? "");
 	const [websiteUrl, setWebsiteUrl] = useState(profile.website_url ?? "");
 	const [tiktokHandle, setTiktokHandle] = useState(profile.tiktok_handle ?? "");
-	const [instagramHandle, setInstagramHandle] = useState(profile.instagram_handle ?? "");
+	const [instagramHandle, setInstagramHandle] = useState(
+		profile.instagram_handle ?? "",
+	);
 	const [youtubeUrl, setYoutubeUrl] = useState(profile.youtube_url ?? "");
 	const [avatarUrl, setAvatarUrl] = useState(profile.avatar_url ?? "");
 
@@ -42,7 +44,9 @@ export function SettingsForm({ profile }: SettingsFormProps) {
 
 			const json = await res.json();
 			if (!res.ok) {
-				throw new Error(json.error?.message || "Failed to prepare avatar upload");
+				throw new Error(
+					json.error?.message || "Failed to prepare avatar upload",
+				);
 			}
 
 			// 2. Put file to storage
@@ -53,7 +57,9 @@ export function SettingsForm({ profile }: SettingsFormProps) {
 			});
 
 			setAvatarUrl(json.data.storage_path);
-			setSuccessMessage("Avatar image uploaded successfully! Don't forget to save changes.");
+			setSuccessMessage(
+				"Avatar image uploaded successfully! Don't forget to save changes.",
+			);
 		} catch (err: unknown) {
 			setError(err instanceof Error ? err.message : "Failed to upload avatar.");
 		}
@@ -82,20 +88,27 @@ export function SettingsForm({ profile }: SettingsFormProps) {
 
 			const json = await res.json();
 			if (!res.ok) {
-				throw new Error(json.error?.message || "Failed to update profile settings");
+				throw new Error(
+					json.error?.message || "Failed to update profile settings",
+				);
 			}
 
 			setSuccessMessage("Profile settings updated successfully!");
 			router.refresh();
 		} catch (err: unknown) {
-			setError(err instanceof Error ? err.message : "Failed to update profile.");
+			setError(
+				err instanceof Error ? err.message : "Failed to update profile.",
+			);
 		} finally {
 			setIsLoading(false);
 		}
 	};
 
 	return (
-		<form onSubmit={handleSubmit} className="space-y-6 max-w-2xl mx-auto p-6 bg-[var(--color-bg-surface)] rounded-xl border border-[var(--color-border-subtle)]">
+		<form
+			onSubmit={handleSubmit}
+			className="space-y-6 max-w-2xl mx-auto p-6 bg-[var(--color-bg-surface)] rounded-xl border border-[var(--color-border-subtle)]"
+		>
 			<h1 className="text-2xl font-bold">Account Settings</h1>
 
 			{successMessage && (
@@ -119,8 +132,14 @@ export function SettingsForm({ profile }: SettingsFormProps) {
 					size="xl"
 				/>
 				<div>
-					<label className="block text-sm font-medium mb-1">Profile Photo</label>
+					<label
+						htmlFor="avatar-upload"
+						className="block text-sm font-medium mb-1"
+					>
+						Profile Photo
+					</label>
 					<input
+						id="avatar-upload"
 						type="file"
 						accept="image/jpeg,image/png,image/webp"
 						onChange={handleAvatarChange}
@@ -138,8 +157,11 @@ export function SettingsForm({ profile }: SettingsFormProps) {
 				/>
 
 				<div>
-					<label className="block text-sm font-medium mb-1">Bio</label>
+					<label htmlFor="bio-input" className="block text-sm font-medium mb-1">
+						Bio
+					</label>
 					<textarea
+						id="bio-input"
 						value={bio}
 						onChange={(e) => setBio(e.target.value)}
 						rows={3}

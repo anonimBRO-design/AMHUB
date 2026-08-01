@@ -28,7 +28,13 @@ export default async function ExplorePage({ searchParams }: ExplorePageProps) {
 	const rawPresets = await listPublishedPresets(supabase, {
 		search: searchQuery,
 		category,
-		sort: sort as "created_at" | "download_count" | "like_count" | "view_count" | "title" | undefined,
+		sort: sort as
+			| "created_at"
+			| "download_count"
+			| "like_count"
+			| "view_count"
+			| "title"
+			| undefined,
 	});
 
 	const presets = rawPresets.map(mapPresetToCardPreset);

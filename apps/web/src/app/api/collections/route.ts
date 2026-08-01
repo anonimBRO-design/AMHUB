@@ -1,12 +1,12 @@
-import { NextRequest } from "next/server";
-import { z } from "zod";
-import { validateJson, validateQuery } from "@/lib/api/validation";
-import { getApiUser, requireApiProfile } from "@/lib/api/auth";
-import { enforceRateLimit } from "@/lib/api/rate-limit";
-import { apiResponse, apiCreated, apiErrorResponse } from "@/lib/api/responses";
-import { createSupabaseServerClient } from "@/lib/supabase/server";
-import { createPaginationMeta } from "@/lib/api/pagination";
 import { createCollection, listCollections } from "@/dal/collections.dal";
+import { getApiUser, requireApiProfile } from "@/lib/api/auth";
+import { createPaginationMeta } from "@/lib/api/pagination";
+import { enforceRateLimit } from "@/lib/api/rate-limit";
+import { apiCreated, apiErrorResponse, apiResponse } from "@/lib/api/responses";
+import { validateJson, validateQuery } from "@/lib/api/validation";
+import { createSupabaseServerClient } from "@/lib/supabase/server";
+import type { NextRequest } from "next/server";
+import { z } from "zod";
 
 const listCollectionsQuerySchema = z.object({
 	page: z.coerce.number().int().min(1).default(1),
@@ -33,7 +33,7 @@ export async function GET(request: NextRequest) {
 	try {
 		const { page, limit, owner_id, search } = validateQuery(
 			request.nextUrl.searchParams,
-			listCollectionsQuerySchema
+			listCollectionsQuerySchema,
 		);
 		const authContext = await getApiUser();
 		const supabase = await createSupabaseServerClient();
