@@ -3,6 +3,9 @@
 /* Import Design Tokens */
 @import "@presethub/ui/tokens/tokens.css";
 
+@source "../app/**/*.{ts,tsx}";
+@source "../../../packages/ui/src/**/*.{ts,tsx}";
+
 /* Custom Tailwind v4 configuration via @theme directive */
 @theme {
 	/* Font Families */
