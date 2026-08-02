@@ -7,7 +7,7 @@ import {
 	NavigationSidebar,
 	TopBar,
 } from "@presethub/ui";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import type React from "react";
 
 interface LayoutShellProps {
@@ -22,16 +22,15 @@ export const LayoutShell: React.FC<LayoutShellProps> = ({
 	unreadNotificationCount,
 }) => {
 	const router = useRouter();
+	const pathname = usePathname();
 
-	// Normalize user data for component props if necessary,
-	// or create a mapper function if schemas diverge.
 	const navUser = currentUser
 		? {
 				username: currentUser.username,
 				displayName: currentUser.display_name,
 				avatarUrl: currentUser.avatar_url ?? undefined,
 				level: currentUser.level,
-				levelName: `Level ${currentUser.level}`, // Derived from level
+				levelName: `Level ${currentUser.level}`,
 			}
 		: undefined;
 
@@ -46,7 +45,7 @@ export const LayoutShell: React.FC<LayoutShellProps> = ({
 				navUser ? (
 					<NavigationSidebar
 						currentUser={navUser}
-						activeRoute="/"
+						activeRoute={pathname}
 						recentActivity={[]}
 						trendingTags={[]}
 					/>
@@ -63,7 +62,7 @@ export const LayoutShell: React.FC<LayoutShellProps> = ({
 			bottomNav={
 				navUser ? (
 					<MobileBottomNav
-						activeRoute="/"
+						activeRoute={pathname}
 						currentUser={{
 							avatarUrl: navUser.avatarUrl,
 							displayName: navUser.displayName,
