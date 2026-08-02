@@ -3,10 +3,9 @@ import { listCreatorPresets } from "@/data/presets";
 import { mapPresetToCardPreset } from "@/lib/mappers";
 import { getCurrentUser } from "@/lib/supabase/auth";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
-import { PresetGrid } from "@presethub/ui";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { ProfileHeaderClient } from "./_components/profile-header-client";
+import { ProfileClient } from "./_components/ProfileClient";
 
 interface PageProps {
 	params: Promise<{ username: string }>;
@@ -54,25 +53,25 @@ export default async function ProfilePage({ params }: PageProps) {
 	const presets = rawPresets.map(mapPresetToCardPreset);
 	const isOwnProfile = currentUser?.id === user.id;
 
-	const headerUser = {
+	const profileUserData = {
+		id: user.id,
 		username: user.username,
 		displayName: user.display_name,
-		avatarUrl: user.avatar_url ?? undefined,
-		badges: [],
+		avatarUrl: user.avatar_url,
+		bio: user.bio,
+		isVerified: user.is_verified,
+		websiteUrl: user.website_url,
+		tiktokHandle: user.tiktok_handle,
+		instagramHandle: user.instagram_handle,
+		youtubeUrl: user.youtube_url,
+		createdAt: user.created_at,
 	};
 
 	return (
-		<div className="space-y-8">
-			<ProfileHeaderClient user={headerUser} isOwnProfile={isOwnProfile} />
-			<div className="px-6 space-y-4">
-				<h2 className="text-xl font-bold">Presets by {user.display_name}</h2>
-				<PresetGrid
-					presets={presets}
-					isLoading={false}
-					hasMore={false}
-					onLoadMore={() => {}}
-				/>
-			</div>
-		</div>
+		<ProfileClient
+			user={profileUserData}
+			isOwnProfile={isOwnProfile}
+			presets={presets}
+		/>
 	);
 }
