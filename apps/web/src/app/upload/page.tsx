@@ -1,9 +1,9 @@
 import { requireUser } from "@/lib/supabase/auth";
 import type { Metadata } from "next";
-import { UploadForm } from "./_components/upload-form";
+import { UploadWizard } from "./_components/UploadWizard";
 
 export const metadata: Metadata = {
-	title: "Upload Preset | PresetHub",
+	title: "Upload Alight Motion Preset | PresetHub",
 	description:
 		"Upload and publish your Alight Motion presets to the community.",
 };
@@ -11,5 +11,5 @@ export const metadata: Metadata = {
 export default async function UploadPage() {
 	await requireUser();
 
-	return <UploadForm />;
+	return <UploadWizard />;
 }
