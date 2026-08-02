@@ -6,7 +6,7 @@ import type { Metadata } from "next";
 import { BookmarksClient } from "./_components/BookmarksClient";
 
 export const metadata: Metadata = {
-	title: "Bookmarked Presets | PresetHub",
+	title: "Bookmarked Presets | AMHUB",
 	description: "View your saved and bookmarked Alight Motion presets.",
 };
 

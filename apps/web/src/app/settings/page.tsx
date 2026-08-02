@@ -4,8 +4,8 @@ import { redirect } from "next/navigation";
 import { SettingsClient } from "./_components/SettingsClient";
 
 export const metadata: Metadata = {
-	title: "Account Settings | PresetHub",
-	description: "Manage your PresetHub account settings and profile details.",
+	title: "Account Settings | AMHUB",
+	description: "Manage your AMHUB account settings and profile details.",
 };
 
 export default async function SettingsPage() {

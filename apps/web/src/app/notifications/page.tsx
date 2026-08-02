@@ -6,7 +6,7 @@ import type { NotificationItemData } from "./_components/NotificationCard";
 import { NotificationClient } from "./_components/NotificationClient";
 
 export const metadata: Metadata = {
-	title: "Notifications | PresetHub",
+	title: "Notifications | AMHUB",
 	description: "View your account notifications and activity updates.",
 };
 

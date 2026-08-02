@@ -7,7 +7,7 @@ import type { Metadata } from "next";
 import { DashboardClient } from "./_components/DashboardClient";
 
 export const metadata: Metadata = {
-	title: "Creator Dashboard | PresetHub",
+	title: "Creator Dashboard | AMHUB",
 	description:
 		"View your preset analytics, downloads, likes, and manage your published content.",
 };

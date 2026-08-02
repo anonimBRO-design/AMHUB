@@ -1,8 +1,23 @@
 import { getUnreadNotificationCount } from "@/data/notifications";
 import { getCurrentProfile } from "@/lib/supabase/auth";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import type { Metadata } from "next";
 import { LayoutShell } from "./_components/layout-shell";
 import "../styles/globals.css";
+
+export const metadata: Metadata = {
+	title: {
+		default: "AMHUB — Alight Motion Presets & Community",
+		template: "%s | AMHUB",
+	},
+	description:
+		"Discover, share, and download pro Alight Motion XML, QR code, and link presets.",
+	icons: {
+		icon: "/favicon.png",
+		shortcut: "/favicon.png",
+		apple: "/favicon.png",
+	},
+};
 
 export default async function RootLayout({
 	children,

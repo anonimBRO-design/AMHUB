@@ -77,7 +77,7 @@ export default function LoginPage() {
 					"text-xl font-bold mb-[var(--space-6)] text-[var(--color-text-primary)]",
 				)}
 			>
-				Sign in to PresetHub
+				Sign in to AMHUB
 			</h1>
 			{(statusMessage || callbackError) && (
 				<p

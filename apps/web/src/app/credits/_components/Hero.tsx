@@ -1,4 +1,4 @@
-import { Heart, Sparkles } from "lucide-react";
+import { Sparkles } from "lucide-react";
 
 export function Hero() {
 	return (
@@ -6,10 +6,16 @@ export function Hero() {
 			<div className="absolute -top-24 -left-24 w-72 h-72 bg-[var(--color-interactive-primary)]/15 rounded-full blur-3xl pointer-events-none" />
 			<div className="absolute -bottom-24 -right-24 w-72 h-72 bg-purple-500/15 rounded-full blur-3xl pointer-events-none" />
 
-			<div className="relative z-10 space-y-3 max-w-xl mx-auto">
+			<div className="relative z-10 space-y-4 max-w-xl mx-auto flex flex-col items-center">
+				<img
+					src="/logo.png"
+					alt="AMHUB Logo"
+					className="w-20 h-20 sm:w-24 sm:h-24 object-contain rounded-2xl shadow-2xl border-2 border-[var(--color-border-subtle)]"
+				/>
+
 				<div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[var(--color-interactive-primary)]/10 text-[var(--color-interactive-primary)] border border-[var(--color-interactive-primary)]/20 text-xs font-bold uppercase tracking-wider">
 					<Sparkles className="w-3.5 h-3.5" />
-					<span>Version 1.0 Production Release</span>
+					<span>AMHUB v1.0 Release</span>
 				</div>
 
 				<h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-[var(--color-text-primary)]">

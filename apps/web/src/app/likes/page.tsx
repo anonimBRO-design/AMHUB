@@ -6,7 +6,7 @@ import type { Metadata } from "next";
 import { LikesClient } from "./_components/LikesClient";
 
 export const metadata: Metadata = {
-	title: "Liked Presets | PresetHub",
+	title: "Liked Presets | AMHUB",
 	description: "View Alight Motion presets you have liked.",
 };
 

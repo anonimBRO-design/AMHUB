@@ -19,7 +19,7 @@ export function ShareButton({ title, url }: ShareButtonProps) {
 			try {
 				await navigator.share({
 					title: title,
-					text: `Check out "${title}" Alight Motion preset on PresetHub!`,
+					text: `Check out "${title}" Alight Motion preset on AMHUB!`,
 					url: shareUrl,
 				});
 				return;

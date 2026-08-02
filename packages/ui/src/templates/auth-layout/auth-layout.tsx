@@ -19,10 +19,19 @@ export const AuthLayout = ({ children }: AuthLayoutProps) => {
 			<header className={cn("mb-[var(--space-8)]")}>
 				<a
 					href="/"
-					aria-label="PresetHub — Return to home"
-					className={cn("text-2xl font-bold text-[var(--color-text-primary)]")}
+					aria-label="AMHUB — Return to home"
+					className={cn(
+						"flex items-center gap-3 hover:opacity-90 transition-opacity",
+					)}
 				>
-					PresetHub
+					<img
+						src="/logo.png"
+						alt="AMHUB Logo"
+						className="h-10 w-10 object-contain rounded-xl shadow-md"
+					/>
+					<span className="text-2xl font-extrabold tracking-tight text-[var(--color-text-primary)]">
+						AMHUB
+					</span>
 				</a>
 			</header>
 
@@ -30,8 +39,8 @@ export const AuthLayout = ({ children }: AuthLayoutProps) => {
 				id="main-content"
 				tabIndex={-1}
 				className={cn(
-					"w-full rounded-[var(--radius-lg)] bg-[var(--color-bg-surface)] p-[var(--space-8)] shadow-[var(--shadow-card)]",
-					"max-w-sm", // Kept as standard utility due to lack of direct token equivalent
+					"w-full rounded-3xl border border-[var(--color-border-subtle)] bg-[var(--color-bg-surface)] p-6 sm:p-8 shadow-2xl",
+					"max-w-sm",
 				)}
 			>
 				{children}

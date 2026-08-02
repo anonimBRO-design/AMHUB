@@ -59,32 +59,45 @@ export const TopBar = ({
 	return (
 		<header
 			className={cn(
-				"sticky top-0 z-[var(--z-sticky)] flex h-16 w-full items-center justify-between px-6 transition-all",
+				"sticky top-0 z-[var(--z-sticky)] flex h-16 w-full items-center justify-between px-4 sm:px-6 transition-all",
 				isScrolled
-					? "bg-[var(--color-bg-surface)]/80 backdrop-blur-md"
-					: "bg-[var(--color-bg-surface)]",
+					? "bg-[var(--color-bg-surface)]/80 backdrop-blur-md border-b border-[var(--color-border-subtle)]"
+					: "bg-[var(--color-bg-surface)] border-b border-[var(--color-border-subtle)]",
 			)}
 		>
-			<a href="/" aria-label="PresetHub — Home" className="text-xl font-bold">
-				{pageTitle || "PresetHub"}
+			<a
+				href="/"
+				aria-label="AMHUB — Home"
+				className="flex items-center gap-2.5 hover:opacity-90 transition-opacity"
+			>
+				<img
+					src="/logo.png"
+					alt="AMHUB Logo"
+					className="h-8 w-8 sm:h-9 sm:w-9 object-contain rounded-lg"
+				/>
+				<span className="text-lg sm:text-xl font-extrabold tracking-tight text-[var(--color-text-primary)]">
+					{pageTitle || "AMHUB"}
+				</span>
 			</a>
 
-			<div className="flex items-center gap-4">
+			<div className="flex items-center gap-3">
 				<button
 					type="button"
-					className="text-[var(--color-text-secondary)]"
+					onClick={() => navigateTo("/explore")}
+					className="text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] p-2 rounded-xl"
 					aria-label="Search"
 				>
 					<Search size={20} />
 				</button>
 				<button
 					type="button"
-					className="relative text-[var(--color-text-secondary)]"
+					onClick={() => navigateTo("/notifications")}
+					className="relative text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] p-2 rounded-xl"
 					aria-label={`${unreadNotificationCount} unread notifications`}
 				>
 					<Bell size={20} />
 					{unreadNotificationCount > 0 && (
-						<span className="absolute -right-1 -top-1 h-2 w-2 rounded-full bg-[var(--color-interactive-danger)]" />
+						<span className="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-[var(--color-interactive-danger)]" />
 					)}
 				</button>
 				{currentUser && (

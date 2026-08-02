@@ -5,7 +5,7 @@ import type { Metadata } from "next";
 import { ExploreClient } from "./_components/ExploreClient";
 
 export const metadata: Metadata = {
-	title: "Explore Alight Motion Presets | PresetHub",
+	title: "Explore Alight Motion Presets | AMHUB",
 	description:
 		"Discover and explore Alight Motion presets. Browse by category, search by name, or sort by popularity.",
 };

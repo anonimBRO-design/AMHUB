@@ -1,4 +1,4 @@
-import { Heart, Sparkles } from "lucide-react";
+import { Heart } from "lucide-react";
 import Link from "next/link";
 
 export function Footer() {
@@ -10,12 +10,14 @@ export function Footer() {
 					<div className="space-y-3 max-w-sm">
 						<Link
 							href="/"
-							className="flex items-center gap-2 text-lg font-extrabold text-[var(--color-text-primary)]"
+							className="flex items-center gap-2.5 text-lg font-extrabold text-[var(--color-text-primary)] hover:opacity-90 transition-opacity"
 						>
-							<div className="p-1.5 rounded-xl bg-[var(--color-interactive-primary)] text-white shadow-md shadow-[var(--color-interactive-primary)]/30">
-								<Sparkles className="w-4 h-4 fill-current" />
-							</div>
-							<span>PresetHub</span>
+							<img
+								src="/logo.png"
+								alt="AMHUB Logo"
+								className="h-8 w-8 object-contain rounded-lg"
+							/>
+							<span>AMHUB</span>
 						</Link>
 						<p className="text-xs text-[var(--color-text-tertiary)] leading-relaxed">
 							The premier community platform for Alight Motion creators.
@@ -96,10 +98,10 @@ export function Footer() {
 								</li>
 								<li>
 									<Link
-										href="/settings"
+										href="/credits"
 										className="hover:text-[var(--color-interactive-primary)] transition-colors"
 									>
-										Account Settings
+										Credits & About
 									</Link>
 								</li>
 							</ul>
@@ -133,7 +135,7 @@ export function Footer() {
 
 				{/* Bottom Bar */}
 				<div className="pt-6 border-t border-[var(--color-border-subtle)]/60 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-[var(--color-text-tertiary)]">
-					<p>© {new Date().getFullYear()} PresetHub. All rights reserved.</p>
+					<p>© {new Date().getFullYear()} AMHUB. All rights reserved.</p>
 					<div className="flex items-center gap-1">
 						<span>Crafted with</span>
 						<Heart className="w-3.5 h-3.5 text-rose-500 fill-rose-500" />

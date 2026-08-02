@@ -61,8 +61,8 @@ export function FollowSection({
 		if (navigator.share) {
 			try {
 				await navigator.share({
-					title: `@${username} on PresetHub`,
-					text: `Check out @${username}'s Alight Motion presets on PresetHub!`,
+					title: `@${username} on AMHUB`,
+					text: `Check out @${username}'s Alight Motion presets on AMHUB!`,
 					url: profileUrl,
 				});
 				return;

@@ -25,15 +25,15 @@ export async function generateMetadata({
 
 	if (!user) {
 		return {
-			title: "User Not Found | PresetHub",
+			title: "User Not Found | AMHUB",
 		};
 	}
 
 	return {
-		title: `${user.display_name} (@${user.username}) | PresetHub`,
+		title: `${user.display_name} (@${user.username}) | AMHUB`,
 		description:
 			user.bio ??
-			`Check out Alight Motion presets by ${user.display_name} on PresetHub.`,
+			`Check out Alight Motion presets by ${user.display_name} on AMHUB.`,
 	};
 }
 

@@ -141,7 +141,7 @@ export function ProfileClient({
 					</div>
 					<p className="text-xs sm:text-sm text-[var(--color-text-secondary)] leading-relaxed">
 						{user.bio ||
-							`@${user.username} is a Alight Motion creator sharing pro XML and QR code editing presets on PresetHub.`}
+							`@${user.username} is a Alight Motion creator sharing pro XML and QR code editing presets on AMHUB.`}
 					</p>
 					<AchievementBadges
 						isVerified={user.isVerified}

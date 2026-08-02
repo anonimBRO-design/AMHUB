@@ -18,12 +18,12 @@ export async function generateMetadata({
 
 	if (!preset) {
 		return {
-			title: "Preset Not Found | PresetHub",
+			title: "Preset Not Found | AMHUB",
 		};
 	}
 
 	return {
-		title: `${preset.title} by ${preset.creator.display_name} | PresetHub`,
+		title: `${preset.title} by ${preset.creator.display_name} | AMHUB`,
 		description:
 			preset.description ??
 			`Download ${preset.title} Alight Motion preset by ${preset.creator.display_name}.`,
