@@ -3,8 +3,8 @@ import { listCreatorPresets } from "@/data/presets";
 import { mapPresetToCardPreset } from "@/lib/mappers";
 import { requireUser } from "@/lib/supabase/auth";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
-import { CreatorDashboard, PresetGrid } from "@presethub/ui";
 import type { Metadata } from "next";
+import { DashboardClient } from "./_components/DashboardClient";
 
 export const metadata: Metadata = {
 	title: "Creator Dashboard | PresetHub",
@@ -28,20 +28,20 @@ export default async function DashboardPage() {
 		totalViews: rawPresets.reduce((sum, p) => sum + p.view_count, 0),
 		followerCount,
 		totalLikes: rawPresets.reduce((sum, p) => sum + p.like_count, 0),
+		presetCount: presets.length,
+	};
+
+	const dashboardUserData = {
+		displayName:
+			user.user_metadata?.display_name ||
+			user.email?.split("@")[0] ||
+			"Creator",
+		username:
+			user.user_metadata?.username || user.email?.split("@")[0] || "creator",
+		avatarUrl: user.user_metadata?.avatar_url || null,
 	};
 
 	return (
-		<div className="space-y-8">
-			<CreatorDashboard stats={stats} />
-			<div className="space-y-4">
-				<h2 className="text-xl font-bold">Your Presets ({presets.length})</h2>
-				<PresetGrid
-					presets={presets}
-					isLoading={false}
-					hasMore={false}
-					onLoadMore={() => {}}
-				/>
-			</div>
-		</div>
+		<DashboardClient user={dashboardUserData} stats={stats} presets={presets} />
 	);
 }
