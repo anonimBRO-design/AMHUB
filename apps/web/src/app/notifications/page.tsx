@@ -2,10 +2,8 @@ import { listNotifications } from "@/data/notifications";
 import { requireUser } from "@/lib/supabase/auth";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import type { Metadata } from "next";
-import {
-	NotificationList,
-	type NotificationListItem,
-} from "./_components/notification-list";
+import type { NotificationItemData } from "./_components/NotificationCard";
+import { NotificationClient } from "./_components/NotificationClient";
 
 export const metadata: Metadata = {
 	title: "Notifications | PresetHub",
@@ -18,26 +16,41 @@ export default async function NotificationsPage() {
 
 	const rawNotifications = await listNotifications(supabase, user.id);
 
-	const initialNotifications: NotificationListItem[] = (
+	const initialNotifications: NotificationItemData[] = (
 		rawNotifications as unknown as Array<{
 			id: string;
 			type: string;
 			message: string | null;
 			is_read: boolean;
 			created_at: string;
+			actor?: { username: string; display_name: string; avatar_url?: string };
+			preset?: { slug: string; title: string };
 		}>
 	).map((n) => ({
 		id: n.id,
-		type: n.type as NotificationListItem["type"],
+		type: n.type as NotificationItemData["type"],
+		actor: n.actor
+			? {
+					username: n.actor.username,
+					displayName: n.actor.display_name,
+					avatarUrl: n.actor.avatar_url,
+				}
+			: undefined,
+		preset: n.preset
+			? {
+					slug: n.preset.slug,
+					title: n.preset.title,
+				}
+			: undefined,
 		message: n.message ?? undefined,
 		isRead: n.is_read,
-		createdAt: new Date(n.created_at).toLocaleDateString(),
+		createdAt: new Date(n.created_at).toLocaleDateString("en-US", {
+			month: "short",
+			day: "numeric",
+			hour: "2-digit",
+			minute: "2-digit",
+		}),
 	}));
 
-	return (
-		<div className="space-y-6 max-w-2xl mx-auto">
-			<h1 className="text-2xl font-bold">Notifications</h1>
-			<NotificationList initialNotifications={initialNotifications} />
-		</div>
-	);
+	return <NotificationClient initialNotifications={initialNotifications} />;
 }
