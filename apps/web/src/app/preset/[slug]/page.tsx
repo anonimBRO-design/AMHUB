@@ -47,7 +47,9 @@ export default async function PresetDetailPage({ params }: PageProps) {
 	const cardPreset = mapPresetToCardPreset(rawPreset);
 	const presetForDetail = {
 		...cardPreset,
-		fileType: "flstudio" as const, // PresetDetail prop interface mapping
+		fileType: rawPreset.file_type,
+		fileUrl: rawPreset.file_url,
+		amLink: rawPreset.am_link,
 	};
 
 	const relatedPresets = rawRelated
