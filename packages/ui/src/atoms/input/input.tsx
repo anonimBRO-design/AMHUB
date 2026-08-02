@@ -6,7 +6,7 @@ import * as React from "react";
 import { cn } from "../../lib/utils";
 
 const inputVariants = cva(
-	"flex h-[var(--space-5)] w-full rounded-[var(--radius-sm)] border border-[var(--color-border-default)] bg-[var(--color-bg-input)] px-3 py-2 text-[var(--font-size-body-md)] ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-[var(--color-text-tertiary)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--shadow-focus)] disabled:cursor-not-allowed disabled:opacity-50",
+	"flex min-h-[48px] w-full rounded-xl border border-[var(--color-border-default)] bg-[var(--color-bg-input)] px-4 py-2.5 text-[var(--font-size-body-md)] ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-[var(--color-text-tertiary)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--shadow-focus)] disabled:cursor-not-allowed disabled:opacity-50",
 	{
 		variants: {
 			variant: {

@@ -30,7 +30,7 @@ export const AppLayoutTemplate: React.FC<AppLayoutTemplateProps> = ({
 				<div className="sticky top-0 z-[var(--z-sticky)]">{topBar}</div>
 
 				{/* Main Content */}
-				<main className="flex-1 p-6 pb-20 lg:pb-6">{children}</main>
+				<main className="flex-1 p-4 sm:p-6 pb-24 lg:pb-6">{children}</main>
 
 				{/* Bottom Nav - Mobile */}
 				<div className="lg:hidden fixed bottom-0 left-0 right-0 z-[var(--z-overlay)]">

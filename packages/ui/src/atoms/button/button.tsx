@@ -22,10 +22,10 @@ const buttonVariants = cva(
 				link: "text-[var(--color-text-accent)] underline-offset-4 hover:underline",
 			},
 			size: {
-				sm: "h-[var(--space-4)] px-[var(--space-3)] py-[var(--space-1_5)] text-[var(--font-size-label-sm)]",
-				md: "h-[var(--space-5)] px-[var(--space-4)] py-[var(--space-2)] text-[var(--font-size-label-md)]",
-				lg: "h-[var(--space-6)] px-[var(--space-6)] py-[var(--space-3)] text-[var(--font-size-label-lg)]",
-				icon: "h-[var(--space-5)] w-[var(--space-5)]",
+				sm: "min-h-[40px] px-3.5 py-2 text-[var(--font-size-label-sm)] rounded-xl",
+				md: "min-h-[48px] sm:min-h-[44px] px-4 py-2.5 text-[var(--font-size-label-md)] rounded-xl",
+				lg: "min-h-[54px] px-6 py-3.5 text-[var(--font-size-label-lg)] rounded-2xl",
+				icon: "min-h-[48px] min-w-[48px] p-2 rounded-xl",
 			},
 		},
 		defaultVariants: {

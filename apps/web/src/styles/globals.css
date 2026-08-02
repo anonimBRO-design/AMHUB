@@ -228,6 +228,40 @@ body {
 	-moz-osx-font-smoothing: grayscale;
 }
 
+/* Mobile Visual Scaling Enhancement (320px–639px) for Native App Experience */
+@media (max-width: 639px) {
+	:root {
+		--font-size-display-2xl: 48px;
+		--font-size-display-xl: 38px;
+		--font-size-display-lg: 32px;
+		--font-size-display-md: 26px;
+		--font-size-display-sm: 22px;
+
+		--font-size-heading-xl: 22px;
+		--font-size-heading-lg: 20px;
+		--font-size-heading-md: 18px;
+		--font-size-heading-sm: 16px;
+
+		--font-size-body-lg: 18px;
+		--font-size-body-md: 16px;
+		--font-size-body-sm: 14px;
+		--font-size-body-xs: 13px;
+
+		--font-size-label-lg: 17px;
+		--font-size-label-md: 15px;
+		--font-size-label-sm: 13px;
+	}
+
+	/* Native mobile touch targets */
+	button,
+	a.btn,
+	input,
+	select,
+	textarea {
+		min-height: 48px;
+	}
+}
+
 /* Focus Visible Utility */
 :focus-visible {
 	outline: none;
