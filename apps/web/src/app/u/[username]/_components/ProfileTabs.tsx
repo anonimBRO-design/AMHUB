@@ -1,3 +1,5 @@
+"use client";
+
 import { Activity, FolderHeart, Grid, Info } from "lucide-react";
 
 export type ProfileTabType = "presets" | "collections" | "activity" | "about";

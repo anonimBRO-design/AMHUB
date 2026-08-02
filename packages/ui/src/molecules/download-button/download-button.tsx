@@ -1,3 +1,5 @@
+"use client";
+
 import { Download, ExternalLink, QrCode } from "lucide-react";
 import * as React from "react";
 import { Button } from "../../atoms/button";

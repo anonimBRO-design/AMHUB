@@ -1,3 +1,5 @@
+"use client";
+
 import { Bookmark, Heart, Share2, UserPlus } from "lucide-react";
 import * as React from "react";
 import { Avatar } from "../../atoms/avatar";

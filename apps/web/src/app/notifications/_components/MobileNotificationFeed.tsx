@@ -1,7 +1,8 @@
 "use client";
 
-import { Bell } from "lucide-react";
-import { useState } from "react";
+import { Bell, Check } from "lucide-react";
+import Image from "next/image";
+import React, { useState } from "react";
 
 export interface MobileNotificationItem {
 	id: string;
@@ -26,93 +27,115 @@ export function MobileNotificationFeed({
 	onMarkAllRead,
 }: MobileNotificationFeedProps) {
 	const [filter, setFilter] = useState<"all" | "unread">("all");
+	const unreadCount = notifications.filter((n) => !n.isRead).length;
 
-	const filteredNotifications = notifications.filter(
-		(n) => filter === "all" || !n.isRead,
+	const filteredNotifications = notifications.filter((n) =>
+		filter === "all" ? true : !n.isRead,
 	);
 
 	return (
-		<div className="md:hidden space-y-4 pb-24">
-			<div className="flex items-center justify-between p-4 rounded-3xl bg-[var(--color-bg-surface)] border border-[var(--color-border-subtle)] shadow-xl">
-				<div className="flex items-center gap-3">
-					<div className="p-3 rounded-2xl bg-[var(--color-interactive-primary)]/10 text-[var(--color-interactive-primary)] border border-[var(--color-interactive-primary)]/20">
-						<Bell className="w-6 h-6" />
-					</div>
-					<div>
-						<h1 className="text-lg font-extrabold text-[var(--color-text-primary)]">
-							Notifications
-						</h1>
-						<p className="text-xs text-[var(--color-text-secondary)] font-medium">
-							{notifications.filter((n) => !n.isRead).length} Unread Updates
-						</p>
-					</div>
-				</div>
-
-				<button
-					type="button"
-					onClick={onMarkAllRead}
-					className="px-3 py-2 rounded-2xl bg-[var(--color-bg-base)] border border-[var(--color-border-subtle)] text-xs font-bold text-[var(--color-text-primary)] hover:border-[var(--color-border-strong)] active:scale-95 transition-all"
-				>
-					Mark All Read
-				</button>
-			</div>
-
-			<div className="flex items-center gap-2">
-				<button
-					type="button"
-					onClick={() => setFilter("all")}
-					className={`flex-1 min-h-[42px] rounded-2xl text-xs font-bold transition-all shadow-md ${
-						filter === "all"
-							? "bg-[var(--color-interactive-primary)] text-white"
-							: "bg-[var(--color-bg-surface)] text-[var(--color-text-secondary)] border border-[var(--color-border-subtle)]"
-					}`}
-				>
-					All ({notifications.length})
-				</button>
-				<button
-					type="button"
-					onClick={() => setFilter("unread")}
-					className={`flex-1 min-h-[42px] rounded-2xl text-xs font-bold transition-all shadow-md ${
-						filter === "unread"
-							? "bg-[var(--color-interactive-primary)] text-white"
-							: "bg-[var(--color-bg-surface)] text-[var(--color-text-secondary)] border border-[var(--color-border-subtle)]"
-					}`}
-				>
-					Unread Only
-				</button>
-			</div>
-
-			<div className="space-y-3">
-				{filteredNotifications.map((n) => (
-					<div
-						key={n.id}
-						className={`p-4 rounded-3xl border transition-all flex items-start gap-3 shadow-md ${
-							n.isRead
-								? "bg-[var(--color-bg-surface)] border-[var(--color-border-subtle)] opacity-80"
-								: "bg-[var(--color-bg-surface)] border-[var(--color-interactive-primary)]/40"
-						}`}
-					>
-						<img
-							src={
-								n.actor.avatarUrl ||
-								`https://api.dicebear.com/7.x/identicon/svg?seed=${n.actor.username}`
-							}
-							alt={n.actor.displayName}
-							className="w-10 h-10 rounded-full object-cover shrink-0 border border-[var(--color-border-subtle)] shadow-sm"
-						/>
-						<div className="flex-1 space-y-1 min-w-0">
-							<p className="text-xs text-[var(--color-text-primary)] leading-snug">
-								<span className="font-bold">{n.actor.displayName}</span>{" "}
-								<span className="text-[var(--color-text-secondary)]">
-									{n.message}
-								</span>
+		<div className="md:hidden space-y-6 px-4 pb-32 pt-4">
+			{/* Header Card */}
+			<div className="flex flex-col gap-4 rounded-3xl bg-surface p-5 shadow-xl border border-[var(--color-border-subtle)]">
+				<div className="flex items-center justify-between">
+					<div className="flex items-center gap-3">
+						<div className="rounded-full bg-interactive-primary/10 p-2.5">
+							<Bell className="w-7 h-7 text-interactive-primary" />
+						</div>
+						<div>
+							<h1 className="text-xl font-bold">Activity</h1>
+							<p className="text-[15px] font-medium text-tertiary">
+								{unreadCount} unread
 							</p>
-							<span className="text-[10px] text-[var(--color-text-tertiary)] font-semibold block">
-								{n.timestamp}
-							</span>
 						</div>
 					</div>
+					{unreadCount > 0 && (
+						<button
+							type="button"
+							onClick={onMarkAllRead}
+							className="flex min-h-[48px] items-center gap-2 rounded-2xl bg-surface-hover px-4 text-sm font-bold active:scale-95 transition-transform"
+						>
+							<Check className="w-4 h-4" />
+							Mark Read
+						</button>
+					)}
+				</div>
+
+				{/* Filter Tabs */}
+				<div className="flex gap-2 rounded-2xl bg-background p-1 border border-[var(--color-border-subtle)]">
+					<button
+						type="button"
+						onClick={() => setFilter("all")}
+						className={`flex-1 min-h-[48px] rounded-xl text-sm font-bold transition-colors ${
+							filter === "all" ? "bg-surface shadow-sm" : "text-tertiary"
+						}`}
+					>
+						All Activity
+					</button>
+					<button
+						type="button"
+						onClick={() => setFilter("unread")}
+						className={`flex-1 min-h-[48px] rounded-xl text-sm font-bold transition-colors ${
+							filter === "unread" ? "bg-surface shadow-sm" : "text-tertiary"
+						}`}
+					>
+						Unread
+					</button>
+				</div>
+			</div>
+
+			{/* Notification List */}
+			<div className="space-y-3">
+				{filteredNotifications.map((notif) => (
+					<div
+						key={notif.id}
+						className={`flex gap-4 rounded-2xl p-4 transition-colors ${
+							notif.isRead
+								? "bg-surface border border-[var(--color-border-subtle)]"
+								: "bg-interactive-primary/5 border border-interactive-primary/20"
+						}`}
+					>
+						<div className="relative h-12 w-12 flex-shrink-0 overflow-hidden rounded-full bg-surface-hover">
+							{notif.actor.avatarUrl ? (
+								<Image
+									src={notif.actor.avatarUrl}
+									alt={notif.actor.displayName}
+									fill
+									className="object-cover"
+								/>
+							) : (
+								<div className="flex h-full w-full items-center justify-center bg-surface-hover text-lg font-bold">
+									{notif.actor.displayName.charAt(0)}
+								</div>
+							)}
+						</div>
+
+						<div className="flex-1 space-y-1">
+							<div className="flex items-start justify-between gap-2">
+								<span className="text-[15px] font-bold">
+									{notif.actor.displayName}
+								</span>
+								<span className="flex-shrink-0 text-sm font-medium text-tertiary">
+									{notif.timestamp}
+								</span>
+							</div>
+							<p className="text-[15px] leading-snug text-secondary">
+								{notif.message}
+							</p>
+						</div>
+
+						{!notif.isRead && (
+							<div className="mt-2 h-2.5 w-2.5 flex-shrink-0 rounded-full bg-interactive-primary" />
+						)}
+					</div>
 				))}
+				{filteredNotifications.length === 0 && (
+					<div className="py-12 text-center">
+						<p className="text-[15px] font-semibold text-tertiary">
+							No notifications
+						</p>
+					</div>
+				)}
 			</div>
 		</div>
 	);

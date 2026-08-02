@@ -1,3 +1,5 @@
+"use client";
+
 import { Loader2, Search, X } from "lucide-react";
 import type * as React from "react";
 import { Input } from "../../atoms/input";

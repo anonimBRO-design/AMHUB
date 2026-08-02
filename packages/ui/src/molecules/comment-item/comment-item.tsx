@@ -1,3 +1,5 @@
+"use client";
+
 import type { UserMini } from "@presethub/types/database";
 import { MoreHorizontal } from "lucide-react";
 import * as React from "react";

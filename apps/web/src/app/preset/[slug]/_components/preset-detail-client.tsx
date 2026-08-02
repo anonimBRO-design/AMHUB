@@ -10,6 +10,17 @@ import { RelatedPresets } from "./RelatedPresets";
 import { StickyActionBar } from "./StickyActionBar";
 import { TagList } from "./TagList";
 
+interface CommentItem {
+	id: string;
+	content: string;
+	createdAt: string;
+	user: {
+		username: string;
+		displayName: string;
+		avatarUrl?: string | null;
+	};
+}
+
 interface PresetDetailClientProps {
 	preset: PresetCardPreset & {
 		fileType?: string;
@@ -17,22 +28,24 @@ interface PresetDetailClientProps {
 		amLink?: string | null;
 	};
 	relatedPresets: PresetCardPreset[];
+	comments?: CommentItem[];
 }
 
 export function PresetDetailClient({
 	preset,
 	relatedPresets,
+	comments = [],
 }: PresetDetailClientProps) {
 	const presetForMobile = {
 		...preset,
 		likeCount: preset.likeCount,
-		commentCount: preset.commentCount,
+		commentCount: comments.length || preset.commentCount,
 		viewCount: preset.viewCount,
 		downloadCount: preset.downloadCount,
 		createdAt: preset.createdAt,
 		fileSize: preset.fileType?.toUpperCase() || "XML",
 		downloadUrl: preset.fileUrl || preset.amLink || "#",
-		comments: [],
+		comments: comments,
 	};
 
 	return (
@@ -50,7 +63,8 @@ export function PresetDetailClient({
 						<TagList preset={preset} />
 						<CommentSection
 							presetId={preset.id}
-							commentCount={preset.commentCount}
+							initialComments={comments}
+							commentCount={comments.length || preset.commentCount}
 						/>
 					</div>
 

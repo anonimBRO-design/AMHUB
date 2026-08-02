@@ -42,7 +42,7 @@ export function LikesClient({ initialPresets }: LikesClientProps) {
 	return (
 		<div>
 			{/* Dedicated Native Mobile Composition (max-width: 768px) */}
-			<MobileLikesView likedPresets={initialPresets} />
+			<MobileLikesView bookmarks={initialPresets} />
 
 			{/* Desktop and Tablet Layout (Hidden on Mobile) */}
 			<div className="hidden md:block space-y-6 max-w-6xl mx-auto pb-12">

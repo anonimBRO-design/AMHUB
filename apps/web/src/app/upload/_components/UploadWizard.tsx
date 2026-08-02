@@ -29,17 +29,21 @@ export function UploadWizard() {
 	const [isLoading, setIsLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
 
-	// Form State
-	const [fileType, setFileType] = useState<"xml" | "qr" | "link">("xml");
+	// Form State with pre-populated example values
+	const [fileType, setFileType] = useState<"xml" | "qr" | "link">("link");
 	const [presetFile, setPresetFile] = useState<File | null>(null);
 	const [thumbnailFile, setThumbnailFile] = useState<File | null>(null);
-	const [amLink, setAmLink] = useState("");
-	const [title, setTitle] = useState("");
-	const [description, setDescription] = useState("");
+	const [amLink, setAmLink] = useState("https://alight.link/xK9zM2pL4qW8");
+	const [title, setTitle] = useState(
+		"4K Ultra Smooth Velocity Ramp & Beat Flash",
+	);
+	const [description, setDescription] = useState(
+		"Ultra-smooth 60fps velocity edit preset featuring custom cubic bezier curves, RGB split flashes, and 3D camera shakes for Alight Motion.",
+	);
 	const [category, setCategory] = useState("velocity");
 	const [difficulty, setDifficulty] = useState<
 		"beginner" | "intermediate" | "advanced"
-	>("beginner");
+	>("intermediate");
 
 	const handleNextStep = () => {
 		setError(null);

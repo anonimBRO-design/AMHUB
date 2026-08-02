@@ -1,3 +1,5 @@
+"use client";
+
 import * as React from "react";
 import { Avatar } from "../../atoms/avatar";
 import { cn } from "../../lib/utils";

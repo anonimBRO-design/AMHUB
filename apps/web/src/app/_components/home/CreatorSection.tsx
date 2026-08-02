@@ -1,49 +1,6 @@
-import { Award, CheckCircle2, UserPlus, Users } from "lucide-react";
+import { MOCK_CREATORS } from "@/data/mock-data";
+import { CheckCircle2, Users } from "lucide-react";
 import Link from "next/link";
-
-interface Creator {
-	username: string;
-	displayName: string;
-	avatarUrl: string;
-	presetCount: number;
-	followerCount: string;
-	isVerified?: boolean;
-}
-
-const FEATURED_CREATORS: Creator[] = [
-	{
-		username: "alight_master",
-		displayName: "Alight Master",
-		avatarUrl: "https://api.dicebear.com/7.x/bottts/svg?seed=alight_master",
-		presetCount: 142,
-		followerCount: "28.5K",
-		isVerified: true,
-	},
-	{
-		username: "velocity_fx",
-		displayName: "Velocity FX",
-		avatarUrl: "https://api.dicebear.com/7.x/bottts/svg?seed=velocity_fx",
-		presetCount: 89,
-		followerCount: "19.2K",
-		isVerified: true,
-	},
-	{
-		username: "anime_edits_pro",
-		displayName: "Kuro Edit",
-		avatarUrl: "https://api.dicebear.com/7.x/bottts/svg?seed=kuro_edit",
-		presetCount: 64,
-		followerCount: "14.8K",
-		isVerified: false,
-	},
-	{
-		username: "color_grade_god",
-		displayName: "Lumina Motion",
-		avatarUrl: "https://api.dicebear.com/7.x/bottts/svg?seed=lumina_motion",
-		presetCount: 51,
-		followerCount: "11.1K",
-		isVerified: true,
-	},
-];
 
 export function CreatorSection() {
 	return (
@@ -54,7 +11,7 @@ export function CreatorSection() {
 						<Users className="w-4 h-4" />
 					</div>
 					<h2 className="text-lg sm:text-xl font-bold tracking-tight text-[var(--color-text-primary)]">
-						Popular Creators
+						Popular Creators ({MOCK_CREATORS.length})
 					</h2>
 				</div>
 				<span className="text-xs font-semibold text-[var(--color-text-tertiary)]">
@@ -63,7 +20,7 @@ export function CreatorSection() {
 			</div>
 
 			<div className="flex items-center gap-3 overflow-x-auto snap-x snap-mandatory pb-2 pt-1 scrollbar-none select-none [-webkit-overflow-scrolling:touch]">
-				{FEATURED_CREATORS.map((creator) => (
+				{MOCK_CREATORS.map((creator) => (
 					<Link
 						key={creator.username}
 						href={`/u/${creator.username}`}
@@ -73,11 +30,11 @@ export function CreatorSection() {
 							{/* Avatar with Ring */}
 							<div className="relative">
 								<img
-									src={creator.avatarUrl}
-									alt={creator.displayName}
+									src={creator.avatar_url}
+									alt={creator.display_name}
 									className="w-14 h-14 rounded-full object-cover border-2 border-[var(--color-interactive-primary)]/50 group-hover:scale-105 transition-transform duration-200"
 								/>
-								{creator.isVerified && (
+								{creator.is_verified && (
 									<div className="absolute -bottom-0.5 -right-0.5 p-0.5 rounded-full bg-[var(--color-interactive-primary)] text-white shadow-md">
 										<CheckCircle2 className="w-3.5 h-3.5 fill-current" />
 									</div>
@@ -87,7 +44,7 @@ export function CreatorSection() {
 							{/* Names */}
 							<div>
 								<h3 className="text-sm font-bold text-[var(--color-text-primary)] group-hover:text-[var(--color-interactive-primary)] transition-colors line-clamp-1">
-									{creator.displayName}
+									{creator.display_name}
 								</h3>
 								<p className="text-[11px] text-[var(--color-text-tertiary)]">
 									@{creator.username}
@@ -96,9 +53,9 @@ export function CreatorSection() {
 
 							{/* Stats Badge */}
 							<div className="flex items-center justify-between w-full pt-2 text-[11px] border-t border-[var(--color-border-subtle)] text-[var(--color-text-secondary)] font-medium">
-								<span>{creator.presetCount} Presets</span>
+								<span>{creator.preset_count} Presets</span>
 								<span className="font-semibold text-purple-400">
-									{creator.followerCount} Fans
+									{(creator.follower_count / 1000).toFixed(1)}K Fans
 								</span>
 							</div>
 						</div>

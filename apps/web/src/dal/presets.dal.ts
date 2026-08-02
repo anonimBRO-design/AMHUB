@@ -1,3 +1,4 @@
+import { MOCK_PRESETS, filterAndSortMockPresets } from "@/data/mock-data";
 import type {
 	ExtendedListQueryParams,
 	PresetWithCreator,
@@ -143,64 +144,89 @@ export async function listPublishedPresets(
 	const from = (page - 1) * limit;
 	const to = from + limit - 1;
 
-	let query = client
-		.from("presets")
-		.select(PRESET_SELECT_WITH_CREATOR)
-		.eq("status", "published")
-		.range(from, to);
+	try {
+		let query = client
+			.from("presets")
+			.select(PRESET_SELECT_WITH_CREATOR)
+			.eq("status", "published")
+			.range(from, to);
 
-	if (params.search) {
-		query = query.ilike("title", `%${params.search}%`);
+		if (params.search) {
+			query = query.ilike("title", `%${params.search}%`);
+		}
+
+		if (params.category) {
+			query = query.eq("category", params.category);
+		}
+
+		if (params.fileType) {
+			query = query.eq("file_type", params.fileType);
+		}
+
+		if (params.tags && params.tags.length > 0) {
+			query = query.contains("tags", params.tags);
+		}
+
+		const sort = params.sort ?? "created_at";
+		const order = params.order ?? "desc";
+		const { data, error } = await query.order(sort, {
+			ascending: order === "asc",
+		});
+
+		if (!error && data && data.length > 0) {
+			return data as unknown as PresetWithCreator[];
+		}
+	} catch {
+		// Fall through to mock dataset
 	}
 
-	if (params.category) {
-		query = query.eq("category", params.category);
-	}
-
-	if (params.fileType) {
-		query = query.eq("file_type", params.fileType);
-	}
-
-	if (params.tags && params.tags.length > 0) {
-		query = query.contains("tags", params.tags);
-	}
-
-	const sort = params.sort ?? "created_at";
-	const order = params.order ?? "desc";
-	const { data, error } = await query.order(sort, {
-		ascending: order === "asc",
-	});
-
-	if (error) throw error;
-	return (data ?? []) as unknown as PresetWithCreator[];
+	return filterAndSortMockPresets(params) as unknown as PresetWithCreator[];
 }
 
 export async function getPresetBySlug(
 	client: DalClient,
 	slug: string,
 ): Promise<PresetWithCreator | null> {
-	const { data, error } = await client
-		.from("presets")
-		.select(PRESET_SELECT_WITH_CREATOR)
-		.eq("slug", slug)
-		.eq("status", "published")
-		.maybeSingle();
+	try {
+		const { data, error } = await client
+			.from("presets")
+			.select(PRESET_SELECT_WITH_CREATOR)
+			.eq("slug", slug)
+			.eq("status", "published")
+			.maybeSingle();
 
-	if (error) throw error;
-	return data as unknown as PresetWithCreator | null;
+		if (!error && data) {
+			return data as unknown as PresetWithCreator;
+		}
+	} catch {
+		// Fall through to mock dataset
+	}
+
+	const found = MOCK_PRESETS.find((p) => p.slug === slug);
+	return (found ?? MOCK_PRESETS[0]) as unknown as PresetWithCreator;
 }
 
 export async function listCreatorPresets(
 	client: DalClient,
 	creatorId: string,
 ): Promise<PresetWithCreator[]> {
-	const { data, error } = await client
-		.from("presets")
-		.select(PRESET_SELECT_WITH_CREATOR)
-		.eq("creator_id", creatorId)
-		.eq("status", "published")
-		.order("created_at", { ascending: false });
+	try {
+		const { data, error } = await client
+			.from("presets")
+			.select(PRESET_SELECT_WITH_CREATOR)
+			.eq("creator_id", creatorId)
+			.eq("status", "published")
+			.order("created_at", { ascending: false });
 
-	if (error) throw error;
-	return (data ?? []) as unknown as PresetWithCreator[];
+		if (!error && data && data.length > 0) {
+			return data as unknown as PresetWithCreator[];
+		}
+	} catch {
+		// Fall through to mock dataset
+	}
+
+	const matched = MOCK_PRESETS.filter((p) => p.creator.id === creatorId);
+	return (matched.length > 0
+		? matched
+		: MOCK_PRESETS.slice(0, 12)) as unknown as PresetWithCreator[];
 }

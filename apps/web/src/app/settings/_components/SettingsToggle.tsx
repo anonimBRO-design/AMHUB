@@ -1,3 +1,5 @@
+"use client";
+
 interface SettingsToggleProps {
 	checked: boolean;
 	onChange: (checked: boolean) => void;

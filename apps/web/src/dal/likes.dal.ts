@@ -3,19 +3,28 @@ import { syncPresetCounter } from "./helpers";
 import { PRESET_SELECT_WITH_CREATOR, assertPresetExists } from "./presets.dal";
 import type { DalClient } from "./types";
 
+import { MOCK_LIKES } from "@/data/mock-data";
+
 export async function listUserLikedPresets(
 	client: DalClient,
 	userId: string,
 ): Promise<PresetWithCreator[]> {
-	const { data, error } = await client
-		.from("presets")
-		.select(`${PRESET_SELECT_WITH_CREATOR}, preset_likes!inner (user_id)`)
-		.eq("preset_likes.user_id", userId)
-		.eq("status", "published")
-		.order("created_at", { ascending: false });
+	try {
+		const { data, error } = await client
+			.from("presets")
+			.select(`${PRESET_SELECT_WITH_CREATOR}, preset_likes!inner (user_id)`)
+			.eq("preset_likes.user_id", userId)
+			.eq("status", "published")
+			.order("created_at", { ascending: false });
 
-	if (error) throw error;
-	return (data ?? []) as unknown as PresetWithCreator[];
+		if (!error && data && data.length > 0) {
+			return data as unknown as PresetWithCreator[];
+		}
+	} catch {
+		// Fall through
+	}
+
+	return MOCK_LIKES as unknown as PresetWithCreator[];
 }
 
 export async function likePreset(

@@ -1,3 +1,4 @@
+import { listComments } from "@/dal/comments.dal";
 import { getPresetBySlug, listPublishedPresets } from "@/data/presets";
 import { mapPresetToCardPreset } from "@/lib/mappers";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
@@ -39,10 +40,13 @@ export default async function PresetDetailPage({ params }: PageProps) {
 		notFound();
 	}
 
-	const rawRelated = await listPublishedPresets(supabase, {
-		category: rawPreset.category,
-		limit: 6,
-	});
+	const [rawRelated, commentsRes] = await Promise.all([
+		listPublishedPresets(supabase, {
+			category: rawPreset.category,
+			limit: 9,
+		}),
+		listComments(supabase, rawPreset.id, { page: 1, limit: 25 }),
+	]);
 
 	const cardPreset = mapPresetToCardPreset(rawPreset);
 	const presetForDetail = {
@@ -54,12 +58,42 @@ export default async function PresetDetailPage({ params }: PageProps) {
 
 	const relatedPresets = rawRelated
 		.filter((p) => p.id !== rawPreset.id)
+		.slice(0, 8)
 		.map(mapPresetToCardPreset);
+
+	const initialComments = (commentsRes.items ?? []).map((c) => {
+		const item = c as unknown as {
+			id: string;
+			body?: string;
+			content?: string;
+			created_at?: string;
+			createdAt?: string;
+			user?: {
+				username?: string;
+				display_name?: string;
+				displayName?: string;
+				avatar_url?: string;
+				avatarUrl?: string;
+			};
+		};
+		return {
+			id: item.id,
+			content: item.body || item.content || "",
+			createdAt: item.created_at || item.createdAt || new Date().toISOString(),
+			user: {
+				username: item.user?.username || "user",
+				displayName:
+					item.user?.display_name || item.user?.displayName || "User",
+				avatarUrl: item.user?.avatar_url || item.user?.avatarUrl || null,
+			},
+		};
+	});
 
 	return (
 		<PresetDetailClient
 			preset={presetForDetail}
 			relatedPresets={relatedPresets}
+			comments={initialComments}
 		/>
 	);
 }

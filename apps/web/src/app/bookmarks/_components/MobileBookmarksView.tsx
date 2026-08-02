@@ -1,57 +1,101 @@
 "use client";
 
 import type { PresetCardPreset } from "@presethub/ui";
-import { PresetGrid } from "@presethub/ui";
-import { Bookmark, Search } from "lucide-react";
-import { useState } from "react";
+import { Bookmark, Search, User } from "lucide-react";
+import Image from "next/image";
+import React, { useState } from "react";
 
 interface MobileBookmarksViewProps {
 	bookmarks: PresetCardPreset[];
 }
 
 export function MobileBookmarksView({ bookmarks }: MobileBookmarksViewProps) {
-	const [query, setQuery] = useState("");
+	const [searchQuery, setSearchQuery] = useState("");
 
 	const filteredBookmarks = bookmarks.filter(
 		(b) =>
-			!query.trim() ||
-			b.title.toLowerCase().includes(query.toLowerCase()) ||
-			b.creator.displayName.toLowerCase().includes(query.toLowerCase()),
+			b.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+			b.creator.username.toLowerCase().includes(searchQuery.toLowerCase()),
 	);
 
 	return (
-		<div className="md:hidden space-y-4 pb-24">
-			<div className="flex items-center gap-3 p-4 rounded-3xl bg-[var(--color-bg-surface)] border border-[var(--color-border-subtle)] shadow-xl">
-				<div className="p-3 rounded-2xl bg-amber-500/10 text-amber-400 border border-amber-500/20">
-					<Bookmark className="w-6 h-6 fill-current" />
+		<div className="md:hidden space-y-8 px-4 pb-32 pt-4">
+			{/* Header */}
+			<div className="flex items-center gap-4">
+				<div className="rounded-2xl bg-amber-500/10 p-3.5">
+					<Bookmark className="w-8 h-8 text-amber-500 fill-amber-500" />
 				</div>
 				<div>
-					<h1 className="text-lg font-extrabold text-[var(--color-text-primary)]">
-						Your Library
-					</h1>
-					<p className="text-xs text-[var(--color-text-secondary)] font-medium">
-						{bookmarks.length} Bookmarked Presets
+					<h1 className="text-xl font-bold">Saved Presets</h1>
+					<p className="text-[15px] font-medium text-tertiary">
+						{bookmarks.length} items
 					</p>
 				</div>
 			</div>
 
-			<div className="relative flex items-center">
-				<Search className="absolute left-4 w-4 h-4 text-[var(--color-text-tertiary)]" />
+			{/* Search */}
+			<div className="relative">
+				<div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4">
+					<Search className="h-5 w-5 text-tertiary" />
+				</div>
 				<input
 					type="text"
-					value={query}
-					onChange={(e) => setQuery(e.target.value)}
-					placeholder="Search saved presets..."
-					className="w-full min-h-[48px] pl-11 pr-4 rounded-2xl bg-[var(--color-bg-surface)] border border-[var(--color-border-subtle)] text-xs font-semibold text-[var(--color-text-primary)] focus:outline-none focus:border-[var(--color-interactive-primary)]"
+					placeholder="Search in saved..."
+					value={searchQuery}
+					onChange={(e) => setSearchQuery(e.target.value)}
+					className="w-full min-h-[52px] rounded-2xl border border-[var(--color-border-subtle)] bg-surface py-3 pl-11 pr-4 text-[15px] font-medium placeholder:text-tertiary focus:border-interactive-primary focus:outline-none focus:ring-1 focus:ring-interactive-primary"
 				/>
 			</div>
 
-			<PresetGrid
-				presets={filteredBookmarks}
-				isLoading={false}
-				hasMore={false}
-				onLoadMore={() => {}}
-			/>
+			{/* Grid */}
+			<div className="grid grid-cols-2 gap-3">
+				{filteredBookmarks.map((preset) => (
+					<div key={preset.id} className="flex flex-col gap-2">
+						<div className="relative aspect-[3/4] w-full overflow-hidden rounded-2xl border border-[var(--color-border-subtle)] bg-surface-hover shadow-sm">
+							{preset.thumbnailUrl ? (
+								<Image
+									src={preset.thumbnailUrl}
+									alt={preset.title}
+									fill
+									className="object-cover"
+								/>
+							) : (
+								<div className="absolute inset-0 flex items-center justify-center">
+									<span className="text-tertiary text-[13px]">No Preview</span>
+								</div>
+							)}
+						</div>
+						<div className="px-1">
+							<h3 className="line-clamp-1 text-sm font-bold">{preset.title}</h3>
+							<div className="mt-1 flex items-center gap-1.5">
+								<div className="relative h-6 w-6 overflow-hidden rounded-full bg-surface-hover border border-[var(--color-border-subtle)]">
+									{preset.creator.avatarUrl ? (
+										<Image
+											src={preset.creator.avatarUrl}
+											alt={preset.creator.username}
+											fill
+											className="object-cover"
+										/>
+									) : (
+										<User className="h-full w-full p-1 text-tertiary" />
+									)}
+								</div>
+								<span className="line-clamp-1 text-[13px] font-medium text-tertiary">
+									{preset.creator.username}
+								</span>
+							</div>
+						</div>
+					</div>
+				))}
+			</div>
+
+			{filteredBookmarks.length === 0 && (
+				<div className="py-12 text-center">
+					<p className="text-[15px] font-semibold text-tertiary">
+						No presets found.
+					</p>
+				</div>
+			)}
 		</div>
 	);
 }

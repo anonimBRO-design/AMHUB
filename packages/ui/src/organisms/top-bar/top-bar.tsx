@@ -1,3 +1,5 @@
+"use client";
+
 import { Bell, Search } from "lucide-react";
 import * as React from "react";
 import { Avatar } from "../../atoms/avatar";

@@ -1,9 +1,9 @@
 "use client";
 
 import type { PresetCardPreset } from "@presethub/ui";
-import { PresetGrid } from "@presethub/ui";
-import { Download, Heart, Sparkles, Upload } from "lucide-react";
-import Link from "next/link";
+import { Activity, UploadCloud, Users } from "lucide-react";
+import Image from "next/image";
+import React from "react";
 
 interface MobileDashboardViewProps {
 	user: {
@@ -18,70 +18,95 @@ export function MobileDashboardView({
 	user,
 	userPresets,
 }: MobileDashboardViewProps) {
-	const totalDownloads = userPresets.reduce(
-		(acc, p) => acc + (p.downloadCount || 0),
-		0,
-	);
-	const totalLikes = userPresets.reduce(
-		(acc, p) => acc + (p.likeCount || 0),
-		0,
-	);
-
 	return (
-		<div className="md:hidden space-y-4 pb-24">
-			<div className="p-5 rounded-3xl bg-gradient-to-br from-[var(--color-interactive-primary)] to-purple-900 text-white space-y-3 shadow-xl">
-				<div className="flex items-center justify-between">
-					<span className="text-[10px] font-extrabold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-white/10 border border-white/10">
-						Level {user.level ?? 1} Creator
-					</span>
-					<Sparkles className="w-4 h-4 text-amber-300" />
-				</div>
-				<div>
-					<h1 className="text-xl font-extrabold">{user.displayName}</h1>
-					<p className="text-xs text-purple-200">@{user.username}</p>
+		<div className="md:hidden space-y-8 pb-32">
+			{/* Creator Studio Header */}
+			<div className="-mx-4 bg-gradient-to-br from-violet-600 to-purple-900 p-6 shadow-xl">
+				<div className="flex items-start justify-between">
+					<div className="space-y-1">
+						<h1 className="text-2xl font-black text-white">
+							{user.displayName}
+						</h1>
+						<p className="text-[15px] text-purple-200">@{user.username}</p>
+					</div>
+					{user.level !== undefined && (
+						<span className="rounded-full bg-white/15 px-4 py-1.5 text-sm font-bold text-white backdrop-blur-md">
+							Lvl {user.level}
+						</span>
+					)}
 				</div>
 
-				<Link
-					href="/upload"
-					className="flex items-center justify-center gap-2 min-h-[48px] w-full rounded-2xl bg-white text-[var(--color-interactive-primary)] font-extrabold text-xs shadow-lg active:scale-95 transition-all"
+				<button
+					type="button"
+					className="mt-6 w-full min-h-[56px] rounded-2xl bg-white text-[15px] font-bold text-purple-700 flex items-center justify-center gap-2 shadow-lg active:scale-95 transition-transform"
 				>
-					<Upload className="w-4 h-4" />
-					<span>Upload New Preset</span>
-				</Link>
+					<UploadCloud className="w-6 h-6" />
+					Upload New Preset
+				</button>
 			</div>
 
-			<div className="grid grid-cols-2 gap-3 text-xs">
-				<div className="p-4 rounded-3xl bg-[var(--color-bg-surface)] border border-[var(--color-border-subtle)] space-y-1 shadow-md">
-					<div className="flex items-center gap-2 text-emerald-400">
-						<Download className="w-4 h-4" />
-						<span className="font-bold text-[10px] uppercase">Downloads</span>
+			<div className="px-4 space-y-8">
+				{/* Stats Grid */}
+				<div className="grid grid-cols-2 gap-3">
+					<div className="rounded-2xl border border-[var(--color-border-subtle)] bg-surface p-5 shadow-sm">
+						<Activity className="w-6 h-6 text-violet-500 mb-2" />
+						<p className="text-[13px] font-semibold uppercase tracking-wider text-tertiary">
+							Total Views
+						</p>
+						<p className="mt-1 text-2xl font-black">24.5k</p>
 					</div>
-					<span className="text-xl font-black text-[var(--color-text-primary)] block">
-						{totalDownloads.toLocaleString()}
-					</span>
+					<div className="rounded-2xl border border-[var(--color-border-subtle)] bg-surface p-5 shadow-sm">
+						<Users className="w-6 h-6 text-purple-500 mb-2" />
+						<p className="text-[13px] font-semibold uppercase tracking-wider text-tertiary">
+							Followers
+						</p>
+						<p className="mt-1 text-2xl font-black">1,248</p>
+					</div>
 				</div>
 
-				<div className="p-4 rounded-3xl bg-[var(--color-bg-surface)] border border-[var(--color-border-subtle)] space-y-1 shadow-md">
-					<div className="flex items-center gap-2 text-rose-400">
-						<Heart className="w-4 h-4" />
-						<span className="font-bold text-[10px] uppercase">Likes</span>
+				{/* My Presets */}
+				<div className="space-y-4">
+					<div className="flex items-center justify-between">
+						<h2 className="text-xl font-bold">My Presets</h2>
+						<button
+							type="button"
+							className="text-[15px] font-bold text-interactive-primary"
+						>
+							See All
+						</button>
 					</div>
-					<span className="text-xl font-black text-[var(--color-text-primary)] block">
-						{totalLikes.toLocaleString()}
-					</span>
-				</div>
-			</div>
 
-			<div className="space-y-3">
-				<h2 className="text-sm font-extrabold text-[var(--color-text-primary)] px-1">
-					My Published Content ({userPresets.length})
-				</h2>
-				<PresetGrid
-					presets={userPresets}
-					isLoading={false}
-					hasMore={false}
-					onLoadMore={() => {}}
-				/>
+					<div className="grid grid-cols-2 gap-3">
+						{userPresets.map((preset) => (
+							<div
+								key={preset.id}
+								className="overflow-hidden rounded-2xl border border-[var(--color-border-subtle)] bg-surface shadow-sm"
+							>
+								<div className="relative aspect-[3/4] w-full bg-surface-hover">
+									{preset.thumbnailUrl ? (
+										<Image
+											src={preset.thumbnailUrl}
+											alt={preset.title}
+											fill
+											className="object-cover"
+										/>
+									) : (
+										<div className="absolute inset-0 flex items-center justify-center">
+											<span className="text-tertiary text-[13px]">
+												No Preview
+											</span>
+										</div>
+									)}
+								</div>
+								<div className="p-3">
+									<h3 className="line-clamp-1 text-sm font-bold">
+										{preset.title}
+									</h3>
+								</div>
+							</div>
+						))}
+					</div>
+				</div>
 			</div>
 		</div>
 	);
