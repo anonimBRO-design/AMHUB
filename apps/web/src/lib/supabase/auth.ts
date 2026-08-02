@@ -1,6 +1,7 @@
 import type { Database, User as Profile } from "@presethub/types";
 import type { User as SupabaseUser } from "@supabase/supabase-js";
 import { redirect } from "next/navigation";
+import { cache } from "react";
 import { createSupabaseServerClient } from "./server";
 
 type ProfileBootstrapInput = {
@@ -28,7 +29,7 @@ const getMetadataString = (
 	return typeof value === "string" && value.trim() ? value.trim() : undefined;
 };
 
-export async function getCurrentUser() {
+export const getCurrentUser = cache(async () => {
 	const supabase = await createSupabaseServerClient();
 	const {
 		data: { user },
@@ -40,7 +41,7 @@ export async function getCurrentUser() {
 	}
 
 	return user;
-}
+});
 
 export async function requireUser() {
 	const user = await getCurrentUser();
@@ -135,7 +136,7 @@ export async function ensureUserProfile(
 	throw lastError;
 }
 
-export async function getCurrentProfile(): Promise<Profile | null> {
+export const getCurrentProfile = cache(async (): Promise<Profile | null> => {
 	const user = await getCurrentUser();
 
 	if (!user) {
@@ -154,4 +155,4 @@ export async function getCurrentProfile(): Promise<Profile | null> {
 	}
 
 	return data ?? ensureUserProfile(user);
-}
+});

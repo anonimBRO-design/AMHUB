@@ -31,6 +31,11 @@ export async function middleware(request: NextRequest) {
 		return response;
 	}
 
+	// Optimization: Skip expensive auth API calls for public routes in middleware
+	if (!isProtectedRoute(request.nextUrl.pathname)) {
+		return response;
+	}
+
 	try {
 		const supabase = createServerClient(
 			env.NEXT_PUBLIC_SUPABASE_URL,
@@ -59,7 +64,7 @@ export async function middleware(request: NextRequest) {
 			data: { user },
 		} = await supabase.auth.getUser();
 
-		if (isProtectedRoute(request.nextUrl.pathname) && !user) {
+		if (!user) {
 			const redirectUrl = request.nextUrl.clone();
 			redirectUrl.pathname = "/auth/login";
 			redirectUrl.search = "";
