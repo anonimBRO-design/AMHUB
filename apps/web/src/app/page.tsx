@@ -17,12 +17,16 @@ export default async function HomePage({ searchParams }: HomePageProps) {
 	const category =
 		typeof params.category === "string" ? params.category : undefined;
 
-	const rawPresets = await listPublishedPresets(supabase, {
-		search: searchQuery,
-		category,
-	});
-
-	const presets = rawPresets.map(mapPresetToCardPreset);
+	let presets: ReturnType<typeof mapPresetToCardPreset>[] = [];
+	try {
+		const rawPresets = await listPublishedPresets(supabase, {
+			search: searchQuery,
+			category,
+		});
+		presets = rawPresets.map(mapPresetToCardPreset);
+	} catch (error) {
+		console.error("Failed to load presets:", error);
+	}
 
 	return (
 		<div className="space-y-8">
