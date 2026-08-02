@@ -228,14 +228,14 @@ body {
 	-moz-osx-font-smoothing: grayscale;
 }
 
-/* Mobile Visual Scaling Enhancement (320px–639px) for Native App Experience */
-@media (max-width: 639px) {
+/* Dedicated Native Mobile Composition Override (max-width: 768px) */
+@media (max-width: 768px) {
 	:root {
-		--font-size-display-2xl: 48px;
-		--font-size-display-xl: 38px;
-		--font-size-display-lg: 32px;
-		--font-size-display-md: 26px;
-		--font-size-display-sm: 22px;
+		--font-size-display-2xl: 44px;
+		--font-size-display-xl: 36px;
+		--font-size-display-lg: 30px;
+		--font-size-display-md: 24px;
+		--font-size-display-sm: 20px;
 
 		--font-size-heading-xl: 22px;
 		--font-size-heading-lg: 20px;
@@ -252,13 +252,21 @@ body {
 		--font-size-label-sm: 13px;
 	}
 
-	/* Native mobile touch targets */
+	/* Edge-to-Edge Container Padding on Mobile */
+	main {
+		padding-left: 16px !important;
+		padding-right: 16px !important;
+		padding-top: 16px !important;
+		padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 84px) !important;
+	}
+
+	/* Dedicated Native Touch Targets */
 	button,
 	a.btn,
 	input,
 	select,
 	textarea {
-		min-height: 48px;
+		min-height: 52px;
 	}
 }
 
