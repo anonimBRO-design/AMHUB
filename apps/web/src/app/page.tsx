@@ -6,6 +6,7 @@ import { CreatorSection } from "./_components/home/CreatorSection";
 import { FeaturedSection } from "./_components/home/FeaturedSection";
 import { Footer } from "./_components/home/Footer";
 import { Hero } from "./_components/home/Hero";
+import { MobileHomeFeed } from "./_components/home/MobileHomeFeed";
 import { PresetCarousel } from "./_components/home/PresetCarousel";
 import { SearchBar } from "./_components/home/SearchBar";
 import { StatsSection } from "./_components/home/StatsSection";
@@ -34,40 +35,43 @@ export default async function HomePage({ searchParams }: HomePageProps) {
 		console.error("Failed to load presets:", error);
 	}
 
+	const categories = [
+		{ id: "velocity", name: "⚡ Velocity" },
+		{ id: "transition", name: "🔄 Transitions" },
+		{ id: "color", name: "🎨 Color Grading" },
+		{ id: "anime", name: "🌸 Anime" },
+		{ id: "gaming", name: "🎮 Gaming" },
+		{ id: "lyric", name: "🎵 Lyric" },
+		{ id: "3d", name: "📦 3D Effects" },
+	];
+
 	return (
-		<div className="space-y-10 sm:space-y-12 pb-8">
-			{/* Hero Banner */}
-			<Hero />
+		<div>
+			{/* Dedicated Mobile Native Feed (max-width: 768px) */}
+			<MobileHomeFeed presets={presets} categories={categories} />
 
-			{/* Search & Category Filtering Controls */}
-			<div className="space-y-4">
-				<SearchBar />
-				<CategoryScroller />
+			{/* Desktop and Tablet Layout (Hidden on Mobile) */}
+			<div className="hidden md:block space-y-10 sm:space-y-12 pb-8">
+				<Hero />
+				<div className="space-y-4">
+					<SearchBar />
+					<CategoryScroller />
+				</div>
+				{!searchQuery && <FeaturedSection presets={presets} />}
+				<PresetCarousel
+					presets={presets}
+					title={
+						searchQuery
+							? `Results for "${searchQuery}"`
+							: category
+								? `${category.charAt(0).toUpperCase() + category.slice(1)} Presets`
+								: "Trending Presets"
+					}
+				/>
+				<CreatorSection />
+				<StatsSection />
+				<Footer />
 			</div>
-
-			{/* Featured Spotlight (only shown when not searching) */}
-			{!searchQuery && <FeaturedSection presets={presets} />}
-
-			{/* Main Preset Catalog Feed */}
-			<PresetCarousel
-				presets={presets}
-				title={
-					searchQuery
-						? `Results for "${searchQuery}"`
-						: category
-							? `${category.charAt(0).toUpperCase() + category.slice(1)} Presets`
-							: "Trending Presets"
-				}
-			/>
-
-			{/* Popular Creators Spotlight */}
-			<CreatorSection />
-
-			{/* Value Proposition / Features Grid */}
-			<StatsSection />
-
-			{/* Footer */}
-			<Footer />
 		</div>
 	);
 }

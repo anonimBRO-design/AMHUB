@@ -1,8 +1,9 @@
 "use client";
 
-import { Bell, CheckCheck, Sparkles } from "lucide-react";
+import { Bell, CheckCheck } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { MobileNotificationFeed } from "./MobileNotificationFeed";
 import {
 	NotificationCard,
 	type NotificationItemData,
@@ -70,54 +71,78 @@ export function NotificationClient({
 		return true;
 	});
 
+	const mobileNotifications = notifications.map((n) => ({
+		id: n.id,
+		type: n.type,
+		isRead: n.isRead,
+		timestamp: n.createdAt,
+		actor: {
+			username: n.actor?.username || "creator",
+			displayName: n.actor?.displayName || "Creator",
+			avatarUrl: n.actor?.avatarUrl || undefined,
+		},
+		message:
+			n.type === "like"
+				? "liked your Alight Motion preset."
+				: n.type === "comment"
+					? "commented on your preset."
+					: n.type === "follow"
+						? "started following your creator profile."
+						: "sent a system notification.",
+	}));
+
 	return (
-		<div className="space-y-6 max-w-3xl mx-auto pb-12">
-			{/* Header Bar */}
-			<div className="flex items-center justify-between px-1">
-				<div className="space-y-1">
-					<div className="flex items-center gap-2 text-xs font-bold text-[var(--color-interactive-primary)] uppercase tracking-wider">
-						<Bell className="w-4 h-4" />
-						<span>Activity Hub</span>
-					</div>
-					<h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-[var(--color-text-primary)]">
-						Notifications
-					</h1>
-				</div>
-
-				{unreadCount > 0 && (
-					<button
-						type="button"
-						onClick={handleMarkAllRead}
-						className="inline-flex items-center gap-1.5 min-h-[40px] px-3.5 rounded-2xl bg-[var(--color-bg-surface)] text-[var(--color-text-secondary)] font-semibold text-xs border border-[var(--color-border-subtle)] hover:text-[var(--color-text-primary)] active:scale-95 transition-all"
-					>
-						<CheckCheck className="w-4 h-4 text-emerald-400" />
-						<span className="hidden sm:inline">Mark all read</span>
-					</button>
-				)}
-			</div>
-
-			{/* Sticky Category Filters */}
-			<NotificationFilters
-				activeFilter={activeFilter}
-				onFilterChange={setActiveFilter}
-				unreadCount={unreadCount}
+		<div>
+			<MobileNotificationFeed
+				notifications={mobileNotifications}
+				onMarkAllRead={handleMarkAllRead}
 			/>
 
-			{/* Notification List Feed */}
-			{filteredNotifications.length > 0 ? (
-				<div className="space-y-3">
-					{filteredNotifications.map((notification) => (
-						<NotificationCard
-							key={notification.id}
-							notification={notification}
-							onMarkRead={handleMarkRead}
-							onClick={handleClick}
-						/>
-					))}
+			<div className="hidden md:block space-y-6 max-w-3xl mx-auto pb-12">
+				<div className="flex items-center justify-between px-1">
+					<div className="space-y-1">
+						<div className="flex items-center gap-2 text-xs font-bold text-[var(--color-interactive-primary)] uppercase tracking-wider">
+							<Bell className="w-4 h-4" />
+							<span>Activity Hub</span>
+						</div>
+						<h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-[var(--color-text-primary)]">
+							Notifications
+						</h1>
+					</div>
+
+					{unreadCount > 0 && (
+						<button
+							type="button"
+							onClick={handleMarkAllRead}
+							className="inline-flex items-center gap-1.5 min-h-[40px] px-3.5 rounded-2xl bg-[var(--color-bg-surface)] text-[var(--color-text-secondary)] font-semibold text-xs border border-[var(--color-border-subtle)] hover:text-[var(--color-text-primary)] active:scale-95 transition-all"
+						>
+							<CheckCheck className="w-4 h-4 text-emerald-400" />
+							<span className="hidden sm:inline">Mark all read</span>
+						</button>
+					)}
 				</div>
-			) : (
-				<NotificationEmpty filter={activeFilter} />
-			)}
+
+				<NotificationFilters
+					activeFilter={activeFilter}
+					onFilterChange={setActiveFilter}
+					unreadCount={unreadCount}
+				/>
+
+				{filteredNotifications.length > 0 ? (
+					<div className="space-y-3">
+						{filteredNotifications.map((notification) => (
+							<NotificationCard
+								key={notification.id}
+								notification={notification}
+								onMarkRead={handleMarkRead}
+								onClick={handleClick}
+							/>
+						))}
+					</div>
+				) : (
+					<NotificationEmpty filter={activeFilter} />
+				)}
+			</div>
 		</div>
 	);
 }

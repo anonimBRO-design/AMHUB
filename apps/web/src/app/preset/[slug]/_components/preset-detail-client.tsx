@@ -5,6 +5,7 @@ import { CommentSection } from "./CommentSection";
 import { CreatorCard } from "./CreatorCard";
 import { Hero } from "./Hero";
 import { InstallSection } from "./InstallSection";
+import { MobilePresetView } from "./MobilePresetView";
 import { RelatedPresets } from "./RelatedPresets";
 import { StickyActionBar } from "./StickyActionBar";
 import { TagList } from "./TagList";
@@ -22,40 +23,45 @@ export function PresetDetailClient({
 	preset,
 	relatedPresets,
 }: PresetDetailClientProps) {
+	const presetForMobile = {
+		...preset,
+		likeCount: preset.likeCount,
+		commentCount: preset.commentCount,
+		viewCount: preset.viewCount,
+		downloadCount: preset.downloadCount,
+		createdAt: preset.createdAt,
+		fileSize: preset.fileType?.toUpperCase() || "XML",
+		downloadUrl: preset.fileUrl || preset.amLink || "#",
+		comments: [],
+	};
+
 	return (
-		<div className="space-y-8 pb-24 sm:pb-12 max-w-5xl mx-auto">
-			{/* Hero Preview Section */}
-			<Hero preset={preset} />
+		<div>
+			{/* Dedicated Native Mobile Composition (max-width: 768px) */}
+			<MobilePresetView preset={presetForMobile} />
 
-			{/* Main Two-Column Layout (Mobile Stack, Desktop Grid) */}
-			<div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
-				{/* Left / Main Column */}
-				<div className="lg:col-span-2 space-y-6">
-					{/* Download & 1-Tap Import Section */}
-					<InstallSection preset={preset} />
+			{/* Desktop and Tablet Layout (Hidden on Mobile) */}
+			<div className="hidden md:block space-y-8 pb-24 sm:pb-12 max-w-5xl mx-auto">
+				<Hero preset={preset} />
 
-					{/* Metadata & Tag List */}
-					<TagList preset={preset} />
+				<div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
+					<div className="lg:col-span-2 space-y-6">
+						<InstallSection preset={preset} />
+						<TagList preset={preset} />
+						<CommentSection
+							presetId={preset.id}
+							commentCount={preset.commentCount}
+						/>
+					</div>
 
-					{/* Community Discussion / Comments */}
-					<CommentSection
-						presetId={preset.id}
-						commentCount={preset.commentCount}
-					/>
+					<div className="space-y-6">
+						<CreatorCard creator={preset.creator} />
+					</div>
 				</div>
 
-				{/* Right / Sidebar Column */}
-				<div className="space-y-6">
-					{/* Creator Card */}
-					<CreatorCard creator={preset.creator} />
-				</div>
+				<RelatedPresets presets={relatedPresets} category={preset.category} />
+				<StickyActionBar preset={preset} />
 			</div>
-
-			{/* Related Presets Recommendations Feed */}
-			<RelatedPresets presets={relatedPresets} category={preset.category} />
-
-			{/* Mobile Sticky Bottom Action Bar (Thumb-reachable) */}
-			<StickyActionBar preset={preset} />
 		</div>
 	);
 }

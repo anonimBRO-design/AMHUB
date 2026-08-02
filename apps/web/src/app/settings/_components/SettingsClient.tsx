@@ -1,21 +1,12 @@
 "use client";
 
 import type { User } from "@presethub/types";
-import {
-	AlertCircle,
-	Bell,
-	Check,
-	Eye,
-	Loader2,
-	Lock,
-	Palette,
-	Sparkles,
-	User as UserIcon,
-} from "lucide-react";
+import { AlertCircle, Check, Loader2, Sparkles } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { type FormEvent, useState } from "react";
 import { AccountCard } from "./AccountCard";
 import { DangerZone } from "./DangerZone";
+import { MobileSettingsView } from "./MobileSettingsView";
 import { SettingsGroup } from "./SettingsGroup";
 import { SettingsToggle } from "./SettingsToggle";
 
@@ -29,7 +20,6 @@ export function SettingsClient({ profile }: SettingsClientProps) {
 	const [successMessage, setSuccessMessage] = useState<string | null>(null);
 	const [error, setError] = useState<string | null>(null);
 
-	// Profile Form State
 	const [displayName, setDisplayName] = useState(profile.display_name ?? "");
 	const [bio, setBio] = useState(profile.bio ?? "");
 	const [websiteUrl, setWebsiteUrl] = useState(profile.website_url ?? "");
@@ -40,7 +30,6 @@ export function SettingsClient({ profile }: SettingsClientProps) {
 	const [youtubeUrl, setYoutubeUrl] = useState(profile.youtube_url ?? "");
 	const [avatarUrl, setAvatarUrl] = useState(profile.avatar_url ?? "");
 
-	// Preferences Toggle State
 	const [pushNotifications, setPushNotifications] = useState(true);
 	const [emailNotifications, setEmailNotifications] = useState(true);
 	const [publicProfile, setPublicProfile] = useState(true);
@@ -112,242 +101,240 @@ export function SettingsClient({ profile }: SettingsClientProps) {
 	};
 
 	return (
-		<form
-			onSubmit={handleSubmit}
-			className="space-y-6 max-w-2xl mx-auto pb-24 sm:pb-12"
-		>
-			{/* Header */}
-			<div className="space-y-1 px-1">
-				<div className="flex items-center gap-2 text-xs font-bold text-[var(--color-interactive-primary)] uppercase tracking-wider">
-					<Sparkles className="w-4 h-4" />
-					<span>Account & Preferences</span>
-				</div>
-				<h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-[var(--color-text-primary)]">
-					Settings
-				</h1>
-			</div>
+		<div>
+			{/* Dedicated Native Mobile Composition (max-width: 768px) */}
+			<MobileSettingsView profile={profile} />
 
-			{/* Success & Error Feedback Banners */}
-			{successMessage && (
-				<div className="flex items-center gap-3 p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-semibold">
-					<Check className="w-5 h-5 shrink-0" />
-					<span>{successMessage}</span>
-				</div>
-			)}
-
-			{error && (
-				<div className="flex items-center gap-3 p-4 rounded-2xl bg-rose-500/10 border border-rose-500/20 text-rose-400 text-xs font-semibold">
-					<AlertCircle className="w-5 h-5 shrink-0" />
-					<span>{error}</span>
-				</div>
-			)}
-
-			{/* Account Profile Spotlight */}
-			<AccountCard
-				username={profile.username}
-				displayName={displayName || profile.display_name || profile.username}
-				avatarUrl={avatarUrl}
-				onAvatarUpload={handleAvatarUpload}
-			/>
-
-			{/* Profile Info Settings Group */}
-			<SettingsGroup title="Public Profile Information">
-				<div className="p-4 space-y-4">
-					<div className="space-y-1.5">
-						<label
-							htmlFor="settings-display-name"
-							className="block text-xs font-bold uppercase tracking-wider text-[var(--color-text-secondary)]"
-						>
-							Display Name *
-						</label>
-						<input
-							id="settings-display-name"
-							type="text"
-							value={displayName}
-							onChange={(e) => setDisplayName(e.target.value)}
-							required
-							className="w-full min-h-[44px] px-4 rounded-2xl bg-[var(--color-bg-base)] border border-[var(--color-border-subtle)] text-xs sm:text-sm text-[var(--color-text-primary)] focus:outline-none focus:border-[var(--color-interactive-primary)]"
-						/>
+			{/* Desktop and Tablet Layout (Hidden on Mobile) */}
+			<form
+				onSubmit={handleSubmit}
+				className="hidden md:block space-y-6 max-w-2xl mx-auto pb-24 sm:pb-12"
+			>
+				<div className="space-y-1 px-1">
+					<div className="flex items-center gap-2 text-xs font-bold text-[var(--color-interactive-primary)] uppercase tracking-wider">
+						<Sparkles className="w-4 h-4" />
+						<span>Account & Preferences</span>
 					</div>
+					<h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-[var(--color-text-primary)]">
+						Settings
+					</h1>
+				</div>
 
-					<div className="space-y-1.5">
-						<label
-							htmlFor="settings-bio"
-							className="block text-xs font-bold uppercase tracking-wider text-[var(--color-text-secondary)]"
-						>
-							Bio
-						</label>
-						<textarea
-							id="settings-bio"
-							rows={3}
-							value={bio}
-							onChange={(e) => setBio(e.target.value)}
-							placeholder="Tell the community about yourself..."
-							className="w-full p-4 rounded-2xl bg-[var(--color-bg-base)] border border-[var(--color-border-subtle)] text-xs sm:text-sm text-[var(--color-text-primary)] focus:outline-none focus:border-[var(--color-interactive-primary)] resize-none"
-						/>
+				{successMessage && (
+					<div className="flex items-center gap-3 p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-semibold">
+						<Check className="w-5 h-5 shrink-0" />
+						<span>{successMessage}</span>
 					</div>
+				)}
 
-					<div className="space-y-1.5">
-						<label
-							htmlFor="settings-website"
-							className="block text-xs font-bold uppercase tracking-wider text-[var(--color-text-secondary)]"
-						>
-							Website URL
-						</label>
-						<input
-							id="settings-website"
-							type="url"
-							value={websiteUrl}
-							onChange={(e) => setWebsiteUrl(e.target.value)}
-							placeholder="https://yourwebsite.com"
-							className="w-full min-h-[44px] px-4 rounded-2xl bg-[var(--color-bg-base)] border border-[var(--color-border-subtle)] text-xs sm:text-sm text-[var(--color-text-primary)] focus:outline-none focus:border-[var(--color-interactive-primary)]"
-						/>
+				{error && (
+					<div className="flex items-center gap-3 p-4 rounded-2xl bg-rose-500/10 border border-rose-500/20 text-rose-400 text-xs font-semibold">
+						<AlertCircle className="w-5 h-5 shrink-0" />
+						<span>{error}</span>
 					</div>
+				)}
 
-					<div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+				<AccountCard
+					username={profile.username}
+					displayName={displayName || profile.display_name || profile.username}
+					avatarUrl={avatarUrl}
+					onAvatarUpload={handleAvatarUpload}
+				/>
+
+				<SettingsGroup title="Public Profile Information">
+					<div className="p-4 space-y-4">
 						<div className="space-y-1.5">
 							<label
-								htmlFor="settings-tiktok"
+								htmlFor="settings-display-name"
 								className="block text-xs font-bold uppercase tracking-wider text-[var(--color-text-secondary)]"
 							>
-								TikTok Handle
+								Display Name *
 							</label>
 							<input
-								id="settings-tiktok"
+								id="settings-display-name"
 								type="text"
-								value={tiktokHandle}
-								onChange={(e) => setTiktokHandle(e.target.value)}
-								placeholder="@username"
+								value={displayName}
+								onChange={(e) => setDisplayName(e.target.value)}
+								required
 								className="w-full min-h-[44px] px-4 rounded-2xl bg-[var(--color-bg-base)] border border-[var(--color-border-subtle)] text-xs sm:text-sm text-[var(--color-text-primary)] focus:outline-none focus:border-[var(--color-interactive-primary)]"
 							/>
 						</div>
 
 						<div className="space-y-1.5">
 							<label
-								htmlFor="settings-instagram"
+								htmlFor="settings-bio"
 								className="block text-xs font-bold uppercase tracking-wider text-[var(--color-text-secondary)]"
 							>
-								Instagram Handle
+								Bio
+							</label>
+							<textarea
+								id="settings-bio"
+								rows={3}
+								value={bio}
+								onChange={(e) => setBio(e.target.value)}
+								placeholder="Tell the community about yourself..."
+								className="w-full p-4 rounded-2xl bg-[var(--color-bg-base)] border border-[var(--color-border-subtle)] text-xs sm:text-sm text-[var(--color-text-primary)] focus:outline-none focus:border-[var(--color-interactive-primary)] resize-none"
+							/>
+						</div>
+
+						<div className="space-y-1.5">
+							<label
+								htmlFor="settings-website"
+								className="block text-xs font-bold uppercase tracking-wider text-[var(--color-text-secondary)]"
+							>
+								Website URL
 							</label>
 							<input
-								id="settings-instagram"
-								type="text"
-								value={instagramHandle}
-								onChange={(e) => setInstagramHandle(e.target.value)}
-								placeholder="@username"
+								id="settings-website"
+								type="url"
+								value={websiteUrl}
+								onChange={(e) => setWebsiteUrl(e.target.value)}
+								placeholder="https://yourwebsite.com"
+								className="w-full min-h-[44px] px-4 rounded-2xl bg-[var(--color-bg-base)] border border-[var(--color-border-subtle)] text-xs sm:text-sm text-[var(--color-text-primary)] focus:outline-none focus:border-[var(--color-interactive-primary)]"
+							/>
+						</div>
+
+						<div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+							<div className="space-y-1.5">
+								<label
+									htmlFor="settings-tiktok"
+									className="block text-xs font-bold uppercase tracking-wider text-[var(--color-text-secondary)]"
+								>
+									TikTok Handle
+								</label>
+								<input
+									id="settings-tiktok"
+									type="text"
+									value={tiktokHandle}
+									onChange={(e) => setTiktokHandle(e.target.value)}
+									placeholder="@username"
+									className="w-full min-h-[44px] px-4 rounded-2xl bg-[var(--color-bg-base)] border border-[var(--color-border-subtle)] text-xs sm:text-sm text-[var(--color-text-primary)] focus:outline-none focus:border-[var(--color-interactive-primary)]"
+								/>
+							</div>
+
+							<div className="space-y-1.5">
+								<label
+									htmlFor="settings-instagram"
+									className="block text-xs font-bold uppercase tracking-wider text-[var(--color-text-secondary)]"
+								>
+									Instagram Handle
+								</label>
+								<input
+									id="settings-instagram"
+									type="text"
+									value={instagramHandle}
+									onChange={(e) => setInstagramHandle(e.target.value)}
+									placeholder="@username"
+									className="w-full min-h-[44px] px-4 rounded-2xl bg-[var(--color-bg-base)] border border-[var(--color-border-subtle)] text-xs sm:text-sm text-[var(--color-text-primary)] focus:outline-none focus:border-[var(--color-interactive-primary)]"
+								/>
+							</div>
+						</div>
+
+						<div className="space-y-1.5">
+							<label
+								htmlFor="settings-youtube"
+								className="block text-xs font-bold uppercase tracking-wider text-[var(--color-text-secondary)]"
+							>
+								YouTube URL
+							</label>
+							<input
+								id="settings-youtube"
+								type="url"
+								value={youtubeUrl}
+								onChange={(e) => setYoutubeUrl(e.target.value)}
+								placeholder="https://youtube.com/@channel"
 								className="w-full min-h-[44px] px-4 rounded-2xl bg-[var(--color-bg-base)] border border-[var(--color-border-subtle)] text-xs sm:text-sm text-[var(--color-text-primary)] focus:outline-none focus:border-[var(--color-interactive-primary)]"
 							/>
 						</div>
 					</div>
+				</SettingsGroup>
 
-					<div className="space-y-1.5">
-						<label
-							htmlFor="settings-youtube"
-							className="block text-xs font-bold uppercase tracking-wider text-[var(--color-text-secondary)]"
+				<SettingsGroup title="Notifications & Alerts">
+					<div className="p-4 space-y-4 text-xs">
+						<div className="flex items-center justify-between">
+							<div className="space-y-0.5">
+								<span className="font-bold text-[var(--color-text-primary)] block">
+									Push Notifications
+								</span>
+								<span className="text-[var(--color-text-tertiary)] block">
+									Get notified on new likes, comments, and followers.
+								</span>
+							</div>
+							<SettingsToggle
+								checked={pushNotifications}
+								onChange={setPushNotifications}
+							/>
+						</div>
+
+						<div className="flex items-center justify-between pt-3 border-t border-[var(--color-border-subtle)]/60">
+							<div className="space-y-0.5">
+								<span className="font-bold text-[var(--color-text-primary)] block">
+									Email Digest
+								</span>
+								<span className="text-[var(--color-text-tertiary)] block">
+									Weekly summary of creator preset performance.
+								</span>
+							</div>
+							<SettingsToggle
+								checked={emailNotifications}
+								onChange={setEmailNotifications}
+							/>
+						</div>
+					</div>
+				</SettingsGroup>
+
+				<SettingsGroup title="Privacy & Interface">
+					<div className="p-4 space-y-4 text-xs">
+						<div className="flex items-center justify-between">
+							<div className="space-y-0.5">
+								<span className="font-bold text-[var(--color-text-primary)] block">
+									Public Profile Visibility
+								</span>
+								<span className="text-[var(--color-text-tertiary)] block">
+									Allow visitors to find your profile in explore search.
+								</span>
+							</div>
+							<SettingsToggle
+								checked={publicProfile}
+								onChange={setPublicProfile}
+							/>
+						</div>
+
+						<div className="flex items-center justify-between pt-3 border-t border-[var(--color-border-subtle)]/60">
+							<div className="space-y-0.5">
+								<span className="font-bold text-[var(--color-text-primary)] block">
+									Dark Mode Design System
+								</span>
+								<span className="text-[var(--color-text-tertiary)] block">
+									Premium high-contrast dark theme (Default active).
+								</span>
+							</div>
+							<SettingsToggle checked={darkTheme} onChange={setDarkTheme} />
+						</div>
+					</div>
+				</SettingsGroup>
+
+				<DangerZone />
+
+				<div className="fixed bottom-0 left-0 right-0 z-40 sm:relative p-4 sm:p-0 bg-[var(--color-bg-surface)]/95 sm:bg-transparent backdrop-blur-xl sm:backdrop-blur-none border-t border-[var(--color-border-subtle)] sm:border-0 shadow-2xl sm:shadow-none pb-[calc(env(safe-area-inset-bottom,0px)+1rem)] sm:pb-0">
+					<div className="flex items-center justify-end gap-3 max-w-2xl mx-auto">
+						<button
+							type="submit"
+							disabled={isLoading}
+							className="w-full sm:w-auto inline-flex items-center justify-center gap-2 min-h-[48px] px-8 rounded-2xl bg-[var(--color-interactive-primary)] text-white font-bold text-xs shadow-xl shadow-[var(--color-interactive-primary)]/20 hover:bg-[var(--color-interactive-primary-hover)] active:scale-95 transition-all disabled:opacity-50"
 						>
-							YouTube URL
-						</label>
-						<input
-							id="settings-youtube"
-							type="url"
-							value={youtubeUrl}
-							onChange={(e) => setYoutubeUrl(e.target.value)}
-							placeholder="https://youtube.com/@channel"
-							className="w-full min-h-[44px] px-4 rounded-2xl bg-[var(--color-bg-base)] border border-[var(--color-border-subtle)] text-xs sm:text-sm text-[var(--color-text-primary)] focus:outline-none focus:border-[var(--color-interactive-primary)]"
-						/>
+							{isLoading ? (
+								<>
+									<Loader2 className="w-4 h-4 animate-spin" />
+									<span>Saving Changes...</span>
+								</>
+							) : (
+								<span>Save Settings Changes</span>
+							)}
+						</button>
 					</div>
 				</div>
-			</SettingsGroup>
-
-			{/* Notifications Settings Group */}
-			<SettingsGroup title="Notifications & Alerts">
-				<div className="p-4 space-y-4 text-xs">
-					<div className="flex items-center justify-between">
-						<div className="space-y-0.5">
-							<span className="font-bold text-[var(--color-text-primary)] block">
-								Push Notifications
-							</span>
-							<span className="text-[var(--color-text-tertiary)] block">
-								Get notified on new likes, comments, and followers.
-							</span>
-						</div>
-						<SettingsToggle
-							checked={pushNotifications}
-							onChange={setPushNotifications}
-						/>
-					</div>
-
-					<div className="flex items-center justify-between pt-3 border-t border-[var(--color-border-subtle)]/60">
-						<div className="space-y-0.5">
-							<span className="font-bold text-[var(--color-text-primary)] block">
-								Email Digest
-							</span>
-							<span className="text-[var(--color-text-tertiary)] block">
-								Weekly summary of creator preset performance.
-							</span>
-						</div>
-						<SettingsToggle
-							checked={emailNotifications}
-							onChange={setEmailNotifications}
-						/>
-					</div>
-				</div>
-			</SettingsGroup>
-
-			{/* Privacy & Appearance */}
-			<SettingsGroup title="Privacy & Interface">
-				<div className="p-4 space-y-4 text-xs">
-					<div className="flex items-center justify-between">
-						<div className="space-y-0.5">
-							<span className="font-bold text-[var(--color-text-primary)] block">
-								Public Profile Visibility
-							</span>
-							<span className="text-[var(--color-text-tertiary)] block">
-								Allow visitors to find your profile in explore search.
-							</span>
-						</div>
-						<SettingsToggle
-							checked={publicProfile}
-							onChange={setPublicProfile}
-						/>
-					</div>
-
-					<div className="flex items-center justify-between pt-3 border-t border-[var(--color-border-subtle)]/60">
-						<div className="space-y-0.5">
-							<span className="font-bold text-[var(--color-text-primary)] block">
-								Dark Mode Design System
-							</span>
-							<span className="text-[var(--color-text-tertiary)] block">
-								Premium high-contrast dark theme (Default active).
-							</span>
-						</div>
-						<SettingsToggle checked={darkTheme} onChange={setDarkTheme} />
-					</div>
-				</div>
-			</SettingsGroup>
-
-			{/* Danger Zone / Logout */}
-			<DangerZone />
-
-			{/* Sticky Bottom Save Action Bar */}
-			<div className="fixed bottom-0 left-0 right-0 z-40 sm:relative p-4 sm:p-0 bg-[var(--color-bg-surface)]/95 sm:bg-transparent backdrop-blur-xl sm:backdrop-blur-none border-t border-[var(--color-border-subtle)] sm:border-0 shadow-2xl sm:shadow-none pb-[calc(env(safe-area-inset-bottom,0px)+1rem)] sm:pb-0">
-				<div className="flex items-center justify-end gap-3 max-w-2xl mx-auto">
-					<button
-						type="submit"
-						disabled={isLoading}
-						className="w-full sm:w-auto inline-flex items-center justify-center gap-2 min-h-[48px] px-8 rounded-2xl bg-[var(--color-interactive-primary)] text-white font-bold text-xs shadow-xl shadow-[var(--color-interactive-primary)]/20 hover:bg-[var(--color-interactive-primary-hover)] active:scale-95 transition-all disabled:opacity-50"
-					>
-						{isLoading ? (
-							<>
-								<Loader2 className="w-4 h-4 animate-spin" />
-								<span>Saving Changes...</span>
-							</>
-						) : (
-							<span>Save Settings Changes</span>
-						)}
-					</button>
-				</div>
-			</div>
-		</form>
+			</form>
+		</div>
 	);
 }
