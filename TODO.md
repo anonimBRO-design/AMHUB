@@ -15,8 +15,7 @@
   - File: same migration.
 
 ### Bug
-- **[BUG-1] Mock fallback shows fake data on any URL in production.** `getPresetBySlug` returns `MOCK_PRESETS[0]` for unknown slugs; `getUserByUsername` returns `MOCK_CREATORS[0]` for unknown users; `getFollowerCount` falls back to hardcoded `48500`. A random `/preset/whatever` or `/u/xyz` renders fabricated content with fake follower counts. Mock fallback should be dev-only (env-gated) and should return `null`/404 in production.
-  - Files: `apps/web/src/dal/presets.dal.ts`, `apps/web/src/dal/users.dal.ts`, `apps/web/src/dal/comments.dal.ts`, `apps/web/src/dal/likes.dal.ts`, `apps/web/src/dal/bookmarks.dal.ts`, `apps/web/src/dal/notifications.dal.ts`
+- **[BUG-1] ✅ FIXED (2026-08-03).** Mock fallback now env-gated via `dal/mock-fallback.ts` (`isMockFallbackEnabled` = non-production). Policy: query error → dev: log+mock / prod: rethrow; empty → dev: mock / prod: real empty (null/[]/0). `getPresetBySlug`/`getUserByUsernameOrNull`/`getUserById` no longer fall back to `MOCK_PRESETS[0]`/`MOCK_CREATORS[0]` for unknown keys (→ 404). `getFollowerCount` prod → real count/0. See TD-3.
 - **[BUG-2] ✅ FIXED (2026-08-03).** `pnpm lint` failed on Biome formatting in `packages/ui/src/templates/app-layout.tsx` (inline JSX children). Split onto own lines; lint now passes 4/4.
 
 ---
@@ -40,7 +39,7 @@
 ### Technical debt
 - **[TD-1] `SUPABASE_SERVICE_ROLE_KEY` required but service client never instantiated.** `createSupabaseServiceClient` exists (exported, type-only used) but no route uses it. Either use it (admin/staff operations) or drop the env requirement to avoid deploy-time failures.
 - **[TD-2] Unused dependencies (apps/web):** `@tanstack/react-query`, `zustand`, `framer-motion`, `react-hook-form`, `@hookform/resolvers` — 0 imports each. Remove from `package.json` (or document why they stay).
-- **[TD-3] Mock fallback pattern** is the single biggest architectural debt: ~10 DAL functions silently swallow DB errors. See BUG-1. Plan: env-gate mock, log errors, return 404/null.
+- **[TD-3] ✅ FIXED (2026-08-03, with BUG-1).** Mock fallback now env-gated (`dal/mock-fallback.ts`); prod surfaces errors and returns real empties. Remaining: `data/mock-data.ts` still uses `Math.random()`/`Date.now()` at module load (see PERF-3).
 
 ---
 
@@ -106,6 +105,7 @@
 ## Done
 
 - **BUG-2** — `fix(ui)`: format `app-layout.tsx` to satisfy Biome lint.
+- **BUG-1 / TD-3** — `fix(dal)`: env-gate mock fallback; prod surfaces DB errors and returns real empties (404 for unknown slugs/users).
 
 ---
 

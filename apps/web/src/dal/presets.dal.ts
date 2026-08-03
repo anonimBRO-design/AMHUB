@@ -5,6 +5,7 @@ import type {
 } from "@/data/presets";
 import type { Database } from "@presethub/types";
 import { assertExists } from "./helpers";
+import { isMockFallbackEnabled, serveMockFallback } from "./mock-fallback";
 import type { DalClient } from "./types";
 
 export const PRESET_SELECT_WITH_CREATOR = `
@@ -173,14 +174,27 @@ export async function listPublishedPresets(
 			ascending: order === "asc",
 		});
 
-		if (!error && data && data.length > 0) {
+		if (error) throw error;
+
+		if (data && data.length > 0) {
 			return data as unknown as PresetWithCreator[];
 		}
-	} catch {
-		// Fall through to mock dataset
-	}
 
-	return filterAndSortMockPresets(params) as unknown as PresetWithCreator[];
+		if (!isMockFallbackEnabled()) {
+			return [];
+		}
+
+		return serveMockFallback(
+			"listPublishedPresets",
+			() => filterAndSortMockPresets(params) as unknown as PresetWithCreator[],
+		);
+	} catch (error) {
+		if (!isMockFallbackEnabled()) throw error;
+		return serveMockFallback(
+			"listPublishedPresets",
+			() => filterAndSortMockPresets(params) as unknown as PresetWithCreator[],
+		);
+	}
 }
 
 export async function getPresetBySlug(
@@ -195,15 +209,27 @@ export async function getPresetBySlug(
 			.eq("status", "published")
 			.maybeSingle();
 
-		if (!error && data) {
+		if (error) throw error;
+
+		if (data) {
 			return data as unknown as PresetWithCreator;
 		}
-	} catch {
-		// Fall through to mock dataset
-	}
 
-	const found = MOCK_PRESETS.find((p) => p.slug === slug);
-	return (found ?? MOCK_PRESETS[0]) as unknown as PresetWithCreator;
+		if (!isMockFallbackEnabled()) {
+			return null;
+		}
+
+		return serveMockFallback("getPresetBySlug", () => {
+			const found = MOCK_PRESETS.find((p) => p.slug === slug);
+			return (found ?? null) as unknown as PresetWithCreator | null;
+		});
+	} catch (error) {
+		if (!isMockFallbackEnabled()) throw error;
+		return serveMockFallback("getPresetBySlug", () => {
+			const found = MOCK_PRESETS.find((p) => p.slug === slug);
+			return (found ?? null) as unknown as PresetWithCreator | null;
+		});
+	}
 }
 
 export async function listCreatorPresets(
@@ -218,15 +244,29 @@ export async function listCreatorPresets(
 			.eq("status", "published")
 			.order("created_at", { ascending: false });
 
-		if (!error && data && data.length > 0) {
+		if (error) throw error;
+
+		if (data && data.length > 0) {
 			return data as unknown as PresetWithCreator[];
 		}
-	} catch {
-		// Fall through to mock dataset
-	}
 
-	const matched = MOCK_PRESETS.filter((p) => p.creator.id === creatorId);
-	return (matched.length > 0
-		? matched
-		: MOCK_PRESETS.slice(0, 12)) as unknown as PresetWithCreator[];
+		if (!isMockFallbackEnabled()) {
+			return [];
+		}
+
+		return serveMockFallback("listCreatorPresets", () => {
+			const matched = MOCK_PRESETS.filter((p) => p.creator.id === creatorId);
+			return (matched.length > 0
+				? matched
+				: MOCK_PRESETS.slice(0, 12)) as unknown as PresetWithCreator[];
+		});
+	} catch (error) {
+		if (!isMockFallbackEnabled()) throw error;
+		return serveMockFallback("listCreatorPresets", () => {
+			const matched = MOCK_PRESETS.filter((p) => p.creator.id === creatorId);
+			return (matched.length > 0
+				? matched
+				: MOCK_PRESETS.slice(0, 12)) as unknown as PresetWithCreator[];
+		});
+	}
 }

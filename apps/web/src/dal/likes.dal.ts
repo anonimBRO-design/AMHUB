@@ -1,5 +1,6 @@
 import type { PresetWithCreator } from "@/data/presets";
 import { syncPresetCounter } from "./helpers";
+import { isMockFallbackEnabled, serveMockFallback } from "./mock-fallback";
 import { PRESET_SELECT_WITH_CREATOR, assertPresetExists } from "./presets.dal";
 import type { DalClient } from "./types";
 
@@ -17,14 +18,27 @@ export async function listUserLikedPresets(
 			.eq("status", "published")
 			.order("created_at", { ascending: false });
 
-		if (!error && data && data.length > 0) {
+		if (error) throw error;
+
+		if (data && data.length > 0) {
 			return data as unknown as PresetWithCreator[];
 		}
-	} catch {
-		// Fall through
-	}
 
-	return MOCK_LIKES as unknown as PresetWithCreator[];
+		if (!isMockFallbackEnabled()) {
+			return [];
+		}
+
+		return serveMockFallback(
+			"listUserLikedPresets",
+			() => MOCK_LIKES as unknown as PresetWithCreator[],
+		);
+	} catch (error) {
+		if (!isMockFallbackEnabled()) throw error;
+		return serveMockFallback(
+			"listUserLikedPresets",
+			() => MOCK_LIKES as unknown as PresetWithCreator[],
+		);
+	}
 }
 
 export async function likePreset(

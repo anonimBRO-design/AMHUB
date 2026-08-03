@@ -1,4 +1,5 @@
 import { syncPresetCounter } from "./helpers";
+import { isMockFallbackEnabled, serveMockFallback } from "./mock-fallback";
 import { assertPresetExists } from "./presets.dal";
 import type { DalClient } from "./types";
 
@@ -57,28 +58,53 @@ export async function listComments(
 			.order("is_pinned", { ascending: false })
 			.order("created_at", { ascending: false });
 
-		if (!error && comments && comments.length > 0) {
+		if (error) throw error;
+
+		if (comments && comments.length > 0) {
 			return {
 				items: comments,
 				total: count ?? comments.length,
 				offset,
 			};
 		}
-	} catch {
-		// Fall through
+
+		if (!isMockFallbackEnabled()) {
+			return {
+				items: [],
+				total: 0,
+				offset,
+			};
+		}
+
+		return serveMockFallback("listComments", () => {
+			const matched = MOCK_COMMENTS.filter(
+				(c) => c.preset_id === presetId || c.preset_id === "preset-01",
+			);
+			const commentsList = matched.length > 0 ? matched : MOCK_COMMENTS;
+			const sliced = commentsList.slice(offset, offset + limit);
+
+			return {
+				items: sliced,
+				total: commentsList.length,
+				offset,
+			};
+		});
+	} catch (error) {
+		if (!isMockFallbackEnabled()) throw error;
+		return serveMockFallback("listComments", () => {
+			const matched = MOCK_COMMENTS.filter(
+				(c) => c.preset_id === presetId || c.preset_id === "preset-01",
+			);
+			const commentsList = matched.length > 0 ? matched : MOCK_COMMENTS;
+			const sliced = commentsList.slice(offset, offset + limit);
+
+			return {
+				items: sliced,
+				total: commentsList.length,
+				offset,
+			};
+		});
 	}
-
-	const matched = MOCK_COMMENTS.filter(
-		(c) => c.preset_id === presetId || c.preset_id === "preset-01",
-	);
-	const commentsList = matched.length > 0 ? matched : MOCK_COMMENTS;
-	const sliced = commentsList.slice(offset, offset + limit);
-
-	return {
-		items: sliced,
-		total: commentsList.length,
-		offset,
-	};
 }
 
 export async function createComment(

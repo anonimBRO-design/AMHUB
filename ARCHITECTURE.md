@@ -121,7 +121,7 @@ sequenceDiagram
     A->>DB: select users by id
     P->>D: listPublishedPresets(client, {search, category})
     D->>DB: select presets + creator (joined), RLS-filtered
-    D-->>P: rows (snake_case) — or MOCK fallback on error/empty ⚠️
+    D-->>P: rows (snake_case) — dev: MOCK fallback · prod: real rows/errors ⚠️
     P->>P: lib/mappers.ts (snake_case → camelCase)
     P->>P: render <Mobile*View> (md:hidden) + desktop (hidden md:block)
     P-->>B: HTML (RSC payload + static shell)
@@ -369,7 +369,7 @@ flowchart TD
         DUPL["uploads.dal.ts"]
         DHELP["helpers.ts: assertExists,<br/>handleDuplicateKey, syncPresetCounter"]
     end
-    subgraph mock["data/mock-data.ts ⚠️"]
+    subgraph mock["data/mock-data.ts (dev-only fallback)"]
         M["MOCK_PRESETS, MOCK_CREATORS,<br/>MOCK_LIKES, MOCK_BOOKMARKS,<br/>MOCK_COMMENTS, MOCK_NOTIFICATIONS"]
     end
     subgraph db["Supabase"]
@@ -398,15 +398,15 @@ flowchart TD
     DBOK --> DB
     DNOTIF --> DB
     DUPL --> DB
-    DPRESET -.->|try/catch error or empty| M
-    DUSER -.->|try/catch error or empty| M
-    DCOM -.->|try/catch error or empty| M
-    DLIKE -.->|try/catch error or empty| M
-    DBOK -.->|try/catch error or empty| M
-    DNOTIF -.->|try/catch error or empty| M
+    DPRESET -.->|error/empty → dev only| M
+    DUSER -.->|error/empty → dev only| M
+    DCOM -.->|error/empty → dev only| M
+    DLIKE -.->|error/empty → dev only| M
+    DBOK -.->|error/empty → dev only| M
+    DNOTIF -.->|error/empty → dev only| M
 ```
 
-**⚠️ Mock fallback (critical gotcha):** most DAL functions `try/catch` and on error **or empty result** return fabricated rows (e.g. `getPresetBySlug` → `MOCK_PRESETS[0]`, `getUserByUsername` → `MOCK_CREATORS[0]`, `getFollowerCount` → `48500`). This hides real DB failures and renders fake data in production. See TODO BUG-1 / TD-3 (planned fix: env-gate mock to dev, log errors, return null/404).
+**⚠️ Mock fallback (was a critical gotcha — FIXED 2026-08-03, TODO BUG-1):** now env-gated via `dal/mock-fallback.ts` (`isMockFallbackEnabled` = non-production). Query error → dev: log + mock · prod: rethrow. Empty → dev: mock · prod: real empty (`null`/`[]`/`0`). `getPresetBySlug`/`getUserByUsernameOrNull`/`getUserById` return `null` for unknown keys (pages 404); `getUserByUsername` throws `ApiError(not_found)` in prod.
 
 **Shared helpers (`dal/helpers.ts`):**
 - `assertExists(data, msg)` → throws `ApiError(not_found)`.
@@ -514,7 +514,7 @@ Current state — deliberately minimal, mostly per-request:
 | Rate limit store | in-memory `Map` | per server instance | ⚠️ resets on cold start (TODO TD-7) |
 | Pages | none (all dynamic) | — | no `revalidate`/ISR (TODO PERF-4) |
 | Images | 6× `next/image`, 34× plain `<img>` | — | TODO PERF-2 |
-| Mock data | module-load `Math.random()`/`Date.now()` | per process | ⚠️ server/client render mismatch (TODO PERF-3) |
+| Mock data | dev-only (BUG-1 fixed); module-load `Math.random()`/`Date.now()` | per process | dev-only; PERF-3 tracks removal |
 
 ```mermaid
 flowchart TD

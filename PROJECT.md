@@ -35,7 +35,7 @@ supabase/         → migrations (1 SQL file) + seed.sql (categories + tags taxo
 **Key architectural facts (must-read):**
 
 - **Data access layer** — ALL DB access goes through `apps/web/src/dal/*.ts` (one file per domain: presets, users, collections, comments, likes, bookmarks, notifications, uploads) plus thin re-export wrappers in `apps/web/src/data/*.ts`.
-- **CRITICAL GOTCHA** — nearly every DAL function wraps queries in `try/catch` and **silently falls back to fabricated mock rows** from `apps/web/src/data/mock-data.ts` on any error OR empty result. `getPresetBySlug` returns `MOCK_PRESETS[0]` for unknown slugs; `getUserByUsername` returns `MOCK_CREATORS[0]`. **Data that looks "too good" (e.g. 48,500 followers) is mock fallback, not a feature.** The mock module uses `Math.random()`/`Date.now()` at module load → differs between server/client renders. Treat mock fallback as technical debt.
+- **CRITICAL GOTCHA (sebagian besar FIXED 2026-08-03)** — hampir semua fungsi DAL sebelumnya wrap query di `try/catch` dan **silently fallback ke mock data** (`apps/web/src/data/mock-data.ts`) saat error ATAU hasil kosong. Sekarang di-gate: `dal/mock-fallback.ts` — error → dev: mock / prod: rethrow; kosong → dev: mock / prod: null/[]/0. `getPresetBySlug`/`getUserByUsernameOrNull`/`getUserById` tidak lagi fallback ke `MOCK_PRESETS[0]`/`MOCK_CREATORS[0]` (slug/user tak dikenal → 404). Mock data di dev tetap dipakai biar UI dev tetap hidup.
 - **Page pattern** — Server component → DAL → `lib/mappers.ts` (snake_case → camelCase) → client wrapper → **TWO separate compositions per page**: `Mobile*View` (`md:hidden`) + desktop (`hidden md:block`). Mobile is NOT a responsive variant; it's hand-written per page. Keep both in sync.
 - **Interactions** — like/bookmark/follow/comment call `fetch("/api/...")` route handlers directly with optimistic updates + manual rollback. **react-query / zustand / framer-motion / react-hook-form are installed but NOT used.**
 - **Auth** — Supabase cookie-based. Middleware protects only `/upload /dashboard /settings /bookmarks /likes /notifications`. Server: `getCurrentUser` / `requireUser` / `getCurrentProfile` / `ensureUserProfile` (auto-creates `users` row on first login, username normalization + unique-violation retry). Client: `AuthContext.tsx` exposes `useAuth().requireAuth(action, title)` → inline `AuthModal` (Google sign-in) instead of redirect.
@@ -254,7 +254,7 @@ pnpm format         # prettier (root md) / biome format --write (workspaces)
 
 ## 12. Technical Debt
 
-1. **Mock fallback di DAL** (paling penting) — menyembunyikan error DB dan menampilkan data palsu di produksi. Baca CLAUDE.md §"Data access layer".
+1. ~~**Mock fallback di DAL**~~ — **FIXED (2026-08-03)**: env-gated di `dal/mock-fallback.ts`; prod tidak lagi menyembunyikan error DB / menampilkan data palsu. Sisa: `mock-data.ts` masih pakai `Math.random()`/`Date.now()` saat module load (lihat PERF-3).
 2. **Branding PresetHub** — package names, site.ts, docs root.
 3. **Unused dependencies** — react-query, zustand, framer-motion, react-hook-form, @hookform/resolvers di apps/web.
 4. **Dead code** — `createSupabaseServiceClient` (tidak pernah di-instantiate, tapi `SUPABASE_SERVICE_ROLE_KEY` wajib di env), `createSignedDownloadUrl`, `realtime.ts`, cursor pagination helpers, `preset_tags` table, `getPresetStorageBucket` (mengabaikan param).
@@ -266,7 +266,7 @@ pnpm format         # prettier (root md) / biome format --write (workspaces)
 10. **Root docs stale** — 00-README sampai 06, PresetHub_*, MASTER_PROMPT (brand lama, beberapa struktur lama: /search, /creators, /leaderboard).
 11. **install.cmd** — installer CLI pihak ketiga (Antigravity/agy) di root repo; verifikasi apakah disengaja; ada SHA512 verify, tapi tetap third-party binary.
 12. **`select("*")`** di beberapa DAL (getPresetById, getUserById, listPresets) — fetch semua kolom.
-13. **Mock data hydration mismatch** — Math.random()/Date.now() at module load.
+13. ~~**Mock data hydration mismatch**~~ — **FIXED (2026-08-03, dengan BUG-1)**: mock hanya dipakai di dev; prod pakai data asli.
 
 ---
 

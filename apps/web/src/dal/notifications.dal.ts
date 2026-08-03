@@ -1,3 +1,4 @@
+import { isMockFallbackEnabled, serveMockFallback } from "./mock-fallback";
 import type { DalClient } from "./types";
 
 import { MOCK_NOTIFICATIONS } from "@/data/mock-data";
@@ -15,12 +16,23 @@ export async function listNotifications(
 			.order("created_at", { ascending: false })
 			.limit(limit);
 
-		if (!error && data && data.length > 0) return data;
-	} catch {
-		// Fall through
-	}
+		if (error) throw error;
 
-	return MOCK_NOTIFICATIONS.slice(0, limit);
+		if (data && data.length > 0) return data;
+
+		if (!isMockFallbackEnabled()) {
+			return [];
+		}
+
+		return serveMockFallback("listNotifications", () =>
+			MOCK_NOTIFICATIONS.slice(0, limit),
+		);
+	} catch (error) {
+		if (!isMockFallbackEnabled()) throw error;
+		return serveMockFallback("listNotifications", () =>
+			MOCK_NOTIFICATIONS.slice(0, limit),
+		);
+	}
 }
 
 export async function getUnreadNotificationCount(
@@ -34,12 +46,25 @@ export async function getUnreadNotificationCount(
 			.eq("user_id", userId)
 			.eq("is_read", false);
 
-		if (!error && typeof count === "number" && count > 0) return count;
-	} catch {
-		// Fall through
-	}
+		if (error) throw error;
 
-	return MOCK_NOTIFICATIONS.filter((n) => !n.is_read).length;
+		if (typeof count === "number" && count > 0) return count;
+
+		if (!isMockFallbackEnabled()) {
+			return 0;
+		}
+
+		return serveMockFallback(
+			"getUnreadNotificationCount",
+			() => MOCK_NOTIFICATIONS.filter((n) => !n.is_read).length,
+		);
+	} catch (error) {
+		if (!isMockFallbackEnabled()) throw error;
+		return serveMockFallback(
+			"getUnreadNotificationCount",
+			() => MOCK_NOTIFICATIONS.filter((n) => !n.is_read).length,
+		);
+	}
 }
 
 export async function markNotificationRead(

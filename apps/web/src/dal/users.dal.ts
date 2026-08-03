@@ -1,6 +1,7 @@
 import { ApiError } from "@/lib/api/errors";
 import type { Database, UpdateUserProfileInput, User } from "@presethub/types";
 import { assertExists, handleDuplicateKey } from "./helpers";
+import { isMockFallbackEnabled, serveMockFallback } from "./mock-fallback";
 import type { DalClient } from "./types";
 
 type UserUpdate = Database["public"]["Tables"]["users"]["Update"];
@@ -40,7 +41,9 @@ export async function getUserByUsername(
 			.ilike("username", username)
 			.maybeSingle();
 
-		if (!error && user) {
+		if (error) throw error;
+
+		if (user) {
 			const validUser = user as unknown as User;
 			const [{ count: followerCount }, { count: followingCount }] =
 				await Promise.all([
@@ -73,19 +76,39 @@ export async function getUserByUsername(
 				is_following: currentUserId ? isFollowing : undefined,
 			};
 		}
-	} catch {
-		// Fall through to mock dataset
+
+		if (!isMockFallbackEnabled()) {
+			throw new ApiError({
+				code: "not_found",
+				message: "User was not found.",
+			});
+		}
+
+		return serveMockFallback("getUserByUsername", () => {
+			const found =
+				MOCK_CREATORS.find(
+					(c) => c.username.toLowerCase() === username.toLowerCase(),
+				) ?? MOCK_CREATORS[0];
+
+			return {
+				...found,
+				is_following: false,
+			};
+		});
+	} catch (error) {
+		if (!isMockFallbackEnabled()) throw error;
+		return serveMockFallback("getUserByUsername", () => {
+			const found =
+				MOCK_CREATORS.find(
+					(c) => c.username.toLowerCase() === username.toLowerCase(),
+				) ?? MOCK_CREATORS[0];
+
+			return {
+				...found,
+				is_following: false,
+			};
+		});
 	}
-
-	const found =
-		MOCK_CREATORS.find(
-			(c) => c.username.toLowerCase() === username.toLowerCase(),
-		) ?? MOCK_CREATORS[0];
-
-	return {
-		...found,
-		is_following: false,
-	};
 }
 
 export async function getUserByUsernameOrNull(
@@ -99,15 +122,29 @@ export async function getUserByUsernameOrNull(
 			.eq("username", username)
 			.maybeSingle();
 
-		if (!error && data) return data;
-	} catch {
-		// Fall through to mock dataset
-	}
+		if (error) throw error;
 
-	const found = MOCK_CREATORS.find(
-		(c) => c.username.toLowerCase() === username.toLowerCase(),
-	);
-	return found ?? MOCK_CREATORS[0];
+		if (data) return data;
+
+		if (!isMockFallbackEnabled()) {
+			return null;
+		}
+
+		return serveMockFallback("getUserByUsernameOrNull", () => {
+			const found = MOCK_CREATORS.find(
+				(c) => c.username.toLowerCase() === username.toLowerCase(),
+			);
+			return found ?? null;
+		});
+	} catch (error) {
+		if (!isMockFallbackEnabled()) throw error;
+		return serveMockFallback("getUserByUsernameOrNull", () => {
+			const found = MOCK_CREATORS.find(
+				(c) => c.username.toLowerCase() === username.toLowerCase(),
+			);
+			return found ?? null;
+		});
+	}
 }
 
 export async function getUserById(client: DalClient, userId: string) {
@@ -118,13 +155,25 @@ export async function getUserById(client: DalClient, userId: string) {
 			.eq("id", userId)
 			.single();
 
-		if (!error && data) return data;
-	} catch {
-		// Fall through to mock dataset
-	}
+		if (error) throw error;
 
-	const found = MOCK_CREATORS.find((c) => c.id === userId) ?? MOCK_CREATORS[0];
-	return found;
+		if (data) return data;
+
+		if (!isMockFallbackEnabled()) {
+			return null;
+		}
+
+		return serveMockFallback("getUserById", () => {
+			const found = MOCK_CREATORS.find((c) => c.id === userId);
+			return found ?? null;
+		});
+	} catch (error) {
+		if (!isMockFallbackEnabled()) throw error;
+		return serveMockFallback("getUserById", () => {
+			const found = MOCK_CREATORS.find((c) => c.id === userId);
+			return found ?? null;
+		});
+	}
 }
 
 export async function getFollowerCount(client: DalClient, userId: string) {
@@ -134,13 +183,25 @@ export async function getFollowerCount(client: DalClient, userId: string) {
 			.select("*", { count: "exact", head: true })
 			.eq("following_id", userId);
 
-		if (!error && typeof count === "number") return count;
-	} catch {
-		// Fall through to mock dataset
-	}
+		if (error) throw error;
 
-	const found = MOCK_CREATORS.find((c) => c.id === userId);
-	return found ? found.follower_count : 48500;
+		if (typeof count === "number") return count;
+
+		if (!isMockFallbackEnabled()) {
+			return 0;
+		}
+
+		return serveMockFallback("getFollowerCount", () => {
+			const found = MOCK_CREATORS.find((c) => c.id === userId);
+			return found ? found.follower_count : 48500;
+		});
+	} catch (error) {
+		if (!isMockFallbackEnabled()) throw error;
+		return serveMockFallback("getFollowerCount", () => {
+			const found = MOCK_CREATORS.find((c) => c.id === userId);
+			return found ? found.follower_count : 48500;
+		});
+	}
 }
 
 export async function updateUserProfile(
