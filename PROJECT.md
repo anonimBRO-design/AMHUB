@@ -221,7 +221,7 @@ Single migration: `supabase/migrations/20260728000000_database_foundation.sql`. 
 pnpm install        # node-linker: hoisted
 pnpm dev            # turbo run dev (Next dev + package watchers)
 pnpm build          # turbo run build  ✅ verified passing (2026-08-03, ~1m25s)
-pnpm lint           # biome check src/  ⚠️ FAILS today: formatting error in packages/ui/src/templates/app-layout.tsx (biome format would fix)
+pnpm lint           # biome check src/  ✅ verified passing (2026-08-03, after BUG-2 fix)
 pnpm typecheck      # tsc --noEmit     ✅ verified passing (2026-08-03, 4/4)
 pnpm format         # prettier (root md) / biome format --write (workspaces)
 ```

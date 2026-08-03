@@ -17,7 +17,7 @@
 ### Bug
 - **[BUG-1] Mock fallback shows fake data on any URL in production.** `getPresetBySlug` returns `MOCK_PRESETS[0]` for unknown slugs; `getUserByUsername` returns `MOCK_CREATORS[0]` for unknown users; `getFollowerCount` falls back to hardcoded `48500`. A random `/preset/whatever` or `/u/xyz` renders fabricated content with fake follower counts. Mock fallback should be dev-only (env-gated) and should return `null`/404 in production.
   - Files: `apps/web/src/dal/presets.dal.ts`, `apps/web/src/dal/users.dal.ts`, `apps/web/src/dal/comments.dal.ts`, `apps/web/src/dal/likes.dal.ts`, `apps/web/src/dal/bookmarks.dal.ts`, `apps/web/src/dal/notifications.dal.ts`
-- **[BUG-2] `pnpm lint` fails (CI breaker).** Biome formatting error in `packages/ui/src/templates/app-layout.tsx` (self-closing divs with children need to be split). Fix: `pnpm --filter @presethub/ui format` or manual reformat.
+- **[BUG-2] ✅ FIXED (2026-08-03).** `pnpm lint` failed on Biome formatting in `packages/ui/src/templates/app-layout.tsx` (inline JSX children). Split onto own lines; lint now passes 4/4.
 
 ---
 
@@ -96,10 +96,16 @@
 ## Verification status (2026-08-03)
 
 - ✅ `pnpm typecheck` — 4/4 workspaces pass
-- ❌ `pnpm lint` — fails on `packages/ui/src/templates/app-layout.tsx` formatting (BUG-2)
-- ✅ `pnpm build` — passes (~1m25s)
+- ✅ `pnpm lint` — passes (after BUG-2 fix)
+- ✅ `pnpm build` — passes (~46s)
 - ✅ Unused dep check — 5 confirmed unused in `apps/web`
 - ✅ No test runner anywhere (do not add test commands)
+
+---
+
+## Done
+
+- **BUG-2** — `fix(ui)`: format `app-layout.tsx` to satisfy Biome lint.
 
 ---
 

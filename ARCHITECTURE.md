@@ -6,7 +6,7 @@
 > Read `CLAUDE.md` in the repo root for the "gotchas" that every contributor must know.
 
 **Last updated:** 2026-08-03
-**Verified against:** `pnpm typecheck` ✅ · `pnpm build` ✅ · `pnpm lint` ❌ (1 formatting error in `packages/ui/src/templates/app-layout.tsx` — see TODO BUG-2)
+**Verified against:** `pnpm typecheck` ✅ · `pnpm build` ✅ · `pnpm lint` ✅ (2026-08-03, BUG-2 fixed)
 
 ---
 
