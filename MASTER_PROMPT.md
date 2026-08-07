@@ -1,18 +1,10 @@
 You are continuing the AM Hub project.
 
-
-
 Before doing anything, carefully read every attached document.
-
-
 
 These documents are the only source of truth.
 
-
-
 Priority order:
-
-
 
 1\. Product Specification
 
@@ -22,11 +14,7 @@ Priority order:
 
 4\. Caveman Skills (engineering workflow and token optimization only)
 
-
-
 Rules:
-
-
 
 \- Do not redesign the product.
 
@@ -46,11 +34,7 @@ Rules:
 
 \- Use Caveman Skills only to optimize workflow, context management, and token efficiency. It must never override the product or design decisions.
 
-
-
 Before creating anything new:
-
-
 
 1\. Read all attached documents.
 
@@ -60,7 +44,4 @@ Before creating anything new:
 
 4\. Wait for my next instruction.
 
-
-
 Do not write implementation code unless I explicitly ask for it.
-

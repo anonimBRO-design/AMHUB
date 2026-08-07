@@ -275,11 +275,11 @@ flowchart TD
 
 Three client constructors — all typed with the hand-written `Database` from `@presethub/types`:
 
-| Constructor | Location | Cookies? | Used by |
-|---|---|---|---|
-| `createSupabaseBrowserClient()` | `lib/supabase/client.ts` | yes (browser) | login/register pages, AuthModal |
-| `createSupabaseServerClient()` | `lib/supabase/server.ts` | yes (request cookies) | pages, route handlers, DAL |
-| `createSupabaseServiceClient()` | `lib/supabase/server.ts` | no (service role) | **unused** (dead code, TODO TD-1) |
+| Constructor                     | Location                 | Cookies?              | Used by                           |
+| ------------------------------- | ------------------------ | --------------------- | --------------------------------- |
+| `createSupabaseBrowserClient()` | `lib/supabase/client.ts` | yes (browser)         | login/register pages, AuthModal   |
+| `createSupabaseServerClient()`  | `lib/supabase/server.ts` | yes (request cookies) | pages, route handlers, DAL        |
+| `createSupabaseServiceClient()` | `lib/supabase/server.ts` | no (service role)     | **unused** (dead code, TODO TD-1) |
 
 - **Typing:** `PresetHubSupabaseClient = ReturnType<typeof createBrowserClient<Database>>` — the server client is cast to this type; `DalClient` in `dal/types.ts` is an alias of it.
 - **Env validation:** `validatePublicEnv()` (URL + anon key) runs in both clients; `validateServerEnv()` (adds `SUPABASE_SERVICE_ROLE_KEY`) only in the service client. During Next build both skip required checks; they throw at runtime.
@@ -329,15 +329,15 @@ sequenceDiagram
 
 **Key policies (from `supabase/migrations/20260728000000_database_foundation.sql`):**
 
-| Table | Policy | Effect |
-|---|---|---|
-| `users` | `users_select_public using (true)` | anyone can read **full rows incl. `email`** ⚠️ TODO SEC-1 |
-| `presets` | published visible; own visible; staff visible | draft/pending/rejected hidden from public |
-| `preset_likes` | `preset_likes_select_public using (true)` | anyone can enumerate likes ⚠️ TODO SEC-2 |
-| `follows` | `follows_select_public using (true)` | social graph enumerable ⚠️ TODO SEC-2 |
-| `comments` | select public; insert own; no update/delete for users | moderation not exposed (TODO MISS-6) |
-| `notifications` | `notifications_staff_insert` | **only staff can insert** — yet nothing inserts (TODO MISS-2) |
-| Storage buckets | first path segment must equal `auth.uid()`; staff override | users can only touch their own folder |
+| Table           | Policy                                                     | Effect                                                        |
+| --------------- | ---------------------------------------------------------- | ------------------------------------------------------------- |
+| `users`         | `users_select_public using (true)`                         | anyone can read **full rows incl. `email`** ⚠️ TODO SEC-1     |
+| `presets`       | published visible; own visible; staff visible              | draft/pending/rejected hidden from public                     |
+| `preset_likes`  | `preset_likes_select_public using (true)`                  | anyone can enumerate likes ⚠️ TODO SEC-2                      |
+| `follows`       | `follows_select_public using (true)`                       | social graph enumerable ⚠️ TODO SEC-2                         |
+| `comments`      | select public; insert own; no update/delete for users      | moderation not exposed (TODO MISS-6)                          |
+| `notifications` | `notifications_staff_insert`                               | **only staff can insert** — yet nothing inserts (TODO MISS-2) |
+| Storage buckets | first path segment must equal `auth.uid()`; staff override | users can only touch their own folder                         |
 
 **Rule of thumb for DAL code:** RLS is the final gate — a DAL query may return fewer rows than requested; the app must not assume PostgREST bypasses it (the service client would, but it's unused).
 
@@ -409,6 +409,7 @@ flowchart TD
 **⚠️ Mock fallback (was a critical gotcha — FIXED 2026-08-03, TODO BUG-1):** now env-gated via `dal/mock-fallback.ts` (`isMockFallbackEnabled` = non-production). Query error → dev: log + mock · prod: rethrow. Empty → dev: mock · prod: real empty (`null`/`[]`/`0`). `getPresetBySlug`/`getUserByUsernameOrNull`/`getUserById` return `null` for unknown keys (pages 404); `getUserByUsername` throws `ApiError(not_found)` in prod.
 
 **Shared helpers (`dal/helpers.ts`):**
+
 - `assertExists(data, msg)` → throws `ApiError(not_found)`.
 - `handleDuplicateKey(err, msg)` → rethrows as `ApiError(conflict)` when Postgres code `23505`.
 - `syncPresetCounter(client, presetId, table, column)` → full `COUNT(*)` + `UPDATE presets` (O(n), intentionally simple). Used after like/bookmark/comment mutations. Comments count excludes `is_removed`.
@@ -444,8 +445,9 @@ sequenceDiagram
 ```
 
 **Rules:**
+
 - Props crossing the boundary must be serializable (no functions, no Date instances — timestamps as ISO strings).
-- Server components never import client components' state; the client wrapper is the *only* bridge.
+- Server components never import client components' state; the client wrapper is the _only_ bridge.
 - `useAuth().requireAuth()` lives in client land; `getCurrentProfile()` in server land — same truth, two mechanisms.
 
 ---
@@ -455,6 +457,7 @@ sequenceDiagram
 **Breakpoint:** `md` (768px) is the app's mobile boundary — set in `packages/ui/src/tokens/tokens.css` and enforced in `apps/web/src/styles/globals.css` (52px touch targets below `md`).
 
 **Two compositions per page — not responsive variants.** Each page that has mobile-specific UX ships:
+
 - `<Mobile*View>` rendered inside `md:hidden` (hand-written mobile layout, often bottom-sheet/native-feel), and
 - the desktop/tablet layout inside `hidden md:block`.
 
@@ -494,6 +497,7 @@ flowchart LR
 ```
 
 **Details:**
+
 - **Status codes** (`lib/api/errors.ts`): 400 bad_request · 401 unauthorized · 403 forbidden · 404 not_found · 409 conflict · 413 payload_too_large · 415 unsupported_media_type · 422 unprocessable_entity · 429 rate_limited · 500 internal_server_error.
 - **Authorization guards** (`lib/api/authorization.ts`): `assertAuthorized`, `assertSameUser`, `assertStaff`, `assertOwnerOrStaff`.
 - **Rate limiting** (`lib/api/rate-limit.ts`): key = `{scope}:user:{userId}` or `{scope}:ip:{ip}`; `MemoryRateLimitStore` (⚠️ per-instance only, TODO TD-7); returns `RateLimit-*` headers.
@@ -507,14 +511,14 @@ flowchart LR
 
 Current state — deliberately minimal, mostly per-request:
 
-| Layer | Mechanism | Scope | Notes |
-|---|---|---|---|
-| Supabase server client | React `cache()` in `lib/supabase/server.ts` | per request tree | dedupes client creation within one render |
-| `getCurrentUser` / `getCurrentProfile` | React `cache()` in `lib/supabase/auth.ts` | per request tree | dedupes auth lookup + profile select |
-| Rate limit store | in-memory `Map` | per server instance | ⚠️ resets on cold start (TODO TD-7) |
-| Pages | none (all dynamic) | — | no `revalidate`/ISR (TODO PERF-4) |
-| Images | 6× `next/image`, 34× plain `<img>` | — | TODO PERF-2 |
-| Mock data | dev-only (BUG-1 fixed); module-load `Math.random()`/`Date.now()` | per process | dev-only; PERF-3 tracks removal |
+| Layer                                  | Mechanism                                                        | Scope               | Notes                                     |
+| -------------------------------------- | ---------------------------------------------------------------- | ------------------- | ----------------------------------------- |
+| Supabase server client                 | React `cache()` in `lib/supabase/server.ts`                      | per request tree    | dedupes client creation within one render |
+| `getCurrentUser` / `getCurrentProfile` | React `cache()` in `lib/supabase/auth.ts`                        | per request tree    | dedupes auth lookup + profile select      |
+| Rate limit store                       | in-memory `Map`                                                  | per server instance | ⚠️ resets on cold start (TODO TD-7)       |
+| Pages                                  | none (all dynamic)                                               | —                   | no `revalidate`/ISR (TODO PERF-4)         |
+| Images                                 | 6× `next/image`, 34× plain `<img>`                               | —                   | TODO PERF-2                               |
+| Mock data                              | dev-only (BUG-1 fixed); module-load `Math.random()`/`Date.now()` | per process         | dev-only; PERF-3 tracks removal           |
 
 ```mermaid
 flowchart TD
@@ -541,6 +545,7 @@ flowchart TD
 **Matcher:** everything except static assets (`_next/static`, `_next/image`, `favicon.ico`, image extensions).
 
 **Logic:**
+
 1. `validatePublicEnv()`; if Supabase env missing → protect nothing (redirect protected routes to login defensively, else pass).
 2. **Optimization:** if pathname is NOT in `protectedRoutes` → return early (no auth API call on public pages).
 3. For protected routes, build `@supabase/ssr` server client over `request.cookies`, call `auth.getUser()`; refresh session cookies on response.
@@ -569,15 +574,15 @@ flowchart TD
 
 **No global state library.** react-query/zustand are installed but unused (TODO TD-2). The actual strategy:
 
-| Concern | Mechanism |
-|---|---|
-| Server-truth (current user, profiles, lists) | Server components + DAL per request |
-| Client auth gate | `AuthContext` (`context/AuthContext.tsx`): `currentUser` prop + `requireAuth()` + `AuthModal` open state |
-| Page-local UI state | `useState` in client wrappers / `Mobile*View` |
-| Server mutations (like/bookmark/follow/comment) | `fetch("/api/...")` + **optimistic update** (setState immediately, rollback on error) |
-| URL state (search, category, pagination) | `searchParams` (server) / `useSearchParams` (client) — no state library |
-| Form state (upload wizard, login) | local `useState` (no react-hook-form) |
-| Toasts/modals | `packages/ui` overlays (toast, modal) — component-level state |
+| Concern                                         | Mechanism                                                                                                |
+| ----------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
+| Server-truth (current user, profiles, lists)    | Server components + DAL per request                                                                      |
+| Client auth gate                                | `AuthContext` (`context/AuthContext.tsx`): `currentUser` prop + `requireAuth()` + `AuthModal` open state |
+| Page-local UI state                             | `useState` in client wrappers / `Mobile*View`                                                            |
+| Server mutations (like/bookmark/follow/comment) | `fetch("/api/...")` + **optimistic update** (setState immediately, rollback on error)                    |
+| URL state (search, category, pagination)        | `searchParams` (server) / `useSearchParams` (client) — no state library                                  |
+| Form state (upload wizard, login)               | local `useState` (no react-hook-form)                                                                    |
+| Toasts/modals                                   | `packages/ui` overlays (toast, modal) — component-level state                                            |
 
 ```mermaid
 flowchart LR
@@ -603,22 +608,22 @@ flowchart LR
 
 ## 15. Folder Ownership
 
-| Path | Owns | Must not |
-|---|---|---|
-| `apps/web/src/app/**` | routes, pages, page-scoped components (`_components/`) | DB queries (use DAL), business rules |
-| `apps/web/src/app/api/**` | HTTP contract: auth gate, rate limit, validation, response envelope | SQL, UI |
-| `apps/web/src/middleware.ts` | session refresh + route protection | business logic |
-| `apps/web/src/dal/**` | all Supabase queries/mutations, counters, error→`ApiError` mapping | HTTP concerns |
-| `apps/web/src/data/**` | mock dataset + thin DAL re-exports for pages | raw queries |
-| `apps/web/src/lib/api/**` | API plumbing: auth context, errors, rate-limit, validation, responses, uploads, pagination, logger | routes, DAL |
-| `apps/web/src/lib/supabase/**` | client factories, auth helpers (server-side), storage URLs | domain logic |
-| `apps/web/src/lib/mappers.ts` | snake_case→camelCase shape mapping | queries |
-| `apps/web/src/context/**` | client-side auth context (AuthProvider/useAuth) | data fetching |
-| `packages/ui/src/**` | presentational components + tokens (atomic design) | Supabase, Next-specific APIs |
-| `packages/types/src/**` | shared types (Database, API, components) | runtime logic |
-| `packages/config/src/**` | env validation + site config | app logic |
-| `supabase/migrations/**` | schema, RLS, triggers, storage buckets | app code |
-| `supabase/seed.sql` | taxonomy only (categories/tags) — **no fake users/presets** | fake content |
+| Path                           | Owns                                                                                               | Must not                             |
+| ------------------------------ | -------------------------------------------------------------------------------------------------- | ------------------------------------ |
+| `apps/web/src/app/**`          | routes, pages, page-scoped components (`_components/`)                                             | DB queries (use DAL), business rules |
+| `apps/web/src/app/api/**`      | HTTP contract: auth gate, rate limit, validation, response envelope                                | SQL, UI                              |
+| `apps/web/src/middleware.ts`   | session refresh + route protection                                                                 | business logic                       |
+| `apps/web/src/dal/**`          | all Supabase queries/mutations, counters, error→`ApiError` mapping                                 | HTTP concerns                        |
+| `apps/web/src/data/**`         | mock dataset + thin DAL re-exports for pages                                                       | raw queries                          |
+| `apps/web/src/lib/api/**`      | API plumbing: auth context, errors, rate-limit, validation, responses, uploads, pagination, logger | routes, DAL                          |
+| `apps/web/src/lib/supabase/**` | client factories, auth helpers (server-side), storage URLs                                         | domain logic                         |
+| `apps/web/src/lib/mappers.ts`  | snake_case→camelCase shape mapping                                                                 | queries                              |
+| `apps/web/src/context/**`      | client-side auth context (AuthProvider/useAuth)                                                    | data fetching                        |
+| `packages/ui/src/**`           | presentational components + tokens (atomic design)                                                 | Supabase, Next-specific APIs         |
+| `packages/types/src/**`        | shared types (Database, API, components)                                                           | runtime logic                        |
+| `packages/config/src/**`       | env validation + site config                                                                       | app logic                            |
+| `supabase/migrations/**`       | schema, RLS, triggers, storage buckets                                                             | app code                             |
+| `supabase/seed.sql`            | taxonomy only (categories/tags) — **no fake users/presets**                                        | fake content                         |
 
 ```mermaid
 graph TD
@@ -642,25 +647,25 @@ graph TD
 
 ## 16. Diagram Index
 
-| Flow | Diagram | Section |
-|---|---|---|
-| Dependency graph | `graph TD` (workspaces + external) | §1 |
-| SSR page request | `sequenceDiagram` | §2a |
-| Client API request | `sequenceDiagram` | §2b |
-| Auth (login + OAuth + callback + bootstrap) | `sequenceDiagram` | §3 |
-| Upload (presigned URL) | `sequenceDiagram` | §4 |
-| Preset publishing | `flowchart TD` (wizard steps) | §5 |
-| Supabase clients | `graph LR` | §6 |
-| RLS enforcement | `sequenceDiagram` | §7 |
-| DAL + mock fallback | `flowchart TD` | §8 |
-| Server ↔ Client props | `sequenceDiagram` | §9 |
-| Mobile/Desktop split | `flowchart TD` | §10 |
-| API lifecycle | `flowchart LR` | §11 |
-| Caching layers | `flowchart TD` | §12 |
-| Middleware decision tree | `flowchart TD` | §13 |
-| State management | `flowchart LR` | §14 |
-| Folder ownership | `graph TD` | §15 |
+| Flow                                        | Diagram                            | Section |
+| ------------------------------------------- | ---------------------------------- | ------- |
+| Dependency graph                            | `graph TD` (workspaces + external) | §1      |
+| SSR page request                            | `sequenceDiagram`                  | §2a     |
+| Client API request                          | `sequenceDiagram`                  | §2b     |
+| Auth (login + OAuth + callback + bootstrap) | `sequenceDiagram`                  | §3      |
+| Upload (presigned URL)                      | `sequenceDiagram`                  | §4      |
+| Preset publishing                           | `flowchart TD` (wizard steps)      | §5      |
+| Supabase clients                            | `graph LR`                         | §6      |
+| RLS enforcement                             | `sequenceDiagram`                  | §7      |
+| DAL + mock fallback                         | `flowchart TD`                     | §8      |
+| Server ↔ Client props                       | `sequenceDiagram`                  | §9      |
+| Mobile/Desktop split                        | `flowchart TD`                     | §10     |
+| API lifecycle                               | `flowchart LR`                     | §11     |
+| Caching layers                              | `flowchart TD`                     | §12     |
+| Middleware decision tree                    | `flowchart TD`                     | §13     |
+| State management                            | `flowchart LR`                     | §14     |
+| Folder ownership                            | `graph TD`                         | §15     |
 
 ---
 
-*Maintained by the assistant (Nawala). Update in the same commit as any change to the flows above (see §0 Sync Contract).*
+_Maintained by the assistant (Nawala). Update in the same commit as any change to the flows above (see §0 Sync Contract)._

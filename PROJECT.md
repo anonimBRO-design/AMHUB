@@ -50,19 +50,20 @@ supabase/         → migrations (1 SQL file) + seed.sql (categories + tags taxo
 **Root:** turbo ^2, typescript ^5.4, @biomejs/biome ^1.8 (lint/format), prettier (root format script).
 
 **apps/web** (deps in `package.json`):
-| Dependency | Status |
-|---|---|
-| next ^15, react ^19, react-dom ^19 | core |
-| @supabase/ssr ^0.5, @supabase/supabase-js ^2.45 | auth + DB |
-| @presethub/{ui,types,config} (workspace) | internal |
-| lucide-react | icons (86 uses) |
-| zod ^3.23 | validation (14 files) |
-| tailwindcss ^4 + @tailwindcss/postcss | styling |
-| **@tanstack/react-query ^5.56** | **UNUSED** (0 imports) |
-| **zustand ^4.5** | **UNUSED** |
-| **framer-motion ^11.5** | **UNUSED** |
-| **react-hook-form ^7.53** | **UNUSED** |
-| **@hookform/resolvers ^3.9** | **UNUSED** |
+
+| Dependency                                      | Status                 |
+| ----------------------------------------------- | ---------------------- |
+| next ^15, react ^19, react-dom ^19              | core                   |
+| @supabase/ssr ^0.5, @supabase/supabase-js ^2.45 | auth + DB              |
+| @presethub/{ui,types,config} (workspace)        | internal               |
+| lucide-react                                    | icons (86 uses)        |
+| zod ^3.23                                       | validation (14 files)  |
+| tailwindcss ^4 + @tailwindcss/postcss           | styling                |
+| **@tanstack/react-query ^5.56**                 | **UNUSED** (0 imports) |
+| **zustand ^4.5**                                | **UNUSED**             |
+| **framer-motion ^11.5**                         | **UNUSED**             |
+| **react-hook-form ^7.53**                       | **UNUSED**             |
+| **@hookform/resolvers ^3.9**                    | **UNUSED**             |
 
 **packages/ui:** class-variance-authority, clsx, tailwind-merge, @radix-ui/react-slot (1 use), lucide-react, @floating-ui/react (1 use).
 
@@ -151,22 +152,22 @@ install.cmd                   # Antigravity CLI installer (third-party, committe
 
 All handlers: `{ data, error, meta }` envelope, `requestId`, rate-limited, Zod-validated (422 on failure).
 
-| Method & Path | Auth | Notes |
-|---|---|---|
-| GET /api/presets | anon | page+limit+category; selects ALL statuses (RLS restricts visibility) |
-| POST /api/presets | user | create preset (10/min) |
-| GET /api/presets/[id] | anon | by UUID |
-| POST/DELETE /api/presets/[id]/like | user | 30/min; upsert + counter sync |
-| POST/DELETE /api/presets/[id]/bookmark | user | optional collection_id; 30/min |
-| GET/POST /api/presets/[id]/comments | anon/user | paginated; create 15/min |
-| GET/PATCH /api/users/[username] | anon/user | profile + follow counts + is_following |
-| POST/DELETE /api/users/[username]/follow | user | 30/min |
-| GET/POST /api/collections | anon/user | public list; create 20/min |
-| GET/PATCH/DELETE /api/collections/[id] | anon/user | owner/staff enforced |
-| POST /api/uploads/preset | user | xml/qr/thumbnail → presigned URL (10/min) |
-| POST /api/uploads/avatar | user | presigned URL (5/min) |
-| GET /api/auth/callback | anon | OAuth exchange + ensureUserProfile |
-| GET /api/auth/logout | anon | signOut → /auth/login |
+| Method & Path                            | Auth      | Notes                                                                |
+| ---------------------------------------- | --------- | -------------------------------------------------------------------- |
+| GET /api/presets                         | anon      | page+limit+category; selects ALL statuses (RLS restricts visibility) |
+| POST /api/presets                        | user      | create preset (10/min)                                               |
+| GET /api/presets/[id]                    | anon      | by UUID                                                              |
+| POST/DELETE /api/presets/[id]/like       | user      | 30/min; upsert + counter sync                                        |
+| POST/DELETE /api/presets/[id]/bookmark   | user      | optional collection_id; 30/min                                       |
+| GET/POST /api/presets/[id]/comments      | anon/user | paginated; create 15/min                                             |
+| GET/PATCH /api/users/[username]          | anon/user | profile + follow counts + is_following                               |
+| POST/DELETE /api/users/[username]/follow | user      | 30/min                                                               |
+| GET/POST /api/collections                | anon/user | public list; create 20/min                                           |
+| GET/PATCH/DELETE /api/collections/[id]   | anon/user | owner/staff enforced                                                 |
+| POST /api/uploads/preset                 | user      | xml/qr/thumbnail → presigned URL (10/min)                            |
+| POST /api/uploads/avatar                 | user      | presigned URL (5/min)                                                |
+| GET /api/auth/callback                   | anon      | OAuth exchange + ensureUserProfile                                   |
+| GET /api/auth/logout                     | anon      | signOut → /auth/login                                                |
 
 **Missing vs Product Spec A§16:** no `GET /api/search`, no `GET /api/tags`, no downloads endpoint, no notification-generation endpoints, no comment moderation (delete/pin/like) endpoints.
 
@@ -176,20 +177,20 @@ All handlers: `{ data, error, meta }` envelope, `requestId`, rate-limited, Zod-v
 
 Single migration: `supabase/migrations/20260728000000_database_foundation.sql`. RLS enabled per-table, `is_staff()` security-definer helper.
 
-| Table | Notes |
-|---|---|
-| users | id = auth.users.id (FK cascade); username unique lower; display_name, email unique lower; xp/level; is_verified/is_staff; socials; `users_username_format ^[a-z0-9_]{3,24}$`; bio ≤280 |
-| categories | slug unique; color_token; is_active; sort_order |
-| tags | slug unique; usage_count |
-| presets | slug unique; creator_id FK; file_type xml/qr/link with location CHECK (xml/qr → file_url, link → am_link); category FK → categories(slug); style/tags text[] (≤10 each, GIN-indexed); difficulty; **am_version_min/max**; device_support array; denormalized counters (download/view/like/bookmark/comment_count); trending_score/quality_score (never computed); status pending/published/rejected/removed; is_featured; rejection_reason; title ≤100, description ≤2000 |
-| preset_tags | join table — **unused in practice** (presets.tags text[] is used instead) |
-| collections | owner_id FK; slug unique per owner; is_public; preset_count |
-| collection_items | PK (collection_id, preset_id); sort_order |
-| follows | PK (follower_id, following_id); no self-follow CHECK |
-| preset_likes | PK (preset_id, user_id) |
-| preset_bookmarks | PK (preset_id, user_id); optional collection_id (SET NULL) |
-| comments | parent_id (single reply level enforced by trigger `validate_comment_parent`); body ≤500; is_pinned/is_removed; like_count |
-| notifications | type in like/comment/follow/download/system; actor_id/preset_id SET NULL; is_read |
+| Table            | Notes                                                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| users            | id = auth.users.id (FK cascade); username unique lower; display_name, email unique lower; xp/level; is_verified/is_staff; socials; `users_username_format ^[a-z0-9_]{3,24}$`; bio ≤280                                                                                                                                                                                                                                                                                    |
+| categories       | slug unique; color_token; is_active; sort_order                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| tags             | slug unique; usage_count                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| presets          | slug unique; creator_id FK; file_type xml/qr/link with location CHECK (xml/qr → file_url, link → am_link); category FK → categories(slug); style/tags text[] (≤10 each, GIN-indexed); difficulty; **am_version_min/max**; device_support array; denormalized counters (download/view/like/bookmark/comment_count); trending_score/quality_score (never computed); status pending/published/rejected/removed; is_featured; rejection_reason; title ≤100, description ≤2000 |
+| preset_tags      | join table — **unused in practice** (presets.tags text[] is used instead)                                                                                                                                                                                                                                                                                                                                                                                                 |
+| collections      | owner_id FK; slug unique per owner; is_public; preset_count                                                                                                                                                                                                                                                                                                                                                                                                               |
+| collection_items | PK (collection_id, preset_id); sort_order                                                                                                                                                                                                                                                                                                                                                                                                                                 |
+| follows          | PK (follower_id, following_id); no self-follow CHECK                                                                                                                                                                                                                                                                                                                                                                                                                      |
+| preset_likes     | PK (preset_id, user_id)                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| preset_bookmarks | PK (preset_id, user_id); optional collection_id (SET NULL)                                                                                                                                                                                                                                                                                                                                                                                                                |
+| comments         | parent_id (single reply level enforced by trigger `validate_comment_parent`); body ≤500; is_pinned/is_removed; like_count                                                                                                                                                                                                                                                                                                                                                 |
+| notifications    | type in like/comment/follow/download/system; actor_id/preset_id SET NULL; is_read                                                                                                                                                                                                                                                                                                                                                                                         |
 
 **Storage buckets:** `thumbnails` (public, 10MB, jpeg/png/webp), `avatars` (public, 5MB), `preset-files` (private, 5MB, xml + images). RLS: first path segment must equal `auth.uid()`; staff override.
 
@@ -202,6 +203,7 @@ Single migration: `supabase/migrations/20260728000000_database_foundation.sql`. 
 ## 9. Komponen Utama
 
 **packages/ui (atomic):**
+
 - atoms: avatar, badge, button, divider, input, skeleton, spinner, tag, textarea
 - molecules: badge-chip, comment-item, creator-card, download-button, filter-chip, notification-item, preset-card, search-bar, stat-card, video-player, xp-progress-bar
 - organisms: challenge-card, comment-thread, creator-dashboard, leaderboard-panel, mobile-bottom-nav, navigation-sidebar, preset-detail, preset-grid, profile-header, top-bar, upload-wizard
@@ -280,4 +282,4 @@ pnpm format         # prettier (root md) / biome format --write (workspaces)
 
 ---
 
-*Maintained by the assistant (Nawala) as the single source of truth. Update on significant changes.*
+_Maintained by the assistant (Nawala) as the single source of truth. Update on significant changes._

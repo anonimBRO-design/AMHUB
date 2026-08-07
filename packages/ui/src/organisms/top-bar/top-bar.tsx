@@ -16,10 +16,7 @@ export interface TopBarProps {
 	onSearchSubmit?: (query: string) => void;
 }
 
-export const TopBar = ({
-	pageTitle,
-	isScrolled,
-}: TopBarProps) => {
+export const TopBar = ({ pageTitle, isScrolled }: TopBarProps) => {
 	return (
 		<header
 			className={cn(

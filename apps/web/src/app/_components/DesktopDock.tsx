@@ -16,6 +16,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type React from "react";
 import { useState } from "react";
+import { LogoutButton } from "./LogoutButton";
 
 interface DesktopDockProps {
 	currentUser?: User | null;
@@ -133,6 +134,9 @@ export function DesktopDock({
 											<span className="text-xs font-bold text-white font-body tracking-wide">
 												{item.label}
 											</span>
+											{item.id === "profile" && currentUser && (
+												<LogoutButton className="text-xs font-bold text-red-400" />
+											)}
 										</div>
 										<div className="w-2 h-2 bg-[#0a090f]/95 rotate-45 border-r border-b border-white/15 mx-auto -mt-1" />
 									</motion.div>

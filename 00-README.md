@@ -48,14 +48,14 @@ Every component entry follows this nine-part structure:
 
 ## File Index
 
-| File | Contents |
-|---|---|
-| `01-atoms.md` | Button, Input, Textarea, Avatar, Badge, Tag, Icon, Skeleton, Spinner, Divider |
-| `02-molecules.md` | PresetCard, CreatorCard, StatCard, CommentItem, NotificationItem, SearchBar, FilterChip, XPProgressBar, BadgeChip, VideoPlayer, DownloadButton |
-| `03-organisms.md` | Navigation Sidebar, Mobile Bottom Nav, Top Bar, PresetGrid, Preset Detail, Profile Header, Upload Wizard, Comment Thread, Creator Dashboard, Challenge Card, Leaderboard Panel |
-| `04-templates.md` | AppLayout, PublicLayout, AuthLayout, AdminLayout |
-| `05-overlays-feedback.md` | Toast, Modal/Dialog, Dropdown Menu, Tooltip, Badge Unlock Overlay, Confirmation Dialog |
-| `06-compound-components.md` | Preset Upload Drop Zone, Tag Input, Category Picker, Markdown Editor, Image Cropper, Follower/Following List, Search Results |
+| File                        | Contents                                                                                                                                                                       |
+| --------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `01-atoms.md`               | Button, Input, Textarea, Avatar, Badge, Tag, Icon, Skeleton, Spinner, Divider                                                                                                  |
+| `02-molecules.md`           | PresetCard, CreatorCard, StatCard, CommentItem, NotificationItem, SearchBar, FilterChip, XPProgressBar, BadgeChip, VideoPlayer, DownloadButton                                 |
+| `03-organisms.md`           | Navigation Sidebar, Mobile Bottom Nav, Top Bar, PresetGrid, Preset Detail, Profile Header, Upload Wizard, Comment Thread, Creator Dashboard, Challenge Card, Leaderboard Panel |
+| `04-templates.md`           | AppLayout, PublicLayout, AuthLayout, AdminLayout                                                                                                                               |
+| `05-overlays-feedback.md`   | Toast, Modal/Dialog, Dropdown Menu, Tooltip, Badge Unlock Overlay, Confirmation Dialog                                                                                         |
+| `06-compound-components.md` | Preset Upload Drop Zone, Tag Input, Category Picker, Markdown Editor, Image Cropper, Follower/Following List, Search Results                                                   |
 
 ## Versioning Note
 
@@ -67,6 +67,6 @@ Every `[OPEN QUESTION]` flagged inline across `01`–`06` is tracked as a number
 
 ---
 
-*PresetHub UI Component Library v1.0*
-*Companion to Motion Studio Design System v1.0*
-*Prepared June 2026*
+_PresetHub UI Component Library v1.0_
+_Companion to Motion Studio Design System v1.0_
+_Prepared June 2026_

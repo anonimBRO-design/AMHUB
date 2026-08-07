@@ -28,6 +28,7 @@ export function UploadWizard() {
 	const router = useRouter();
 	const [currentStep, setCurrentStep] = useState(1);
 	const [isLoading, setIsLoading] = useState(false);
+	const [uploadProgress, setUploadProgress] = useState(0);
 	const [error, setError] = useState<string | null>(null);
 
 	// Form State
@@ -93,78 +94,75 @@ export function UploadWizard() {
 		}
 	};
 
+	const uploadFile = async (
+		file: File,
+		upload_type: string,
+		content_type: string,
+	): Promise<string> => {
+		const res = await fetch("/api/uploads/preset", {
+			method: "POST",
+			headers: { "Content-Type": "application/json" },
+			body: JSON.stringify({
+				upload_type,
+				filename: file.name,
+				content_type,
+				size: file.size,
+			}),
+		});
+
+		const json = await res.json();
+		if (!res.ok) {
+			throw new Error(
+				json.error?.message || `Failed to prepare ${upload_type} upload`,
+			);
+		}
+
+		await new Promise<void>((resolve, reject) => {
+			const xhr = new XMLHttpRequest();
+			xhr.open("PUT", json.data.upload_url);
+			xhr.setRequestHeader("Content-Type", content_type);
+			xhr.upload.onprogress = (event) => {
+				if (event.lengthComputable) {
+					setUploadProgress(Math.round((event.loaded / event.total) * 100));
+				}
+			};
+			xhr.onload = () => {
+				if (xhr.status === 200) resolve();
+				else reject(new Error("Upload failed"));
+			};
+			xhr.onerror = () => reject(new Error("Upload failed"));
+			xhr.send(file);
+		});
+
+		return json.data.storage_path;
+	};
+
 	const handlePublish = async (e: FormEvent) => {
 		e.preventDefault();
 		setIsLoading(true);
+		setUploadProgress(0);
 		setError(null);
 
 		try {
 			let uploadedPresetUrl: string | undefined = undefined;
 			let uploadedThumbnailUrl: string | undefined = undefined;
 
-			// 1. Upload thumbnail file
+			// 1. Upload thumbnail
 			if (thumbnailFile) {
-				const thumbRes = await fetch("/api/uploads/preset", {
-					method: "POST",
-					headers: { "Content-Type": "application/json" },
-					body: JSON.stringify({
-						upload_type: "thumbnail",
-						filename: thumbnailFile.name,
-						content_type: thumbnailFile.type || "image/jpeg",
-						size: thumbnailFile.size,
-					}),
-				});
-
-				const thumbJson = await thumbRes.json();
-				if (!thumbRes.ok) {
-					throw new Error(
-						thumbJson.error?.message || "Failed to prepare thumbnail upload",
-					);
-				}
-
-				await fetch(thumbJson.data.upload_url, {
-					method: "PUT",
-					headers: { "Content-Type": thumbnailFile.type || "image/jpeg" },
-					body: thumbnailFile,
-				});
-
-				uploadedThumbnailUrl = thumbJson.data.storage_path;
+				uploadedThumbnailUrl = await uploadFile(
+					thumbnailFile,
+					"thumbnail",
+					thumbnailFile.type || "image/jpeg",
+				);
 			}
 
 			// 2. Upload preset file if xml/qr
 			if (fileType !== "link" && presetFile) {
-				const uploadType = fileType === "xml" ? "xml" : "qr";
-				const fileRes = await fetch("/api/uploads/preset", {
-					method: "POST",
-					headers: { "Content-Type": "application/json" },
-					body: JSON.stringify({
-						upload_type: uploadType,
-						filename: presetFile.name,
-						content_type:
-							presetFile.type ||
-							(uploadType === "xml" ? "text/xml" : "image/jpeg"),
-						size: presetFile.size,
-					}),
-				});
-
-				const fileJson = await fileRes.json();
-				if (!fileRes.ok) {
-					throw new Error(
-						fileJson.error?.message || "Failed to prepare file upload",
-					);
-				}
-
-				await fetch(fileJson.data.upload_url, {
-					method: "PUT",
-					headers: {
-						"Content-Type":
-							presetFile.type ||
-							(uploadType === "xml" ? "text/xml" : "image/jpeg"),
-					},
-					body: presetFile,
-				});
-
-				uploadedPresetUrl = fileJson.data.storage_path;
+				uploadedPresetUrl = await uploadFile(
+					presetFile,
+					fileType === "xml" ? "xml" : "qr",
+					presetFile.type || (fileType === "xml" ? "text/xml" : "image/jpeg"),
+				);
 			}
 
 			// 3. Create Preset record
@@ -180,7 +178,7 @@ export function UploadWizard() {
 					slug,
 					title,
 					description: description.trim() || undefined,
-					thumbnail_url: uploadedThumbnailUrl || "/placeholder.jpg",
+					thumbnail_url: uploadedThumbnailUrl ?? "/placeholder.jpg",
 					file_type: fileType,
 					file_url: uploadedPresetUrl || undefined,
 					am_link:
@@ -194,6 +192,30 @@ export function UploadWizard() {
 
 			const createJson = await createRes.json();
 			if (!createRes.ok) {
+				// Rollback: Delete uploaded files if database insertion fails
+				const cleanupPaths = [];
+				if (uploadedThumbnailUrl)
+					cleanupPaths.push({
+						bucket: "thumbnails",
+						path: uploadedThumbnailUrl,
+					});
+				if (uploadedPresetUrl)
+					cleanupPaths.push({
+						bucket: "preset-files",
+						path: uploadedPresetUrl,
+					});
+
+				for (const item of cleanupPaths) {
+					try {
+						await fetch("/api/uploads/delete", {
+							method: "POST",
+							headers: { "Content-Type": "application/json" },
+							body: JSON.stringify(item),
+						});
+					} catch (cleanupErr) {
+						console.error("Cleanup failed:", cleanupErr);
+					}
+				}
 				throw new Error(createJson.error?.message || "Failed to create preset");
 			}
 
@@ -320,7 +342,11 @@ export function UploadWizard() {
 							{isLoading ? (
 								<>
 									<Loader2 className="w-4 h-4 animate-spin" />
-									<span>Publishing Preset...</span>
+									<span>
+										{uploadProgress > 0
+											? `Uploading ${uploadProgress}%...`
+											: "Publishing Preset..."}
+									</span>
 								</>
 							) : (
 								<>

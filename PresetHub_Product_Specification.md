@@ -1,4 +1,5 @@
 # PresetHub — Complete Product Specification
+
 ### "The home of Alight Motion creators."
 
 **Version:** 1.0 — June 2026  
@@ -37,7 +38,7 @@
 
 ## The Problem
 
-Alight Motion creators today share their work across fragmented, inadequate channels: Discord servers with no discovery, Google Drive links buried in TikTok bios, Telegram groups with zero curation. There's no place that makes a creator feel *proud* to post their work. There's no stage.
+Alight Motion creators today share their work across fragmented, inadequate channels: Discord servers with no discovery, Google Drive links buried in TikTok bios, Telegram groups with zero curation. There's no place that makes a creator feel _proud_ to post their work. There's no stage.
 
 ## The Opportunity
 
@@ -77,8 +78,9 @@ The product must feel like Apple designed a creative community and Discord made 
 - Goal: Recognition, community, something to point to on his bio
 
 **Journey:**
+
 ```
-Discovers PresetHub → Creates profile (5 min onboarding) 
+Discovers PresetHub → Creates profile (5 min onboarding)
 → Uploads his best velocity preset with thumbnail + video preview
 → Gets notified: 200 downloads in 24h, 47 likes
 → Checks his analytics dashboard
@@ -96,6 +98,7 @@ Discovers PresetHub → Creates profile (5 min onboarding)
 - Goal: Find quality presets that actually work, learn the craft
 
 **Journey:**
+
 ```
 Finds PresetHub via TikTok → Lands on trending page
 → Sees a beautiful anime transition with preview video
@@ -114,6 +117,7 @@ Finds PresetHub via TikTok → Lands on trending page
 - Goal: Differentiation, visibility, potential income
 
 **Journey:**
+
 ```
 Joins PresetHub → Sees "Verified Creator" program
 → Uploads 10 carefully documented presets
@@ -176,12 +180,15 @@ PresetHub
 ## Navigation Structure
 
 **Primary Nav (Authenticated):**
+
 - Home (feed) · Explore · Trending · Challenges
 
 **Secondary Nav:**
+
 - Notifications · Bookmarks · Upload · Profile menu
 
 **Mobile Nav:**
+
 - Bottom tab bar: Home · Explore · [Upload FAB] · Challenges · Profile
 
 ---
@@ -195,6 +202,7 @@ All tables use `uuid` primary keys. `created_at` and `updated_at` timestamps on 
 ---
 
 ### users
+
 ```sql
 users (
   id              uuid PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -222,6 +230,7 @@ users (
 ```
 
 ### presets
+
 ```sql
 presets (
   id               uuid PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -231,12 +240,12 @@ presets (
   description      text,                           -- markdown, max 2000 chars
   thumbnail_url    text NOT NULL,
   preview_video_url text,
-  
+
   -- Upload format
   file_type        text NOT NULL,                  -- xml|qr|link
   file_url         text,                           -- XML file or QR image
   am_link          text,                           -- alight motion deep link
-  
+
   -- Metadata
   category         text NOT NULL,                  -- velocity|transition|color|anime|gaming|lyric|etc
   style            text[],                         -- multi-tag style array
@@ -245,30 +254,31 @@ presets (
   am_version_min   text,                           -- e.g. "4.0"
   am_version_max   text,                           -- null = all future
   device_support   text[],                         -- android|ios|both
-  
+
   -- Stats (denormalized for performance)
   download_count   integer DEFAULT 0,
   view_count       integer DEFAULT 0,
   like_count       integer DEFAULT 0,
   bookmark_count   integer DEFAULT 0,
   comment_count    integer DEFAULT 0,
-  
+
   -- Scoring
   trending_score   float DEFAULT 0,
   quality_score    float DEFAULT 0,               -- computed by algo
-  
+
   -- Moderation
   status           text DEFAULT 'pending',         -- pending|published|rejected|removed
   is_featured      boolean DEFAULT false,
   featured_at      timestamptz,
   rejection_reason text,
-  
+
   created_at       timestamptz DEFAULT now(),
   updated_at       timestamptz DEFAULT now()
 )
 ```
 
 ### preset_likes
+
 ```sql
 preset_likes (
   preset_id   uuid REFERENCES presets(id) ON DELETE CASCADE,
@@ -279,6 +289,7 @@ preset_likes (
 ```
 
 ### preset_bookmarks
+
 ```sql
 preset_bookmarks (
   preset_id      uuid REFERENCES presets(id) ON DELETE CASCADE,
@@ -290,6 +301,7 @@ preset_bookmarks (
 ```
 
 ### preset_downloads
+
 ```sql
 preset_downloads (
   id          uuid PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -302,6 +314,7 @@ preset_downloads (
 ```
 
 ### comments
+
 ```sql
 comments (
   id          uuid PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -318,6 +331,7 @@ comments (
 ```
 
 ### comment_likes
+
 ```sql
 comment_likes (
   comment_id  uuid REFERENCES comments(id) ON DELETE CASCADE,
@@ -327,6 +341,7 @@ comment_likes (
 ```
 
 ### follows
+
 ```sql
 follows (
   follower_id  uuid REFERENCES users(id) ON DELETE CASCADE,
@@ -337,6 +352,7 @@ follows (
 ```
 
 ### collections
+
 ```sql
 collections (
   id           uuid PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -353,6 +369,7 @@ collections (
 ```
 
 ### collection_items
+
 ```sql
 collection_items (
   collection_id uuid REFERENCES collections(id) ON DELETE CASCADE,
@@ -364,6 +381,7 @@ collection_items (
 ```
 
 ### badges
+
 ```sql
 badges (
   id          uuid PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -377,6 +395,7 @@ badges (
 ```
 
 ### user_badges
+
 ```sql
 user_badges (
   user_id    uuid REFERENCES users(id) ON DELETE CASCADE,
@@ -387,6 +406,7 @@ user_badges (
 ```
 
 ### challenges
+
 ```sql
 challenges (
   id           uuid PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -405,6 +425,7 @@ challenges (
 ```
 
 ### challenge_entries
+
 ```sql
 challenge_entries (
   challenge_id uuid REFERENCES challenges(id) ON DELETE CASCADE,
@@ -418,6 +439,7 @@ challenge_entries (
 ```
 
 ### notifications
+
 ```sql
 notifications (
   id          uuid PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -433,6 +455,7 @@ notifications (
 ```
 
 ### reports
+
 ```sql
 reports (
   id           uuid PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -448,6 +471,7 @@ reports (
 ```
 
 ### analytics_events
+
 ```sql
 analytics_events (
   id         uuid PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -465,6 +489,7 @@ analytics_events (
 ---
 
 ### Key Indexes
+
 ```sql
 -- Performance critical
 CREATE INDEX idx_presets_creator ON presets(creator_id);
@@ -482,7 +507,8 @@ CREATE INDEX idx_analytics_preset ON analytics_events(preset_id, created_at);
 # 5. FEATURE ROADMAP
 
 ## Phase 0 — Foundation (Weeks 1–6)
-*Ship a product that is already better than anything that exists*
+
+_Ship a product that is already better than anything that exists_
 
 - [ ] Auth (email + Google + Discord)
 - [ ] User profiles (avatar, banner, bio, social links)
@@ -497,7 +523,8 @@ CREATE INDEX idx_analytics_preset ON analytics_events(preset_id, created_at);
 - [ ] Moderation admin panel
 
 ## Phase 1 — Community (Weeks 7–12)
-*Make people come back every day*
+
+_Make people come back every day_
 
 - [ ] In-app notifications
 - [ ] Following feed
@@ -511,7 +538,8 @@ CREATE INDEX idx_analytics_preset ON analytics_events(preset_id, created_at);
 - [ ] Mobile-optimized experience
 
 ## Phase 2 — Growth (Weeks 13–20)
-*Virality and creator investment*
+
+_Virality and creator investment_
 
 - [ ] Creator verification program
 - [ ] Embed widget (share preset to external sites)
@@ -524,7 +552,8 @@ CREATE INDEX idx_analytics_preset ON analytics_events(preset_id, created_at);
 - [ ] API for third-party tools
 
 ## Phase 3 — Economy (Months 6–12)
-*Sustainable ecosystem*
+
+_Sustainable ecosystem_
 
 - [ ] Premium presets (paid downloads)
 - [ ] Creator tips / support
@@ -542,26 +571,27 @@ CREATE INDEX idx_analytics_preset ON analytics_events(preset_id, created_at);
 **Purpose:** Convert visitors into believers in 8 seconds.
 
 **Structure:**
+
 ```
 HERO
   Full-width video loop — actual Alight Motion edits made with site presets
   Headline: "The home of Alight Motion creators."
   Subline: "Discover, share, and download motion presets. Join 50,000+ creators."
   CTA: [Get Started Free] [Browse Presets →]
-  
+
 SOCIAL PROOF BAR
   "10,000+ Presets · 50,000+ Creators · 2M+ Downloads"
-  
+
 TRENDING STRIP (live, scrollable)
   5 trending preset cards, auto-scrolling
-  
+
 FEATURE SECTIONS (alternating)
   - Upload in 3 steps / Beautiful profiles
   - Discover by mood / Weekly challenges
-  
+
 CREATOR SPOTLIGHT
   3 featured creator cards
-  
+
 FOOTER CTA
   "Start uploading your presets today."
   [Join PresetHub]
@@ -593,7 +623,7 @@ LEFT SIDEBAR (desktop only)
 
 MAIN CONTENT
   Tab bar: [For You] [Following] [New] [Trending]
-  
+
   Masonry preset cards — 3 cols desktop, 2 cols tablet, 1 col mobile
 
 RIGHT SIDEBAR (desktop only)
@@ -607,6 +637,7 @@ RIGHT SIDEBAR (desktop only)
 **Purpose:** The moment of discovery that leads to download.
 
 **Structure:**
+
 ```
 BREADCRUMB
   Home > Velocity > Summer Glitch Pack
@@ -614,7 +645,7 @@ BREADCRUMB
 HERO SPLIT LAYOUT
   LEFT: Video preview player (autoplay, muted, loop)
          — thumbnail fallback
-  RIGHT: 
+  RIGHT:
     Creator avatar + name + follow button
     ──────────────
     Title (large)
@@ -632,12 +663,12 @@ HERO SPLIT LAYOUT
     [❤ Like 2.4K] [🔖 Save] [↗ Share]
     ──────────────
     Stats: 12.4K downloads · 892 views this week
-    
+
 BELOW FOLD
   Comments section (threaded, 2 levels)
-  
+
   More from @creator (horizontal scroll)
-  
+
   Related presets (recommendation engine output)
 ```
 
@@ -654,7 +685,7 @@ PROFILE HEADER
   Bio
   Social links row
   [Follow 2.3K] [Message] [Share Profile]
-  
+
 STATS ROW
   📦 124 Presets · ⬇ 89K Downloads · ❤ 12.4K Likes · 👥 3.2K Followers
 
@@ -663,7 +694,7 @@ BADGES ROW (scrollable chips)
 
 CONTENT TABS
   [Presets] [Collections] [Liked] [Activity]
-  
+
   Content grid below tabs
 ```
 
@@ -672,6 +703,7 @@ CONTENT TABS
 **Purpose:** Make uploading feel like publishing on Medium.
 
 **Step 1 — Files**
+
 ```
 Drag + drop zone, or click to upload
 Accepts: .xml file OR QR code image OR Alight Motion link paste
@@ -681,6 +713,7 @@ Upload preview video (optional, recommended)
 ```
 
 **Step 2 — Details**
+
 ```
 Title (required, max 100 chars)
 Description (markdown editor, optional)
@@ -692,6 +725,7 @@ Device (Android / iOS / Both)
 ```
 
 **Step 3 — Preview & Publish**
+
 ```
 Card preview — exactly how it will look in the grid
 "Looks good?" [← Back] [Publish Preset]
@@ -716,10 +750,10 @@ CHART
 
 PRESET PERFORMANCE TABLE
   Sortable: Name | Downloads | Likes | Views | Status | Date
-  
+
 RECENT ACTIVITY
   Last 20 interactions (download, like, comment, follow)
-  
+
 QUICK ACTIONS
   [+ Upload New Preset] [Edit Profile] [View Public Profile]
 ```
@@ -732,7 +766,7 @@ QUICK ACTIONS
 HERO SEARCH BAR
   Giant, centered, autofocused on load
   "Search 10,000+ presets..."
-  
+
 FILTER BAR (horizontal scroll, pill chips)
   All · Velocity · Transition · Color · Anime · Gaming · Lyric · 3D
 
@@ -743,7 +777,7 @@ SECONDARY FILTERS (expandable panel)
   Difficulty: [Beginner] [Intermediate] [Advanced]
   Device: [Android] [iOS] [Both]
   AM Version: [3.x] [4.x] [5.x]
-  
+
 MASONRY GRID
   Infinite scroll with skeleton loading
 ```
@@ -772,10 +806,10 @@ UPCOMING CHALLENGES
 ```
 HERO SEARCH BAR
   "Search 50,000+ creators..."
-  
+
 FILTER BAR (horizontal scroll, pill chips)
   All · Velocity Experts · Transition Masters · Color Artists · Anime · Gaming · Lyric
-  
+
 SORT BAR
   [Top Followers] [Most Downloads] [Trending] [Newest]
 
@@ -802,24 +836,24 @@ SIDEBAR (desktop only)
 HERO HEADER
   Title: "Leaderboard"
   Period selector: [All Time ▾] · Monthly resets on 1st
-  
+
 MAIN CONTENT — THREE SECTIONS
 
 GLOBAL LEADERBOARD (All-Time XP)
   Top 50 creators ranked by total XP
   Rank | Avatar | Creator | Level | Total XP
   Gold/silver/bronze styling for top 3
-  
+
 MONTHLY LEADERBOARD (Downloads This Month)
   Top 20 creators by downloads in current month
   Resets on 1st of each month
   Shows download count + trend indicator (↑↓)
-  
+
 CATEGORY LEADERBOARDS (Downloads Per Category)
   Top 10 in each category (Velocity, Transition, Color, etc.)
   Tabbed interface for category selection
   Shows category-specific download counts
-  
+
 SIDEBAR (desktop only)
   Your current rank (if logged in)
   Badges earned this month
@@ -833,6 +867,7 @@ SIDEBAR (desktop only)
 ## Atomic Design System
 
 ### Atoms
+
 - `Button` (primary, secondary, ghost, danger, icon)
 - `Input` (text, search, textarea)
 - `Badge` (category, difficulty, rarity)
@@ -842,6 +877,7 @@ SIDEBAR (desktop only)
 - `Spinner` / `Skeleton`
 
 ### Molecules
+
 - `PresetCard` — The most important component in the app
 - `CreatorCard` — Profile mini-card
 - `CommentItem` — Comment + reply
@@ -853,6 +889,7 @@ SIDEBAR (desktop only)
 - `BadgeChip` (earned badge display)
 
 ### Organisms
+
 - `PresetGrid` — Masonry layout, handles infinite scroll
 - `PresetDetail` — Full preset page content
 - `ProfileHeader` — Banner + avatar + stats
@@ -865,6 +902,7 @@ SIDEBAR (desktop only)
 - `NotificationDropdown`
 
 ### Templates
+
 - `AppLayout` — Auth'd layout with navigation
 - `PublicLayout` — Landing + public pages
 - `AuthLayout` — Login / register
@@ -902,6 +940,7 @@ States: default | hover | loading (skeleton) | featured (glow border)
 PresetHub's visual identity is built around the feeling of a professional studio at night. Dark, deliberate, warm-accented. The interface recedes so content can breathe.
 
 **Aesthetic pillars:**
+
 1. **Content-first** — The preset thumbnails and videos are the stars. UI chrome is minimal.
 2. **Warm dark** — Not cold pitch-black. Warm near-blacks with purple-tinted shadows.
 3. **Precision spacing** — 8px base grid, generous whitespace. Nothing feels cramped.
@@ -909,6 +948,7 @@ PresetHub's visual identity is built around the feeling of a professional studio
 5. **Tactile feedback** — Every interactive element has a clear hover + active state.
 
 ## Spacing Scale (8px base)
+
 ```
 0px  → space-0
 4px  → space-1
@@ -925,6 +965,7 @@ PresetHub's visual identity is built around the feeling of a professional studio
 ```
 
 ## Border Radius
+
 ```
 4px  → rounded-sm    (inputs, small chips)
 8px  → rounded       (buttons, badges)
@@ -935,6 +976,7 @@ full → rounded-full  (avatars, pills)
 ```
 
 ## Elevation / Shadow System
+
 ```
 shadow-glow-sm:   0 0 12px rgba(124, 58, 237, 0.15)
 shadow-glow-md:   0 0 24px rgba(124, 58, 237, 0.25)
@@ -952,6 +994,7 @@ shadow-modal:     0 24px 64px rgba(0, 0, 0, 0.6)
 The palette is chosen to complement Alight Motion content (vivid, colorful thumbnails and videos). The background must be dark enough to make any color thumbnail pop. The accent (violet-to-purple gradient) references the motion/energy of animations without competing with content.
 
 ## Base Colors
+
 ```
 background-base:     #0C0B0F   ← Near-black, warm purple tint
 background-surface:  #141218   ← Card backgrounds
@@ -964,6 +1007,7 @@ border-strong:       #5A5468   ← Focused inputs
 ```
 
 ## Text Colors
+
 ```
 text-primary:    #F2EFF9   ← Main headings and body
 text-secondary:  #A89CC0   ← Subtitles, meta
@@ -972,6 +1016,7 @@ text-inverse:    #0C0B0F   ← Text on light buttons
 ```
 
 ## Accent — Violet Gradient (Primary)
+
 ```
 accent-400:  #9D6FFF   ← Light variant (hover states)
 accent-500:  #7C3AED   ← Primary (CTAs, focus rings)
@@ -983,6 +1028,7 @@ Gradient hero:    linear-gradient(135deg, #4F1C99, #7C3AED, #C084FC)
 ```
 
 ## Semantic Colors
+
 ```
 success-400: #4ADE80
 success-bg:  rgba(74, 222, 128, 0.1)
@@ -998,6 +1044,7 @@ info-bg:     rgba(96, 165, 250, 0.1)
 ```
 
 ## Rarity Colors (for badges)
+
 ```
 common:    #94A3B8   ← Slate
 rare:      #60A5FA   ← Blue
@@ -1006,6 +1053,7 @@ legendary: linear-gradient(135deg, #FBBF24, #F59E0B, #F97316)
 ```
 
 ## Category Colors (accent pills on cards)
+
 ```
 velocity:    #F87171   ← Red
 transition:  #60A5FA   ← Blue
@@ -1024,20 +1072,24 @@ other:       #94A3B8   ← Gray
 ## Typeface Selection
 
 **Display / Hero:** `Space Grotesk`
+
 - Variable weight, geometric, modern, slightly technical
 - Used for: Hero headlines, stat numbers, badge names
 - Weights: 500, 600, 700
 
 **Body / UI:** `Inter`
+
 - The gold standard for UI readability
 - Used for: Body text, labels, navigation, inputs
 - Weights: 400, 500, 600
 
 **Monospace / Code/Metadata:** `JetBrains Mono`
+
 - Used for: Version numbers, download counts in monospaced contexts, any code/XML display
 - Weight: 400, 500
 
 ## Type Scale
+
 ```
 display-2xl: Space Grotesk 700 / 72px / -0.04em  ← Hero headline
 display-xl:  Space Grotesk 700 / 56px / -0.03em
@@ -1062,9 +1114,10 @@ mono-sm:     JetBrains Mono 400 / 12px / 0
 ```
 
 ## Gradient Text (for key headings)
+
 ```css
 .gradient-text {
-  background: linear-gradient(135deg, #C084FC, #7C3AED, #60A5FA);
+  background: linear-gradient(135deg, #c084fc, #7c3aed, #60a5fa);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
@@ -1089,32 +1142,35 @@ Animations serve one purpose: to communicate state changes and guide attention. 
 ```css
 :root {
   /* Durations — canonical names: --dur-* (Design System §11) */
-  --dur-instant:  50ms;    /* Feedback: ripple, press          */
-  --dur-fast:    150ms;    /* Feedback: color change, icon swap */
-  --dur-normal:  250ms;    /* Transition: most UI state changes */
-  --dur-slow:    400ms;    /* Transition: page, complex state   */
-  --dur-xslow:   600ms;    /* Entrance: XP bar, chart draw      */
-  --dur-glacial: 1000ms;   /* Ambient: count-up, dashboard load */
-  --dur-loop:    2000ms;   /* Ambient: loading, streaming       */
+  --dur-instant: 50ms; /* Feedback: ripple, press          */
+  --dur-fast: 150ms; /* Feedback: color change, icon swap */
+  --dur-normal: 250ms; /* Transition: most UI state changes */
+  --dur-slow: 400ms; /* Transition: page, complex state   */
+  --dur-xslow: 600ms; /* Entrance: XP bar, chart draw      */
+  --dur-glacial: 1000ms; /* Ambient: count-up, dashboard load */
+  --dur-loop: 2000ms; /* Ambient: loading, streaming       */
 
-  --ease-linear:    linear;
-  --ease-out:       cubic-bezier(0.0, 0.0, 0.2, 1);
-  --ease-in:        cubic-bezier(0.4, 0.0, 1.0, 1.0);
-  --ease-in-out:    cubic-bezier(0.4, 0.0, 0.2, 1);
-  --ease-spring:    cubic-bezier(0.34, 1.56, 0.64, 1);  /* slight overshoot */
-  --ease-spring-sm: cubic-bezier(0.34, 1.3,  0.64, 1);
-  --ease-bounce:    cubic-bezier(0.34, 1.8,  0.64, 1);
-  --ease-snap:      cubic-bezier(0.2,  0.0,  0.0,  1.0);
+  --ease-linear: linear;
+  --ease-out: cubic-bezier(0, 0, 0.2, 1);
+  --ease-in: cubic-bezier(0.4, 0, 1, 1);
+  --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1); /* slight overshoot */
+  --ease-spring-sm: cubic-bezier(0.34, 1.3, 0.64, 1);
+  --ease-bounce: cubic-bezier(0.34, 1.8, 0.64, 1);
+  --ease-snap: cubic-bezier(0.2, 0, 0, 1);
 }
 
 @media (prefers-reduced-motion: reduce) {
-  * { animation-duration: 0.01ms !important; }
+  * {
+    animation-duration: 0.01ms !important;
+  }
 }
 ```
 
 ## Animation Catalog
 
 ### Page Transitions
+
 ```
 Route change: fade + translate-y 8px → 0, 250ms ease-out
 Modal open:   scale 0.95 → 1 + fade, 200ms ease-spring
@@ -1122,6 +1178,7 @@ Modal close:  scale 1 → 0.95 + fade, 150ms ease-in
 ```
 
 ### Preset Card
+
 ```
 Card hover:   translateY(-4px) + shadow glow, 200ms ease-out
 Thumbnail hover → video: crossfade, 300ms
@@ -1130,6 +1187,7 @@ Bookmark:     bookmark icon fill + scale, 200ms ease-spring
 ```
 
 ### Feed / Grid
+
 ```
 Cards enter: staggered fade-in + translateY 16px → 0
              Stagger: 40ms between cards
@@ -1138,24 +1196,28 @@ Skeleton → content: crossfade 200ms
 ```
 
 ### Dashboard
+
 ```
 Stat number: count-up animation on mount, 1000ms ease-out
 Chart: line draws left-to-right, 800ms ease-out
 ```
 
 ### Upload Wizard
+
 ```
 Step transition: slide-out-left + slide-in-right, 300ms ease-in-out
 Progress bar fill: width transition, 400ms ease-out
 ```
 
 ### Notifications
+
 ```
 Badge count: pop scale 1.5 → 1, 300ms ease-spring
 Notification slide-in: right-to-0, 250ms ease-out
 ```
 
 ### XP / Badge
+
 ```
 XP bar fill: slow fill + shimmer, 600ms ease-out
 Badge unlock: scale 0 → 1.2 → 1 + glow pulse, 500ms ease-spring
@@ -1168,23 +1230,23 @@ Badge unlock: scale 0 → 1.2 → 1 + glow pulse, 500ms ease-spring
 export const fadeInUp = {
   initial: { opacity: 0, y: 16 },
   animate: { opacity: 1, y: 0 },
-  exit: { opacity: 0, y: -8 }
-}
+  exit: { opacity: 0, y: -8 },
+};
 
 export const staggerContainer = {
-  animate: { transition: { staggerChildren: 0.04 } }
-}
+  animate: { transition: { staggerChildren: 0.04 } },
+};
 
 export const cardHover = {
   rest: { y: 0, boxShadow: "0 4px 24px rgba(0,0,0,0.4)" },
-  hover: { y: -4, boxShadow: "0 0 32px rgba(124,58,237,0.3)" }
-}
+  hover: { y: -4, boxShadow: "0 0 32px rgba(124,58,237,0.3)" },
+};
 
 export const scaleIn = {
   initial: { scale: 0.95, opacity: 0 },
   animate: { scale: 1, opacity: 1 },
-  exit: { scale: 0.95, opacity: 0 }
-}
+  exit: { scale: 0.95, opacity: 0 },
+};
 ```
 
 ---
@@ -1380,6 +1442,7 @@ presethub/
 ## Core Endpoints
 
 ### Presets
+
 ```
 GET    /api/presets              → list (paginated, filterable)
 POST   /api/presets              → create (auth required)
@@ -1395,6 +1458,7 @@ POST   /api/presets/:id/comments → add comment
 ```
 
 ### Users
+
 ```
 GET    /api/users/:username       → public profile
 GET    /api/users/:username/presets
@@ -1405,6 +1469,7 @@ PATCH  /api/users/me              → update profile
 ```
 
 ### Feed
+
 ```
 GET /api/feed/home       → personalized feed (auth)
 GET /api/feed/trending   → trending presets
@@ -1413,11 +1478,13 @@ GET /api/feed/following  → following feed (auth)
 ```
 
 ### Search
+
 ```
 GET /api/search?q=&category=&difficulty=&device=&version=&sort=
 ```
 
 ### Upload
+
 ```
 POST /api/upload/image    → Cloudinary signed upload URL
 POST /api/upload/video    → Cloudinary signed upload URL
@@ -1425,6 +1492,7 @@ POST /api/upload/file     → Store XML/QR in Supabase Storage
 ```
 
 ### Notifications
+
 ```
 GET    /api/notifications           → list, paginated
 POST   /api/notifications/read-all  → mark all read
@@ -1432,6 +1500,7 @@ PATCH  /api/notifications/:id       → mark single read
 ```
 
 ### Challenges
+
 ```
 GET  /api/challenges             → list
 GET  /api/challenges/:slug       → single
@@ -1440,6 +1509,7 @@ POST /api/challenges/:slug/vote/:presetId → vote (auth)
 ```
 
 ### Analytics (creator only)
+
 ```
 GET /api/analytics/overview
 GET /api/analytics/downloads?period=7d|30d|90d
@@ -1448,6 +1518,7 @@ GET /api/analytics/countries
 ```
 
 ## Pagination Pattern
+
 ```typescript
 // Cursor-based pagination for feeds (performance at scale)
 GET /api/feed/trending?cursor=<encoded_cursor>&limit=20
@@ -1457,6 +1528,7 @@ GET /api/presets?page=2&limit=24
 ```
 
 ## Response Format
+
 ```typescript
 // Success
 { data: T, meta?: { total, page, cursor } }
@@ -1492,7 +1564,7 @@ CREATE POLICY "presets_public_read" ON presets
 
 -- Users can only delete their own comments
 CREATE POLICY "comments_delete_own" ON comments
-  FOR DELETE USING (user_id = auth.uid() OR 
+  FOR DELETE USING (user_id = auth.uid() OR
     EXISTS (SELECT 1 FROM users WHERE id = auth.uid() AND is_staff = true));
 ```
 
@@ -1517,6 +1589,7 @@ CREATE POLICY "comments_delete_own" ON comments
 - **Markdown rendering:** Sanitized via DOMPurify before render
 
 ## Content Security Policy
+
 ```
 Content-Security-Policy:
   default-src 'self';
@@ -1570,11 +1643,13 @@ Bulk actions: approve batch, reject batch
 ## Trust Score
 
 Every creator has a trust score (0–100) that determines:
+
 - Auto-approval eligibility (score ≥ 80)
 - Appeal fast-track (score ≥ 60)
 - Account restrictions (score < 20)
 
 Score components:
+
 - Account age (+20 points for 3+ months)
 - Upload history (no rejections = +30)
 - Community reports (each valid report = -10)
@@ -1611,18 +1686,21 @@ API    → Moderation queue
 ## Step-by-Step
 
 **1. Client requests signed URLs**
+
 ```typescript
 POST /api/upload/image
-POST /api/upload/video  
+POST /api/upload/video
 → Returns: { cloudinary_url, signature, timestamp }
 ```
 
 **2. Client uploads directly to Cloudinary**
+
 - Thumbnail → Cloudinary (transformed to 800×600 WebP)
 - Preview video → Cloudinary (transcoded to H.264 720p)
 - XML/QR → Supabase Storage (private bucket, signed for download)
 
 **3. Client submits metadata**
+
 ```typescript
 POST /api/presets
 {
@@ -1643,7 +1721,7 @@ POST /api/presets
 ## Cloudinary Transformations
 
 ```
-Thumbnail: 
+Thumbnail:
   /upload/w_800,h_600,c_fill,q_auto,f_webp/{public_id}
 
 Thumbnail small (card grid):
@@ -1662,23 +1740,26 @@ Video preview (autoplay in card):
 
 ## Goal
 
-Show users presets they'll download and come back for. Not just popular, but *right for them*.
+Show users presets they'll download and come back for. Not just popular, but _right for them_.
 
 ## Input Signals
 
 **Strong signals (high weight):**
+
 - Categories the user has downloaded before
 - Tags overlapping with past engagement
 - Creators they follow
 - Presets they've spent >5s viewing
 
 **Medium signals:**
+
 - Device type (Android vs iOS)
 - AM version they appear to use
 - Time of day (different engagement patterns)
 - Bookmarks (stronger intent than like)
 
 **Weak signals:**
+
 - Country/language (Indonesian creators visible to Indonesian users first)
 - Account age (newer users see beginner-tagged presets more)
 
@@ -1695,7 +1776,7 @@ For each candidate preset:
     + freshness_bonus * 0.8     ← newer presets get a boost
     - already_downloaded * 999  ← never show what they have
   )
-  
+
 Sort by score, inject 1 "discovery" preset per 8 (outside user's usual categories)
 ```
 
@@ -1711,7 +1792,7 @@ Sort by score, inject 1 "discovery" preset per 8 (outside user's usual categorie
 
 ## Goal
 
-Trending must feel *real*. Users should trust that trending = actually good and popular right now, not gamed.
+Trending must feel _real_. Users should trust that trending = actually good and popular right now, not gamed.
 
 ## Formula
 
@@ -1745,6 +1826,7 @@ The `+2` prevents brand-new posts from going infinitely viral from a single enga
 ## Trending Categories
 
 Each category has its own trending chart (not just global):
+
 - Trending → Velocity this week
 - Trending → Anime this week
 - etc.
@@ -1761,71 +1843,75 @@ Gamification must feel earned, not manufactured. Users should feel pride when th
 
 ### Earning XP
 
-| Action | XP |
-|---|---|
-| Upload preset (published) | +100 |
-| Get 10 downloads | +25 |
-| Get 100 downloads | +100 |
-| Get 1K downloads | +300 |
-| Get 10K downloads | +1000 |
-| Get a like | +5 |
-| Get a comment | +10 |
-| Win weekly challenge | +500 |
-| Profile complete | +50 |
-| First upload | +50 |
-| Streak (upload weekly for 4 weeks) | +200 |
+| Action                             | XP    |
+| ---------------------------------- | ----- |
+| Upload preset (published)          | +100  |
+| Get 10 downloads                   | +25   |
+| Get 100 downloads                  | +100  |
+| Get 1K downloads                   | +300  |
+| Get 10K downloads                  | +1000 |
+| Get a like                         | +5    |
+| Get a comment                      | +10   |
+| Win weekly challenge               | +500  |
+| Profile complete                   | +50   |
+| First upload                       | +50   |
+| Streak (upload weekly for 4 weeks) | +200  |
 
 ### Levels
 
-| Level | XP Required | Title |
-|---|---|---|
-| 1 | 0 | Newcomer |
-| 2 | 100 | Creator |
-| 3 | 500 | Editor |
-| 4 | 1,500 | Artist |
-| 5 | 5,000 | Professional |
-| 6 | 15,000 | Expert |
-| 7 | 40,000 | Legend |
-| 8 | 100,000 | Icon |
+| Level | XP Required | Title        |
+| ----- | ----------- | ------------ |
+| 1     | 0           | Newcomer     |
+| 2     | 100         | Creator      |
+| 3     | 500         | Editor       |
+| 4     | 1,500       | Artist       |
+| 5     | 5,000       | Professional |
+| 6     | 15,000      | Expert       |
+| 7     | 40,000      | Legend       |
+| 8     | 100,000     | Icon         |
 
 Level displayed on profile with animated glow ring around avatar.
 
 ## Badge System
 
 ### Milestone Badges
-| Badge | Condition | Rarity |
-|---|---|---|
-| First Upload | Upload 1 preset | Common |
-| Pack Builder | Upload 10 presets | Rare |
-| Content Creator | Upload 50 presets | Epic |
-| Library | Upload 100 presets | Legendary |
-| First Download | Receive 1 download | Common |
-| Viral | 10K downloads in 24h | Legendary |
-| 100K Club | Total 100K downloads | Legendary |
+
+| Badge           | Condition            | Rarity    |
+| --------------- | -------------------- | --------- |
+| First Upload    | Upload 1 preset      | Common    |
+| Pack Builder    | Upload 10 presets    | Rare      |
+| Content Creator | Upload 50 presets    | Epic      |
+| Library         | Upload 100 presets   | Legendary |
+| First Download  | Receive 1 download   | Common    |
+| Viral           | 10K downloads in 24h | Legendary |
+| 100K Club       | Total 100K downloads | Legendary |
 
 ### Skill Badges
-| Badge | Condition | Rarity |
-|---|---|---|
-| Velocity Expert | 20+ velocity presets | Rare |
-| Anime Specialist | 20+ anime presets | Rare |
-| Color Master | 20+ color presets | Rare |
-| Transition Pro | 20+ transition presets | Rare |
+
+| Badge            | Condition              | Rarity |
+| ---------------- | ---------------------- | ------ |
+| Velocity Expert  | 20+ velocity presets   | Rare   |
+| Anime Specialist | 20+ anime presets      | Rare   |
+| Color Master     | 20+ color presets      | Rare   |
+| Transition Pro   | 20+ transition presets | Rare   |
 
 ### Social Badges
-| Badge | Condition | Rarity |
-|---|---|---|
-| Community Builder | 500 followers | Rare |
-| Influential | 5K followers | Epic |
-| Trendsetter | #1 on trending | Legendary |
-| Challenge Winner | Win weekly challenge | Epic |
-| 3x Champion | Win 3 challenges | Legendary |
+
+| Badge             | Condition            | Rarity    |
+| ----------------- | -------------------- | --------- |
+| Community Builder | 500 followers        | Rare      |
+| Influential       | 5K followers         | Epic      |
+| Trendsetter       | #1 on trending       | Legendary |
+| Challenge Winner  | Win weekly challenge | Epic      |
+| 3x Champion       | Win 3 challenges     | Legendary |
 
 ### Loyalty Badges
-| Badge | Condition | Rarity |
-|---|---|---|
-| OG Creator | Joined in first month | Legendary |
-| Consistent | Upload every week for 3 months | Epic |
-| Veteran | 1 year account age | Rare |
+
+| Badge      | Condition                      | Rarity    |
+| ---------- | ------------------------------ | --------- |
+| OG Creator | Joined in first month          | Legendary |
+| Consistent | Upload every week for 3 months | Epic      |
+| Veteran    | 1 year account age             | Rare      |
 
 ## Badge Display
 
@@ -1837,6 +1923,7 @@ Level displayed on profile with animated glow ring around avatar.
 ## Weekly Challenges
 
 **Structure:**
+
 - New challenge every Monday 00:00 UTC
 - Theme: e.g., "Best Summer Velocity Edit", "Anime Transition Week"
 - Submit any preset (new or existing) that fits the theme
@@ -1844,6 +1931,7 @@ Level displayed on profile with animated glow ring around avatar.
 - Winners: 1st/2nd/3rd place + Feature + XP
 
 **Challenge Types:**
+
 - **Open theme** — Any preset in a category
 - **Constraint** — "Presets with max 5 effects only"
 - **Collab** — Partners submit together
@@ -1866,7 +1954,8 @@ Level displayed on profile with animated glow ring around avatar.
 PresetHub's goal is to eventually return value to its best creators — the people who make the platform worth visiting.
 
 ## Phase 1 — Recognition (Launch)
-*No money yet, but the foundation of value*
+
+_No money yet, but the foundation of value_
 
 - Featured Creator spotlight (homepage)
 - Verified badge (trust signal)
@@ -1875,20 +1964,24 @@ PresetHub's goal is to eventually return value to its best creators — the peop
 - Badge system (social currency)
 
 ## Phase 2 — Support (6–12 months)
-*Community-powered revenue, minimal friction*
+
+_Community-powered revenue, minimal friction_
 
 **Tip Jar**
+
 - Users can send tips to creators (IDR 5K / 10K / 25K / 50K)
 - Payment via GoPay, OVO, Dana, credit card
 - Platform takes 10%
 - Creator receives weekly payout
 
 **Supporter Badge**
+
 - Users who tip any creator get "Supporter" badge
 - Creates social incentive to tip
 
 ## Phase 3 — Premium Presets (12–24 months)
-*Creator-set pricing, marketplace model*
+
+_Creator-set pricing, marketplace model_
 
 - Creators can mark presets as "Premium" (paid)
 - Price range: IDR 5,000 – IDR 50,000 per preset
@@ -1897,13 +1990,16 @@ PresetHub's goal is to eventually return value to its best creators — the peop
 - Platform escrow + dispute system
 
 **Free tier protections:**
+
 - Creators must keep ≥50% of their uploads free
 - Top 100 most-downloaded presets always free (platform editorial picks)
 
 ## Phase 4 — Subscription (18–36 months)
-*PresetHub Pro*
+
+_PresetHub Pro_
 
 **For creators:**
+
 - Analytics deep-dive
 - A/B test thumbnails
 - Scheduled uploads
@@ -1913,6 +2009,7 @@ PresetHub's goal is to eventually return value to its best creators — the peop
 - IDR 50,000/month
 
 **For collectors:**
+
 - Ad-free experience
 - Unlimited bookmarks
 - Early access to featured packs
@@ -1922,12 +2019,14 @@ PresetHub's goal is to eventually return value to its best creators — the peop
 ## Creator Verification Program
 
 Eligibility:
+
 - 500+ followers OR 10K+ downloads
 - Account 30+ days old
 - No active moderation strikes
 - ID verification (optional, for monetization)
 
 Benefits:
+
 - Blue checkmark on profile
 - Auto-approve uploads
 - Priority support
@@ -1941,12 +2040,14 @@ Benefits:
 ## Year 1 Milestones
 
 **Q1 (Months 1–3)**
+
 - MVP launch (Phase 0 + Phase 1 features)
 - 1,000 presets
 - 10,000 registered users
 - First Weekly Challenge
 
 **Q2 (Months 4–6)**
+
 - Creator verification launch
 - Collections launch
 - Embed widget
@@ -1954,6 +2055,7 @@ Benefits:
 - 50,000 users
 
 **Q3 (Months 7–9)**
+
 - Creator Dashboard v2 (advanced analytics)
 - PWA launch
 - Push notifications
@@ -1962,6 +2064,7 @@ Benefits:
 - 150,000 users
 
 **Q4 (Months 10–12)**
+
 - Tip system public
 - Premium presets beta
 - Creator API v1
@@ -1971,38 +2074,45 @@ Benefits:
 ## Year 2 Innovations
 
 **PresetHub Studio (In-browser editor)**
+
 - Preview how a preset looks on your own video
 - Requires WebAssembly/Canvas — ambitious, but creates deep moat
 - "Try before you download"
 
 **Preset Packs**
+
 - Creators bundle multiple presets as a pack
 - Single download, single page
 - Great for "Complete Velocity Pack" launches
 
 **Creator Mentorship**
+
 - Experienced creators can take on mentees
 - Mentee gets faster badge progression
 - Mentor gets "Mentor" badge + XP bonus
 
 **PresetHub Discover App (Mobile)**
+
 - Native iOS + Android app
 - Deep link opens preset directly in Alight Motion
 - Push notifications for following feed
 - This is the 10x UX moment
 
 **AI-Powered Features**
+
 - "Find me a preset that looks like this" (image-to-preset search)
 - Auto-tag suggestions on upload
 - Thumbnail quality scoring (blurry = warn before publish)
 - Spam/copy detection via ML
 
 **International Expansion**
+
 - Localization: Bahasa Indonesia, English, Spanish, Portuguese, Thai
 - Regional challenges
 - Regional leaderboards (Top Creator in Indonesia, etc.)
 
 **PresetHub for Teams**
+
 - Groups of creators under one org
 - Shared upload analytics
 - Collab on preset packs
@@ -2013,6 +2123,7 @@ Benefits:
 # APPENDIX A — OG Image Strategy
 
 Every preset page generates a dynamic OG image:
+
 - Background: preset thumbnail (blurred)
 - Center: preset title (large)
 - Creator avatar + name
@@ -2040,12 +2151,14 @@ Enables rich previews when shared on Discord, TikTok bio, Twitter.
 # APPENDIX D — Launch Strategy
 
 **Pre-launch (2–3 weeks before):**
+
 - Personal outreach to 20 known Alight Motion creators
 - Offer them "Founding Creator" status + OG badge
 - Get 100 presets seeded before doors open
 - Waitlist landing page, collect 1,000 emails
 
 **Launch day:**
+
 - Post on r/AlightMotion
 - Creator partners post on TikTok on same day
 - Post on Indonesian Discord servers
@@ -2055,6 +2168,6 @@ Enables rich previews when shared on Discord, TikTok bio, Twitter.
 
 ---
 
-*PresetHub Product Specification v1.0*  
-*Prepared June 2026*  
-*"The home of Alight Motion creators."*
+_PresetHub Product Specification v1.0_  
+_Prepared June 2026_  
+_"The home of Alight Motion creators."_

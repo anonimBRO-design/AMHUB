@@ -2,8 +2,8 @@
 
 import {
 	FloatingPortal,
-	flip,
 	type Placement,
+	flip,
 	useClick,
 	useDismiss,
 	useFloating,

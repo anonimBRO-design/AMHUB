@@ -1,5 +1,5 @@
-import { createServerClient } from "@supabase/ssr";
 import { validatePublicEnv } from "@presethub/config";
+import { createServerClient } from "@supabase/ssr";
 import { type NextRequest, NextResponse } from "next/server";
 
 const protectedRoutes = [

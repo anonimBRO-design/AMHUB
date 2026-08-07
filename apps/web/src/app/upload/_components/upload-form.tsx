@@ -155,7 +155,7 @@ export function UploadForm() {
 					slug,
 					title,
 					description: description.trim() || undefined,
-					thumbnail_url: uploadedThumbnailUrl || "/placeholder.jpg",
+					thumbnail_url: uploadedThumbnailUrl ?? "/placeholder.jpg",
 					file_type: fileType,
 					file_url: uploadedPresetUrl || undefined,
 					am_link: amLink.trim() || undefined,

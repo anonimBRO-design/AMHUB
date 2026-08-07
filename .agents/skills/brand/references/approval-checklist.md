@@ -5,6 +5,7 @@ Comprehensive checklist for reviewing marketing assets before approval.
 ## Quick Review
 
 Before detailed review, verify:
+
 - [ ] Asset serves stated purpose
 - [ ] Target audience appropriate
 - [ ] No obvious errors or issues
@@ -13,6 +14,7 @@ Before detailed review, verify:
 ## Visual Elements
 
 ### Logo Usage
+
 - [ ] Correct logo variant for context
 - [ ] Proper clear space maintained
 - [ ] Minimum size requirements met
@@ -21,6 +23,7 @@ Before detailed review, verify:
 - [ ] Appropriate for background
 
 ### Color Compliance
+
 - [ ] Uses brand palette colors only
 - [ ] Primary/secondary ratio appropriate (60/30/10)
 - [ ] Semantic colors used correctly
@@ -28,6 +31,7 @@ Before detailed review, verify:
 - [ ] Consistent across all elements
 
 ### Typography
+
 - [ ] Brand fonts used throughout
 - [ ] Correct font weights applied
 - [ ] Proper type hierarchy
@@ -36,6 +40,7 @@ Before detailed review, verify:
 - [ ] No orphans/widows in body text
 
 ### Imagery
+
 - [ ] Matches brand photography style
 - [ ] Appropriate subjects/content
 - [ ] Quality meets requirements
@@ -45,6 +50,7 @@ Before detailed review, verify:
 ## Accessibility
 
 ### Visual Accessibility
+
 - [ ] Text contrast ratio >= 4.5:1 (AA)
 - [ ] Large text contrast >= 3:1
 - [ ] Interactive elements have visible focus
@@ -52,6 +58,7 @@ Before detailed review, verify:
 - [ ] Alt text for all images
 
 ### Content Accessibility
+
 - [ ] Clear and scannable layout
 - [ ] Readable font sizes
 - [ ] Logical reading order
@@ -61,6 +68,7 @@ Before detailed review, verify:
 ## Content Quality
 
 ### Copy Review
+
 - [ ] Matches brand voice
 - [ ] Appropriate tone for context
 - [ ] No prohibited terms used
@@ -69,6 +77,7 @@ Before detailed review, verify:
 - [ ] Proofread for errors
 
 ### Messaging
+
 - [ ] Aligns with key messages
 - [ ] Differentiators highlighted
 - [ ] Benefits over features
@@ -78,6 +87,7 @@ Before detailed review, verify:
 ## Technical Requirements
 
 ### File Specifications
+
 - [ ] Correct file format
 - [ ] Appropriate resolution
 - [ ] File size optimized
@@ -85,18 +95,20 @@ Before detailed review, verify:
 - [ ] Metadata included
 
 ### Platform Requirements
-| Platform | Verified |
-|----------|----------|
-| Instagram | [ ] Correct dimensions |
-| Twitter/X | [ ] Meets requirements |
-| LinkedIn | [ ] Professional standards |
-| Facebook | [ ] Guidelines compliant |
-| Email | [ ] Size under 1MB |
-| Web | [ ] Optimized for web |
+
+| Platform  | Verified                   |
+| --------- | -------------------------- |
+| Instagram | [ ] Correct dimensions     |
+| Twitter/X | [ ] Meets requirements     |
+| LinkedIn  | [ ] Professional standards |
+| Facebook  | [ ] Guidelines compliant   |
+| Email     | [ ] Size under 1MB         |
+| Web       | [ ] Optimized for web      |
 
 ## Legal & Compliance
 
 ### Intellectual Property
+
 - [ ] Stock images licensed
 - [ ] Music/audio cleared
 - [ ] No trademark violations
@@ -104,6 +116,7 @@ Before detailed review, verify:
 - [ ] Credits included where needed
 
 ### Regulatory
+
 - [ ] Required disclosures present
 - [ ] No misleading claims
 - [ ] Pricing accurate
@@ -114,13 +127,13 @@ Before detailed review, verify:
 
 ### Reviewer Sign-off
 
-| Review Area | Reviewer | Date | Status |
-|-------------|----------|------|--------|
-| Visual Design | | | [ ] Pass / [ ] Revisions |
-| Copy/Content | | | [ ] Pass / [ ] Revisions |
-| Brand Compliance | | | [ ] Pass / [ ] Revisions |
-| Technical | | | [ ] Pass / [ ] Revisions |
-| Legal | | | [ ] Pass / [ ] Revisions |
+| Review Area      | Reviewer | Date | Status                   |
+| ---------------- | -------- | ---- | ------------------------ |
+| Visual Design    |          |      | [ ] Pass / [ ] Revisions |
+| Copy/Content     |          |      | [ ] Pass / [ ] Revisions |
+| Brand Compliance |          |      | [ ] Pass / [ ] Revisions |
+| Technical        |          |      | [ ] Pass / [ ] Revisions |
+| Legal            |          |      | [ ] Pass / [ ] Revisions |
 
 ### Final Approval
 
@@ -138,19 +151,20 @@ Before detailed review, verify:
 
 ## Common Issues & Fixes
 
-| Issue | Fix |
-|-------|-----|
-| Logo too small | Increase to minimum size |
-| Wrong font | Replace with brand font |
-| Low contrast | Adjust colors for accessibility |
-| Off-brand color | Replace with palette color |
-| Blurry image | Use higher resolution source |
-| Missing alt text | Add descriptive alt text |
-| Weak CTA | Strengthen action-oriented copy |
+| Issue            | Fix                             |
+| ---------------- | ------------------------------- |
+| Logo too small   | Increase to minimum size        |
+| Wrong font       | Replace with brand font         |
+| Low contrast     | Adjust colors for accessibility |
+| Off-brand color  | Replace with palette color      |
+| Blurry image     | Use higher resolution source    |
+| Missing alt text | Add descriptive alt text        |
+| Weak CTA         | Strengthen action-oriented copy |
 
 ## Automation Support
 
 The `validate-asset.cjs` script can auto-check:
+
 - Color palette compliance
 - Minimum dimensions
 - File format/size
@@ -162,6 +176,7 @@ Run: `node .claude/skills/brand/scripts/validate-asset.cjs <asset-path>`
 ## Archival
 
 After approval:
+
 1. Update asset status in manifest.json
 2. Add approver and timestamp
 3. Move previous versions to archive
