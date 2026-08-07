@@ -1,14 +1,14 @@
 "use client";
 
+import { AuthProvider } from "@/context/AuthContext";
+import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 import type { User } from "@presethub/types";
-import {
-	AppLayoutTemplate,
-	MobileBottomNav,
-	NavigationSidebar,
-	TopBar,
-} from "@presethub/ui";
+import { AppLayoutTemplate, TopBar } from "@presethub/ui";
 import { usePathname, useRouter } from "next/navigation";
 import type React from "react";
+import { useEffect, useState } from "react";
+import { DesktopDock } from "./DesktopDock";
+import { PointerCaptureGuard } from "./PointerCaptureGuard";
 
 interface LayoutShellProps {
 	children: React.ReactNode;
@@ -19,10 +19,47 @@ interface LayoutShellProps {
 export const LayoutShell: React.FC<LayoutShellProps> = ({
 	children,
 	currentUser,
-	unreadNotificationCount,
+	unreadNotificationCount: initialUnreadCount,
 }) => {
 	const router = useRouter();
 	const pathname = usePathname();
+	const [unreadCount, setUnreadCount] = useState(initialUnreadCount);
+
+	const isWelcomePage = pathname === "/";
+
+	// Realtime subscription for unread notifications count
+	useEffect(() => {
+		if (!currentUser?.id) return;
+		const supabase = createSupabaseBrowserClient();
+
+		const channel = supabase
+			.channel(`layout-notifications-${currentUser.id}`)
+			.on(
+				"postgres_changes",
+				{
+					event: "*",
+					schema: "public",
+					table: "notifications",
+					filter: `user_id=eq.${currentUser.id}`,
+				},
+				() => {
+					// Refresh unread count
+					fetch("/api/notifications")
+						.then((res) => res.json())
+						.then((resData) => {
+							if (resData?.data?.unreadCount !== undefined) {
+								setUnreadCount(resData.data.unreadCount);
+							}
+						})
+						.catch(() => {});
+				},
+			)
+			.subscribe();
+
+		return () => {
+			supabase.removeChannel(channel);
+		};
+	}, [currentUser?.id]);
 
 	const navUser = currentUser
 		? {
@@ -40,38 +77,34 @@ export const LayoutShell: React.FC<LayoutShellProps> = ({
 	};
 
 	return (
-		<AppLayoutTemplate
-			sidebar={
-				navUser ? (
-					<NavigationSidebar
-						currentUser={navUser}
-						activeRoute={pathname}
-						recentActivity={[]}
-						trendingTags={[]}
+		<AuthProvider currentUser={currentUser}>
+			<PointerCaptureGuard />
+			{isWelcomePage ? (
+				<main>{children}</main>
+			) : (
+				<>
+					<AppLayoutTemplate
+						sidebar={null}
+						topBar={
+							<TopBar
+								currentUser={navUser}
+								unreadNotificationCount={unreadCount}
+								isScrolled={false}
+								onSearchSubmit={handleSearchSubmit}
+							/>
+						}
+						bottomNav={null}
+					>
+						{children}
+					</AppLayoutTemplate>
+
+					{/* macOS-style Responsive Floating Dock — Single navigation across mobile and desktop */}
+					<DesktopDock
+						currentUser={currentUser}
+						unreadNotificationCount={unreadCount}
 					/>
-				) : null
-			}
-			topBar={
-				<TopBar
-					currentUser={navUser}
-					unreadNotificationCount={unreadNotificationCount}
-					isScrolled={false}
-					onSearchSubmit={handleSearchSubmit}
-				/>
-			}
-			bottomNav={
-				navUser ? (
-					<MobileBottomNav
-						activeRoute={pathname}
-						currentUser={{
-							avatarUrl: navUser.avatarUrl,
-							displayName: navUser.displayName,
-						}}
-					/>
-				) : null
-			}
-		>
-			{children}
-		</AppLayoutTemplate>
+				</>
+			)}
+		</AuthProvider>
 	);
 };

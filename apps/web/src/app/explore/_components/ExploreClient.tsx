@@ -8,7 +8,6 @@ import { useState } from "react";
 import { CategoryScroller } from "./CategoryScroller";
 import { EmptyState } from "./EmptyState";
 import { FilterSheet } from "./FilterSheet";
-import { MobileExploreView } from "./MobileExploreView";
 import { SearchBar } from "./SearchBar";
 import { SortMenu } from "./SortMenu";
 import { TrendingSection } from "./TrendingSection";
@@ -37,80 +36,67 @@ export function ExploreClient({ presets }: ExploreClientProps) {
 		searchQuery || category || sort || difficulty || fileType,
 	);
 
-	const categories = [
-		{ id: "velocity", name: "⚡ Velocity" },
-		{ id: "transition", name: "🔄 Transitions" },
-		{ id: "color", name: "🎨 Color Grading" },
-		{ id: "anime", name: "🌸 Anime" },
-		{ id: "gaming", name: "🎮 Gaming" },
-		{ id: "lyric", name: "🎵 Lyric" },
-		{ id: "3d", name: "📦 3D Effects" },
-	];
-
 	return (
-		<div>
-			{/* Dedicated Native Mobile View (max-width: 768px) */}
-			<MobileExploreView presets={presets} categories={categories} />
+		<div className="space-y-8 pb-16 max-w-6xl mx-auto px-4 sm:px-0">
+			{/* Top Glass Header Banner */}
+			<div className="relative overflow-hidden p-6 sm:p-8 rounded-3xl backdrop-blur-2xl bg-white/[0.02] border border-white/[0.08] shadow-[0_16px_48px_rgba(0,0,0,0.4)] flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+				<div className="pointer-events-none absolute -top-24 -right-24 w-64 h-64 bg-purple-600/15 rounded-full blur-[90px]" />
 
-			{/* Desktop and Tablet Layout (Hidden on Mobile) */}
-			<div className="hidden md:block space-y-6 sm:space-y-8 pb-12">
-				<div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 px-1">
-					<div className="space-y-1">
-						<div className="flex items-center gap-2 text-xs font-bold text-[var(--color-interactive-primary)] uppercase tracking-wider">
-							<Compass className="w-4 h-4" />
-							<span>Explore Catalog</span>
-						</div>
-						<h1 className="text-2xl sm:text-4xl font-extrabold tracking-tight text-[var(--color-text-primary)]">
-							Discover Alight Motion Presets
-						</h1>
+				<div className="space-y-2 relative z-10">
+					<div className="flex items-center gap-2 text-xs font-extrabold text-[var(--color-interactive-primary)] uppercase tracking-wider">
+						<Compass className="w-4 h-4 text-purple-400 animate-spin-slow" />
+						<span>Explore Catalog</span>
 					</div>
-
-					<div className="flex items-center gap-2 text-xs text-[var(--color-text-secondary)] font-medium">
-						<Sparkles className="w-4 h-4 text-amber-400" />
-						<span>{presets.length} Presets Available</span>
-					</div>
+					<h1 className="font-display text-3xl sm:text-4xl font-extrabold tracking-tight text-white">
+						Discover Alight Motion Presets
+					</h1>
 				</div>
 
-				<SearchBar
-					onOpenFilterSheet={() => setIsFilterSheetOpen(true)}
-					activeFilterCount={activeFilterCount}
-				/>
-
-				<div className="space-y-3">
-					<CategoryScroller />
-					<SortMenu />
+				<div className="relative z-10 flex items-center gap-2 px-4 py-2 rounded-2xl backdrop-blur-xl bg-purple-500/10 border border-purple-500/20 text-purple-300 text-xs font-bold tracking-wide w-fit">
+					<Sparkles className="w-4 h-4 text-amber-400 animate-pulse" />
+					<span>{presets.length} Presets Available</span>
 				</div>
-
-				<FilterSheet
-					isOpen={isFilterSheetOpen}
-					onClose={() => setIsFilterSheetOpen(false)}
-				/>
-
-				{!isFiltered && <TrendingSection presets={presets} />}
-
-				<section className="space-y-4">
-					<div className="flex items-center justify-between px-1">
-						<h2 className="text-base sm:text-lg font-bold text-[var(--color-text-primary)]">
-							{searchQuery
-								? `Results for "${searchQuery}"`
-								: category
-									? `${category.charAt(0).toUpperCase() + category.slice(1)} Presets`
-									: "All Presets"}
-						</h2>
-					</div>
-
-					{presets.length > 0 ? (
-						<PresetGrid
-							presets={presets}
-							isLoading={false}
-							hasMore={false}
-							onLoadMore={() => {}}
-						/>
-					) : (
-						<EmptyState searchQuery={searchQuery} category={category} />
-					)}
-				</section>
 			</div>
+
+			<SearchBar
+				onOpenFilterSheet={() => setIsFilterSheetOpen(true)}
+				activeFilterCount={activeFilterCount}
+			/>
+
+			<div className="space-y-3">
+				<CategoryScroller />
+				<SortMenu />
+			</div>
+
+			<FilterSheet
+				isOpen={isFilterSheetOpen}
+				onClose={() => setIsFilterSheetOpen(false)}
+			/>
+
+			{!isFiltered && <TrendingSection presets={presets} />}
+
+			<section className="space-y-6">
+				<div className="flex items-center justify-between px-1">
+					<h2 className="font-display text-xl sm:text-2xl font-bold text-white tracking-tight">
+						{searchQuery
+							? `Results for "${searchQuery}"`
+							: category
+								? `${category.charAt(0).toUpperCase() + category.slice(1)} Presets`
+								: "All Presets"}
+					</h2>
+				</div>
+
+				{presets.length > 0 ? (
+					<PresetGrid
+						presets={presets}
+						isLoading={false}
+						hasMore={false}
+						onLoadMore={() => {}}
+					/>
+				) : (
+					<EmptyState searchQuery={searchQuery} category={category} />
+				)}
+			</section>
 		</div>
 	);
 }

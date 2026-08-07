@@ -22,6 +22,8 @@ export default async function ExplorePage({ searchParams }: ExplorePageProps) {
 		typeof params.search === "string" ? params.search : undefined;
 	const category =
 		typeof params.category === "string" ? params.category : undefined;
+	const difficulty =
+		typeof params.difficulty === "string" ? params.difficulty : undefined;
 	const sort = typeof params.sort === "string" ? params.sort : undefined;
 	const fileType =
 		typeof params.fileType === "string" ? params.fileType : undefined;
@@ -31,13 +33,16 @@ export default async function ExplorePage({ searchParams }: ExplorePageProps) {
 		const rawPresets = await listPublishedPresets(supabase, {
 			search: searchQuery,
 			category,
+			difficulty,
 			fileType: fileType as "xml" | "qr" | "link" | undefined,
 			sort: sort as
 				| "created_at"
+				| "oldest"
 				| "download_count"
 				| "like_count"
-				| "view_count"
-				| "title"
+				| "most_downloaded"
+				| "most_liked"
+				| "trending"
 				| undefined,
 		});
 		presets = rawPresets.map(mapPresetToCardPreset);

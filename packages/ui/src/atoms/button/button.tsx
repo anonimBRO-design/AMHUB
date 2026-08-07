@@ -1,24 +1,24 @@
 import { Slot } from "@radix-ui/react-slot";
-import { type VariantProps, cva } from "class-variance-authority";
+import { cva, type VariantProps } from "class-variance-authority";
 import type { LucideIcon } from "lucide-react";
 import * as React from "react";
 import { cn } from "../../lib/utils";
 
 const buttonVariants = cva(
-	"inline-flex items-center justify-center rounded-[var(--radius-md)] text-[var(--font-size-label-md)] font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--shadow-focus)] disabled:opacity-40 disabled:pointer-events-none ring-offset-background",
+	"inline-flex items-center justify-center rounded-[var(--radius-md)] text-[var(--font-size-label-md)] font-medium transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--shadow-focus)] disabled:opacity-40 disabled:pointer-events-none ring-offset-background select-none",
 	{
 		variants: {
 			variant: {
 				default:
-					"bg-[var(--color-interactive-primary)] text-[var(--color-text-inverse)] hover:bg-[var(--color-interactive-primary-hover)] active:bg-[var(--color-interactive-primary-active)]",
+					"bg-[var(--color-interactive-primary)] text-[var(--color-text-inverse)] hover:bg-[var(--color-interactive-primary-hover)] active:bg-[var(--color-interactive-primary-active)] shadow-[0_0_16px_rgba(124,58,237,0.25)] hover:shadow-[0_0_24px_rgba(124,58,237,0.45)] border border-purple-500/20",
 				secondary:
-					"bg-[var(--color-interactive-secondary)] text-[var(--color-text-primary)] hover:bg-[var(--color-interactive-secondary-hover)]",
+					"bg-white/[0.05] border border-white/[0.08] text-[var(--color-text-primary)] hover:bg-white/[0.08] hover:border-white/[0.12]",
 				outline:
-					"border border-[var(--color-border-default)] bg-transparent hover:bg-[var(--color-bg-elevated)] hover:text-[var(--color-text-primary)]",
+					"border border-white/[0.08] bg-transparent text-[var(--color-text-primary)] hover:bg-white/[0.06] hover:border-white/[0.12]",
 				ghost:
-					"hover:bg-[var(--color-bg-elevated)] hover:text-[var(--color-text-primary)]",
+					"border border-transparent hover:bg-white/[0.06] hover:border-white/[0.08] hover:text-[var(--color-text-primary)] text-[var(--color-text-secondary)]",
 				destructive:
-					"bg-[var(--color-interactive-danger)] text-[var(--color-text-inverse)] hover:bg-[var(--color-interactive-danger-hover)]",
+					"bg-[var(--color-interactive-danger)] text-[var(--color-text-inverse)] hover:bg-[var(--color-interactive-danger-hover)] shadow-[0_0_16px_rgba(239,68,68,0.25)]",
 				link: "text-[var(--color-text-accent)] underline-offset-4 hover:underline",
 			},
 			size: {

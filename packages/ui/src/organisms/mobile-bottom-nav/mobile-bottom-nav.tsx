@@ -17,7 +17,7 @@ export const MobileBottomNav = ({
 	unreadNotificationCount,
 }: MobileBottomNavProps) => {
 	const navItems = [
-		{ label: "Home", href: "/", icon: "⌂" },
+		{ label: "Home", href: "/home", icon: "⌂" },
 		{ label: "Explore", href: "/explore", icon: "🔍" },
 		{ label: "Upload", href: "/upload", icon: "⬆", isFab: true },
 		{ label: "Challenges", href: "/challenges", icon: "🏆" },
@@ -27,7 +27,7 @@ export const MobileBottomNav = ({
 	return (
 		<nav
 			aria-label="Mobile navigation"
-			className="fixed bottom-0 left-0 z-[var(--z-sticky)] flex h-16 w-full items-center justify-around border-t border-[var(--color-border-subtle)] bg-[var(--color-bg-surface)] pb-[env(safe-area-inset-bottom)] lg:hidden"
+			className="fixed bottom-0 left-0 z-[var(--z-sticky)] flex h-16 w-full items-center justify-around border-t border-[var(--color-border-subtle)] bg-[var(--color-bg-surface)] pb-[env(safe-area-inset-bottom)] md:hidden"
 		>
 			{navItems.map((item) => {
 				const isActive = activeRoute === item.href;

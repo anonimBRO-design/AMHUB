@@ -54,12 +54,14 @@ export const VideoPlayer = ({
 			/>
 			<video
 				ref={videoRef}
-				src={src}
 				muted
 				loop={loop}
-				className="absolute inset-0 h-full w-full object-cover"
+				playsInline
 				controls={context === "detail"}
-			/>
+				className="absolute inset-0 h-full w-full object-cover"
+			>
+				<source src={src} type="video/mp4" />
+			</video>
 		</div>
 	);
 };

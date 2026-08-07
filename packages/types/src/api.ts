@@ -70,7 +70,11 @@ export type SortField =
 	| "download_count"
 	| "like_count"
 	| "view_count"
-	| "title";
+	| "title"
+	| "oldest"
+	| "most_downloaded"
+	| "most_liked"
+	| "trending";
 
 export interface ListQueryParams {
 	page?: number;

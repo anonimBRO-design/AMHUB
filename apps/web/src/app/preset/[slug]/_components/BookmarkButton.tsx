@@ -1,5 +1,6 @@
 "use client";
 
+import { useAuth } from "@/context/AuthContext";
 import { Bookmark } from "lucide-react";
 import { useState } from "react";
 
@@ -16,8 +17,10 @@ export function BookmarkButton({
 }: BookmarkButtonProps) {
 	const [isBookmarked, setIsBookmarked] = useState(initialBookmarked);
 	const [isLoading, setIsLoading] = useState(false);
+	const { requireAuth } = useAuth();
 
 	const handleToggle = async () => {
+		if (!requireAuth(undefined, "Sign in to bookmark presets")) return;
 		setIsLoading(true);
 		const nextState = !isBookmarked;
 		setIsBookmarked(nextState);

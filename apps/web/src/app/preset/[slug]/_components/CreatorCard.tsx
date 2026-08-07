@@ -1,5 +1,6 @@
 "use client";
 
+import { useAuth } from "@/context/AuthContext";
 import { CheckCircle2, ShieldCheck, UserCheck, UserPlus } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
@@ -12,17 +13,26 @@ interface CreatorCardProps {
 		avatarUrl?: string | null;
 		isVerified?: boolean;
 		bio?: string | null;
+		followerCount?: number;
+		presetCount?: number;
+		isFollowing?: boolean;
 	};
 }
 
 export function CreatorCard({ creator }: CreatorCardProps) {
-	const [isFollowing, setIsFollowing] = useState(false);
+	const [isFollowing, setIsFollowing] = useState(creator.isFollowing ?? false);
+	const [followerCount, setFollowerCount] = useState(
+		creator.followerCount ?? 0,
+	);
 	const [isLoading, setIsLoading] = useState(false);
+	const { requireAuth } = useAuth();
 
 	const handleFollowToggle = async () => {
+		if (!requireAuth(undefined, "Sign in to follow creators")) return;
 		setIsLoading(true);
 		const nextState = !isFollowing;
 		setIsFollowing(nextState);
+		setFollowerCount((prev) => (nextState ? prev + 1 : Math.max(0, prev - 1)));
 
 		try {
 			await fetch(`/api/users/${creator.username}/follow`, {
@@ -31,6 +41,9 @@ export function CreatorCard({ creator }: CreatorCardProps) {
 		} catch (e) {
 			console.error("Failed to toggle follow", e);
 			setIsFollowing(!nextState);
+			setFollowerCount((prev) =>
+				!nextState ? prev + 1 : Math.max(0, prev - 1),
+			);
 		} finally {
 			setIsLoading(false);
 		}
@@ -44,14 +57,17 @@ export function CreatorCard({ creator }: CreatorCardProps) {
 					className="flex items-center gap-3 group min-w-0"
 				>
 					<div className="relative shrink-0">
-						<img
-							src={
-								creator.avatarUrl ||
-								`https://api.dicebear.com/7.x/identicon/svg?seed=${creator.username}`
-							}
-							alt={creator.displayName}
-							className="w-12 h-12 sm:w-14 sm:h-14 rounded-full object-cover border-2 border-[var(--color-interactive-primary)]/40 group-hover:scale-105 transition-transform"
-						/>
+						{creator.avatarUrl ? (
+							<img
+								src={creator.avatarUrl}
+								alt={creator.displayName}
+								className="w-12 h-12 sm:w-14 sm:h-14 rounded-full object-cover border-2 border-[var(--color-interactive-primary)]/40 group-hover:scale-105 transition-transform"
+							/>
+						) : (
+							<div className="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-purple-600/30 border-2 border-purple-500/40 text-white font-bold text-base flex items-center justify-center">
+								{creator.displayName.slice(0, 2).toUpperCase()}
+							</div>
+						)}
 						{creator.isVerified && (
 							<div className="absolute -bottom-0.5 -right-0.5 p-0.5 rounded-full bg-[var(--color-interactive-primary)] text-white shadow-md">
 								<CheckCircle2 className="w-3.5 h-3.5 fill-current" />
@@ -96,6 +112,17 @@ export function CreatorCard({ creator }: CreatorCardProps) {
 						</>
 					)}
 				</button>
+			</div>
+
+			{/* Creator Stats Row */}
+			<div className="flex items-center justify-between pt-3 text-xs border-t border-[var(--color-border-subtle)]/60 text-[var(--color-text-secondary)] font-medium font-body">
+				<span>{creator.presetCount ?? 0} Presets</span>
+				<span className="font-semibold text-purple-400">
+					{followerCount > 1000
+						? `${(followerCount / 1000).toFixed(1)}K`
+						: followerCount}{" "}
+					Fans
+				</span>
 			</div>
 
 			{creator.bio && (

@@ -1,7 +1,7 @@
 import { ApiError } from "@/lib/api/errors";
 import type { Database, UpdateUserProfileInput, User } from "@presethub/types";
 import { assertExists, handleDuplicateKey } from "./helpers";
-import { isMockFallbackEnabled, serveMockFallback } from "./mock-fallback";
+import { createNotification } from "./notifications.dal";
 import type { DalClient } from "./types";
 
 type UserUpdate = Database["public"]["Tables"]["users"]["Update"];
@@ -27,8 +27,6 @@ export const PUBLIC_USER_SELECT = `
 	updated_at
 `;
 
-import { MOCK_CREATORS } from "@/data/mock-data";
-
 export async function getUserByUsername(
 	client: DalClient,
 	username: string,
@@ -41,73 +39,44 @@ export async function getUserByUsername(
 			.ilike("username", username)
 			.maybeSingle();
 
-		if (error) throw error;
+		if (error || !user) {
+			return null;
+		}
 
-		if (user) {
-			const validUser = user as unknown as User;
-			const [{ count: followerCount }, { count: followingCount }] =
-				await Promise.all([
-					client
-						.from("follows")
-						.select("*", { count: "exact", head: true })
-						.eq("following_id", validUser.id),
-					client
-						.from("follows")
-						.select("*", { count: "exact", head: true })
-						.eq("follower_id", validUser.id),
-				]);
-
-			let isFollowing = false;
-			if (currentUserId && currentUserId !== validUser.id) {
-				const { data: followRecord } = await client
+		const validUser = user as unknown as User;
+		const [{ count: followerCount }, { count: followingCount }] =
+			await Promise.all([
+				client
 					.from("follows")
-					.select("follower_id")
-					.eq("follower_id", currentUserId)
-					.eq("following_id", validUser.id)
-					.maybeSingle();
+					.select("*", { count: "exact", head: true })
+					.eq("following_id", validUser.id),
+				client
+					.from("follows")
+					.select("*", { count: "exact", head: true })
+					.eq("follower_id", validUser.id),
+			]);
 
-				isFollowing = Boolean(followRecord);
-			}
+		let isFollowing = false;
+		if (currentUserId && currentUserId !== validUser.id) {
+			const { data: followRecord } = await client
+				.from("follows")
+				.select("follower_id")
+				.eq("follower_id", currentUserId)
+				.eq("following_id", validUser.id)
+				.maybeSingle();
 
-			return {
-				...validUser,
-				follower_count: followerCount ?? 0,
-				following_count: followingCount ?? 0,
-				is_following: currentUserId ? isFollowing : undefined,
-			};
+			isFollowing = Boolean(followRecord);
 		}
 
-		if (!isMockFallbackEnabled()) {
-			throw new ApiError({
-				code: "not_found",
-				message: "User was not found.",
-			});
-		}
-
-		return serveMockFallback("getUserByUsername", () => {
-			const found =
-				MOCK_CREATORS.find(
-					(c) => c.username.toLowerCase() === username.toLowerCase(),
-				) ?? MOCK_CREATORS[0];
-
-			return {
-				...found,
-				is_following: false,
-			};
-		});
+		return {
+			...validUser,
+			follower_count: followerCount ?? 0,
+			following_count: followingCount ?? 0,
+			is_following: currentUserId ? isFollowing : undefined,
+		};
 	} catch (error) {
-		if (!isMockFallbackEnabled()) throw error;
-		return serveMockFallback("getUserByUsername", () => {
-			const found =
-				MOCK_CREATORS.find(
-					(c) => c.username.toLowerCase() === username.toLowerCase(),
-				) ?? MOCK_CREATORS[0];
-
-			return {
-				...found,
-				is_following: false,
-			};
-		});
+		console.error("Failed to get user by username:", error);
+		return null;
 	}
 }
 
@@ -122,28 +91,11 @@ export async function getUserByUsernameOrNull(
 			.eq("username", username)
 			.maybeSingle();
 
-		if (error) throw error;
-
-		if (data) return data;
-
-		if (!isMockFallbackEnabled()) {
-			return null;
-		}
-
-		return serveMockFallback("getUserByUsernameOrNull", () => {
-			const found = MOCK_CREATORS.find(
-				(c) => c.username.toLowerCase() === username.toLowerCase(),
-			);
-			return found ?? null;
-		});
+		if (error || !data) return null;
+		return data;
 	} catch (error) {
-		if (!isMockFallbackEnabled()) throw error;
-		return serveMockFallback("getUserByUsernameOrNull", () => {
-			const found = MOCK_CREATORS.find(
-				(c) => c.username.toLowerCase() === username.toLowerCase(),
-			);
-			return found ?? null;
-		});
+		console.error("Failed to get user by username or null:", error);
+		return null;
 	}
 }
 
@@ -155,24 +107,11 @@ export async function getUserById(client: DalClient, userId: string) {
 			.eq("id", userId)
 			.single();
 
-		if (error) throw error;
-
-		if (data) return data;
-
-		if (!isMockFallbackEnabled()) {
-			return null;
-		}
-
-		return serveMockFallback("getUserById", () => {
-			const found = MOCK_CREATORS.find((c) => c.id === userId);
-			return found ?? null;
-		});
+		if (error || !data) return null;
+		return data;
 	} catch (error) {
-		if (!isMockFallbackEnabled()) throw error;
-		return serveMockFallback("getUserById", () => {
-			const found = MOCK_CREATORS.find((c) => c.id === userId);
-			return found ?? null;
-		});
+		console.error("Failed to get user by id:", error);
+		return null;
 	}
 }
 
@@ -183,24 +122,11 @@ export async function getFollowerCount(client: DalClient, userId: string) {
 			.select("*", { count: "exact", head: true })
 			.eq("following_id", userId);
 
-		if (error) throw error;
-
-		if (typeof count === "number") return count;
-
-		if (!isMockFallbackEnabled()) {
-			return 0;
-		}
-
-		return serveMockFallback("getFollowerCount", () => {
-			const found = MOCK_CREATORS.find((c) => c.id === userId);
-			return found ? found.follower_count : 48500;
-		});
+		if (error) return 0;
+		return count ?? 0;
 	} catch (error) {
-		if (!isMockFallbackEnabled()) throw error;
-		return serveMockFallback("getFollowerCount", () => {
-			const found = MOCK_CREATORS.find((c) => c.id === userId);
-			return found ? found.follower_count : 48500;
-		});
+		console.error("Failed to get follower count:", error);
+		return 0;
 	}
 }
 
@@ -270,6 +196,18 @@ export async function followUser(
 
 	if (insertError) {
 		handleDuplicateKey(insertError, "You are already following this user.");
+	}
+
+	// Trigger Notification for target user
+	try {
+		await createNotification(client, {
+			userId: validTargetUser.id,
+			actorId: followerId,
+			type: "follow",
+			message: "started following you",
+		});
+	} catch (e) {
+		console.error("Failed to trigger follow notification", e);
 	}
 
 	return {

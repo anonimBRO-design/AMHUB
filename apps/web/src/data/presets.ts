@@ -6,9 +6,9 @@ import {
 import type { PresetHubSupabaseClient } from "@/lib/supabase/client";
 import type { ListQueryParams } from "@presethub/types";
 
-// Local extension of ListQueryParams to support category
 export type ExtendedListQueryParams = ListQueryParams & {
 	category?: string;
+	difficulty?: string;
 };
 
 export type PresetWithCreator = {

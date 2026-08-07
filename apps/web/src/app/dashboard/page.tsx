@@ -1,9 +1,10 @@
 import { getFollowerCount } from "@/dal/users.dal";
 import { listCreatorPresets } from "@/data/presets";
 import { mapPresetToCardPreset } from "@/lib/mappers";
-import { requireUser } from "@/lib/supabase/auth";
+import { getCurrentProfile } from "@/lib/supabase/auth";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import type { Metadata } from "next";
+import { redirect } from "next/navigation";
 import { DashboardClient } from "./_components/DashboardClient";
 
 export const metadata: Metadata = {
@@ -13,12 +14,16 @@ export const metadata: Metadata = {
 };
 
 export default async function DashboardPage() {
-	const user = await requireUser();
+	const profile = await getCurrentProfile();
+	if (!profile) {
+		redirect("/auth/login");
+	}
+
 	const supabase = await createSupabaseServerClient();
 
 	const [rawPresets, followerCount] = await Promise.all([
-		listCreatorPresets(supabase, user.id),
-		getFollowerCount(supabase, user.id),
+		listCreatorPresets(supabase, profile.id),
+		getFollowerCount(supabase, profile.id),
 	]);
 
 	const presets = rawPresets.map(mapPresetToCardPreset);
@@ -32,13 +37,9 @@ export default async function DashboardPage() {
 	};
 
 	const dashboardUserData = {
-		displayName:
-			user.user_metadata?.display_name ||
-			user.email?.split("@")[0] ||
-			"Creator",
-		username:
-			user.user_metadata?.username || user.email?.split("@")[0] || "creator",
-		avatarUrl: user.user_metadata?.avatar_url || null,
+		displayName: profile.display_name,
+		username: profile.username,
+		avatarUrl: profile.avatar_url || null,
 	};
 
 	return (

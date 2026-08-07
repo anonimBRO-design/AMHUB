@@ -65,10 +65,10 @@ export function CategoryScroller() {
 							key={cat.id}
 							type="button"
 							onClick={() => handleCategoryClick(cat.id)}
-							className={`snap-start shrink-0 inline-flex items-center gap-2 min-h-[44px] px-4 rounded-2xl border transition-all duration-200 active:scale-95 ${
+							className={`snap-start shrink-0 inline-flex items-center gap-2 min-h-[52px] px-4.5 rounded-2xl transition-all duration-300 font-body select-none active:scale-[0.97] ${
 								isActive
-									? "bg-[var(--color-interactive-primary)] text-white border-[var(--color-interactive-primary)] shadow-md shadow-[var(--color-interactive-primary)]/20 scale-[1.02]"
-									: "bg-[var(--color-bg-surface)] text-[var(--color-text-secondary)] border-[var(--color-border-subtle)] hover:text-[var(--color-text-primary)] hover:border-[var(--color-border-strong)] hover:bg-[var(--color-bg-elevated)]"
+									? "bg-[var(--color-interactive-primary)] text-white border border-[var(--color-interactive-primary)] shadow-[0_0_24px_rgba(124,58,237,0.4)] scale-[1.02]"
+									: "backdrop-blur-xl bg-white/[0.03] text-[var(--color-text-secondary)] border border-white/[0.08] hover:text-[var(--color-text-primary)] hover:bg-white/[0.06] hover:border-white/[0.12] hover:shadow-[0_0_20px_rgba(124,58,237,0.15)]"
 							}`}
 						>
 							<Icon
@@ -78,7 +78,7 @@ export function CategoryScroller() {
 										: "text-[var(--color-text-tertiary)]"
 								}`}
 							/>
-							<span className="whitespace-nowrap">{cat.label}</span>
+							<span className="whitespace-nowrap font-medium">{cat.label}</span>
 						</button>
 					);
 				})}

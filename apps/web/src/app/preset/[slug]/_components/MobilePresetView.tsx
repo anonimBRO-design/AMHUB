@@ -1,5 +1,6 @@
 "use client";
 
+import { useAuth } from "@/context/AuthContext";
 import type { PresetCardPreset } from "@presethub/ui";
 import {
 	BadgeCheck,
@@ -24,12 +25,21 @@ interface MobilePresetViewProps {
 export function MobilePresetView({ preset }: MobilePresetViewProps) {
 	const [isLiked, setIsLiked] = useState(false);
 	const [isSaved, setIsSaved] = useState(false);
+	const { requireAuth } = useAuth();
 
-	const handleLike = () => setIsLiked(!isLiked);
-	const handleSave = () => setIsSaved(!isSaved);
+	const handleLike = () => {
+		if (requireAuth(undefined, "Sign in to like presets")) {
+			setIsLiked(!isLiked);
+		}
+	};
+	const handleSave = () => {
+		if (requireAuth(undefined, "Sign in to bookmark presets")) {
+			setIsSaved(!isSaved);
+		}
+	};
 
 	return (
-		<div className="md:hidden space-y-6 pb-32">
+		<div className="md:hidden space-y-6 pb-32 w-full max-w-full overflow-hidden">
 			{/* FULL-BLEED PREVIEW */}
 			<div className="-mx-4 relative aspect-[4/5] w-full rounded-3xl overflow-hidden bg-base">
 				<Image
@@ -60,6 +70,7 @@ export function MobilePresetView({ preset }: MobilePresetViewProps) {
 									src={preset.creator.avatarUrl}
 									alt={preset.creator.displayName}
 									fill
+									sizes="48px"
 									className="object-cover"
 								/>
 							) : (

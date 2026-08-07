@@ -1,5 +1,5 @@
 import { syncPresetCounter } from "./helpers";
-import { isMockFallbackEnabled, serveMockFallback } from "./mock-fallback";
+import { createNotification } from "./notifications.dal";
 import { assertPresetExists } from "./presets.dal";
 import type { DalClient } from "./types";
 
@@ -33,8 +33,6 @@ export interface CreateCommentData {
 	parent_id?: string | null;
 }
 
-import { MOCK_COMMENTS } from "@/data/mock-data";
-
 export async function listComments(
 	client: DalClient,
 	presetId: string,
@@ -58,17 +56,7 @@ export async function listComments(
 			.order("is_pinned", { ascending: false })
 			.order("created_at", { ascending: false });
 
-		if (error) throw error;
-
-		if (comments && comments.length > 0) {
-			return {
-				items: comments,
-				total: count ?? comments.length,
-				offset,
-			};
-		}
-
-		if (!isMockFallbackEnabled()) {
+		if (error) {
 			return {
 				items: [],
 				total: 0,
@@ -76,34 +64,18 @@ export async function listComments(
 			};
 		}
 
-		return serveMockFallback("listComments", () => {
-			const matched = MOCK_COMMENTS.filter(
-				(c) => c.preset_id === presetId || c.preset_id === "preset-01",
-			);
-			const commentsList = matched.length > 0 ? matched : MOCK_COMMENTS;
-			const sliced = commentsList.slice(offset, offset + limit);
-
-			return {
-				items: sliced,
-				total: commentsList.length,
-				offset,
-			};
-		});
+		return {
+			items: comments ?? [],
+			total: count ?? comments?.length ?? 0,
+			offset,
+		};
 	} catch (error) {
-		if (!isMockFallbackEnabled()) throw error;
-		return serveMockFallback("listComments", () => {
-			const matched = MOCK_COMMENTS.filter(
-				(c) => c.preset_id === presetId || c.preset_id === "preset-01",
-			);
-			const commentsList = matched.length > 0 ? matched : MOCK_COMMENTS;
-			const sliced = commentsList.slice(offset, offset + limit);
-
-			return {
-				items: sliced,
-				total: commentsList.length,
-				offset,
-			};
-		});
+		console.error("Failed to list comments:", error);
+		return {
+			items: [],
+			total: 0,
+			offset,
+		};
 	}
 }
 
@@ -131,6 +103,31 @@ export async function createComment(
 	if (insertError) throw insertError;
 
 	await syncPresetCounter(client, presetId, "comments", "comment_count");
+
+	// Trigger Notification for creator
+	try {
+		const { data: preset } = await client
+			.from("presets")
+			.select("creator_id, title")
+			.eq("id", presetId)
+			.maybeSingle();
+
+		if (
+			preset &&
+			(preset as { creator_id: string }).creator_id &&
+			(preset as { creator_id: string }).creator_id !== userId
+		) {
+			await createNotification(client, {
+				userId: (preset as { creator_id: string }).creator_id,
+				actorId: userId,
+				type: "comment",
+				presetId,
+				message: `commented on your preset "${(preset as { title?: string }).title || "Preset"}"`,
+			});
+		}
+	} catch (e) {
+		console.error("Failed to trigger comment notification", e);
+	}
 
 	return comment;
 }

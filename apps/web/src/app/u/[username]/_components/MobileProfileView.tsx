@@ -25,7 +25,7 @@ export function MobileProfileView({ user, presets }: MobileProfileViewProps) {
 	const [activeTab, setActiveTab] = useState<"presets" | "about">("presets");
 
 	return (
-		<div className="md:hidden pb-32">
+		<div className="md:hidden pb-32 w-full max-w-full overflow-hidden">
 			{/* COVER */}
 			<div className="h-36 w-full bg-gradient-to-r from-violet-600 via-purple-700 to-indigo-900" />
 

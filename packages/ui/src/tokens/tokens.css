@@ -1,5 +1,5 @@
-/* PresetHub Design Tokens — v1.0 */
-/* Generated from Design System §2-§16 */
+/* AMHUB Design Tokens — v2.0 (Cinema Dark + Glassmorphism) */
+/* Generated from Design System + ui-ux-pro-max recommendations */
 
 :root {
 	/* ─── SPACING (8pt Grid System) ───────────────────────────── */
@@ -22,30 +22,30 @@
 	/* ─── TYPOGRAPHY ──────────────────────────────────────────── */
 
 	/* Font Families */
-	--font-family-display: "Space Grotesk", system-ui, sans-serif;
-	--font-family-body: "Inter", system-ui, sans-serif;
+	--font-family-display: "Syne", system-ui, sans-serif;
+	--font-family-body: "Manrope", system-ui, sans-serif;
 	--font-family-mono: "JetBrains Mono", Menlo, monospace;
 
-	/* Font Sizes - Display (Space Grotesk) */
+	/* Font Sizes - Display (Syne) */
 	--font-size-display-2xl: 72px;
 	--font-size-display-xl: 56px;
 	--font-size-display-lg: 40px;
 	--font-size-display-md: 32px;
 	--font-size-display-sm: 24px;
 
-	/* Font Sizes - Heading (Inter) */
+	/* Font Sizes - Heading (Manrope) */
 	--font-size-heading-xl: 20px;
 	--font-size-heading-lg: 18px;
 	--font-size-heading-md: 16px;
 	--font-size-heading-sm: 14px;
 
-	/* Font Sizes - Body (Inter) */
+	/* Font Sizes - Body (Manrope) */
 	--font-size-body-lg: 18px;
 	--font-size-body-md: 16px;
 	--font-size-body-sm: 14px;
 	--font-size-body-xs: 12px;
 
-	/* Font Sizes - Label (Inter) */
+	/* Font Sizes - Label (Manrope) */
 	--font-size-label-lg: 16px;
 	--font-size-label-md: 14px;
 	--font-size-label-sm: 12px;
@@ -61,6 +61,7 @@
 	--font-weight-medium: 500;
 	--font-weight-semibold: 600;
 	--font-weight-bold: 700;
+	--font-weight-extrabold: 800;
 
 	/* Line Heights */
 	--leading-display-2xl: 80px;
@@ -87,9 +88,9 @@
 	/* Letter Spacing */
 	--tracking-display-2xl: -0.04em;
 	--tracking-display-xl: -0.03em;
-	--tracking-display-lg: -0.02em;
+	--tracking-display-lg: -0.025em;
 	--tracking-display-md: -0.02em;
-	--tracking-display-sm: -0.01em;
+	--tracking-display-sm: -0.015em;
 	--tracking-heading-xl: -0.01em;
 	--tracking-heading-lg: -0.01em;
 	--tracking-heading-md: 0;
@@ -117,23 +118,23 @@
 	/* ─── SHADOWS & ELEVATION ─────────────────────────────────── */
 
 	/* Structural Shadows */
-	--shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.3);
-	--shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.35);
-	--shadow-md: 0 4px 16px rgba(0, 0, 0, 0.4);
-	--shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.5);
-	--shadow-xl: 0 16px 64px rgba(0, 0, 0, 0.6);
+	--shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.4);
+	--shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.4);
+	--shadow-md: 0 4px 16px rgba(0, 0, 0, 0.45);
+	--shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.55);
+	--shadow-xl: 0 16px 64px rgba(0, 0, 0, 0.65);
 
 	/* Accent Glow Shadows */
 	--shadow-glow-xs: 0 0 8px rgba(124, 58, 237, 0.15);
 	--shadow-glow-sm: 0 0 16px rgba(124, 58, 237, 0.2);
-	--shadow-glow-md: 0 0 32px rgba(124, 58, 237, 0.3);
-	--shadow-glow-lg: 0 0 56px rgba(124, 58, 237, 0.4);
-	--shadow-glow-xl: 0 0 96px rgba(124, 58, 237, 0.5);
+	--shadow-glow-md: 0 0 32px rgba(124, 58, 237, 0.25);
+	--shadow-glow-lg: 0 0 56px rgba(124, 58, 237, 0.35);
+	--shadow-glow-xl: 0 0 96px rgba(124, 58, 237, 0.45);
 
 	/* Combined Shadows */
-	--shadow-card: 0 4px 24px rgba(0, 0, 0, 0.4);
-	--shadow-card-hover: 0 8px 32px rgba(0, 0, 0, 0.5), 0 0 24px
-		rgba(124, 58, 237, 0.2);
+	--shadow-card: 0 4px 24px rgba(0, 0, 0, 0.45);
+	--shadow-card-hover:
+		0 8px 40px rgba(0, 0, 0, 0.5), 0 0 32px rgba(124, 58, 237, 0.15);
 	--shadow-modal: 0 24px 64px rgba(0, 0, 0, 0.7), 0 0 48px rgba(0, 0, 0, 0.3);
 	--shadow-dropdown: 0 8px 24px rgba(0, 0, 0, 0.5);
 	--shadow-tooltip: 0 4px 12px rgba(0, 0, 0, 0.4);
@@ -141,6 +142,22 @@
 	/* Focus Rings */
 	--shadow-focus: 0 0 0 3px rgba(124, 58, 237, 0.5);
 	--shadow-focus-error: 0 0 0 3px rgba(239, 68, 68, 0.4);
+
+	/* ─── GLASSMORPHISM ───────────────────────────────────────── */
+	--glass-bg: rgba(255, 255, 255, 0.03);
+	--glass-bg-hover: rgba(255, 255, 255, 0.06);
+	--glass-bg-active: rgba(255, 255, 255, 0.08);
+	--glass-border: rgba(255, 255, 255, 0.08);
+	--glass-border-hover: rgba(255, 255, 255, 0.12);
+	--glass-border-strong: rgba(255, 255, 255, 0.16);
+	--glass-blur: 20px;
+	--glass-blur-strong: 40px;
+
+	/* ─── AMBIENT GLOW ────────────────────────────────────────── */
+	--glow-primary: rgba(124, 58, 237, 0.15);
+	--glow-primary-strong: rgba(124, 58, 237, 0.25);
+	--glow-secondary: rgba(99, 102, 241, 0.12);
+	--glow-accent: rgba(236, 72, 153, 0.12);
 
 	/* ─── Z-INDEX ─────────────────────────────────────────────── */
 	--z-base: 0;
@@ -162,37 +179,41 @@
 	--dur-glacial: 1000ms;
 	--dur-loop: 2000ms;
 	--dur-loop-fast: 800ms;
+	--dur-reveal: 450ms;
+	--dur-stagger: 60ms;
+
 	/* ─── EASINGS ─────────────────────────────────────────────── */
 	--ease-linear: linear;
-	--ease-in: cubic-bezier(0.4, 0.0, 1.0, 1.0);
-	--ease-out: cubic-bezier(0.0, 0.0, 0.2, 1.0);
-	--ease-in-out: cubic-bezier(0.4, 0.0, 0.2, 1.0);
-	--ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1.0);
-	--ease-spring-sm: cubic-bezier(0.34, 1.3, 0.64, 1.0);
-	--ease-bounce: cubic-bezier(0.34, 1.8, 0.64, 1.0);
-	--ease-snap: cubic-bezier(0.2, 0.0, 0.0, 1.0);
+	--ease-in: cubic-bezier(0.4, 0, 1, 1);
+	--ease-out: cubic-bezier(0, 0, 0.2, 1);
+	--ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+	--ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+	--ease-spring-sm: cubic-bezier(0.34, 1.3, 0.64, 1);
+	--ease-bounce: cubic-bezier(0.34, 1.8, 0.64, 1);
+	--ease-snap: cubic-bezier(0.2, 0, 0, 1);
+	--ease-expo-out: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 /* ─── DARK THEME (Default) ──────────────────────────────────── */
 :root {
-	/* Background Colors */
-	--color-bg-base: #0c0b0f;
-	--color-bg-surface: #141218;
-	--color-bg-elevated: #1c1a22;
-	--color-bg-overlay: rgba(0, 0, 0, 0.75);
-	--color-bg-input: #1e1c25;
-	--color-bg-accent: rgba(124, 58, 237, 0.15);
-	--color-bg-success: rgba(74, 222, 128, 0.12);
-	--color-bg-warning: rgba(251, 191, 36, 0.12);
-	--color-bg-error: rgba(248, 113, 113, 0.12);
-	--color-bg-info: rgba(96, 165, 250, 0.12);
+	/* Background Colors — Cinema Dark palette */
+	--color-bg-base: #08070c;
+	--color-bg-surface: #0f0e14;
+	--color-bg-elevated: #17151e;
+	--color-bg-overlay: rgba(0, 0, 0, 0.8);
+	--color-bg-input: #13111a;
+	--color-bg-accent: rgba(124, 58, 237, 0.12);
+	--color-bg-success: rgba(74, 222, 128, 0.1);
+	--color-bg-warning: rgba(251, 191, 36, 0.1);
+	--color-bg-error: rgba(248, 113, 113, 0.1);
+	--color-bg-info: rgba(96, 165, 250, 0.1);
 
 	/* Text Colors */
-	--color-text-primary: #f2eff9;
+	--color-text-primary: #f0ecfa;
 	--color-text-secondary: #a89cc0;
 	--color-text-tertiary: #6b6080;
 	--color-text-disabled: #3d394a;
-	--color-text-inverse: #0c0b0f;
+	--color-text-inverse: #08070c;
 	--color-text-accent: #a78bfa;
 	--color-text-success: #4ade80;
 	--color-text-warning: #fbbf24;
@@ -200,9 +221,9 @@
 	--color-text-info: #60a5fa;
 
 	/* Border Colors */
-	--color-border-subtle: #2a2733;
-	--color-border-default: #3d394a;
-	--color-border-strong: #5a5468;
+	--color-border-subtle: #1f1d28;
+	--color-border-default: #2e2b3a;
+	--color-border-strong: #4a4460;
 	--color-border-accent: #7c3aed;
 	--color-border-error: #f87171;
 	--color-border-success: #4ade80;
@@ -212,8 +233,8 @@
 	--color-interactive-primary-hover: #8b5cf6;
 	--color-interactive-primary-active: #6d28d9;
 	--color-accent-400: #9d6fff;
-	--color-interactive-secondary: #1c1a22;
-	--color-interactive-secondary-hover: #2a2733;
+	--color-interactive-secondary: #17151e;
+	--color-interactive-secondary-hover: #1f1d28;
 	--color-interactive-danger: #ef4444;
 	--color-interactive-danger-hover: #f87171;
 
@@ -248,7 +269,20 @@
 
 	/* Gradients (Invariant) */
 	--gradient-primary: linear-gradient(135deg, #7c3aed, #9d6fff);
+	--gradient-accent: linear-gradient(135deg, #7c3aed, #ec4899);
 	--gradient-legendary: linear-gradient(135deg, #fbbf24, #f59e0b, #f97316);
+	--gradient-hero: linear-gradient(
+		135deg,
+		rgba(124, 58, 237, 0.2),
+		rgba(99, 102, 241, 0.1),
+		rgba(236, 72, 153, 0.08)
+	);
+	--gradient-shimmer: linear-gradient(
+		90deg,
+		transparent 0%,
+		rgba(255, 255, 255, 0.04) 50%,
+		transparent 100%
+	);
 }
 
 /* ─── LIGHT THEME ───────────────────────────────────────────── */
@@ -294,6 +328,20 @@
 	--color-interactive-secondary-hover: #e2dff0;
 	--color-interactive-danger: #ef4444;
 	--color-interactive-danger-hover: #dc2626;
+
+	/* Glassmorphism — Light mode overrides */
+	--glass-bg: rgba(255, 255, 255, 0.6);
+	--glass-bg-hover: rgba(255, 255, 255, 0.8);
+	--glass-bg-active: rgba(255, 255, 255, 0.9);
+	--glass-border: rgba(0, 0, 0, 0.06);
+	--glass-border-hover: rgba(0, 0, 0, 0.1);
+	--glass-border-strong: rgba(0, 0, 0, 0.14);
+
+	/* Ambient Glow — Light mode */
+	--glow-primary: rgba(124, 58, 237, 0.08);
+	--glow-primary-strong: rgba(124, 58, 237, 0.15);
+	--glow-secondary: rgba(99, 102, 241, 0.06);
+	--glow-accent: rgba(236, 72, 153, 0.06);
 }
 
 /* System preference fallback */
@@ -335,6 +383,13 @@
 		--color-interactive-secondary-hover: #e2dff0;
 		--color-interactive-danger: #ef4444;
 		--color-interactive-danger-hover: #dc2626;
+
+		--glass-bg: rgba(255, 255, 255, 0.6);
+		--glass-bg-hover: rgba(255, 255, 255, 0.8);
+		--glass-bg-active: rgba(255, 255, 255, 0.9);
+		--glass-border: rgba(0, 0, 0, 0.06);
+		--glass-border-hover: rgba(0, 0, 0, 0.1);
+		--glass-border-strong: rgba(0, 0, 0, 0.14);
 	}
 }
 

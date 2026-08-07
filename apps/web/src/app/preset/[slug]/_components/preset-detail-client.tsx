@@ -5,7 +5,6 @@ import { CommentSection } from "./CommentSection";
 import { CreatorCard } from "./CreatorCard";
 import { Hero } from "./Hero";
 import { InstallSection } from "./InstallSection";
-import { MobilePresetView } from "./MobilePresetView";
 import { RelatedPresets } from "./RelatedPresets";
 import { StickyActionBar } from "./StickyActionBar";
 import { TagList } from "./TagList";
@@ -26,6 +25,13 @@ interface PresetDetailClientProps {
 		fileType?: string;
 		fileUrl?: string | null;
 		amLink?: string | null;
+		isLiked?: boolean;
+		isBookmarked?: boolean;
+		creator: PresetCardPreset["creator"] & {
+			followerCount?: number;
+			presetCount?: number;
+			isFollowing?: boolean;
+		};
 	};
 	relatedPresets: PresetCardPreset[];
 	comments?: CommentItem[];
@@ -36,46 +42,28 @@ export function PresetDetailClient({
 	relatedPresets,
 	comments = [],
 }: PresetDetailClientProps) {
-	const presetForMobile = {
-		...preset,
-		likeCount: preset.likeCount,
-		commentCount: comments.length || preset.commentCount,
-		viewCount: preset.viewCount,
-		downloadCount: preset.downloadCount,
-		createdAt: preset.createdAt,
-		fileSize: preset.fileType?.toUpperCase() || "XML",
-		downloadUrl: preset.fileUrl || preset.amLink || "#",
-		comments: comments,
-	};
-
 	return (
-		<div>
-			{/* Dedicated Native Mobile Composition (max-width: 768px) */}
-			<MobilePresetView preset={presetForMobile} />
+		<div className="space-y-8 pb-24 sm:pb-12 max-w-5xl mx-auto px-4 sm:px-0">
+			<Hero preset={preset} />
 
-			{/* Desktop and Tablet Layout (Hidden on Mobile) */}
-			<div className="hidden md:block space-y-8 pb-24 sm:pb-12 max-w-5xl mx-auto">
-				<Hero preset={preset} />
-
-				<div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
-					<div className="lg:col-span-2 space-y-6">
-						<InstallSection preset={preset} />
-						<TagList preset={preset} />
-						<CommentSection
-							presetId={preset.id}
-							initialComments={comments}
-							commentCount={comments.length || preset.commentCount}
-						/>
-					</div>
-
-					<div className="space-y-6">
-						<CreatorCard creator={preset.creator} />
-					</div>
+			<div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
+				<div className="lg:col-span-2 space-y-6">
+					<InstallSection preset={preset} />
+					<TagList preset={preset} />
+					<CommentSection
+						presetId={preset.id}
+						initialComments={comments}
+						commentCount={comments.length || preset.commentCount}
+					/>
 				</div>
 
-				<RelatedPresets presets={relatedPresets} category={preset.category} />
-				<StickyActionBar preset={preset} />
+				<div className="space-y-6">
+					<CreatorCard creator={preset.creator} />
+				</div>
 			</div>
+
+			<RelatedPresets presets={relatedPresets} category={preset.category} />
+			<StickyActionBar preset={preset} />
 		</div>
 	);
 }

@@ -114,9 +114,9 @@ export const PresetCard = React.forwardRef<HTMLDivElement, PresetCardProps>(
 			<div
 				ref={ref}
 				className={cn(
-					"group relative flex flex-col overflow-hidden rounded-[var(--radius-lg)] bg-[var(--color-bg-surface)] shadow-[var(--shadow-card)] transition-all hover:-translate-y-1 hover:shadow-[var(--shadow-card-hover)]",
+					"group relative flex flex-col overflow-hidden rounded-[var(--radius-lg)] backdrop-blur-xl bg-white/[0.03] border border-white/[0.08] transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:border-white/[0.16] hover:bg-white/[0.06] hover:-translate-y-1 hover:shadow-[0_8px_32px_rgba(0,0,0,0.5),0_0_24px_rgba(124,58,237,0.2)]",
 					variant === "featured" &&
-						"border-2 border-[var(--color-border-accent)] shadow-[var(--shadow-glow-md)]",
+						"border-purple-500/30 shadow-[0_0_24px_rgba(124,58,237,0.25)] hover:border-purple-500/50",
 					className,
 				)}
 				onMouseEnter={handleMouseEnter}
@@ -136,24 +136,26 @@ export const PresetCard = React.forwardRef<HTMLDivElement, PresetCardProps>(
 							muted
 							loop
 							playsInline
-							className="h-full w-full object-cover"
+							className="h-full w-full object-cover transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-105"
 						/>
 					) : (
 						<img
 							src={preset.thumbnailUrl}
 							alt={`${preset.title} by ${preset.creator.displayName} — ${preset.category} preset`}
-							className="h-full w-full object-cover"
+							className="h-full w-full object-cover transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-105"
 							loading="lazy"
 						/>
 					)}
 
-					<div className="absolute left-3 top-3 flex gap-2">
+					<div className="absolute inset-0 bg-gradient-to-t from-[var(--color-bg-base)] via-transparent to-transparent opacity-80 group-hover:opacity-60 transition-opacity duration-300 pointer-events-none" />
+
+					<div className="absolute left-3 top-3 flex gap-2 z-10">
 						<Badge variant="category" value={preset.category} size="sm" />
 						<Badge variant="difficulty" value={preset.difficulty} size="sm" />
 					</div>
 
 					{variant === "featured" && (
-						<div className="absolute bottom-3 right-3 rounded-[var(--radius-md)] bg-[var(--color-bg-accent)] px-2 py-1 text-[var(--font-size-label-sm)] font-medium text-[var(--color-text-accent)]">
+						<div className="absolute bottom-3 right-3 z-10 rounded-lg backdrop-blur-md bg-purple-500/20 border border-purple-500/30 px-2.5 py-1 text-[var(--font-size-label-sm)] font-bold text-purple-300 shadow-[0_0_12px_rgba(124,58,237,0.4)]">
 							Featured
 						</div>
 					)}
@@ -185,10 +187,10 @@ export const PresetCard = React.forwardRef<HTMLDivElement, PresetCardProps>(
 						)}
 					</div>
 
-					<h3 className="mb-1 text-[var(--font-size-heading-md)] font-semibold text-[var(--color-text-primary)]">
+					<h3 className="mb-1 text-[var(--font-size-heading-md)] font-semibold text-[var(--color-text-primary)] group-hover:text-purple-300 transition-colors">
 						{preset.title}
 					</h3>
-					<p className="mb-4 text-[var(--font-size-body-sm)] text-[var(--color-text-secondary)]">
+					<p className="mb-4 text-[var(--font-size-body-sm)] text-[var(--color-text-secondary)] line-clamp-2">
 						{preset.description}
 					</p>
 
@@ -200,7 +202,12 @@ export const PresetCard = React.forwardRef<HTMLDivElement, PresetCardProps>(
 							aria-label={isLiked ? "Unlike preset" : "Like preset"}
 							aria-pressed={isLiked}
 						>
-							<Heart className={cn("h-4 w-4", isLiked && "fill-current")} />
+							<Heart
+								className={cn(
+									"h-4 w-4 transition-colors",
+									isLiked && "fill-rose-500 text-rose-500",
+								)}
+							/>
 						</Button>
 						<Button
 							variant="ghost"
@@ -210,7 +217,10 @@ export const PresetCard = React.forwardRef<HTMLDivElement, PresetCardProps>(
 							aria-pressed={isBookmarked}
 						>
 							<Bookmark
-								className={cn("h-4 w-4", isBookmarked && "fill-current")}
+								className={cn(
+									"h-4 w-4 transition-colors",
+									isBookmarked && "fill-purple-400 text-purple-400",
+								)}
 							/>
 						</Button>
 						<Button

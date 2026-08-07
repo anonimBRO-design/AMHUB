@@ -1,17 +1,18 @@
 "use client";
 
-import { type VariantProps, cva } from "class-variance-authority";
+import { cva, type VariantProps } from "class-variance-authority";
 import { type LucideIcon, Search, X } from "lucide-react";
 import * as React from "react";
 import { cn } from "../../lib/utils";
 
 const inputVariants = cva(
-	"flex min-h-[48px] w-full rounded-xl border border-[var(--color-border-default)] bg-[var(--color-bg-input)] px-4 py-2.5 text-[var(--font-size-body-md)] ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-[var(--color-text-tertiary)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--shadow-focus)] disabled:cursor-not-allowed disabled:opacity-50",
+	"flex min-h-[48px] w-full rounded-xl border border-white/[0.08] bg-[#13111a] px-4 py-2.5 text-[var(--font-size-body-md)] text-[var(--color-text-primary)] ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-[var(--color-text-tertiary)] transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] focus-visible:outline-none focus:border-purple-500/50 focus:ring-2 focus:ring-purple-500/20 focus-visible:border-purple-500/50 focus-visible:ring-2 focus-visible:ring-purple-500/20 disabled:cursor-not-allowed disabled:opacity-50 backdrop-blur-md",
 	{
 		variants: {
 			variant: {
 				default: "",
-				search: "pl-10",
+				search:
+					"pl-10 bg-[#13111a] border-white/[0.08] focus:border-purple-500/50 focus:ring-purple-500/20",
 				password: "pr-10",
 				prefix: "pl-3",
 				suffix: "pr-3",
@@ -70,7 +71,8 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
 		},
 		ref,
 	) => {
-		const inputId = id || React.useId();
+		const generatedId = React.useId();
+		const inputId = id || generatedId;
 		const errorId = `${inputId}-error`;
 		const hintId = `${inputId}-hint`;
 

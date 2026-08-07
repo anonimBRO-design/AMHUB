@@ -6,7 +6,6 @@ import {
 	Download,
 	ExternalLink,
 	FileCode,
-	Info,
 	QrCode,
 	Smartphone,
 } from "lucide-react";
@@ -24,11 +23,22 @@ interface InstallSectionProps {
 
 export function InstallSection({ preset }: InstallSectionProps) {
 	const [copied, setCopied] = useState(false);
+	const [downloadTracked, setDownloadTracked] = useState(false);
 
 	const linkToCopy =
 		preset.amLink ||
 		preset.fileUrl ||
 		(typeof window !== "undefined" ? window.location.href : "");
+
+	const trackDownload = async () => {
+		if (downloadTracked) return;
+		setDownloadTracked(true);
+		try {
+			await fetch(`/api/presets/${preset.id}/download`, { method: "POST" });
+		} catch (e) {
+			console.error("Failed to track download", e);
+		}
+	};
 
 	const handleCopy = async () => {
 		if (!linkToCopy) return;
@@ -36,6 +46,7 @@ export function InstallSection({ preset }: InstallSectionProps) {
 			await navigator.clipboard.writeText(linkToCopy);
 			setCopied(true);
 			setTimeout(() => setCopied(false), 2000);
+			trackDownload();
 		} catch (e) {
 			console.error("Failed to copy link", e);
 		}
@@ -69,6 +80,7 @@ export function InstallSection({ preset }: InstallSectionProps) {
 						href={preset.amLink}
 						target="_blank"
 						rel="noopener noreferrer"
+						onClick={trackDownload}
 						className="inline-flex items-center justify-center gap-2 min-h-[52px] px-6 rounded-2xl bg-[var(--color-interactive-primary)] text-white font-bold text-sm shadow-xl shadow-[var(--color-interactive-primary)]/25 hover:bg-[var(--color-interactive-primary-hover)] active:scale-[0.98] transition-all"
 					>
 						<ExternalLink className="w-5 h-5" />
@@ -80,6 +92,7 @@ export function InstallSection({ preset }: InstallSectionProps) {
 					<a
 						href={preset.fileUrl}
 						download
+						onClick={trackDownload}
 						className="inline-flex items-center justify-center gap-2 min-h-[52px] px-6 rounded-2xl bg-[var(--color-bg-elevated)] text-[var(--color-text-primary)] font-bold text-sm border border-[var(--color-border-subtle)] hover:border-[var(--color-border-strong)] active:scale-[0.98] transition-all"
 					>
 						{preset.fileType === "qr" ? (

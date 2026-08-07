@@ -1,6 +1,8 @@
 import { listComments } from "@/dal/comments.dal";
+import { getFollowerCount } from "@/dal/users.dal";
 import { getPresetBySlug, listPublishedPresets } from "@/data/presets";
 import { mapPresetToCardPreset } from "@/lib/mappers";
+import { getCurrentUser } from "@/lib/supabase/auth";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
@@ -34,18 +36,57 @@ export async function generateMetadata({
 export default async function PresetDetailPage({ params }: PageProps) {
 	const { slug } = await params;
 	const supabase = await createSupabaseServerClient();
+	const currentUser = await getCurrentUser();
 
 	const rawPreset = await getPresetBySlug(supabase, slug);
 	if (!rawPreset) {
 		notFound();
 	}
 
-	const [rawRelated, commentsRes] = await Promise.all([
+	const [
+		rawRelated,
+		commentsRes,
+		followerCount,
+		{ count: creatorPresetCount },
+		{ data: likeRecord },
+		{ data: bookmarkRecord },
+		{ data: followRecord },
+	] = await Promise.all([
 		listPublishedPresets(supabase, {
 			category: rawPreset.category,
 			limit: 9,
 		}),
-		listComments(supabase, rawPreset.id, { page: 1, limit: 25 }),
+		listComments(supabase, rawPreset.id, { page: 1, limit: 50 }),
+		getFollowerCount(supabase, rawPreset.creator.id),
+		supabase
+			.from("presets")
+			.select("id", { count: "exact", head: true })
+			.eq("creator_id", rawPreset.creator.id)
+			.eq("status", "published"),
+		currentUser
+			? supabase
+					.from("preset_likes")
+					.select("preset_id")
+					.eq("user_id", currentUser.id)
+					.eq("preset_id", rawPreset.id)
+					.maybeSingle()
+			: Promise.resolve({ data: null }),
+		currentUser
+			? supabase
+					.from("preset_bookmarks")
+					.select("preset_id")
+					.eq("user_id", currentUser.id)
+					.eq("preset_id", rawPreset.id)
+					.maybeSingle()
+			: Promise.resolve({ data: null }),
+		currentUser && currentUser.id !== rawPreset.creator.id
+			? supabase
+					.from("follows")
+					.select("follower_id")
+					.eq("follower_id", currentUser.id)
+					.eq("following_id", rawPreset.creator.id)
+					.maybeSingle()
+			: Promise.resolve({ data: null }),
 	]);
 
 	const cardPreset = mapPresetToCardPreset(rawPreset);
@@ -54,6 +95,14 @@ export default async function PresetDetailPage({ params }: PageProps) {
 		fileType: rawPreset.file_type,
 		fileUrl: rawPreset.file_url,
 		amLink: rawPreset.am_link,
+		isLiked: Boolean(likeRecord),
+		isBookmarked: Boolean(bookmarkRecord),
+		creator: {
+			...cardPreset.creator,
+			followerCount,
+			presetCount: creatorPresetCount ?? 1,
+			isFollowing: Boolean(followRecord),
+		},
 	};
 
 	const relatedPresets = rawRelated

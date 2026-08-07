@@ -1,14 +1,22 @@
 "use client";
 
-import { ArrowUpDown, Download, Eye, Heart, Sparkles } from "lucide-react";
+import {
+	ArrowUpDown,
+	Clock,
+	Download,
+	Flame,
+	Heart,
+	Sparkles,
+} from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useTransition } from "react";
 
 const SORT_OPTIONS = [
 	{ label: "Newest", value: "created_at", icon: Sparkles },
-	{ label: "Most Downloaded", value: "download_count", icon: Download },
-	{ label: "Most Liked", value: "like_count", icon: Heart },
-	{ label: "Most Viewed", value: "view_count", icon: Eye },
+	{ label: "Oldest", value: "oldest", icon: Clock },
+	{ label: "Most Downloaded", value: "most_downloaded", icon: Download },
+	{ label: "Most Liked", value: "most_liked", icon: Heart },
+	{ label: "Trending", value: "trending", icon: Flame },
 ];
 
 export function SortMenu() {

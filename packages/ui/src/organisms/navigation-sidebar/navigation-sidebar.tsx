@@ -29,7 +29,7 @@ export const NavigationSidebar = ({
 	unreadNotificationCount,
 }: NavigationSidebarProps) => {
 	const navItems = [
-		{ label: "Home", href: "/", icon: "⌂" },
+		{ label: "Home", href: "/home", icon: "⌂" },
 		{ label: "Explore", href: "/explore", icon: "🔍" },
 		{ label: "Bookmarks", href: "/bookmarks", icon: "🔖" },
 		{ label: "Likes", href: "/likes", icon: "❤️" },
@@ -47,7 +47,7 @@ export const NavigationSidebar = ({
 		>
 			<div className="flex h-16 items-center px-6 border-b border-[var(--color-border-subtle)]">
 				<a
-					href="/"
+					href="/home"
 					aria-label="AMHUB — Home"
 					className="flex items-center gap-2.5 hover:opacity-90 transition-opacity"
 				>

@@ -1,10 +1,7 @@
 import type { PresetWithCreator } from "@/data/presets";
 import { syncPresetCounter } from "./helpers";
-import { isMockFallbackEnabled, serveMockFallback } from "./mock-fallback";
 import { PRESET_SELECT_WITH_CREATOR, assertPresetExists } from "./presets.dal";
 import type { DalClient } from "./types";
-
-import { MOCK_BOOKMARKS } from "@/data/mock-data";
 
 export async function listUserBookmarkedPresets(
 	client: DalClient,
@@ -18,26 +15,11 @@ export async function listUserBookmarkedPresets(
 			.eq("status", "published")
 			.order("created_at", { ascending: false });
 
-		if (error) throw error;
-
-		if (data && data.length > 0) {
-			return data as unknown as PresetWithCreator[];
-		}
-
-		if (!isMockFallbackEnabled()) {
-			return [];
-		}
-
-		return serveMockFallback(
-			"listUserBookmarkedPresets",
-			() => MOCK_BOOKMARKS as unknown as PresetWithCreator[],
-		);
+		if (error) return [];
+		return (data ?? []) as unknown as PresetWithCreator[];
 	} catch (error) {
-		if (!isMockFallbackEnabled()) throw error;
-		return serveMockFallback(
-			"listUserBookmarkedPresets",
-			() => MOCK_BOOKMARKS as unknown as PresetWithCreator[],
-		);
+		console.error("Failed to list bookmarked presets:", error);
+		return [];
 	}
 }
 

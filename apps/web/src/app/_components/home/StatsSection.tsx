@@ -33,32 +33,35 @@ export function StatsSection() {
 	];
 
 	return (
-		<section className="p-6 sm:p-8 rounded-3xl bg-[var(--color-bg-surface)] border border-[var(--color-border-subtle)] space-y-6">
-			<div className="text-center max-w-lg mx-auto space-y-2">
-				<h2 className="text-xl sm:text-2xl font-bold tracking-tight text-[var(--color-text-primary)]">
+		<section className="relative overflow-hidden p-6 sm:p-8 rounded-3xl backdrop-blur-xl bg-white/[0.03] border border-white/[0.08] space-y-6 shadow-2xl transition-all duration-300">
+			{/* Ambient Glow Orb */}
+			<div className="pointer-events-none absolute -bottom-24 -left-24 w-80 h-80 bg-purple-600/15 rounded-full blur-[120px]" />
+
+			<div className="relative z-10 text-center max-w-lg mx-auto space-y-2">
+				<h2 className="font-display text-xl sm:text-2xl font-bold tracking-tight text-[var(--color-text-primary)]">
 					Built for Alight Motion Editors
 				</h2>
-				<p className="text-xs sm:text-sm text-[var(--color-text-secondary)]">
+				<p className="font-body text-xs sm:text-sm text-[var(--color-text-secondary)] leading-relaxed">
 					Streamlined mobile workflow designed for fast creation, effortless
 					sharing, and highest playback quality.
 				</p>
 			</div>
 
-			<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+			<div className="relative z-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
 				{features.map((feat) => {
 					const Icon = feat.icon;
 					return (
 						<div
 							key={feat.title}
-							className="p-5 rounded-2xl bg-[var(--color-bg-base)] border border-[var(--color-border-subtle)] space-y-3 transition-all duration-200 hover:border-[var(--color-interactive-primary)]/30 hover:shadow-lg"
+							className="p-5 rounded-2xl backdrop-blur-xl bg-white/[0.03] border border-white/[0.08] space-y-3 transition-all duration-300 hover:bg-white/[0.06] hover:border-white/[0.12] hover:-translate-y-0.5 hover:shadow-[0_0_24px_rgba(124,58,237,0.15)]"
 						>
 							<div className={`p-3 rounded-2xl w-fit border ${feat.color}`}>
 								<Icon className="w-5 h-5" />
 							</div>
-							<h3 className="text-base font-bold text-[var(--color-text-primary)]">
+							<h3 className="font-display text-base font-bold text-[var(--color-text-primary)]">
 								{feat.title}
 							</h3>
-							<p className="text-xs text-[var(--color-text-secondary)] leading-relaxed">
+							<p className="font-body text-xs text-[var(--color-text-secondary)] leading-relaxed">
 								{feat.description}
 							</p>
 						</div>

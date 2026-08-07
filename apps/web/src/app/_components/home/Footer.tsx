@@ -3,14 +3,14 @@ import Link from "next/link";
 
 export function Footer() {
 	return (
-		<footer className="w-full pt-10 pb-24 sm:pb-12 border-t border-[var(--color-border-subtle)] bg-[var(--color-bg-surface)]/50 text-[var(--color-text-secondary)]">
+		<footer className="w-full pt-10 pb-24 sm:pb-12 border-t border-white/[0.08] backdrop-blur-xl bg-white/[0.02] text-[var(--color-text-secondary)]">
 			<div className="max-w-6xl mx-auto px-4 sm:px-6 space-y-8">
 				<div className="flex flex-col md:flex-row items-start justify-between gap-8">
 					{/* Brand Info */}
 					<div className="space-y-3 max-w-sm">
 						<Link
 							href="/"
-							className="flex items-center gap-2.5 text-lg font-extrabold text-[var(--color-text-primary)] hover:opacity-90 transition-opacity"
+							className="flex items-center gap-2.5 text-lg font-extrabold text-[var(--color-text-primary)] hover:opacity-90 transition-opacity font-display"
 						>
 							<img
 								src="/logo.png"
@@ -19,16 +19,16 @@ export function Footer() {
 							/>
 							<span>AMHUB</span>
 						</Link>
-						<p className="text-xs text-[var(--color-text-tertiary)] leading-relaxed">
+						<p className="font-body text-xs text-[var(--color-text-tertiary)] leading-relaxed">
 							The premier community platform for Alight Motion creators.
 							Discover, share, and import pro XML, QR, and link presets.
 						</p>
 					</div>
 
 					{/* Navigation Links Grid */}
-					<div className="grid grid-cols-2 sm:grid-cols-3 gap-8 text-xs w-full md:w-auto">
+					<div className="grid grid-cols-2 sm:grid-cols-3 gap-8 text-xs w-full md:w-auto font-body">
 						<div className="space-y-3">
-							<h4 className="font-bold uppercase tracking-wider text-[var(--color-text-primary)]">
+							<h4 className="font-display font-bold uppercase tracking-wider text-[var(--color-text-primary)]">
 								Explore
 							</h4>
 							<ul className="space-y-2">
@@ -68,7 +68,7 @@ export function Footer() {
 						</div>
 
 						<div className="space-y-3">
-							<h4 className="font-bold uppercase tracking-wider text-[var(--color-text-primary)]">
+							<h4 className="font-display font-bold uppercase tracking-wider text-[var(--color-text-primary)]">
 								Creator Hub
 							</h4>
 							<ul className="space-y-2">
@@ -108,7 +108,7 @@ export function Footer() {
 						</div>
 
 						<div className="space-y-3">
-							<h4 className="font-bold uppercase tracking-wider text-[var(--color-text-primary)]">
+							<h4 className="font-display font-bold uppercase tracking-wider text-[var(--color-text-primary)]">
 								Account
 							</h4>
 							<ul className="space-y-2">
@@ -134,7 +134,7 @@ export function Footer() {
 				</div>
 
 				{/* Bottom Bar */}
-				<div className="pt-6 border-t border-[var(--color-border-subtle)]/60 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-[var(--color-text-tertiary)]">
+				<div className="pt-6 border-t border-white/[0.08] flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-[var(--color-text-tertiary)] font-body">
 					<p>© {new Date().getFullYear()} AMHUB. All rights reserved.</p>
 					<div className="flex items-center gap-1">
 						<span>Crafted with</span>

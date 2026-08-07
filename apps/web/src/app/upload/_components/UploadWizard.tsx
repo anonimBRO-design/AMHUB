@@ -1,5 +1,6 @@
 "use client";
 
+import type { ValidationResult } from "@/lib/validation/types";
 import {
 	AlertCircle,
 	ArrowLeft,
@@ -29,31 +30,44 @@ export function UploadWizard() {
 	const [isLoading, setIsLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
 
-	// Form State with pre-populated example values
-	const [fileType, setFileType] = useState<"xml" | "qr" | "link">("link");
+	// Form State
+	const [fileType, setFileType] = useState<"xml" | "qr" | "link">("xml");
 	const [presetFile, setPresetFile] = useState<File | null>(null);
 	const [thumbnailFile, setThumbnailFile] = useState<File | null>(null);
-	const [amLink, setAmLink] = useState("https://alight.link/xK9zM2pL4qW8");
-	const [title, setTitle] = useState(
-		"4K Ultra Smooth Velocity Ramp & Beat Flash",
-	);
-	const [description, setDescription] = useState(
-		"Ultra-smooth 60fps velocity edit preset featuring custom cubic bezier curves, RGB split flashes, and 3D camera shakes for Alight Motion.",
-	);
+	const [amLink, setAmLink] = useState("");
+	const [title, setTitle] = useState("");
+	const [description, setDescription] = useState("");
 	const [category, setCategory] = useState("velocity");
 	const [difficulty, setDifficulty] = useState<
 		"beginner" | "intermediate" | "advanced"
 	>("intermediate");
 
+	// Real-time Validation State
+	const [validation, setValidation] = useState<ValidationResult>({
+		isValid: false,
+		isValidating: false,
+		checks: [],
+		error: null,
+	});
+
+	const isNextStepDisabled = () => {
+		if (currentStep === 1) {
+			return !validation.isValid || validation.isValidating;
+		}
+		if (currentStep === 2) {
+			return !thumbnailFile;
+		}
+		if (currentStep === 3) {
+			return !title.trim();
+		}
+		return false;
+	};
+
 	const handleNextStep = () => {
 		setError(null);
 		if (currentStep === 1) {
-			if (fileType !== "link" && !presetFile) {
-				setError("Please select a preset file (XML or QR code).");
-				return;
-			}
-			if (fileType === "link" && !amLink.trim()) {
-				setError("Please enter a valid Alight Motion import link.");
+			if (!validation.isValid) {
+				setError(validation.error || "Please complete asset validation first.");
 				return;
 			}
 			setCurrentStep(2);
@@ -169,7 +183,10 @@ export function UploadWizard() {
 					thumbnail_url: uploadedThumbnailUrl || "/placeholder.jpg",
 					file_type: fileType,
 					file_url: uploadedPresetUrl || undefined,
-					am_link: amLink.trim() || undefined,
+					am_link:
+						fileType === "qr" && validation.decodedPayload
+							? validation.decodedPayload
+							: amLink.trim() || undefined,
 					category,
 					difficulty,
 				}),
@@ -227,6 +244,8 @@ export function UploadWizard() {
 						onPresetFileChange={setPresetFile}
 						amLink={amLink}
 						onAmLinkChange={setAmLink}
+						validation={validation}
+						onValidationChange={setValidation}
 					/>
 				)}
 
@@ -264,7 +283,7 @@ export function UploadWizard() {
 				)}
 			</div>
 
-			{/* Navigation Buttons (Sticky Bottom for Mobile) */}
+			{/* Navigation Buttons */}
 			<div className="fixed bottom-0 left-0 right-0 z-40 sm:relative p-4 sm:p-0 bg-[var(--color-bg-surface)]/95 sm:bg-transparent backdrop-blur-xl sm:backdrop-blur-none border-t border-[var(--color-border-subtle)] sm:border-0 shadow-2xl sm:shadow-none pb-[calc(env(safe-area-inset-bottom,0px)+1rem)] sm:pb-0">
 				<div className="flex items-center justify-between gap-3 max-w-2xl mx-auto">
 					{currentStep > 1 ? (
@@ -285,7 +304,8 @@ export function UploadWizard() {
 						<button
 							type="button"
 							onClick={handleNextStep}
-							className="inline-flex items-center justify-center gap-2 min-h-[48px] px-6 rounded-2xl bg-[var(--color-interactive-primary)] text-white font-bold text-xs shadow-lg shadow-[var(--color-interactive-primary)]/20 hover:bg-[var(--color-interactive-primary-hover)] active:scale-95 transition-all ml-auto"
+							disabled={isNextStepDisabled()}
+							className="inline-flex items-center justify-center gap-2 min-h-[48px] px-6 rounded-2xl bg-[var(--color-interactive-primary)] text-white font-bold text-xs shadow-lg shadow-[var(--color-interactive-primary)]/20 hover:bg-[var(--color-interactive-primary-hover)] active:scale-95 transition-all disabled:opacity-40 disabled:cursor-not-allowed ml-auto"
 						>
 							<span>Next Step</span>
 							<ArrowRight className="w-4 h-4" />

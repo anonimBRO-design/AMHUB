@@ -2,8 +2,8 @@
 
 import {
 	FloatingPortal,
-	type Placement,
 	flip,
+	type Placement,
 	useClick,
 	useDismiss,
 	useFloating,
@@ -170,13 +170,7 @@ export const DropdownMenu = ({
 };
 
 const DropdownMenuItemRenderer = React.memo(
-	({
-		item,
-		index,
-	}: {
-		item: DropdownMenuActionItem;
-		index: number;
-	}) => {
+	({ item, index }: { item: DropdownMenuActionItem; index: number }) => {
 		const context = React.useContext(DropdownMenuContext);
 		if (!context)
 			throw new Error(

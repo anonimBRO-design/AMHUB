@@ -19,11 +19,11 @@ export function FeaturedSection({ presets }: FeaturedSectionProps) {
 					<div className="p-1.5 rounded-xl bg-amber-500/10 text-amber-400 border border-amber-500/20">
 						<Sparkles className="w-4 h-4" />
 					</div>
-					<h2 className="text-lg sm:text-xl font-bold tracking-tight text-[var(--color-text-primary)]">
+					<h2 className="font-display text-lg sm:text-xl font-bold tracking-tight text-[var(--color-text-primary)]">
 						Featured Spotlight
 					</h2>
 				</div>
-				<span className="text-xs font-semibold text-[var(--color-interactive-primary)]">
+				<span className="font-display text-xs font-semibold tracking-wider text-[var(--color-interactive-primary)]">
 					PRO SELECTIONS
 				</span>
 			</div>
@@ -34,7 +34,7 @@ export function FeaturedSection({ presets }: FeaturedSectionProps) {
 					<Link
 						key={preset.id}
 						href={`/preset/${preset.slug}`}
-						className="group relative overflow-hidden rounded-3xl bg-[var(--color-bg-surface)] border border-[var(--color-border-subtle)] hover:border-[var(--color-interactive-primary)]/50 transition-all duration-300 hover:shadow-2xl hover:shadow-[var(--color-interactive-primary)]/10 active:scale-[0.99]"
+						className="group relative overflow-hidden rounded-3xl backdrop-blur-xl bg-white/[0.03] border border-white/[0.08] hover:bg-white/[0.06] hover:border-white/[0.12] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_0_24px_rgba(124,58,237,0.15)] active:scale-[0.97]"
 					>
 						{/* Aspect Ratio Container */}
 						<div className="relative aspect-[16/9] w-full overflow-hidden bg-[var(--color-bg-elevated)]">
@@ -45,32 +45,32 @@ export function FeaturedSection({ presets }: FeaturedSectionProps) {
 								loading="lazy"
 							/>
 							{/* Gradient Overlay */}
-							<div className="absolute inset-0 bg-gradient-to-t from-[var(--color-bg-surface)] via-[var(--color-bg-surface)]/30 to-transparent" />
+							<div className="absolute inset-0 bg-gradient-to-t from-[var(--color-bg-base)] via-[var(--color-bg-base)]/30 to-transparent" />
 
 							{/* Format & Category Badges */}
 							<div className="absolute top-3 left-3 flex items-center gap-2">
-								<span className="px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-black/60 backdrop-blur-md text-white border border-white/10">
+								<span className="px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-black/60 backdrop-blur-md text-white border border-white/[0.12]">
 									{preset.difficulty}
 								</span>
-								<span className="px-2.5 py-1 rounded-full text-[10px] font-semibold tracking-wider bg-[var(--color-interactive-primary)]/80 text-white backdrop-blur-md">
+								<span className="px-2.5 py-1 rounded-full text-[10px] font-semibold tracking-wider bg-[var(--color-interactive-primary)]/80 text-white backdrop-blur-md border border-white/10">
 									{preset.category}
 								</span>
 							</div>
 
 							{/* Top Right Action Icon */}
-							<div className="absolute top-3 right-3 p-2 rounded-full bg-black/40 backdrop-blur-md text-white/80 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+							<div className="absolute top-3 right-3 p-2 rounded-full bg-black/40 backdrop-blur-md text-white/80 opacity-0 group-hover:opacity-100 transition-all duration-300 group-hover:scale-110 border border-white/10">
 								<ArrowUpRight className="w-4 h-4" />
 							</div>
 						</div>
 
 						{/* Card Content */}
 						<div className="p-4 space-y-3">
-							<h3 className="text-base font-bold text-[var(--color-text-primary)] line-clamp-1 group-hover:text-[var(--color-interactive-primary)] transition-colors">
+							<h3 className="font-display text-base font-bold text-[var(--color-text-primary)] line-clamp-1 group-hover:text-[var(--color-interactive-primary)] transition-colors">
 								{preset.title}
 							</h3>
 
 							{/* Creator Info & Stats */}
-							<div className="flex items-center justify-between text-xs text-[var(--color-text-secondary)] pt-1 border-t border-[var(--color-border-subtle)]/60">
+							<div className="flex items-center justify-between text-xs text-[var(--color-text-secondary)] pt-2 border-t border-white/[0.08]">
 								<div className="flex items-center gap-2">
 									<img
 										src={
@@ -80,12 +80,12 @@ export function FeaturedSection({ presets }: FeaturedSectionProps) {
 										alt={preset.creator.displayName}
 										className="w-5 h-5 rounded-full object-cover border border-white/10"
 									/>
-									<span className="font-medium text-[var(--color-text-primary)] truncate max-w-[110px]">
+									<span className="font-body font-medium text-[var(--color-text-primary)] truncate max-w-[110px]">
 										{preset.creator.displayName}
 									</span>
 								</div>
 
-								<div className="flex items-center gap-3 text-xs font-semibold">
+								<div className="flex items-center gap-3 text-xs font-semibold font-body">
 									<span className="flex items-center gap-1 text-rose-400">
 										<Heart className="w-3.5 h-3.5 fill-rose-400/20" />
 										{preset.likeCount}

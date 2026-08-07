@@ -1,7 +1,8 @@
-import { listNotifications } from "@/data/notifications";
-import { requireUser } from "@/lib/supabase/auth";
+import { listNotifications } from "@/dal/notifications.dal";
+import { getCurrentUser } from "@/lib/supabase/auth";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import type { Metadata } from "next";
+import { redirect } from "next/navigation";
 import type { NotificationItemData } from "./_components/NotificationCard";
 import { NotificationClient } from "./_components/NotificationClient";
 
@@ -11,9 +12,12 @@ export const metadata: Metadata = {
 };
 
 export default async function NotificationsPage() {
-	const user = await requireUser();
-	const supabase = await createSupabaseServerClient();
+	const user = await getCurrentUser();
+	if (!user) {
+		redirect("/auth/login");
+	}
 
+	const supabase = await createSupabaseServerClient();
 	const rawNotifications = await listNotifications(supabase, user.id);
 
 	const initialNotifications: NotificationItemData[] = (
@@ -24,7 +28,7 @@ export default async function NotificationsPage() {
 			is_read: boolean;
 			created_at: string;
 			actor?: { username: string; display_name: string; avatar_url?: string };
-			preset?: { slug: string; title: string };
+			preset?: { slug: string; title: string; thumbnail_url?: string };
 		}>
 	).map((n) => ({
 		id: n.id,
@@ -40,10 +44,12 @@ export default async function NotificationsPage() {
 			? {
 					slug: n.preset.slug,
 					title: n.preset.title,
+					thumbnailUrl: n.preset.thumbnail_url,
 				}
 			: undefined,
 		message: n.message ?? undefined,
 		isRead: n.is_read,
+		rawCreatedAt: n.created_at,
 		createdAt: new Date(n.created_at).toLocaleDateString("en-US", {
 			month: "short",
 			day: "numeric",

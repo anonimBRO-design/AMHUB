@@ -32,8 +32,8 @@ export default async function RootLayout({
 		: 0;
 
 	return (
-		<html lang="en">
-			<body className="bg-[var(--color-bg-surface)] text-[var(--color-text-primary)]">
+		<html lang="en" data-theme="dark">
+			<body className="bg-[var(--color-bg-base)] text-[var(--color-text-primary)] antialiased selection:bg-purple-500/30 selection:text-white">
 				<LayoutShell
 					currentUser={currentUser}
 					unreadNotificationCount={unreadNotificationCount}

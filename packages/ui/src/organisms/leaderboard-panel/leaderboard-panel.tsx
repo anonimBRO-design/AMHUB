@@ -13,7 +13,9 @@ export interface LeaderboardEntry {
 
 export const LeaderboardPanel = ({
 	entries,
-}: { entries: LeaderboardEntry[] }) => {
+}: {
+	entries: LeaderboardEntry[];
+}) => {
 	return (
 		<section className="border rounded-lg p-4">
 			<h2 className="font-bold mb-4">Leaderboard</h2>

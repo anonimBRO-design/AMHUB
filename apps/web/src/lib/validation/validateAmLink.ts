@@ -1,0 +1,177 @@
+import type { ValidationCheck, ValidationResult } from "./types";
+
+const ALLOWED_DOMAINS = [
+	"alight.link",
+	"am.link",
+	"alightmotion.com",
+	"drive.google.com",
+	"dropbox.com",
+	"mediafire.com",
+	"github.com",
+];
+
+export async function validateAmLink(
+	urlInput: string,
+): Promise<ValidationResult> {
+	const checks: ValidationCheck[] = [
+		{
+			id: "url_format",
+			label: "URL format & HTTPS protocol valid",
+			status: "idle",
+		},
+		{
+			id: "supported_host",
+			label: "Supported preset provider hostname",
+			status: "idle",
+		},
+		{
+			id: "reachable",
+			label: "Link reachable (HTTP 200/301)",
+			status: "idle",
+		},
+	];
+
+	const trimmed = urlInput.trim();
+	if (!trimmed) {
+		return {
+			isValid: false,
+			isValidating: false,
+			checks,
+			error: "Please enter an Alight Motion import link.",
+		};
+	}
+
+	// 1. Check URL Syntax & HTTPS Protocol
+	let parsedUrl: URL;
+	try {
+		parsedUrl = new URL(trimmed);
+	} catch {
+		checks[0] = {
+			...checks[0],
+			status: "error",
+			message: "Invalid URL syntax. URL must start with https://",
+		};
+		return {
+			isValid: false,
+			isValidating: false,
+			checks,
+			error: "Invalid URL format.",
+		};
+	}
+
+	if (parsedUrl.protocol !== "https:") {
+		checks[0] = {
+			...checks[0],
+			status: "error",
+			message: "Insecure protocol. Preset URLs must use HTTPS.",
+		};
+		return {
+			isValid: false,
+			isValidating: false,
+			checks,
+			error: "URL must use HTTPS.",
+		};
+	}
+
+	if (trimmed.length > 2048) {
+		checks[0] = {
+			...checks[0],
+			status: "error",
+			message: "URL length exceeds 2048 characters.",
+		};
+		return {
+			isValid: false,
+			isValidating: false,
+			checks,
+			error: "URL is excessively long.",
+		};
+	}
+
+	checks[0] = {
+		...checks[0],
+		status: "success",
+		message: "Valid HTTPS URL format",
+	};
+
+	// 2. Check Supported Hostname
+	const hostname = parsedUrl.hostname.toLowerCase();
+	const isSupported = ALLOWED_DOMAINS.some(
+		(d) => hostname === d || hostname.endsWith(`.${d}`),
+	);
+	const isXmlPath = parsedUrl.pathname.toLowerCase().endsWith(".xml");
+
+	if (!isSupported && !isXmlPath) {
+		checks[1] = {
+			...checks[1],
+			status: "error",
+			message: `Unsupported hostname "${hostname}". Must be alight.link, am.link, drive.google.com, etc.`,
+		};
+		return {
+			isValid: false,
+			isValidating: false,
+			checks,
+			error: "Unsupported preset link domain.",
+		};
+	}
+
+	checks[1] = {
+		...checks[1],
+		status: "success",
+		message: `Supported provider (${hostname})`,
+	};
+
+	// 3. Reachability Check via Server Endpoint
+	checks[2] = {
+		...checks[2],
+		status: "loading",
+		message: "Pinging server...",
+	};
+
+	try {
+		const res = await fetch("/api/validate-link", {
+			method: "POST",
+			headers: { "Content-Type": "application/json" },
+			body: JSON.stringify({ url: trimmed }),
+		});
+
+		const data = await res.json();
+		if (!res.ok || !data.reachable) {
+			checks[2] = {
+				...checks[2],
+				status: "error",
+				message: data.message || "Link ping failed.",
+			};
+			return {
+				isValid: false,
+				isValidating: false,
+				checks,
+				error: data.message || "Preset link is unreachable.",
+			};
+		}
+
+		checks[2] = {
+			...checks[2],
+			status: "success",
+			message: "Link verified reachable",
+		};
+	} catch (e) {
+		checks[2] = {
+			...checks[2],
+			status: "error",
+			message: `Network check failed: ${e instanceof Error ? e.message : "Error"}`,
+		};
+		return {
+			isValid: false,
+			isValidating: false,
+			checks,
+			error: "Failed to verify link reachability.",
+		};
+	}
+
+	return {
+		isValid: true,
+		isValidating: false,
+		checks,
+		error: null,
+	};
+}

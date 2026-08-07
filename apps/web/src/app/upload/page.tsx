@@ -1,5 +1,6 @@
-import { requireUser } from "@/lib/supabase/auth";
+import { getCurrentProfile } from "@/lib/supabase/auth";
 import type { Metadata } from "next";
+import { redirect } from "next/navigation";
 import { UploadWizard } from "./_components/UploadWizard";
 
 export const metadata: Metadata = {
@@ -9,7 +10,10 @@ export const metadata: Metadata = {
 };
 
 export default async function UploadPage() {
-	await requireUser();
+	const profile = await getCurrentProfile();
+	if (!profile) {
+		redirect("/auth/login");
+	}
 
 	return <UploadWizard />;
 }

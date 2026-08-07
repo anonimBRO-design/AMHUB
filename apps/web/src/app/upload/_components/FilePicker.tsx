@@ -1,5 +1,9 @@
 "use client";
 
+import type { ValidationResult } from "@/lib/validation/types";
+import { validateAmLink } from "@/lib/validation/validateAmLink";
+import { validateQr } from "@/lib/validation/validateQr";
+import { validateXml } from "@/lib/validation/validateXml";
 import {
 	Check,
 	ExternalLink,
@@ -8,7 +12,8 @@ import {
 	QrCode,
 	Upload,
 } from "lucide-react";
-import { type ChangeEvent, useState } from "react";
+import { type ChangeEvent, useEffect, useRef, useState } from "react";
+import { ValidationCard } from "./ValidationCard";
 
 interface FilePickerProps {
 	fileType: "xml" | "qr" | "link";
@@ -17,6 +22,8 @@ interface FilePickerProps {
 	onPresetFileChange: (file: File | null) => void;
 	amLink: string;
 	onAmLinkChange: (link: string) => void;
+	validation: ValidationResult;
+	onValidationChange: (res: ValidationResult) => void;
 }
 
 export function FilePicker({
@@ -26,8 +33,150 @@ export function FilePicker({
 	onPresetFileChange,
 	amLink,
 	onAmLinkChange,
+	validation,
+	onValidationChange,
 }: FilePickerProps) {
 	const [isDragging, setIsDragging] = useState(false);
+	const linkDebounceTimer = useRef<NodeJS.Timeout | null>(null);
+
+	// Validate XML or QR whenever presetFile or fileType changes
+	useEffect(() => {
+		let isCancelled = false;
+
+		if (fileType === "xml") {
+			onValidationChange({
+				isValid: false,
+				isValidating: Boolean(presetFile),
+				checks: [
+					{
+						id: "file_selected",
+						label: "XML file selected",
+						status: presetFile ? "loading" : "idle",
+					},
+					{
+						id: "file_size",
+						label: "File size within limit (≤15MB)",
+						status: "idle",
+					},
+					{ id: "file_readable", label: "File readable", status: "idle" },
+					{ id: "xml_syntax", label: "XML syntax valid", status: "idle" },
+					{
+						id: "preset_structure",
+						label: "Alight Motion preset structure detected",
+						status: "idle",
+					},
+				],
+				error: presetFile ? null : "Please select an Alight Motion XML file.",
+			});
+
+			if (presetFile) {
+				validateXml(presetFile).then((res) => {
+					if (!isCancelled) onValidationChange(res);
+				});
+			}
+		} else if (fileType === "qr") {
+			onValidationChange({
+				isValid: false,
+				isValidating: Boolean(presetFile),
+				checks: [
+					{
+						id: "qr_selected",
+						label: "QR image selected",
+						status: presetFile ? "loading" : "idle",
+					},
+					{
+						id: "qr_decoded",
+						label: "QR code detected & decoded",
+						status: "idle",
+					},
+					{
+						id: "preset_payload",
+						label: "Supported preset payload verified",
+						status: "idle",
+					},
+				],
+				error: presetFile ? null : "Please upload a QR code image.",
+			});
+
+			if (presetFile) {
+				validateQr(presetFile).then((res) => {
+					if (!isCancelled) onValidationChange(res);
+				});
+			}
+		}
+
+		return () => {
+			isCancelled = true;
+		};
+	}, [fileType, presetFile, onValidationChange]);
+
+	// Validate AM Link with debounce
+	useEffect(() => {
+		if (fileType !== "link") return;
+
+		if (linkDebounceTimer.current) {
+			clearTimeout(linkDebounceTimer.current);
+		}
+
+		if (!amLink.trim()) {
+			onValidationChange({
+				isValid: false,
+				isValidating: false,
+				checks: [
+					{
+						id: "url_format",
+						label: "URL format & HTTPS protocol valid",
+						status: "idle",
+					},
+					{
+						id: "supported_host",
+						label: "Supported preset provider hostname",
+						status: "idle",
+					},
+					{
+						id: "reachable",
+						label: "Link reachable (HTTP 200/301)",
+						status: "idle",
+					},
+				],
+				error: "Please enter an Alight Motion import link.",
+			});
+			return;
+		}
+
+		onValidationChange({
+			isValid: false,
+			isValidating: true,
+			checks: [
+				{
+					id: "url_format",
+					label: "URL format & HTTPS protocol valid",
+					status: "loading",
+				},
+				{
+					id: "supported_host",
+					label: "Supported preset provider hostname",
+					status: "idle",
+				},
+				{
+					id: "reachable",
+					label: "Link reachable (HTTP 200/301)",
+					status: "idle",
+				},
+			],
+			error: null,
+		});
+
+		linkDebounceTimer.current = setTimeout(() => {
+			validateAmLink(amLink).then((res) => {
+				onValidationChange(res);
+			});
+		}, 400);
+
+		return () => {
+			if (linkDebounceTimer.current) clearTimeout(linkDebounceTimer.current);
+		};
+	}, [fileType, amLink, onValidationChange]);
 
 	const handleFileSelect = (e: ChangeEvent<HTMLInputElement>) => {
 		if (e.target.files?.[0]) {
@@ -53,7 +202,10 @@ export function FilePicker({
 				<div className="grid grid-cols-3 gap-2.5">
 					<button
 						type="button"
-						onClick={() => onFileTypeChange("xml")}
+						onClick={() => {
+							onFileTypeChange("xml");
+							onPresetFileChange(null);
+						}}
 						className={`flex flex-col items-center justify-center p-3.5 rounded-2xl border text-center transition-all active:scale-95 ${
 							fileType === "xml"
 								? "bg-[var(--color-interactive-primary)]/10 text-[var(--color-interactive-primary)] border-[var(--color-interactive-primary)] shadow-md"
@@ -66,7 +218,10 @@ export function FilePicker({
 
 					<button
 						type="button"
-						onClick={() => onFileTypeChange("qr")}
+						onClick={() => {
+							onFileTypeChange("qr");
+							onPresetFileChange(null);
+						}}
 						className={`flex flex-col items-center justify-center p-3.5 rounded-2xl border text-center transition-all active:scale-95 ${
 							fileType === "qr"
 								? "bg-[var(--color-interactive-primary)]/10 text-[var(--color-interactive-primary)] border-[var(--color-interactive-primary)] shadow-md"
@@ -79,7 +234,10 @@ export function FilePicker({
 
 					<button
 						type="button"
-						onClick={() => onFileTypeChange("link")}
+						onClick={() => {
+							onFileTypeChange("link");
+							onPresetFileChange(null);
+						}}
 						className={`flex flex-col items-center justify-center p-3.5 rounded-2xl border text-center transition-all active:scale-95 ${
 							fileType === "link"
 								? "bg-[var(--color-interactive-primary)]/10 text-[var(--color-interactive-primary)] border-[var(--color-interactive-primary)] shadow-md"
@@ -113,7 +271,9 @@ export function FilePicker({
 							isDragging
 								? "border-[var(--color-interactive-primary)] bg-[var(--color-interactive-primary)]/5"
 								: presetFile
-									? "border-emerald-500/50 bg-emerald-500/5"
+									? validation.isValid
+										? "border-emerald-500/50 bg-emerald-500/5"
+										: "border-rose-500/50 bg-rose-500/5"
 									: "border-[var(--color-border-subtle)] bg-[var(--color-bg-base)] hover:border-[var(--color-border-strong)]"
 						}`}
 					>
@@ -127,15 +287,20 @@ export function FilePicker({
 
 						{presetFile ? (
 							<div className="space-y-2">
-								<div className="p-3 rounded-2xl bg-emerald-500/10 text-emerald-400 w-fit mx-auto border border-emerald-500/20">
+								<div
+									className={`p-3 rounded-2xl w-fit mx-auto border ${
+										validation.isValid
+											? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
+											: "bg-rose-500/10 text-rose-400 border-rose-500/20"
+									}`}
+								>
 									<FileCheck className="w-8 h-8" />
 								</div>
 								<p className="text-sm font-bold text-[var(--color-text-primary)]">
 									{presetFile.name}
 								</p>
-								<span className="text-xs text-emerald-400 font-semibold flex items-center justify-center gap-1">
-									<Check className="w-3.5 h-3.5" /> File Selected (
-									{(presetFile.size / 1024).toFixed(1)} KB)
+								<span className="text-xs font-semibold flex items-center justify-center gap-1 text-[var(--color-text-secondary)]">
+									{(presetFile.size / 1024).toFixed(1)} KB
 								</span>
 							</div>
 						) : (
@@ -174,6 +339,9 @@ export function FilePicker({
 					/>
 				</div>
 			)}
+
+			{/* Real-time Validation Card */}
+			<ValidationCard fileType={fileType} validation={validation} />
 		</div>
 	);
 }

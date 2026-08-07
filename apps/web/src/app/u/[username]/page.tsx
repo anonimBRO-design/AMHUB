@@ -42,10 +42,14 @@ export default async function ProfilePage({ params }: PageProps) {
 	const currentUser = await getCurrentUser();
 	const supabase = await createSupabaseServerClient();
 
-	let user: Awaited<ReturnType<typeof getUserByUsername>>;
+	let user: Awaited<ReturnType<typeof getUserByUsername>> = null;
 	try {
 		user = await getUserByUsername(supabase, username, currentUser?.id);
 	} catch {
+		notFound();
+	}
+
+	if (!user) {
 		notFound();
 	}
 
@@ -60,6 +64,8 @@ export default async function ProfilePage({ params }: PageProps) {
 		avatarUrl: user.avatar_url,
 		bio: user.bio,
 		isVerified: user.is_verified,
+		followerCount: user.follower_count,
+		followingCount: user.following_count,
 		websiteUrl: user.website_url,
 		tiktokHandle: user.tiktok_handle,
 		instagramHandle: user.instagram_handle,

@@ -1,6 +1,7 @@
 "use client";
 
-import { MessageSquare, Send, User } from "lucide-react";
+import { useAuth } from "@/context/AuthContext";
+import { MessageSquare, Send, Trash2 } from "lucide-react";
 import { type FormEvent, useState } from "react";
 
 interface Comment {
@@ -28,9 +29,11 @@ export function CommentSection({
 	const [comments, setComments] = useState<Comment[]>(initialComments);
 	const [newComment, setNewComment] = useState("");
 	const [isSubmitting, setIsSubmitting] = useState(false);
+	const { currentUser, requireAuth } = useAuth();
 
 	const handleSubmit = async (e: FormEvent) => {
 		e.preventDefault();
+		if (!requireAuth(undefined, "Sign in to post comments")) return;
 		if (!newComment.trim() || isSubmitting) return;
 
 		setIsSubmitting(true);
@@ -38,35 +41,40 @@ export function CommentSection({
 			const res = await fetch(`/api/presets/${presetId}/comments`, {
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify({ content: newComment.trim() }),
+				body: JSON.stringify({ body: newComment.trim() }),
 			});
 
 			if (res.ok) {
 				const json = await res.json();
-				if (json.data) {
-					setComments((prev) => [json.data, ...prev]);
-				} else {
-					// Fallback optimistic comment if server response is minimal
-					setComments((prev) => [
-						{
-							id: Date.now().toString(),
-							content: newComment.trim(),
-							createdAt: new Date().toISOString(),
-							user: {
-								username: "you",
-								displayName: "You",
-								avatarUrl: null,
-							},
-						},
-						...prev,
-					]);
-				}
+				const created = json.data || json;
+				const formattedComment: Comment = {
+					id: created.id || Date.now().toString(),
+					content: created.body || created.content || newComment.trim(),
+					createdAt: created.created_at || new Date().toISOString(),
+					user: {
+						username: currentUser?.username || "you",
+						displayName: currentUser?.display_name || "You",
+						avatarUrl: currentUser?.avatar_url || null,
+					},
+				};
+				setComments((prev) => [formattedComment, ...prev]);
 				setNewComment("");
 			}
 		} catch (error) {
 			console.error("Failed to post comment", error);
 		} finally {
 			setIsSubmitting(false);
+		}
+	};
+
+	const handleDeleteComment = async (commentId: string) => {
+		try {
+			await fetch(`/api/presets/${presetId}/comments?commentId=${commentId}`, {
+				method: "DELETE",
+			});
+			setComments((prev) => prev.filter((c) => c.id !== commentId));
+		} catch (error) {
+			console.error("Failed to delete comment", error);
 		}
 	};
 
@@ -108,38 +116,65 @@ export function CommentSection({
 			{/* Comments List */}
 			<div className="space-y-3 pt-2">
 				{comments.length > 0 ? (
-					comments.map((comment) => (
-						<div
-							key={comment.id}
-							className="p-3.5 rounded-2xl bg-[var(--color-bg-base)] border border-[var(--color-border-subtle)]/60 space-y-1.5"
-						>
-							<div className="flex items-center justify-between">
-								<div className="flex items-center gap-2">
-									<img
-										src={
-											comment.user.avatarUrl ||
-											`https://api.dicebear.com/7.x/identicon/svg?seed=${comment.user.username}`
-										}
-										alt={comment.user.displayName}
-										className="w-5 h-5 rounded-full object-cover"
-									/>
-									<span className="text-xs font-bold text-[var(--color-text-primary)]">
-										{comment.user.displayName}
-									</span>
+					comments.map((comment) => {
+						const isOwnComment =
+							currentUser && currentUser.username === comment.user.username;
+
+						return (
+							<div
+								key={comment.id}
+								className="p-3.5 rounded-2xl bg-[var(--color-bg-base)] border border-[var(--color-border-subtle)]/60 space-y-1.5"
+							>
+								<div className="flex items-center justify-between">
+									<div className="flex items-center gap-2">
+										{comment.user.avatarUrl ? (
+											<img
+												src={comment.user.avatarUrl}
+												alt={comment.user.displayName}
+												className="w-5 h-5 rounded-full object-cover"
+											/>
+										) : (
+											<div className="w-5 h-5 rounded-full bg-purple-600/30 text-purple-300 font-bold text-[10px] flex items-center justify-center">
+												{comment.user.displayName.slice(0, 2).toUpperCase()}
+											</div>
+										)}
+										<span className="text-xs font-bold text-[var(--color-text-primary)]">
+											{comment.user.displayName}
+										</span>
+									</div>
+
+									<div className="flex items-center gap-2">
+										<span className="text-[10px] text-[var(--color-text-tertiary)]">
+											{new Date(comment.createdAt).toLocaleDateString()}
+										</span>
+										{isOwnComment && (
+											<button
+												type="button"
+												onClick={() => handleDeleteComment(comment.id)}
+												className="text-[var(--color-text-tertiary)] hover:text-rose-400 p-1 rounded-lg transition-colors"
+												title="Delete comment"
+											>
+												<Trash2 className="w-3.5 h-3.5" />
+											</button>
+										)}
+									</div>
 								</div>
-								<span className="text-[10px] text-[var(--color-text-tertiary)]">
-									{new Date(comment.createdAt).toLocaleDateString()}
-								</span>
+								<p className="text-xs text-[var(--color-text-secondary)] leading-relaxed pl-7">
+									{comment.content}
+								</p>
 							</div>
-							<p className="text-xs text-[var(--color-text-secondary)] leading-relaxed pl-7">
-								{comment.content}
-							</p>
-						</div>
-					))
+						);
+					})
 				) : (
-					<p className="text-xs text-[var(--color-text-tertiary)] text-center py-4">
-						No comments yet. Be the first to share your thoughts!
-					</p>
+					<div className="p-8 text-center rounded-2xl bg-[var(--color-bg-base)]/40 border border-white/[0.05] space-y-2">
+						<MessageSquare className="w-6 h-6 text-purple-400 mx-auto opacity-50" />
+						<p className="text-xs font-bold text-[var(--color-text-primary)]">
+							No comments yet
+						</p>
+						<p className="text-[11px] text-[var(--color-text-tertiary)]">
+							Be the first editor to share your feedback or ask a question!
+						</p>
+					</div>
 				)}
 			</div>
 		</section>

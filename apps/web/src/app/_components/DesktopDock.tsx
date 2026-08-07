@@ -1,0 +1,194 @@
+"use client";
+
+import type { User } from "@presethub/types";
+import { AnimatePresence, motion } from "framer-motion";
+import {
+	Bell,
+	Bookmark,
+	Compass,
+	Heart,
+	LayoutDashboard,
+	PlusCircle,
+	Sparkles,
+	User as UserIcon,
+} from "lucide-react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import type React from "react";
+import { useState } from "react";
+
+interface DesktopDockProps {
+	currentUser?: User | null;
+	unreadNotificationCount?: number;
+}
+
+interface DockItem {
+	id: string;
+	label: string;
+	href: string;
+	icon: React.ComponentType<{ className?: string }>;
+	badge?: number;
+	isSpecial?: boolean;
+	avatarUrl?: string | null;
+}
+
+export function DesktopDock({
+	currentUser,
+	unreadNotificationCount = 0,
+}: DesktopDockProps) {
+	const pathname = usePathname();
+	const [hoveredId, setHoveredId] = useState<string | null>(null);
+
+	const profileHref = currentUser
+		? `/u/${currentUser.username}`
+		: "/auth/login";
+
+	const dockItems: DockItem[] = [
+		{
+			id: "home",
+			label: "Feed",
+			href: "/home",
+			icon: Sparkles,
+		},
+		{
+			id: "explore",
+			label: "Explore",
+			href: "/explore",
+			icon: Compass,
+		},
+		{
+			id: "upload",
+			label: "Upload",
+			href: "/upload",
+			icon: PlusCircle,
+			isSpecial: true,
+		},
+		{
+			id: "bookmarks",
+			label: "Saved",
+			href: "/bookmarks",
+			icon: Bookmark,
+		},
+		{
+			id: "likes",
+			label: "Likes",
+			href: "/likes",
+			icon: Heart,
+		},
+		{
+			id: "notifications",
+			label: "Notifications",
+			href: "/notifications",
+			icon: Bell,
+			badge: unreadNotificationCount,
+		},
+		{
+			id: "dashboard",
+			label: "Dashboard",
+			href: "/dashboard",
+			icon: LayoutDashboard,
+		},
+		{
+			id: "profile",
+			label: currentUser ? currentUser.display_name : "Sign In",
+			href: profileHref,
+			icon: UserIcon,
+			avatarUrl: currentUser?.avatar_url,
+		},
+	];
+
+	return (
+		<div className="flex fixed bottom-3 sm:bottom-6 left-1/2 -translate-x-1/2 z-50 pointer-events-auto select-none max-w-[96vw] sm:max-w-none">
+			<motion.div
+				initial={{ y: 40, opacity: 0 }}
+				animate={{ y: 0, opacity: 1 }}
+				transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+				className="relative flex items-center gap-1 sm:gap-1.5 p-1.5 sm:p-2 rounded-3xl backdrop-blur-2xl bg-[#0f0e14]/90 border border-white/[0.12] shadow-[0_20px_50px_rgba(0,0,0,0.8),0_0_30px_rgba(124,58,237,0.2)]"
+			>
+				{dockItems.map((item) => {
+					const Icon = item.icon;
+					const isActive =
+						pathname === item.href ||
+						(item.href === "/home" && pathname === "/");
+					const isHovered = hoveredId === item.id;
+
+					return (
+						<div
+							key={item.id}
+							className="relative group"
+							onMouseEnter={() => setHoveredId(item.id)}
+							onMouseLeave={() => setHoveredId(null)}
+						>
+							{/* Tooltip Bubble */}
+							<AnimatePresence>
+								{isHovered && (
+									<motion.div
+										initial={{ opacity: 0, y: 6, scale: 0.9 }}
+										animate={{ opacity: 1, y: 0, scale: 1 }}
+										exit={{ opacity: 0, y: 4, scale: 0.95 }}
+										transition={{ duration: 0.15, ease: [0.16, 1, 0.3, 1] }}
+										className="absolute -top-12 left-1/2 -translate-x-1/2 z-50 pointer-events-none hidden sm:block"
+									>
+										<div className="px-3 py-1.5 rounded-xl bg-[#0a090f]/95 border border-white/15 backdrop-blur-md shadow-xl flex items-center gap-1.5 whitespace-nowrap">
+											<span className="text-xs font-bold text-white font-body tracking-wide">
+												{item.label}
+											</span>
+										</div>
+										<div className="w-2 h-2 bg-[#0a090f]/95 rotate-45 border-r border-b border-white/15 mx-auto -mt-1" />
+									</motion.div>
+								)}
+							</AnimatePresence>
+
+							{/* macOS Dock Magnification Link Item */}
+							<Link
+								href={item.href}
+								className="relative flex flex-col items-center justify-center min-w-[38px] min-h-[38px] sm:min-w-[48px] sm:min-h-[48px] p-1 sm:p-2.5 rounded-2xl transition-all duration-200"
+							>
+								<motion.div
+									animate={{
+										scale: isHovered ? 1.2 : 1,
+										y: isHovered ? -3 : 0,
+									}}
+									transition={{ type: "spring", stiffness: 400, damping: 25 }}
+									className={`relative flex items-center justify-center w-9 h-9 sm:w-10 sm:h-10 rounded-2xl transition-colors duration-200 overflow-hidden ${
+										item.isSpecial
+											? "bg-gradient-to-tr from-purple-600 to-indigo-600 text-white shadow-[0_0_20px_rgba(124,58,237,0.4)] border border-purple-400/40"
+											: isActive
+												? "bg-white/15 text-white border border-white/20 shadow-md"
+												: "bg-white/[0.03] text-[var(--color-text-secondary)] border border-white/[0.06] hover:bg-white/[0.08] hover:text-white"
+									}`}
+								>
+									{item.id === "profile" && item.avatarUrl ? (
+										<img
+											src={item.avatarUrl}
+											alt={item.label}
+											className="w-full h-full object-cover rounded-2xl"
+										/>
+									) : (
+										<Icon className="w-4.5 h-4.5 sm:w-5 sm:h-5" />
+									)}
+
+									{/* Badge Dot */}
+									{item.badge && item.badge > 0 ? (
+										<span className="absolute -top-1 -right-1 flex h-3.5 w-3.5 sm:h-4 sm:w-4 items-center justify-center rounded-full bg-purple-500 text-[9px] sm:text-[10px] font-black text-white shadow-[0_0_8px_rgba(168,85,247,0.8)] border border-black">
+											{item.badge > 9 ? "9+" : item.badge}
+										</span>
+									) : null}
+								</motion.div>
+
+								{/* Active Route Dot Indicator */}
+								{isActive && (
+									<motion.div
+										layoutId="activeDockDot"
+										className="absolute bottom-0.5 sm:bottom-1 w-1.5 h-1.5 rounded-full bg-purple-400 shadow-[0_0_8px_rgba(168,85,247,0.9)]"
+										transition={{ type: "spring", stiffness: 500, damping: 30 }}
+									/>
+								)}
+							</Link>
+						</div>
+					);
+				})}
+			</motion.div>
+		</div>
+	);
+}

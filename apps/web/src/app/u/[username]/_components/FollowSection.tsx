@@ -1,5 +1,6 @@
 "use client";
 
+import { useAuth } from "@/context/AuthContext";
 import {
 	Check,
 	Copy,
@@ -25,8 +26,10 @@ export function FollowSection({
 	const [isFollowing, setIsFollowing] = useState(initialFollowing);
 	const [isLoading, setIsLoading] = useState(false);
 	const [copied, setCopied] = useState(false);
+	const { requireAuth } = useAuth();
 
 	const handleFollowToggle = async () => {
+		if (!requireAuth(undefined, "Sign in to follow creators")) return;
 		setIsLoading(true);
 		const nextState = !isFollowing;
 		setIsFollowing(nextState);

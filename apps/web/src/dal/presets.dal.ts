@@ -1,11 +1,9 @@
-import { MOCK_PRESETS, filterAndSortMockPresets } from "@/data/mock-data";
 import type {
 	ExtendedListQueryParams,
 	PresetWithCreator,
 } from "@/data/presets";
 import type { Database } from "@presethub/types";
 import { assertExists } from "./helpers";
-import { isMockFallbackEnabled, serveMockFallback } from "./mock-fallback";
 import type { DalClient } from "./types";
 
 export const PRESET_SELECT_WITH_CREATOR = `
@@ -152,12 +150,19 @@ export async function listPublishedPresets(
 			.eq("status", "published")
 			.range(from, to);
 
-		if (params.search) {
-			query = query.ilike("title", `%${params.search}%`);
+		if (params.search?.trim()) {
+			const term = `%${params.search.trim()}%`;
+			query = query.or(
+				`title.ilike.${term},description.ilike.${term},category.ilike.${term}`,
+			);
 		}
 
-		if (params.category) {
-			query = query.eq("category", params.category);
+		if (params.category && params.category.toLowerCase() !== "all") {
+			query = query.ilike("category", params.category);
+		}
+
+		if (params.difficulty) {
+			query = query.eq("difficulty", params.difficulty);
 		}
 
 		if (params.fileType) {
@@ -168,32 +173,41 @@ export async function listPublishedPresets(
 			query = query.contains("tags", params.tags);
 		}
 
-		const sort = params.sort ?? "created_at";
-		const order = params.order ?? "desc";
-		const { data, error } = await query.order(sort, {
-			ascending: order === "asc",
-		});
-
-		if (error) throw error;
-
-		if (data && data.length > 0) {
-			return data as unknown as PresetWithCreator[];
+		const sortOption = params.sort ?? "created_at";
+		if (sortOption === "oldest") {
+			query = query.order("created_at", { ascending: true });
+		} else if (
+			sortOption === "most_downloaded" ||
+			(sortOption as string) === "downloads"
+		) {
+			query = query.order("download_count", { ascending: false });
+		} else if (
+			sortOption === "most_liked" ||
+			(sortOption as string) === "likes"
+		) {
+			query = query.order("like_count", { ascending: false });
+		} else if (sortOption === "trending") {
+			query = query
+				.order("download_count", { ascending: false })
+				.order("like_count", { ascending: false });
+		} else if (
+			sortOption === "download_count" ||
+			sortOption === "like_count" ||
+			sortOption === "view_count" ||
+			sortOption === "title"
+		) {
+			query = query.order(sortOption, { ascending: false });
+		} else {
+			query = query.order("created_at", { ascending: false });
 		}
 
-		if (!isMockFallbackEnabled()) {
-			return [];
-		}
+		const { data, error } = await query;
 
-		return serveMockFallback(
-			"listPublishedPresets",
-			() => filterAndSortMockPresets(params) as unknown as PresetWithCreator[],
-		);
+		if (error) return [];
+		return (data ?? []) as unknown as PresetWithCreator[];
 	} catch (error) {
-		if (!isMockFallbackEnabled()) throw error;
-		return serveMockFallback(
-			"listPublishedPresets",
-			() => filterAndSortMockPresets(params) as unknown as PresetWithCreator[],
-		);
+		console.error("Failed to list published presets:", error);
+		return [];
 	}
 }
 
@@ -209,26 +223,11 @@ export async function getPresetBySlug(
 			.eq("status", "published")
 			.maybeSingle();
 
-		if (error) throw error;
-
-		if (data) {
-			return data as unknown as PresetWithCreator;
-		}
-
-		if (!isMockFallbackEnabled()) {
-			return null;
-		}
-
-		return serveMockFallback("getPresetBySlug", () => {
-			const found = MOCK_PRESETS.find((p) => p.slug === slug);
-			return (found ?? null) as unknown as PresetWithCreator | null;
-		});
+		if (error || !data) return null;
+		return data as unknown as PresetWithCreator;
 	} catch (error) {
-		if (!isMockFallbackEnabled()) throw error;
-		return serveMockFallback("getPresetBySlug", () => {
-			const found = MOCK_PRESETS.find((p) => p.slug === slug);
-			return (found ?? null) as unknown as PresetWithCreator | null;
-		});
+		console.error("Failed to get preset by slug:", error);
+		return null;
 	}
 }
 
@@ -244,29 +243,10 @@ export async function listCreatorPresets(
 			.eq("status", "published")
 			.order("created_at", { ascending: false });
 
-		if (error) throw error;
-
-		if (data && data.length > 0) {
-			return data as unknown as PresetWithCreator[];
-		}
-
-		if (!isMockFallbackEnabled()) {
-			return [];
-		}
-
-		return serveMockFallback("listCreatorPresets", () => {
-			const matched = MOCK_PRESETS.filter((p) => p.creator.id === creatorId);
-			return (matched.length > 0
-				? matched
-				: MOCK_PRESETS.slice(0, 12)) as unknown as PresetWithCreator[];
-		});
+		if (error) return [];
+		return (data ?? []) as unknown as PresetWithCreator[];
 	} catch (error) {
-		if (!isMockFallbackEnabled()) throw error;
-		return serveMockFallback("listCreatorPresets", () => {
-			const matched = MOCK_PRESETS.filter((p) => p.creator.id === creatorId);
-			return (matched.length > 0
-				? matched
-				: MOCK_PRESETS.slice(0, 12)) as unknown as PresetWithCreator[];
-		});
+		console.error("Failed to list creator presets:", error);
+		return [];
 	}
 }

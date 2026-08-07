@@ -1,5 +1,5 @@
 import type { PresetCardPreset } from "@presethub/ui";
-import { ArrowUpRight, Download, Flame, Heart } from "lucide-react";
+import { ArrowUpRight, Download, Flame, Heart, TrendingUp } from "lucide-react";
 import Link from "next/link";
 
 interface TrendingSectionProps {
@@ -7,11 +7,35 @@ interface TrendingSectionProps {
 }
 
 export function TrendingSection({ presets }: TrendingSectionProps) {
+	if (!presets || presets.length === 0) return null;
+
 	const trendingItems = presets.slice(0, 3);
-	if (trendingItems.length === 0) return null;
+	// Extract top categories directly from real Supabase dataset
+	const trendingCategories = Array.from(
+		new Set(presets.map((p) => p.category)),
+	).slice(0, 6);
 
 	return (
 		<section className="space-y-4">
+			{/* Real Database Trending Search Terms */}
+			{trendingCategories.length > 0 && (
+				<div className="flex items-center gap-2 overflow-x-auto scrollbar-none pb-1">
+					<div className="flex items-center gap-1.5 text-xs font-bold text-amber-400 shrink-0 px-2">
+						<TrendingUp className="w-3.5 h-3.5" />
+						<span>Trending:</span>
+					</div>
+					{trendingCategories.map((cat) => (
+						<Link
+							key={cat}
+							href={`/explore?category=${encodeURIComponent(cat.toLowerCase())}`}
+							className="px-3 py-1 rounded-full bg-purple-500/10 hover:bg-purple-500/20 text-purple-300 text-xs font-semibold border border-purple-500/20 transition-all shrink-0"
+						>
+							#{cat}
+						</Link>
+					))}
+				</div>
+			)}
+
 			<div className="flex items-center justify-between px-1">
 				<div className="flex items-center gap-2">
 					<div className="p-1.5 rounded-xl bg-flame-500/10 text-rose-400 border border-rose-500/20">
@@ -34,12 +58,16 @@ export function TrendingSection({ presets }: TrendingSectionProps) {
 						className="group relative overflow-hidden rounded-3xl bg-[var(--color-bg-surface)] border border-[var(--color-border-subtle)] hover:border-[var(--color-interactive-primary)]/50 transition-all duration-300 hover:shadow-2xl hover:shadow-[var(--color-interactive-primary)]/10 active:scale-[0.99]"
 					>
 						<div className="relative aspect-[16/9] w-full overflow-hidden bg-[var(--color-bg-elevated)]">
-							<img
-								src={preset.thumbnailUrl}
-								alt={preset.title}
-								className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-								loading="lazy"
-							/>
+							{preset.thumbnailUrl ? (
+								<img
+									src={preset.thumbnailUrl}
+									alt={preset.title}
+									className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+									loading="lazy"
+								/>
+							) : (
+								<div className="h-full w-full bg-purple-950/40" />
+							)}
 							<div className="absolute inset-0 bg-gradient-to-t from-[var(--color-bg-surface)] via-transparent to-transparent" />
 
 							<div className="absolute top-3 left-3 flex items-center gap-2">
@@ -63,14 +91,17 @@ export function TrendingSection({ presets }: TrendingSectionProps) {
 
 							<div className="flex items-center justify-between text-xs text-[var(--color-text-secondary)] pt-1 border-t border-[var(--color-border-subtle)]/60">
 								<div className="flex items-center gap-2">
-									<img
-										src={
-											preset.creator.avatarUrl ||
-											`https://api.dicebear.com/7.x/identicon/svg?seed=${preset.creator.username}`
-										}
-										alt={preset.creator.displayName}
-										className="w-5 h-5 rounded-full object-cover"
-									/>
+									{preset.creator.avatarUrl ? (
+										<img
+											src={preset.creator.avatarUrl}
+											alt={preset.creator.displayName}
+											className="w-5 h-5 rounded-full object-cover"
+										/>
+									) : (
+										<div className="w-5 h-5 rounded-full bg-purple-600/30 text-purple-300 font-bold text-[10px] flex items-center justify-center">
+											{preset.creator.displayName.slice(0, 2).toUpperCase()}
+										</div>
+									)}
 									<span className="font-medium text-[var(--color-text-primary)] truncate max-w-[100px]">
 										{preset.creator.displayName}
 									</span>

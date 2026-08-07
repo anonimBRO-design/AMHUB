@@ -1,10 +1,8 @@
 import type { PresetWithCreator } from "@/data/presets";
 import { syncPresetCounter } from "./helpers";
-import { isMockFallbackEnabled, serveMockFallback } from "./mock-fallback";
+import { createNotification } from "./notifications.dal";
 import { PRESET_SELECT_WITH_CREATOR, assertPresetExists } from "./presets.dal";
 import type { DalClient } from "./types";
-
-import { MOCK_LIKES } from "@/data/mock-data";
 
 export async function listUserLikedPresets(
 	client: DalClient,
@@ -18,26 +16,11 @@ export async function listUserLikedPresets(
 			.eq("status", "published")
 			.order("created_at", { ascending: false });
 
-		if (error) throw error;
-
-		if (data && data.length > 0) {
-			return data as unknown as PresetWithCreator[];
-		}
-
-		if (!isMockFallbackEnabled()) {
-			return [];
-		}
-
-		return serveMockFallback(
-			"listUserLikedPresets",
-			() => MOCK_LIKES as unknown as PresetWithCreator[],
-		);
+		if (error) return [];
+		return (data ?? []) as unknown as PresetWithCreator[];
 	} catch (error) {
-		if (!isMockFallbackEnabled()) throw error;
-		return serveMockFallback(
-			"listUserLikedPresets",
-			() => MOCK_LIKES as unknown as PresetWithCreator[],
-		);
+		console.error("Failed to list liked presets:", error);
+		return [];
 	}
 }
 
@@ -57,6 +40,31 @@ export async function likePreset(
 	if (insertError) throw insertError;
 
 	await syncPresetCounter(client, presetId, "preset_likes", "like_count");
+
+	// Trigger Notification for creator
+	try {
+		const { data: preset } = await client
+			.from("presets")
+			.select("creator_id, title")
+			.eq("id", presetId)
+			.maybeSingle();
+
+		if (
+			preset &&
+			(preset as { creator_id: string }).creator_id &&
+			(preset as { creator_id: string }).creator_id !== userId
+		) {
+			await createNotification(client, {
+				userId: (preset as { creator_id: string }).creator_id,
+				actorId: userId,
+				type: "like",
+				presetId,
+				message: `liked your preset "${(preset as { title?: string }).title || "Preset"}"`,
+			});
+		}
+	} catch (e) {
+		console.error("Failed to trigger like notification", e);
+	}
 
 	return { preset_id: presetId, liked: true };
 }
