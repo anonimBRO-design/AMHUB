@@ -17,6 +17,11 @@ const usernameRouteParamsSchema = z.object({
 		.regex(/^[a-zA-Z0-9_-]+$/),
 });
 
+const emptyToNull = z.preprocess(
+	(v) => (typeof v === "string" && v.trim() === "" ? null : v),
+	z.string().url().nullable().optional(),
+);
+
 const updateUserProfileSchema = z.object({
 	username: z
 		.string()
@@ -27,15 +32,36 @@ const updateUserProfileSchema = z.object({
 		.regex(/^[a-z0-9_-]+$/)
 		.optional(),
 	display_name: z.string().trim().min(1).max(80).optional(),
-	bio: z.string().trim().max(280).nullable().optional(),
-	avatar_url: z.string().url().nullable().optional(),
-	banner_url: z.string().url().nullable().optional(),
-	website_url: z.string().url().nullable().optional(),
-	tiktok_handle: z.string().trim().max(50).nullable().optional(),
-	instagram_handle: z.string().trim().max(50).nullable().optional(),
-	discord_handle: z.string().trim().max(50).nullable().optional(),
-	youtube_url: z.string().url().nullable().optional(),
-	country_code: z.string().trim().length(2).toUpperCase().nullable().optional(),
+	bio: z.preprocess(
+		(v) => (typeof v === "string" && v.trim() === "" ? null : v),
+		z.string().trim().max(280).nullable().optional(),
+	),
+	avatar_url: z.preprocess(
+		(v) => (typeof v === "string" && v.trim() === "" ? null : v),
+		z.string().trim().max(500).nullable().optional(),
+	),
+	banner_url: z.preprocess(
+		(v) => (typeof v === "string" && v.trim() === "" ? null : v),
+		z.string().trim().max(500).nullable().optional(),
+	),
+	website_url: emptyToNull,
+	tiktok_handle: z.preprocess(
+		(v) => (typeof v === "string" && v.trim() === "" ? null : v),
+		z.string().trim().max(50).nullable().optional(),
+	),
+	instagram_handle: z.preprocess(
+		(v) => (typeof v === "string" && v.trim() === "" ? null : v),
+		z.string().trim().max(50).nullable().optional(),
+	),
+	discord_handle: z.preprocess(
+		(v) => (typeof v === "string" && v.trim() === "" ? null : v),
+		z.string().trim().max(50).nullable().optional(),
+	),
+	youtube_url: emptyToNull,
+	country_code: z.preprocess(
+		(v) => (typeof v === "string" && v.trim() === "" ? null : v),
+		z.string().trim().length(2).toUpperCase().nullable().optional(),
+	),
 });
 
 export async function GET(
