@@ -29,6 +29,7 @@ interface ProfileClientProps {
 		createdAt?: string;
 	};
 	isOwnProfile: boolean;
+	isFollowing: boolean;
 	presets: PresetCardPreset[];
 	activities: ActivityItem[];
 }
@@ -36,6 +37,7 @@ interface ProfileClientProps {
 export function ProfileClient({
 	user,
 	isOwnProfile,
+	isFollowing,
 	presets,
 	activities,
 }: ProfileClientProps) {
@@ -52,7 +54,11 @@ export function ProfileClient({
 			<Hero user={user} />
 
 			<div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-				<FollowSection username={user.username} isOwnProfile={isOwnProfile} />
+				<FollowSection
+					username={user.username}
+					isOwnProfile={isOwnProfile}
+					initialFollowing={isFollowing}
+				/>
 			</div>
 
 			<ProfileStats

@@ -131,10 +131,13 @@ export default async function ProfilePage({ params }: PageProps) {
 		createdAt: user.created_at,
 	};
 
+	const isFollowing = user.is_following === true;
+
 	return (
 		<ProfileClient
 			user={profileUserData}
 			isOwnProfile={isOwnProfile}
+			isFollowing={isFollowing}
 			presets={presets}
 			activities={activities}
 		/>
