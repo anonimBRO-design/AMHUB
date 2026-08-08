@@ -10,6 +10,16 @@ type ProfileBootstrapInput = {
 };
 type ProfileInsert = Database["public"]["Tables"]["users"]["Insert"];
 
+const INVALID_PLACEHOLDERS = [
+	"admin",
+	"default user",
+	"default_user",
+	"guest",
+	"anonymous",
+	"default",
+	"system",
+];
+
 const normalizeUsername = (value: string | undefined, fallback: string) => {
 	const normalized = (value ?? "")
 		.toLowerCase()
@@ -69,7 +79,65 @@ export async function ensureUserProfile(
 	}
 
 	if (existingProfile) {
-		return existingProfile;
+		const currentProfile = existingProfile as unknown as Profile;
+		const isInvalidUsername = INVALID_PLACEHOLDERS.includes(
+			currentProfile.username.toLowerCase(),
+		);
+		const isInvalidDisplayName = INVALID_PLACEHOLDERS.includes(
+			currentProfile.display_name.toLowerCase(),
+		);
+
+		if (!isInvalidUsername && !isInvalidDisplayName) {
+			return currentProfile;
+		}
+
+		// Auto-heal existing invalid profile
+		const email = user.email ?? currentProfile.email;
+		const fallbackUsername = `user_${user.id.slice(0, 8)}`;
+		const metadataUsername =
+			input.username ??
+			getMetadataString(user, "username") ??
+			getMetadataString(user, "preferred_username");
+
+		let healedUsername = currentProfile.username;
+		if (isInvalidUsername) {
+			const candidate = normalizeUsername(
+				metadataUsername ?? (email ? email.split("@")[0] : undefined),
+				fallbackUsername,
+			);
+			healedUsername = INVALID_PLACEHOLDERS.includes(candidate.toLowerCase())
+				? fallbackUsername
+				: candidate;
+		}
+
+		let healedDisplayName = currentProfile.display_name;
+		if (isInvalidDisplayName) {
+			const rawDisplayName =
+				input.displayName ??
+				getMetadataString(user, "display_name") ??
+				getMetadataString(user, "full_name") ??
+				getMetadataString(user, "name");
+			healedDisplayName =
+				rawDisplayName &&
+				!INVALID_PLACEHOLDERS.includes(rawDisplayName.trim().toLowerCase())
+					? rawDisplayName.trim()
+					: healedUsername;
+		}
+
+		const { data: updatedProfile, error: updateError } = await supabase
+			.from("users")
+			.update({
+				username: healedUsername,
+				display_name: healedDisplayName,
+				updated_at: new Date().toISOString(),
+			} as never)
+			.eq("id", user.id)
+			.select("*")
+			.single();
+
+		if (!updateError && updatedProfile) {
+			return updatedProfile as unknown as Profile;
+		}
 	}
 
 	const email = user.email;
@@ -83,17 +151,28 @@ export async function ensureUserProfile(
 		input.username ??
 		getMetadataString(user, "username") ??
 		getMetadataString(user, "preferred_username");
-	const baseUsername = normalizeUsername(
+
+	let baseUsername = normalizeUsername(
 		metadataUsername ?? email.split("@")[0],
 		fallbackUsername,
 	);
-	const displayName =
+	if (INVALID_PLACEHOLDERS.includes(baseUsername.toLowerCase())) {
+		baseUsername = fallbackUsername;
+	}
+
+	const rawDisplayName =
 		input.displayName ??
 		getMetadataString(user, "display_name") ??
 		getMetadataString(user, "full_name") ??
 		getMetadataString(user, "name") ??
-		metadataUsername ??
-		baseUsername;
+		metadataUsername;
+
+	const displayName =
+		rawDisplayName &&
+		!INVALID_PLACEHOLDERS.includes(rawDisplayName.trim().toLowerCase())
+			? rawDisplayName.trim()
+			: baseUsername;
+
 	const avatarUrl =
 		getMetadataString(user, "avatar_url") ?? getMetadataString(user, "picture");
 	const provider = user.app_metadata?.provider;
@@ -143,16 +222,15 @@ export const getCurrentProfile = cache(async (): Promise<Profile | null> => {
 		return null;
 	}
 
-	const supabase = await createSupabaseServerClient();
-	const { data, error } = await supabase
-		.from("users")
-		.select("*")
-		.eq("id", user.id)
-		.maybeSingle();
+	return ensureUserProfile(user);
+});
 
-	if (error) {
-		throw error;
+export async function requireProfile(): Promise<Profile> {
+	const profile = await getCurrentProfile();
+
+	if (!profile) {
+		redirect("/auth/login");
 	}
 
-	return data ?? ensureUserProfile(user);
-});
+	return profile;
+}

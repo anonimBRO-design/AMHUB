@@ -39,7 +39,7 @@ export const AppLayoutTemplate: React.FC<AppLayoutTemplateProps> = ({
 				</div>
 
 				{/* Main Content */}
-				<main className="flex-1 p-4 sm:p-6 pb-28 md:pb-28 lg:pb-32 min-w-0 max-w-full">
+				<main className="flex-1 p-4 sm:p-6 pb-24 min-w-0 max-w-full">
 					{children}
 				</main>
 

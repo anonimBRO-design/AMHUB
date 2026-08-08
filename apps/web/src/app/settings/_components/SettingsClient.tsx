@@ -9,6 +9,7 @@ import { DangerZone } from "./DangerZone";
 import { MobileSettingsView } from "./MobileSettingsView";
 import { SettingsGroup } from "./SettingsGroup";
 import { SettingsToggle } from "./SettingsToggle";
+import { UsernameField } from "./UsernameField";
 
 interface SettingsClientProps {
 	profile: User;
@@ -19,6 +20,10 @@ export function SettingsClient({ profile }: SettingsClientProps) {
 	const [isLoading, setIsLoading] = useState(false);
 	const [successMessage, setSuccessMessage] = useState<string | null>(null);
 	const [error, setError] = useState<string | null>(null);
+
+	const [username, setUsername] = useState(profile.username ?? "");
+	const [isUsernameValid, setIsUsernameValid] = useState(true);
+	const [isUsernameChecking, setIsUsernameChecking] = useState(false);
 
 	const [displayName, setDisplayName] = useState(profile.display_name ?? "");
 	const [bio, setBio] = useState(profile.bio ?? "");
@@ -63,6 +68,8 @@ export function SettingsClient({ profile }: SettingsClientProps) {
 
 	const handleSubmit = async (e: FormEvent) => {
 		e.preventDefault();
+		if (!isUsernameValid || isUsernameChecking) return;
+
 		setIsLoading(true);
 		setError(null);
 		setSuccessMessage(null);
@@ -72,6 +79,7 @@ export function SettingsClient({ profile }: SettingsClientProps) {
 				method: "PATCH",
 				headers: { "Content-Type": "application/json" },
 				body: JSON.stringify({
+					username: username.trim().toLowerCase(),
 					display_name: displayName.trim() || profile.display_name,
 					bio: bio.trim() || null,
 					avatar_url: avatarUrl.trim() || null,
@@ -108,7 +116,7 @@ export function SettingsClient({ profile }: SettingsClientProps) {
 			{/* Desktop and Tablet Layout (Hidden on Mobile) */}
 			<form
 				onSubmit={handleSubmit}
-				className="hidden md:block space-y-6 max-w-2xl mx-auto pb-24 sm:pb-12"
+				className="hidden md:block space-y-6 max-w-2xl mx-auto"
 			>
 				<div className="space-y-1 px-1">
 					<div className="flex items-center gap-2 text-xs font-bold text-[var(--color-interactive-primary)] uppercase tracking-wider">
@@ -135,7 +143,7 @@ export function SettingsClient({ profile }: SettingsClientProps) {
 				)}
 
 				<AccountCard
-					username={profile.username}
+					username={username || profile.username}
 					displayName={displayName || profile.display_name || profile.username}
 					avatarUrl={avatarUrl}
 					onAvatarUpload={handleAvatarUpload}
@@ -143,6 +151,16 @@ export function SettingsClient({ profile }: SettingsClientProps) {
 
 				<SettingsGroup title="Public Profile Information">
 					<div className="p-4 space-y-4">
+						<UsernameField
+							value={username}
+							initialUsername={profile.username}
+							onChange={setUsername}
+							onValidityChange={(isValid, isChecking) => {
+								setIsUsernameValid(isValid);
+								setIsUsernameChecking(isChecking);
+							}}
+						/>
+
 						<div className="space-y-1.5">
 							<label
 								htmlFor="settings-display-name"
@@ -316,23 +334,21 @@ export function SettingsClient({ profile }: SettingsClientProps) {
 
 				<DangerZone />
 
-				<div className="fixed bottom-0 left-0 right-0 z-40 sm:relative p-4 sm:p-0 bg-[var(--color-bg-surface)]/95 sm:bg-transparent backdrop-blur-xl sm:backdrop-blur-none border-t border-[var(--color-border-subtle)] sm:border-0 shadow-2xl sm:shadow-none pb-[calc(env(safe-area-inset-bottom,0px)+1rem)] sm:pb-0">
-					<div className="flex items-center justify-end gap-3 max-w-2xl mx-auto">
-						<button
-							type="submit"
-							disabled={isLoading}
-							className="w-full sm:w-auto inline-flex items-center justify-center gap-2 min-h-[48px] px-8 rounded-2xl bg-[var(--color-interactive-primary)] text-white font-bold text-xs shadow-xl shadow-[var(--color-interactive-primary)]/20 hover:bg-[var(--color-interactive-primary-hover)] active:scale-95 transition-all disabled:opacity-50"
-						>
-							{isLoading ? (
-								<>
-									<Loader2 className="w-4 h-4 animate-spin" />
-									<span>Saving Changes...</span>
-								</>
-							) : (
-								<span>Save Settings Changes</span>
-							)}
-						</button>
-					</div>
+				<div className="mt-8 mb-24 sm:mb-28 flex items-center justify-end gap-3 max-w-2xl mx-auto">
+					<button
+						type="submit"
+						disabled={isLoading || !isUsernameValid || isUsernameChecking}
+						className="w-full sm:w-auto inline-flex items-center justify-center gap-2 min-h-[48px] px-8 rounded-2xl bg-[var(--color-interactive-primary)] text-white font-bold text-xs shadow-xl shadow-[var(--color-interactive-primary)]/20 hover:bg-[var(--color-interactive-primary-hover)] active:scale-95 transition-all disabled:opacity-50"
+					>
+						{isLoading ? (
+							<>
+								<Loader2 className="w-4 h-4 animate-spin" />
+								<span>Saving Changes...</span>
+							</>
+						) : (
+							<span>Save Settings Changes</span>
+						)}
+					</button>
 				</div>
 			</form>
 		</div>

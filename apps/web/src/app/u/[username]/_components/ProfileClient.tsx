@@ -21,6 +21,7 @@ interface ProfileClientProps {
 		isVerified?: boolean;
 		followerCount?: number;
 		followingCount?: number;
+		presetCount?: number;
 		websiteUrl?: string | null;
 		tiktokHandle?: string | null;
 		instagramHandle?: string | null;
@@ -53,7 +54,7 @@ export function ProfileClient({
 			</div>
 
 			<ProfileStats
-				presetCount={presets.length}
+				presetCount={user.presetCount ?? presets.length}
 				followerCount={user.followerCount ?? 0}
 				followingCount={user.followingCount ?? 0}
 				totalDownloads={totalDownloads}

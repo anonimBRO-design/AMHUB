@@ -1,7 +1,11 @@
-import { getUserByUsername, getUserByUsernameOrNull } from "@/dal/users.dal";
+import {
+	getUserByAuthId,
+	getUserByUsername,
+	getUserByUsernameOrNull,
+} from "@/dal/users.dal";
 import { listCreatorPresets } from "@/data/presets";
 import { mapPresetToCardPreset } from "@/lib/mappers";
-import { getCurrentUser } from "@/lib/supabase/auth";
+import { getCurrentProfile } from "@/lib/supabase/auth";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
@@ -39,14 +43,25 @@ export async function generateMetadata({
 
 export default async function ProfilePage({ params }: PageProps) {
 	const { username } = await params;
-	const currentUser = await getCurrentUser();
+	const currentUser = await getCurrentProfile();
 	const supabase = await createSupabaseServerClient();
 
 	let user: Awaited<ReturnType<typeof getUserByUsername>> = null;
-	try {
-		user = await getUserByUsername(supabase, username, currentUser?.id);
-	} catch {
-		notFound();
+
+	if (
+		currentUser &&
+		(username === "me" ||
+			username.toLowerCase() === currentUser.username.toLowerCase())
+	) {
+		user = await getUserByAuthId(supabase, currentUser.id);
+	}
+
+	if (!user) {
+		try {
+			user = await getUserByUsername(supabase, username, currentUser?.id);
+		} catch {
+			notFound();
+		}
 	}
 
 	if (!user) {
@@ -66,6 +81,7 @@ export default async function ProfilePage({ params }: PageProps) {
 		isVerified: user.is_verified,
 		followerCount: user.follower_count,
 		followingCount: user.following_count,
+		presetCount: user.preset_count,
 		websiteUrl: user.website_url,
 		tiktokHandle: user.tiktok_handle,
 		instagramHandle: user.instagram_handle,

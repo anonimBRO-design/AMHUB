@@ -4,6 +4,7 @@ import type { User } from "@presethub/types";
 import { Avatar, Button, Input } from "@presethub/ui";
 import { useRouter } from "next/navigation";
 import { type ChangeEvent, type FormEvent, useState } from "react";
+import { UsernameField } from "./UsernameField";
 
 interface SettingsFormProps {
 	profile: User;
@@ -14,6 +15,10 @@ export function SettingsForm({ profile }: SettingsFormProps) {
 	const [isLoading, setIsLoading] = useState(false);
 	const [successMessage, setSuccessMessage] = useState<string | null>(null);
 	const [error, setError] = useState<string | null>(null);
+
+	const [username, setUsername] = useState(profile.username ?? "");
+	const [isUsernameValid, setIsUsernameValid] = useState(true);
+	const [isUsernameChecking, setIsUsernameChecking] = useState(false);
 
 	const [displayName, setDisplayName] = useState(profile.display_name ?? "");
 	const [bio, setBio] = useState(profile.bio ?? "");
@@ -67,6 +72,8 @@ export function SettingsForm({ profile }: SettingsFormProps) {
 
 	const handleSubmit = async (e: FormEvent) => {
 		e.preventDefault();
+		if (!isUsernameValid || isUsernameChecking) return;
+
 		setIsLoading(true);
 		setError(null);
 		setSuccessMessage(null);
@@ -76,6 +83,7 @@ export function SettingsForm({ profile }: SettingsFormProps) {
 				method: "PATCH",
 				headers: { "Content-Type": "application/json" },
 				body: JSON.stringify({
+					username: username.trim().toLowerCase(),
 					display_name: displayName.trim() || profile.display_name,
 					bio: bio.trim() || null,
 					avatar_url: avatarUrl.trim() || null,
@@ -149,6 +157,16 @@ export function SettingsForm({ profile }: SettingsFormProps) {
 			</div>
 
 			<div className="space-y-4">
+				<UsernameField
+					value={username}
+					initialUsername={profile.username}
+					onChange={setUsername}
+					onValidityChange={(isValid, isChecking) => {
+						setIsUsernameValid(isValid);
+						setIsUsernameChecking(isChecking);
+					}}
+				/>
+
 				<Input
 					label="Display Name"
 					value={displayName}
@@ -203,7 +221,11 @@ export function SettingsForm({ profile }: SettingsFormProps) {
 			</div>
 
 			<div className="flex justify-end pt-4 border-t border-[var(--color-border-subtle)]">
-				<Button type="submit" isLoading={isLoading}>
+				<Button
+					type="submit"
+					isLoading={isLoading}
+					isDisabled={isLoading || !isUsernameValid || isUsernameChecking}
+				>
 					Save Changes
 				</Button>
 			</div>

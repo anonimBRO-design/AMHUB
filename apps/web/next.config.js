@@ -7,7 +7,8 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const nextConfig = {
 	reactStrictMode: true,
 	transpilePackages: ["@presethub/ui", "@presethub/types", "@presethub/config"],
-	outputFileTracingRoot: path.join(__dirname, "../../"),
+	serverExternalPackages: ["zod"],
+	outputFileTracingRoot: path.resolve(__dirname, "../"),
 	images: {
 		remotePatterns: [
 			{

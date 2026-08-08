@@ -1,5 +1,5 @@
 import { listNotifications } from "@/dal/notifications.dal";
-import { getCurrentUser } from "@/lib/supabase/auth";
+import { getCurrentProfile } from "@/lib/supabase/auth";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
@@ -12,13 +12,13 @@ export const metadata: Metadata = {
 };
 
 export default async function NotificationsPage() {
-	const user = await getCurrentUser();
-	if (!user) {
+	const profile = await getCurrentProfile();
+	if (!profile) {
 		redirect("/auth/login");
 	}
 
 	const supabase = await createSupabaseServerClient();
-	const rawNotifications = await listNotifications(supabase, user.id);
+	const rawNotifications = await listNotifications(supabase, profile.id);
 
 	const initialNotifications: NotificationItemData[] = (
 		rawNotifications as unknown as Array<{

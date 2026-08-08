@@ -2,18 +2,18 @@
 	"name": "presethub",
 	"private": true,
 	"scripts": {
-		"build": "turbo run build",
-		"dev": "turbo run dev",
-		"lint": "turbo run lint",
-		"format": "prettier --write \"**/*.{ts,tsx,md}\"",
-		"typecheck": "turbo run typecheck"
+		"build": "npx --prefix apps/web next build",
+		"dev": "npx --prefix apps/web next dev",
+		"lint": "npx @biomejs/biome check .",
+		"format": "npx prettier --write \"**/*.{ts,tsx,md}\"",
+		"typecheck": "npx --prefix apps/web tsc --noEmit"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "^1.8.0",
 		"turbo": "^2.0.0",
 		"typescript": "^5.4.0"
 	},
-	"packageManager": "pnpm@9.0.0",
+	"packageManager": "pnpm@9.15.9",
 	"engines": {
 		"node": ">=20.0.0"
 	}

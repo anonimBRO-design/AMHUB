@@ -229,7 +229,7 @@ export function UploadWizard() {
 	};
 
 	return (
-		<div className="max-w-2xl mx-auto space-y-6 pb-24 sm:pb-12">
+		<div className="max-w-2xl mx-auto space-y-6">
 			{/* Header */}
 			<div className="space-y-1 text-center sm:text-left">
 				<div className="flex items-center justify-center sm:justify-start gap-2 text-xs font-bold text-[var(--color-interactive-primary)] uppercase tracking-wider">
@@ -306,7 +306,7 @@ export function UploadWizard() {
 			</div>
 
 			{/* Navigation Buttons */}
-			<div className="fixed bottom-0 left-0 right-0 z-40 sm:relative p-4 sm:p-0 bg-[var(--color-bg-surface)]/95 sm:bg-transparent backdrop-blur-xl sm:backdrop-blur-none border-t border-[var(--color-border-subtle)] sm:border-0 shadow-2xl sm:shadow-none pb-[calc(env(safe-area-inset-bottom,0px)+1rem)] sm:pb-0">
+			<div className="mt-8 mb-24 sm:mb-28 pt-4 border-t border-[var(--color-border-subtle)]/60">
 				<div className="flex items-center justify-between gap-3 max-w-2xl mx-auto">
 					{currentStep > 1 ? (
 						<button

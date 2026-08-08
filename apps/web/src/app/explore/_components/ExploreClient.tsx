@@ -37,7 +37,7 @@ export function ExploreClient({ presets }: ExploreClientProps) {
 	);
 
 	return (
-		<div className="space-y-8 pb-16 max-w-6xl mx-auto px-4 sm:px-0">
+		<div className="space-y-8 max-w-6xl mx-auto px-4 sm:px-0">
 			{/* Top Glass Header Banner */}
 			<div className="relative overflow-hidden p-6 sm:p-8 rounded-3xl backdrop-blur-2xl bg-white/[0.02] border border-white/[0.08] shadow-[0_16px_48px_rgba(0,0,0,0.4)] flex flex-col sm:flex-row sm:items-center justify-between gap-4">
 				<div className="pointer-events-none absolute -top-24 -right-24 w-64 h-64 bg-purple-600/15 rounded-full blur-[90px]" />

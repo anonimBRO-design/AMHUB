@@ -73,7 +73,7 @@ export function StickyActionBar({ preset }: StickyActionBarProps) {
 	const mainDownloadUrl = preset.amLink || preset.fileUrl || "#";
 
 	return (
-		<div className="fixed bottom-0 left-0 right-0 z-40 sm:hidden p-3 bg-[var(--color-bg-surface)]/95 backdrop-blur-xl border-t border-[var(--color-border-subtle)] shadow-2xl pb-[calc(env(safe-area-inset-bottom,0px)+0.75rem)] transition-all">
+		<div className="mt-6 p-3 rounded-3xl bg-[var(--color-bg-surface)] border border-[var(--color-border-subtle)] shadow-lg sm:hidden transition-all">
 			<div className="flex items-center gap-2 max-w-lg mx-auto">
 				{/* Primary Action Button (Download / Import) */}
 				<a

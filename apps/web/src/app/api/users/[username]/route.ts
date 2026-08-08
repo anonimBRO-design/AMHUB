@@ -13,11 +13,19 @@ const usernameRouteParamsSchema = z.object({
 		.string()
 		.trim()
 		.min(3)
-		.max(24)
-		.regex(/^[a-zA-Z0-9_]+$/),
+		.max(30)
+		.regex(/^[a-zA-Z0-9_-]+$/),
 });
 
 const updateUserProfileSchema = z.object({
+	username: z
+		.string()
+		.trim()
+		.toLowerCase()
+		.min(3)
+		.max(30)
+		.regex(/^[a-z0-9_-]+$/)
+		.optional(),
 	display_name: z.string().trim().min(1).max(80).optional(),
 	bio: z.string().trim().max(280).nullable().optional(),
 	avatar_url: z.string().url().nullable().optional(),

@@ -157,8 +157,8 @@ export function MobilePresetView({ preset }: MobilePresetViewProps) {
 				/>
 			</div>
 
-			{/* STICKY BOTTOM BAR */}
-			<div className="fixed bottom-0 left-0 right-0 z-50 bg-surface/95 backdrop-blur-xl border-t border-[var(--color-border-subtle)] p-4 pb-[calc(env(safe-area-inset-bottom,0px)+1rem)]">
+			{/* BOTTOM ACTION BAR */}
+			<div className="mt-6 mx-4 rounded-3xl border border-[var(--color-border-subtle)] bg-[var(--color-bg-surface)] p-4 shadow-xl">
 				<div className="flex items-center gap-3">
 					<button
 						type="button"

@@ -1,6 +1,8 @@
-import { getFollowerCount } from "@/dal/users.dal";
-import { listCreatorPresets } from "@/data/presets";
-import { mapPresetToCardPreset } from "@/lib/mappers";
+import {
+	getCreatorAnalytics,
+	getCreatorDashboardStats,
+	listCreatorPresetsPaginated,
+} from "@/dal/presets.dal";
 import { getCurrentProfile } from "@/lib/supabase/auth";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import type { Metadata } from "next";
@@ -21,20 +23,11 @@ export default async function DashboardPage() {
 
 	const supabase = await createSupabaseServerClient();
 
-	const [rawPresets, followerCount] = await Promise.all([
-		listCreatorPresets(supabase, profile.id),
-		getFollowerCount(supabase, profile.id),
+	const [stats, initialPresetsResult, analytics] = await Promise.all([
+		getCreatorDashboardStats(supabase, profile.id),
+		listCreatorPresetsPaginated(supabase, profile.id, { page: 1, limit: 12 }),
+		getCreatorAnalytics(supabase, profile.id, "7d"),
 	]);
-
-	const presets = rawPresets.map(mapPresetToCardPreset);
-
-	const stats = {
-		totalDownloads: rawPresets.reduce((sum, p) => sum + p.download_count, 0),
-		totalViews: rawPresets.reduce((sum, p) => sum + p.view_count, 0),
-		followerCount,
-		totalLikes: rawPresets.reduce((sum, p) => sum + p.like_count, 0),
-		presetCount: presets.length,
-	};
 
 	const dashboardUserData = {
 		displayName: profile.display_name,
@@ -42,7 +35,32 @@ export default async function DashboardPage() {
 		avatarUrl: profile.avatar_url || null,
 	};
 
+	const initialPresets = initialPresetsResult.items.map((preset) => ({
+		id: preset.id,
+		title: preset.title,
+		slug: preset.slug,
+		description: preset.description,
+		thumbnail_url: preset.thumbnail_url,
+		file_type: preset.file_type as "xml" | "qr" | "link",
+		category: preset.category,
+		difficulty: (preset.difficulty || "beginner") as
+			| "beginner"
+			| "intermediate"
+			| "advanced",
+		tags: preset.tags || [],
+		download_count: preset.download_count,
+		like_count: preset.like_count,
+		view_count: preset.view_count,
+		status: preset.status as "pending" | "published" | "rejected" | "removed",
+		created_at: preset.created_at,
+	}));
+
 	return (
-		<DashboardClient user={dashboardUserData} stats={stats} presets={presets} />
+		<DashboardClient
+			user={dashboardUserData}
+			stats={stats}
+			initialPresets={initialPresets}
+			initialAnalytics={analytics}
+		/>
 	);
 }

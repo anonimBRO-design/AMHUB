@@ -111,6 +111,7 @@ export interface UserProfileResponse {
 }
 
 export interface UpdateUserProfileInput {
+	username?: string;
 	display_name?: string;
 	bio?: string | null;
 	avatar_url?: string | null;

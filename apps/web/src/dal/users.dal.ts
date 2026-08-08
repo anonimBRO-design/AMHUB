@@ -44,17 +44,24 @@ export async function getUserByUsername(
 		}
 
 		const validUser = user as unknown as User;
-		const [{ count: followerCount }, { count: followingCount }] =
-			await Promise.all([
-				client
-					.from("follows")
-					.select("*", { count: "exact", head: true })
-					.eq("following_id", validUser.id),
-				client
-					.from("follows")
-					.select("*", { count: "exact", head: true })
-					.eq("follower_id", validUser.id),
-			]);
+		const [
+			{ count: followerCount },
+			{ count: followingCount },
+			{ count: presetCount },
+		] = await Promise.all([
+			client
+				.from("follows")
+				.select("*", { count: "exact", head: true })
+				.eq("following_id", validUser.id),
+			client
+				.from("follows")
+				.select("*", { count: "exact", head: true })
+				.eq("follower_id", validUser.id),
+			client
+				.from("presets")
+				.select("*", { count: "exact", head: true })
+				.eq("creator_id", validUser.id),
+		]);
 
 		let isFollowing = false;
 		if (currentUserId && currentUserId !== validUser.id) {
@@ -72,10 +79,56 @@ export async function getUserByUsername(
 			...validUser,
 			follower_count: followerCount ?? 0,
 			following_count: followingCount ?? 0,
+			preset_count: presetCount ?? 0,
 			is_following: currentUserId ? isFollowing : undefined,
 		};
 	} catch (error) {
 		console.error("Failed to get user by username:", error);
+		return null;
+	}
+}
+
+export async function getUserByAuthId(client: DalClient, userId: string) {
+	try {
+		const { data: user, error } = await client
+			.from("users")
+			.select(PUBLIC_USER_SELECT)
+			.eq("id", userId)
+			.maybeSingle();
+
+		if (error || !user) {
+			return null;
+		}
+
+		const validUser = user as unknown as User;
+		const [
+			{ count: followerCount },
+			{ count: followingCount },
+			{ count: presetCount },
+		] = await Promise.all([
+			client
+				.from("follows")
+				.select("*", { count: "exact", head: true })
+				.eq("following_id", validUser.id),
+			client
+				.from("follows")
+				.select("*", { count: "exact", head: true })
+				.eq("follower_id", validUser.id),
+			client
+				.from("presets")
+				.select("*", { count: "exact", head: true })
+				.eq("creator_id", validUser.id),
+		]);
+
+		return {
+			...validUser,
+			follower_count: followerCount ?? 0,
+			following_count: followingCount ?? 0,
+			preset_count: presetCount ?? 0,
+			is_following: undefined,
+		};
+	} catch (error) {
+		console.error("Failed to get user by auth ID:", error);
 		return null;
 	}
 }
@@ -130,6 +183,93 @@ export async function getFollowerCount(client: DalClient, userId: string) {
 	}
 }
 
+export async function getFollowingCount(client: DalClient, userId: string) {
+	try {
+		const { count, error } = await client
+			.from("follows")
+			.select("*", { count: "exact", head: true })
+			.eq("follower_id", userId);
+
+		if (error) return 0;
+		return count ?? 0;
+	} catch (error) {
+		console.error("Failed to get following count:", error);
+		return 0;
+	}
+}
+
+export const RESERVED_USERNAMES = [
+	"admin",
+	"administrator",
+	"system",
+	"guest",
+	"anonymous",
+	"support",
+	"api",
+	"settings",
+	"profile",
+	"me",
+	"home",
+	"explore",
+	"upload",
+	"dashboard",
+	"notifications",
+	"bookmarks",
+	"likes",
+	"login",
+	"register",
+	"auth",
+	"credits",
+];
+
+export async function isUsernameAvailable(
+	client: DalClient,
+	username: string,
+	currentUserId?: string,
+) {
+	const normalized = username.trim().toLowerCase();
+	if (!normalized || normalized.length < 3 || normalized.length > 30) {
+		return {
+			available: false,
+			reason: "Username must be 3-30 characters long.",
+		};
+	}
+
+	if (!/^[a-z0-9_-]+$/.test(normalized)) {
+		return {
+			available: false,
+			reason: "Only letters, numbers, underscores, and hyphens allowed.",
+		};
+	}
+
+	if (RESERVED_USERNAMES.includes(normalized)) {
+		return { available: false, reason: "This username is reserved." };
+	}
+
+	const { data: existingUser, error } = await client
+		.from("users")
+		.select("id, username")
+		.ilike("username", normalized)
+		.maybeSingle();
+
+	if (error) {
+		throw error;
+	}
+
+	if (existingUser) {
+		const validExisting = existingUser as unknown as {
+			id: string;
+			username: string;
+		};
+		if (currentUserId && validExisting.id === currentUserId) {
+			return { available: true, isCurrent: true, reason: "Username available" };
+		}
+		return { available: false, reason: "Username is already taken." };
+	}
+
+	return { available: true, isCurrent: false, reason: "Username available" };
+}
+
 export async function updateUserProfile(
 	client: DalClient,
 	targetUsername: string,
@@ -147,8 +287,24 @@ export async function updateUserProfile(
 		"User was not found.",
 	) as unknown as { id: string; username: string };
 
+	if (input.username) {
+		const normalizedUsername = input.username.trim().toLowerCase();
+		const checkResult = await isUsernameAvailable(
+			client,
+			normalizedUsername,
+			validTargetUser.id,
+		);
+		if (!checkResult.available) {
+			throw new ApiError({
+				code: "bad_request",
+				message: checkResult.reason,
+			});
+		}
+	}
+
 	const updatePayload: UserUpdate = {
 		...input,
+		username: input.username ? input.username.trim().toLowerCase() : undefined,
 		updated_at: new Date().toISOString(),
 	};
 
@@ -159,7 +315,10 @@ export async function updateUserProfile(
 		.select(PUBLIC_USER_SELECT)
 		.single();
 
-	if (updateError) throw updateError;
+	if (updateError) {
+		handleDuplicateKey(updateError, "Username is already taken.");
+		throw updateError;
+	}
 	return { targetUser: validTargetUser, updatedUser };
 }
 

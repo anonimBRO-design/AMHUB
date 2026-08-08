@@ -1,10 +1,11 @@
-import { Download, Eye, Grid, Heart, Users } from "lucide-react";
+import { Download, Eye, Grid, Heart, UserCheck, Users } from "lucide-react";
 
 interface StatsCardsProps {
 	stats: {
 		totalDownloads: number;
 		totalLikes: number;
 		followerCount: number;
+		followingCount: number;
 		totalViews: number;
 		presetCount: number;
 	};
@@ -12,6 +13,12 @@ interface StatsCardsProps {
 
 export function StatsCards({ stats }: StatsCardsProps) {
 	const cards = [
+		{
+			label: "Total Presets",
+			value: stats.presetCount,
+			icon: Grid,
+			color: "text-indigo-400 bg-indigo-500/10 border-indigo-500/20",
+		},
 		{
 			label: "Total Downloads",
 			value: stats.totalDownloads,
@@ -25,27 +32,27 @@ export function StatsCards({ stats }: StatsCardsProps) {
 			color: "text-rose-400 bg-rose-500/10 border-rose-500/20",
 		},
 		{
-			label: "Followers",
-			value: stats.followerCount,
-			icon: Users,
-			color: "text-purple-400 bg-purple-500/10 border-purple-500/20",
-		},
-		{
 			label: "Total Views",
 			value: stats.totalViews,
 			icon: Eye,
 			color: "text-blue-400 bg-blue-500/10 border-blue-500/20",
 		},
 		{
-			label: "Published Presets",
-			value: stats.presetCount,
-			icon: Grid,
-			color: "text-indigo-400 bg-indigo-500/10 border-indigo-500/20",
+			label: "Followers",
+			value: stats.followerCount,
+			icon: Users,
+			color: "text-purple-400 bg-purple-500/10 border-purple-500/20",
+		},
+		{
+			label: "Following",
+			value: stats.followingCount,
+			icon: UserCheck,
+			color: "text-cyan-400 bg-cyan-500/10 border-cyan-500/20",
 		},
 	];
 
 	return (
-		<div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
+		<div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
 			{cards.map((card) => {
 				const Icon = card.icon;
 				return (
