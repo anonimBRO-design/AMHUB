@@ -9,6 +9,7 @@ import { getCurrentProfile } from "@/lib/supabase/auth";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import type { ActivityItem } from "./_components/ActivitySection";
 import { ProfileClient } from "./_components/ProfileClient";
 
 interface PageProps {
@@ -41,6 +42,44 @@ export async function generateMetadata({
 	};
 }
 
+async function fetchUserActivities(
+	supabase: Awaited<ReturnType<typeof createSupabaseServerClient>>,
+	userId: string,
+): Promise<ActivityItem[]> {
+	try {
+		const { data, error } = await supabase
+			.from("notifications")
+			.select(
+				"id, type, message, preset_id, created_at, presets!notifications_preset_id_fkey(title)",
+			)
+			.eq("user_id", userId)
+			.order("created_at", { ascending: false })
+			.limit(10);
+
+		if (error || !data) return [];
+
+		return (
+			data as unknown as Array<{
+				id: string;
+				type: string;
+				message: string | null;
+				preset_id: string | null;
+				created_at: string;
+				presets: { title: string } | null;
+			}>
+		).map((n) => ({
+			id: n.id,
+			type: n.type as ActivityItem["type"],
+			message: n.message || n.type,
+			presetTitle: n.presets?.title ?? null,
+			actorName: null,
+			createdAt: n.created_at,
+		}));
+	} catch {
+		return [];
+	}
+}
+
 export default async function ProfilePage({ params }: PageProps) {
 	const { username } = await params;
 	const currentUser = await getCurrentProfile();
@@ -68,7 +107,10 @@ export default async function ProfilePage({ params }: PageProps) {
 		notFound();
 	}
 
-	const rawPresets = await listCreatorPresets(supabase, user.id);
+	const [rawPresets, activities] = await Promise.all([
+		listCreatorPresets(supabase, user.id),
+		fetchUserActivities(supabase, user.id),
+	]);
 	const presets = rawPresets.map(mapPresetToCardPreset);
 	const isOwnProfile = currentUser?.id === user.id;
 
@@ -94,6 +136,7 @@ export default async function ProfilePage({ params }: PageProps) {
 			user={profileUserData}
 			isOwnProfile={isOwnProfile}
 			presets={presets}
+			activities={activities}
 		/>
 	);
 }

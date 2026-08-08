@@ -11,7 +11,7 @@ export function AchievementBadges({
 	totalDownloads = 0,
 	presetCount = 0,
 }: AchievementBadgesProps) {
-	const achievements = [
+	const allAchievements = [
 		{
 			id: "verified",
 			title: "Verified Creator",
@@ -25,7 +25,7 @@ export function AchievementBadges({
 			title: "10K+ Downloads",
 			description: "Surpassed 10,000 total community preset downloads.",
 			icon: Zap,
-			unlocked: totalDownloads >= 10000 || isVerified,
+			unlocked: totalDownloads >= 10000,
 			color: "text-purple-400 bg-purple-500/10 border-purple-500/20",
 		},
 		{
@@ -46,6 +46,29 @@ export function AchievementBadges({
 		},
 	];
 
+	const earned = allAchievements.filter((a) => a.unlocked);
+
+	if (earned.length === 0) {
+		return (
+			<div className="p-5 rounded-3xl bg-[var(--color-bg-surface)] border border-[var(--color-border-subtle)] space-y-4 shadow-lg">
+				<div className="flex items-center gap-2">
+					<Sparkles className="w-4 h-4 text-amber-400" />
+					<h3 className="text-sm font-bold text-[var(--color-text-primary)] uppercase tracking-wider">
+						Achievements & Badges
+					</h3>
+				</div>
+				<div className="flex flex-col items-center justify-center py-8 text-center space-y-2">
+					<div className="p-3 rounded-2xl bg-[var(--color-bg-elevated)] text-[var(--color-text-tertiary)]">
+						<Sparkles className="w-5 h-5" />
+					</div>
+					<p className="text-xs text-[var(--color-text-tertiary)]">
+						No achievements yet
+					</p>
+				</div>
+			</div>
+		);
+	}
+
 	return (
 		<div className="p-5 rounded-3xl bg-[var(--color-bg-surface)] border border-[var(--color-border-subtle)] space-y-4 shadow-lg">
 			<div className="flex items-center gap-2">
@@ -56,16 +79,12 @@ export function AchievementBadges({
 			</div>
 
 			<div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-				{achievements.map((badge) => {
+				{earned.map((badge) => {
 					const Icon = badge.icon;
 					return (
 						<div
 							key={badge.id}
-							className={`p-3.5 rounded-2xl border flex items-start gap-3 transition-all ${
-								badge.unlocked
-									? "bg-[var(--color-bg-base)] border-[var(--color-border-subtle)]"
-									: "bg-[var(--color-bg-base)]/40 border-[var(--color-border-subtle)]/40 opacity-50 grayscale"
-							}`}
+							className="p-3.5 rounded-2xl border flex items-start gap-3 transition-all bg-[var(--color-bg-base)] border-[var(--color-border-subtle)]"
 						>
 							<div className={`p-2 rounded-xl border ${badge.color} shrink-0`}>
 								<Icon className="w-4 h-4" />

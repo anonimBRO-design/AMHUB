@@ -5,7 +5,7 @@ import { PresetGrid } from "@presethub/ui";
 import { Grid, Info, Sparkles } from "lucide-react";
 import { useState } from "react";
 import { AchievementBadges } from "./AchievementBadges";
-import { ActivitySection } from "./ActivitySection";
+import { type ActivityItem, ActivitySection } from "./ActivitySection";
 import { FollowSection } from "./FollowSection";
 import { Hero } from "./Hero";
 import { ProfileStats } from "./ProfileStats";
@@ -30,12 +30,14 @@ interface ProfileClientProps {
 	};
 	isOwnProfile: boolean;
 	presets: PresetCardPreset[];
+	activities: ActivityItem[];
 }
 
 export function ProfileClient({
 	user,
 	isOwnProfile,
 	presets,
+	activities,
 }: ProfileClientProps) {
 	const [activeTab, setActiveTab] = useState<ProfileTabType>("presets");
 
@@ -116,10 +118,7 @@ export function ProfileClient({
 
 			{activeTab === "activity" && (
 				<div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-					<ActivitySection
-						username={user.username}
-						displayName={user.displayName}
-					/>
+					<ActivitySection activities={activities} />
 					<AchievementBadges
 						isVerified={user.isVerified}
 						totalDownloads={totalDownloads}
