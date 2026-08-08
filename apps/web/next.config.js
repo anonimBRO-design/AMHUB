@@ -8,7 +8,7 @@ const nextConfig = {
 	reactStrictMode: true,
 	transpilePackages: ["@presethub/ui", "@presethub/types", "@presethub/config"],
 	serverExternalPackages: ["zod"],
-	outputFileTracingRoot: path.resolve(__dirname, "../"),
+	outputFileTracingRoot: path.resolve(__dirname, "../../"),
 	images: {
 		remotePatterns: [
 			{
