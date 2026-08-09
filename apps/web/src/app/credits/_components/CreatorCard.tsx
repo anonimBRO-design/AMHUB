@@ -10,7 +10,7 @@ export function CreatorCard() {
 
 			<div className="flex flex-col sm:flex-row items-center sm:items-start gap-5 text-center sm:text-left">
 				<img
-					src="https://api.dicebear.com/7.x/identicon/svg?seed=AnonimBRO"
+					src="/anonimbro-avatar.jpeg"
 					alt="AnonimBRO"
 					className="w-20 h-20 sm:w-24 sm:h-24 rounded-full object-cover border-4 border-[var(--color-interactive-primary)]/40 shadow-xl shrink-0"
 				/>
