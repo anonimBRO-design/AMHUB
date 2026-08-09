@@ -5,7 +5,6 @@ import { AlertCircle, Check, Loader2, User as UserIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import type React from "react";
 import { useState } from "react";
-import { SettingsToggle } from "./SettingsToggle";
 import { UsernameField } from "./UsernameField";
 
 interface MobileSettingsViewProps {
@@ -13,7 +12,7 @@ interface MobileSettingsViewProps {
 }
 
 export function MobileSettingsView({ profile }: MobileSettingsViewProps) {
-	const { language, setLanguage, t } = useLanguage();
+	const { t } = useLanguage();
 	const router = useRouter();
 	const [isLoading, setIsLoading] = useState(false);
 	const [successMessage, setSuccessMessage] = useState<string | null>(null);
@@ -26,11 +25,11 @@ export function MobileSettingsView({ profile }: MobileSettingsViewProps) {
 	const [displayName, setDisplayName] = useState(profile.display_name ?? "");
 	const [bio, setBio] = useState(profile.bio ?? "");
 	const [websiteUrl, setWebsiteUrl] = useState(profile.website_url ?? "");
-
-	const [darkMode, setDarkMode] = useState(true);
-	const [pushNotifications, setPushNotifications] = useState(true);
-	const [dataSaver, setDataSaver] = useState(false);
-	const [privateProfile, setPrivateProfile] = useState(false);
+	const [tiktokHandle, setTiktokHandle] = useState(profile.tiktok_handle ?? "");
+	const [instagramHandle, setInstagramHandle] = useState(
+		profile.instagram_handle ?? "",
+	);
+	const [youtubeUrl, setYoutubeUrl] = useState(profile.youtube_url ?? "");
 
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
@@ -49,6 +48,9 @@ export function MobileSettingsView({ profile }: MobileSettingsViewProps) {
 					display_name: displayName.trim() || profile.display_name,
 					bio: bio.trim() || null,
 					website_url: websiteUrl.trim() || null,
+					tiktok_handle: tiktokHandle.trim() || null,
+					instagram_handle: instagramHandle.trim() || null,
+					youtube_url: youtubeUrl.trim() || null,
 				}),
 			});
 
@@ -59,7 +61,7 @@ export function MobileSettingsView({ profile }: MobileSettingsViewProps) {
 				);
 			}
 
-			setSuccessMessage("Settings updated successfully!");
+			setSuccessMessage(t.settings.savedSuccess);
 			router.refresh();
 		} catch (err: unknown) {
 			setError(
@@ -131,7 +133,7 @@ export function MobileSettingsView({ profile }: MobileSettingsViewProps) {
 								htmlFor="mobile-settings-display-name"
 								className="block text-xs font-bold uppercase tracking-wider text-[var(--color-text-secondary)]"
 							>
-								Display Name *
+								{t.settings.displayName} *
 							</label>
 							<input
 								id="mobile-settings-display-name"
@@ -148,14 +150,14 @@ export function MobileSettingsView({ profile }: MobileSettingsViewProps) {
 								htmlFor="mobile-settings-bio"
 								className="block text-xs font-bold uppercase tracking-wider text-[var(--color-text-secondary)]"
 							>
-								Bio
+								{t.settings.bio}
 							</label>
 							<textarea
 								id="mobile-settings-bio"
 								rows={3}
 								value={bio}
 								onChange={(e) => setBio(e.target.value)}
-								placeholder="Tell the community about yourself..."
+								placeholder={t.settings.bioPlaceholder}
 								className="w-full p-4 rounded-2xl bg-[var(--color-bg-base)] border border-[var(--color-border-subtle)] text-xs sm:text-sm text-[var(--color-text-primary)] focus:outline-none focus:border-[var(--color-interactive-primary)] resize-none"
 							/>
 						</div>
@@ -165,7 +167,7 @@ export function MobileSettingsView({ profile }: MobileSettingsViewProps) {
 								htmlFor="mobile-settings-website"
 								className="block text-xs font-bold uppercase tracking-wider text-[var(--color-text-secondary)]"
 							>
-								Website URL
+								{t.settings.website}
 							</label>
 							<input
 								id="mobile-settings-website"
@@ -173,6 +175,59 @@ export function MobileSettingsView({ profile }: MobileSettingsViewProps) {
 								value={websiteUrl}
 								onChange={(e) => setWebsiteUrl(e.target.value)}
 								placeholder="https://yourwebsite.com"
+								className="w-full min-h-[44px] px-4 rounded-2xl bg-[var(--color-bg-base)] border border-[var(--color-border-subtle)] text-xs sm:text-sm text-[var(--color-text-primary)] focus:outline-none focus:border-[var(--color-interactive-primary)]"
+							/>
+						</div>
+
+						<div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+							<div className="space-y-1.5">
+								<label
+									htmlFor="mobile-settings-tiktok"
+									className="block text-xs font-bold uppercase tracking-wider text-[var(--color-text-secondary)]"
+								>
+									{t.settings.tiktok}
+								</label>
+								<input
+									id="mobile-settings-tiktok"
+									type="text"
+									value={tiktokHandle}
+									onChange={(e) => setTiktokHandle(e.target.value)}
+									placeholder="@username"
+									className="w-full min-h-[44px] px-4 rounded-2xl bg-[var(--color-bg-base)] border border-[var(--color-border-subtle)] text-xs sm:text-sm text-[var(--color-text-primary)] focus:outline-none focus:border-[var(--color-interactive-primary)]"
+								/>
+							</div>
+
+							<div className="space-y-1.5">
+								<label
+									htmlFor="mobile-settings-instagram"
+									className="block text-xs font-bold uppercase tracking-wider text-[var(--color-text-secondary)]"
+								>
+									{t.settings.instagram}
+								</label>
+								<input
+									id="mobile-settings-instagram"
+									type="text"
+									value={instagramHandle}
+									onChange={(e) => setInstagramHandle(e.target.value)}
+									placeholder="@username"
+									className="w-full min-h-[44px] px-4 rounded-2xl bg-[var(--color-bg-base)] border border-[var(--color-border-subtle)] text-xs sm:text-sm text-[var(--color-text-primary)] focus:outline-none focus:border-[var(--color-interactive-primary)]"
+								/>
+							</div>
+						</div>
+
+						<div className="space-y-1.5">
+							<label
+								htmlFor="mobile-settings-youtube"
+								className="block text-xs font-bold uppercase tracking-wider text-[var(--color-text-secondary)]"
+							>
+								{t.settings.youtube}
+							</label>
+							<input
+								id="mobile-settings-youtube"
+								type="url"
+								value={youtubeUrl}
+								onChange={(e) => setYoutubeUrl(e.target.value)}
+								placeholder="https://youtube.com/@channel"
 								className="w-full min-h-[44px] px-4 rounded-2xl bg-[var(--color-bg-base)] border border-[var(--color-border-subtle)] text-xs sm:text-sm text-[var(--color-text-primary)] focus:outline-none focus:border-[var(--color-interactive-primary)]"
 							/>
 						</div>
@@ -188,10 +243,10 @@ export function MobileSettingsView({ profile }: MobileSettingsViewProps) {
 						{isLoading ? (
 							<>
 								<Loader2 className="w-4 h-4 animate-spin" />
-								<span>Saving...</span>
+								<span>{t.common.saving}</span>
 							</>
 						) : (
-							<span>Save Profile Changes</span>
+							<span>{t.settings.saveChanges}</span>
 						)}
 					</button>
 				</div>
