@@ -21,7 +21,7 @@ export const TopBar = ({ pageTitle, isScrolled, rightContent }: TopBarProps) => 
 	return (
 		<header
 			className={cn(
-				"sticky top-0 z-40 flex h-16 w-full items-center justify-between px-4 sm:px-8 transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] backdrop-blur-2xl bg-[#08070c]/80 border-b border-white/[0.08]",
+				"sticky top-0 z-[100] flex h-16 w-full items-center justify-between px-4 sm:px-8 transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] backdrop-blur-2xl bg-[#08070c]/80 border-b border-white/[0.08]",
 				isScrolled &&
 					"shadow-[0_8px_32px_rgba(0,0,0,0.6)] bg-[#08070c]/90 border-white/[0.12]",
 			)}
