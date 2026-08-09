@@ -1,6 +1,7 @@
 import {
 	getFollowerCount as getFollowerCountDal,
 	getUserByUsernameOrNull,
+	listPopularCreators as listPopularCreatorsDal,
 } from "@/dal/users.dal";
 import type { PresetHubSupabaseClient } from "@/lib/supabase/client";
 
@@ -16,4 +17,11 @@ export async function getFollowerCount(
 	userId: string,
 ) {
 	return getFollowerCountDal(supabase, userId);
+}
+
+export async function listPopularCreators(
+	supabase: PresetHubSupabaseClient,
+	limit = 10,
+) {
+	return listPopularCreatorsDal(supabase, limit);
 }

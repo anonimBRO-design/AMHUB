@@ -198,6 +198,69 @@ export async function getFollowingCount(client: DalClient, userId: string) {
 	}
 }
 
+export interface PopularCreator {
+	id: string;
+	username: string;
+	display_name: string;
+	avatar_url: string | null;
+	is_verified: boolean;
+	preset_count: number;
+	follower_count: number;
+}
+
+export async function listPopularCreators(
+	client: DalClient,
+	limit = 10,
+): Promise<PopularCreator[]> {
+	try {
+		const { data: users, error } = await client
+			.from("users")
+			.select("id, username, display_name, avatar_url, is_verified")
+			.limit(limit);
+
+		if (error || !users || users.length === 0) {
+			return [];
+		}
+
+		type UserBase = {
+			id: string;
+			username: string;
+			display_name: string;
+			avatar_url: string | null;
+			is_verified: boolean;
+		};
+		const typedUsers = users as unknown as UserBase[];
+
+		const creatorsWithStats = await Promise.all(
+			typedUsers.map(async (u) => {
+				const [{ count: followerCount }, { count: presetCount }] =
+					await Promise.all([
+						client
+							.from("follows")
+							.select("*", { count: "exact", head: true })
+							.eq("following_id", u.id),
+						client
+							.from("presets")
+							.select("*", { count: "exact", head: true })
+							.eq("creator_id", u.id)
+							.eq("status", "published"),
+					]);
+
+				return {
+					...u,
+					follower_count: followerCount ?? 0,
+					preset_count: presetCount ?? 0,
+				};
+			}),
+		);
+
+		return creatorsWithStats;
+	} catch (error) {
+		console.error("Failed to list popular creators:", error);
+		return [];
+	}
+}
+
 export const RESERVED_USERNAMES = [
 	"admin",
 	"administrator",

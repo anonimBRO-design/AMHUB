@@ -1,4 +1,5 @@
 import { listPublishedPresets } from "@/data/presets";
+import { listPopularCreators } from "@/data/users";
 import { mapPresetToCardPreset } from "@/lib/mappers";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { resolveStorageUrl } from "@/lib/supabase/storage";
@@ -41,7 +42,7 @@ export default async function HomePage({ searchParams }: HomePageProps) {
 	try {
 		const [
 			rawPresets,
-			{ data: rawCreators },
+			rawCreators,
 			{ count: presetCount },
 			{ count: userCount },
 			{ data: downloadSumData },
@@ -50,10 +51,7 @@ export default async function HomePage({ searchParams }: HomePageProps) {
 				search: searchQuery,
 				category,
 			}),
-			supabase
-				.from("users")
-				.select("id, username, display_name, avatar_url, is_verified")
-				.limit(10),
+			listPopularCreators(supabase, 10),
 			supabase
 				.from("presets")
 				.select("id", { count: "exact", head: true })
@@ -66,7 +64,7 @@ export default async function HomePage({ searchParams }: HomePageProps) {
 		]);
 
 		presets = rawPresets.map(mapPresetToCardPreset);
-		creators = ((rawCreators ?? []) as typeof creators).map((c) => ({
+		creators = rawCreators.map((c) => ({
 			...c,
 			avatar_url: resolveStorageUrl(c.avatar_url),
 		}));
