@@ -34,12 +34,12 @@ export const AppLayoutTemplate: React.FC<AppLayoutTemplateProps> = ({
 				)}
 			>
 				{/* Top Bar - Sticky */}
-				<div className="sticky top-0 z-[var(--z-sticky)] min-w-0 max-w-full">
+				<div className="sticky top-0 z-40 min-w-0 max-w-full">
 					{topBar}
 				</div>
 
 				{/* Main Content */}
-				<main className="flex-1 p-4 sm:p-6 pb-24 min-w-0 max-w-full">
+				<main className="relative z-0 flex-1 p-4 sm:p-6 pb-24 min-w-0 max-w-full">
 					{children}
 				</main>
 
