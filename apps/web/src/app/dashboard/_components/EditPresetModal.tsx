@@ -1,6 +1,7 @@
 "use client";
 
 import { Loader2, X } from "lucide-react";
+import posthog from "posthog-js";
 import { type FormEvent, useState } from "react";
 
 interface PresetItem {
@@ -92,6 +93,12 @@ export function EditPresetModal({
 				throw new Error(json.error || "Failed to update preset");
 			}
 
+			posthog.capture("preset_updated", {
+				preset_id: preset.id,
+				category,
+				difficulty,
+				status,
+			});
 			onSuccess();
 			onClose();
 		} catch (err) {

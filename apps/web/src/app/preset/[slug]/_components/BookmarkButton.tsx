@@ -2,6 +2,7 @@
 
 import { useAuth } from "@/context/AuthContext";
 import { Bookmark } from "lucide-react";
+import posthog from "posthog-js";
 import { useState } from "react";
 
 interface BookmarkButtonProps {
@@ -27,7 +28,14 @@ export function BookmarkButton({
 
 		try {
 			const endpoint = `/api/presets/${presetId}/bookmark`;
-			await fetch(endpoint, { method: nextState ? "POST" : "DELETE" });
+			const response = await fetch(endpoint, {
+				method: nextState ? "POST" : "DELETE",
+			});
+			if (!response.ok) throw new Error("Failed to toggle bookmark");
+			posthog.capture(
+				nextState ? "preset_bookmarked" : "preset_bookmark_removed",
+				{ preset_id: presetId },
+			);
 			onBookmark?.(presetId);
 		} catch (error) {
 			console.error("Failed to toggle bookmark", error);

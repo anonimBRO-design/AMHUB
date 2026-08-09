@@ -3,6 +3,7 @@ import { resolveStorageUrl } from "@/lib/supabase/storage-url";
 import type { User } from "@presethub/types";
 import { AlertCircle, Check, Loader2, User as UserIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
+import posthog from "posthog-js";
 import type React from "react";
 import { useState } from "react";
 import { UsernameField } from "./UsernameField";
@@ -61,6 +62,10 @@ export function MobileSettingsView({ profile }: MobileSettingsViewProps) {
 				);
 			}
 
+			posthog.capture("profile_updated", {
+				username_changed: username.trim().toLowerCase() !== profile.username,
+				avatar_updated: false,
+			});
 			setSuccessMessage(t.settings.savedSuccess);
 			router.refresh();
 		} catch (err: unknown) {

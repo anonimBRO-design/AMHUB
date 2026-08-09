@@ -1,6 +1,7 @@
 "use client";
 
 import { AlertTriangle, Loader2, Trash2 } from "lucide-react";
+import posthog from "posthog-js";
 import { useState } from "react";
 
 interface DeletePresetDialogProps {
@@ -36,6 +37,7 @@ export function DeletePresetDialog({
 				throw new Error(json.error || "Failed to delete preset");
 			}
 
+			posthog.capture("preset_deleted", { preset_id: preset.id });
 			onSuccess();
 			onClose();
 		} catch (err) {

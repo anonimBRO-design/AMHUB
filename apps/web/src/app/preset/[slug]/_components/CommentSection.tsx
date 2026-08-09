@@ -2,6 +2,7 @@
 
 import { useAuth } from "@/context/AuthContext";
 import { MessageSquare, Send, Trash2 } from "lucide-react";
+import posthog from "posthog-js";
 import { type FormEvent, useState } from "react";
 
 interface Comment {
@@ -59,6 +60,7 @@ export function CommentSection({
 				};
 				setComments((prev) => [formattedComment, ...prev]);
 				setNewComment("");
+				posthog.capture("preset_comment_created", { preset_id: presetId });
 			}
 		} catch (error) {
 			console.error("Failed to post comment", error);
@@ -69,10 +71,13 @@ export function CommentSection({
 
 	const handleDeleteComment = async (commentId: string) => {
 		try {
-			await fetch(`/api/presets/${presetId}/comments?commentId=${commentId}`, {
-				method: "DELETE",
-			});
+			const response = await fetch(
+				`/api/presets/${presetId}/comments?commentId=${commentId}`,
+				{ method: "DELETE" },
+			);
+			if (!response.ok) throw new Error("Failed to delete comment");
 			setComments((prev) => prev.filter((c) => c.id !== commentId));
+			posthog.capture("preset_comment_deleted", { preset_id: presetId });
 		} catch (error) {
 			console.error("Failed to delete comment", error);
 		}

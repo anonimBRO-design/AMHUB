@@ -10,6 +10,7 @@ import {
 	Upload,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
+import posthog from "posthog-js";
 import { type FormEvent, useState } from "react";
 import { DetailsStep } from "./DetailsStep";
 import { FilePicker } from "./FilePicker";
@@ -219,6 +220,12 @@ export function UploadWizard() {
 				throw new Error(createJson.error?.message || "Failed to create preset");
 			}
 
+			posthog.capture("preset_published", {
+				preset_id: createJson.data?.id ?? createJson.id,
+				file_type: fileType,
+				category,
+				difficulty,
+			});
 			router.push(`/preset/${slug}`);
 		} catch (err: unknown) {
 			setError(

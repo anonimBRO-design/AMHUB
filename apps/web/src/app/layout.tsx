@@ -3,8 +3,8 @@ import { getCurrentProfile } from "@/lib/supabase/auth";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { resolveStorageUrl } from "@/lib/supabase/storage";
 import type { Metadata } from "next";
-import { LayoutShell } from "./_components/layout-shell";
 import { PostHogProvider } from "./PostHogProvider";
+import { LayoutShell } from "./_components/layout-shell";
 import "../styles/globals.css";
 
 export const metadata: Metadata = {
@@ -43,7 +43,7 @@ export default async function RootLayout({
 	return (
 		<html lang="en" data-theme="dark">
 			<body className="bg-[var(--color-bg-base)] text-[var(--color-text-primary)] antialiased selection:bg-purple-500/30 selection:text-white">
-				<PostHogProvider>
+				<PostHogProvider currentUser={currentUser}>
 					<LayoutShell
 						currentUser={resolvedUser}
 						unreadNotificationCount={unreadNotificationCount}

@@ -4,6 +4,7 @@ import { useLanguage } from "@/i18n";
 import type { User } from "@presethub/types";
 import { AlertCircle, Check, Loader2, Sparkles } from "lucide-react";
 import { useRouter } from "next/navigation";
+import posthog from "posthog-js";
 import { type FormEvent, useState } from "react";
 import { AccountCard } from "./AccountCard";
 import { DangerZone } from "./DangerZone";
@@ -99,6 +100,10 @@ export function SettingsClient({ profile }: SettingsClientProps) {
 				);
 			}
 
+			posthog.capture("profile_updated", {
+				username_changed: username.trim().toLowerCase() !== profile.username,
+				avatar_updated: avatarUrl !== (profile.avatar_url ?? ""),
+			});
 			setSuccessMessage("Settings updated successfully!");
 			router.refresh();
 		} catch (err: unknown) {

@@ -1,11 +1,14 @@
 "use client";
 
 import { LogOut, Trash2 } from "lucide-react";
+import posthog from "posthog-js";
 
 export function DangerZone() {
 	const handleSignOut = async () => {
 		try {
-			await fetch("/auth/logout", { method: "POST" });
+			const response = await fetch("/auth/logout", { method: "POST" });
+			if (!response.ok) throw new Error("Failed to sign out");
+			posthog.reset();
 			window.location.href = "/auth/login";
 		} catch (e) {
 			console.error("Sign out failed", e);

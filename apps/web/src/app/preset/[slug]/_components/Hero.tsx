@@ -2,6 +2,7 @@
 
 import { useAuth } from "@/context/AuthContext";
 import { Download, Eye, Heart, Play, Sparkles } from "lucide-react";
+import posthog from "posthog-js";
 import { useState } from "react";
 import { BookmarkButton } from "./BookmarkButton";
 import { ShareButton } from "./ShareButton";
@@ -39,8 +40,14 @@ export function Hero({ preset }: HeroProps) {
 		setLikeCount((prev) => (nextState ? prev + 1 : Math.max(0, prev - 1)));
 
 		try {
-			await fetch(`/api/presets/${preset.id}/like`, {
+			const response = await fetch(`/api/presets/${preset.id}/like`, {
 				method: nextState ? "POST" : "DELETE",
+			});
+			if (!response.ok) throw new Error("Failed to toggle like");
+			posthog.capture(nextState ? "preset_liked" : "preset_unliked", {
+				preset_id: preset.id,
+				category: preset.category,
+				difficulty: preset.difficulty,
 			});
 		} catch (e) {
 			console.error("Failed to toggle like", e);
