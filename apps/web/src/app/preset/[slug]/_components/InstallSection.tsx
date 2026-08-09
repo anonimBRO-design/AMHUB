@@ -9,6 +9,7 @@ import {
 	QrCode,
 	Smartphone,
 } from "lucide-react";
+import posthog from "posthog-js";
 import { useState } from "react";
 
 interface InstallSectionProps {
@@ -34,7 +35,14 @@ export function InstallSection({ preset }: InstallSectionProps) {
 		if (downloadTracked) return;
 		setDownloadTracked(true);
 		try {
-			await fetch(`/api/presets/${preset.id}/download`, { method: "POST" });
+			const response = await fetch(`/api/presets/${preset.id}/download`, {
+				method: "POST",
+			});
+			if (!response.ok) throw new Error("Failed to track download");
+			posthog.capture("preset_downloaded", {
+				preset_id: preset.id,
+				file_type: preset.fileType ?? "xml",
+			});
 		} catch (e) {
 			console.error("Failed to track download", e);
 		}

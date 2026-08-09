@@ -2,6 +2,7 @@
 
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 import { LogOut } from "lucide-react";
+import posthog from "posthog-js";
 import type React from "react";
 import { useState } from "react";
 
@@ -23,6 +24,7 @@ export const LogoutButton = ({
 		try {
 			const supabase = createSupabaseBrowserClient();
 			await supabase.auth.signOut();
+			posthog.reset();
 		} catch (error) {
 			console.error("Logout error:", error);
 		} finally {

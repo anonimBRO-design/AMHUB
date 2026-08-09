@@ -4,6 +4,7 @@ import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 import { AnimatePresence, motion } from "framer-motion";
 import { LogIn, UserPlus, X } from "lucide-react";
 import Link from "next/link";
+import posthog from "posthog-js";
 import { useState } from "react";
 
 interface AuthModalProps {
@@ -21,6 +22,7 @@ export function AuthModal({
 	const supabase = createSupabaseBrowserClient();
 
 	const handleGoogleLogin = async () => {
+		posthog.capture("auth_login_started", { method: "google" });
 		setIsLoading(true);
 		const callbackUrl = new URL("/auth/callback", window.location.origin);
 		callbackUrl.searchParams.set("next", "/home");
@@ -131,7 +133,10 @@ export function AuthModal({
 							{/* Secondary Login CTA */}
 							<Link
 								href="/auth/login"
-								onClick={onClose}
+								onClick={() => {
+									posthog.capture("auth_login_started", { method: "email" });
+									onClose();
+								}}
 								className="w-full min-h-[52px] h-13 sm:h-14 rounded-2xl bg-gradient-to-r from-[var(--color-interactive-primary)] via-purple-600 to-indigo-600 text-white font-extrabold text-sm sm:text-base flex items-center justify-center gap-2 hover:opacity-95 transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] shadow-[0_0_24px_rgba(124,58,237,0.35)] hover:shadow-[0_0_32px_rgba(124,58,237,0.5)] focus:outline-none focus:ring-2 focus:ring-purple-500/50 active:scale-[0.97]"
 							>
 								<LogIn className="w-4.5 h-4.5" />

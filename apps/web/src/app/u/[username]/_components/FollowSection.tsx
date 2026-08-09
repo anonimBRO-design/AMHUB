@@ -10,6 +10,7 @@ import {
 	UserPlus,
 } from "lucide-react";
 import Link from "next/link";
+import posthog from "posthog-js";
 import { useState } from "react";
 
 interface FollowSectionProps {
@@ -35,9 +36,11 @@ export function FollowSection({
 		setIsFollowing(nextState);
 
 		try {
-			await fetch(`/api/users/${username}/follow`, {
+			const response = await fetch(`/api/users/${username}/follow`, {
 				method: nextState ? "POST" : "DELETE",
 			});
+			if (!response.ok) throw new Error("Failed to toggle follow");
+			posthog.capture(nextState ? "creator_followed" : "creator_unfollowed");
 		} catch (e) {
 			console.error("Failed to toggle follow", e);
 			setIsFollowing(!nextState);
