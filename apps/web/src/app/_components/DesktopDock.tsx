@@ -235,7 +235,7 @@ export function DesktopDock({
 				)}
 
 				<div className="relative flex items-center justify-center pl-1 sm:pl-1.5 border-l border-white/10 my-1">
-					<LanguageSwitcher variant="compact" />
+					<LanguageSwitcher variant="compact" position="up" />
 				</div>
 			</motion.div>
 		</div>

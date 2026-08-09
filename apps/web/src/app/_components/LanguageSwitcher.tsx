@@ -11,11 +11,18 @@ interface LanguageSwitcherProps {
 	 * Full mode shows complete label names (e.g. "English", "Bahasa Indonesia").
 	 */
 	variant?: "compact" | "full";
+	/**
+	 * Dropdown direction relative to button.
+	 * "up" opens upward (useful for bottom dock/navbars).
+	 * "down" opens downward (default for top header).
+	 */
+	position?: "up" | "down";
 	className?: string;
 }
 
 export function LanguageSwitcher({
 	variant = "compact",
+	position = "down",
 	className = "",
 }: LanguageSwitcherProps) {
 	const { language, setLanguage, t } = useLanguage();
@@ -52,6 +59,8 @@ export function LanguageSwitcher({
 		};
 	}, []);
 
+	const isUp = position === "up";
+
 	return (
 		<div
 			ref={dropdownRef}
@@ -76,11 +85,13 @@ export function LanguageSwitcher({
 			<AnimatePresence>
 				{isOpen && (
 					<motion.div
-						initial={{ opacity: 0, y: 6, scale: 0.95 }}
+						initial={{ opacity: 0, y: isUp ? -6 : 6, scale: 0.95 }}
 						animate={{ opacity: 1, y: 0, scale: 1 }}
-						exit={{ opacity: 0, y: 4, scale: 0.95 }}
+						exit={{ opacity: 0, y: isUp ? -4 : 4, scale: 0.95 }}
 						transition={{ duration: 0.15, ease: [0.16, 1, 0.3, 1] }}
-						className="absolute right-0 mt-2 w-44 z-50 py-1.5 rounded-2xl bg-[#0e0d14]/95 border border-white/15 backdrop-blur-2xl shadow-[0_10px_30px_rgba(0,0,0,0.8),0_0_20px_rgba(124,58,237,0.15)] focus:outline-none overflow-hidden"
+						className={`absolute right-0 w-44 z-50 py-1.5 rounded-2xl bg-[#0e0d14]/95 border border-white/15 backdrop-blur-2xl shadow-[0_10px_30px_rgba(0,0,0,0.8),0_0_20px_rgba(124,58,237,0.15)] focus:outline-none overflow-hidden ${
+							isUp ? "bottom-full mb-2" : "mt-2"
+						}`}
 					>
 						{languages.map((lang) => {
 							const isSelected = language === lang.code;
