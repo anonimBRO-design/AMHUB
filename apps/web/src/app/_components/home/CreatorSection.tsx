@@ -1,3 +1,6 @@
+"use client";
+
+import { useLanguage } from "@/i18n";
 import { CheckCircle2, Users } from "lucide-react";
 import Link from "next/link";
 
@@ -16,6 +19,8 @@ interface CreatorSectionProps {
 }
 
 export function CreatorSection({ creators = [] }: CreatorSectionProps) {
+	const { t } = useLanguage();
+
 	if (!creators || creators.length === 0) {
 		return (
 			<section className="space-y-4">

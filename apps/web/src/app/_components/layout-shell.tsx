@@ -1,6 +1,7 @@
 "use client";
 
 import { AuthProvider } from "@/context/AuthContext";
+import { LanguageProvider } from "@/i18n";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 import type { User } from "@presethub/types";
 import { AppLayoutTemplate, TopBar } from "@presethub/ui";
@@ -77,34 +78,36 @@ export const LayoutShell: React.FC<LayoutShellProps> = ({
 	};
 
 	return (
-		<AuthProvider currentUser={currentUser}>
-			<PointerCaptureGuard />
-			{isWelcomePage ? (
-				<main>{children}</main>
-			) : (
-				<>
-					<AppLayoutTemplate
-						sidebar={null}
-						topBar={
-							<TopBar
-								currentUser={navUser}
-								unreadNotificationCount={unreadCount}
-								isScrolled={false}
-								onSearchSubmit={handleSearchSubmit}
-							/>
-						}
-						bottomNav={null}
-					>
-						{children}
-					</AppLayoutTemplate>
+		<LanguageProvider>
+			<AuthProvider currentUser={currentUser}>
+				<PointerCaptureGuard />
+				{isWelcomePage ? (
+					<main>{children}</main>
+				) : (
+					<>
+						<AppLayoutTemplate
+							sidebar={null}
+							topBar={
+								<TopBar
+									currentUser={navUser}
+									unreadNotificationCount={unreadCount}
+									isScrolled={false}
+									onSearchSubmit={handleSearchSubmit}
+								/>
+							}
+							bottomNav={null}
+						>
+							{children}
+						</AppLayoutTemplate>
 
-					{/* macOS-style Responsive Floating Dock — Single navigation across mobile and desktop */}
-					<DesktopDock
-						currentUser={currentUser}
-						unreadNotificationCount={unreadCount}
-					/>
-				</>
-			)}
-		</AuthProvider>
+						{/* macOS-style Responsive Floating Dock — Single navigation across mobile and desktop */}
+						<DesktopDock
+							currentUser={currentUser}
+							unreadNotificationCount={unreadCount}
+						/>
+					</>
+				)}
+			</AuthProvider>
+		</LanguageProvider>
 	);
 };

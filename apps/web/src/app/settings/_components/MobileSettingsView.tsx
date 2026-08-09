@@ -1,3 +1,4 @@
+import { useLanguage } from "@/i18n";
 import { resolveStorageUrl } from "@/lib/supabase/storage-url";
 import type { User } from "@presethub/types";
 import { AlertCircle, Check, Loader2, User as UserIcon } from "lucide-react";
@@ -12,6 +13,7 @@ interface MobileSettingsViewProps {
 }
 
 export function MobileSettingsView({ profile }: MobileSettingsViewProps) {
+	const { language, setLanguage, t } = useLanguage();
 	const router = useRouter();
 	const [isLoading, setIsLoading] = useState(false);
 	const [successMessage, setSuccessMessage] = useState<string | null>(null);

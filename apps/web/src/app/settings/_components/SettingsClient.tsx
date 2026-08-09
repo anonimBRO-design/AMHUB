@@ -1,5 +1,6 @@
 "use client";
 
+import { useLanguage } from "@/i18n";
 import type { User } from "@presethub/types";
 import { AlertCircle, Check, Loader2, Sparkles } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -16,6 +17,7 @@ interface SettingsClientProps {
 }
 
 export function SettingsClient({ profile }: SettingsClientProps) {
+	const { language, setLanguage, t } = useLanguage();
 	const router = useRouter();
 	const [isLoading, setIsLoading] = useState(false);
 	const [successMessage, setSuccessMessage] = useState<string | null>(null);

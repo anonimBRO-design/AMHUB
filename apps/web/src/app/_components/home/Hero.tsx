@@ -1,3 +1,6 @@
+"use client";
+
+import { useLanguage } from "@/i18n";
 import type { PresetCardPreset } from "@presethub/ui";
 import {
 	ArrowRight,
@@ -23,6 +26,7 @@ interface HeroProps {
 }
 
 export function Hero({ stats, featuredPreset }: HeroProps) {
+	const { t } = useLanguage();
 	const totalPresets = stats?.totalPresets ?? 0;
 	const totalCreators = stats?.totalCreators ?? 0;
 	const totalDownloads = stats?.totalDownloads ?? 0;

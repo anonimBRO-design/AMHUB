@@ -1,7 +1,12 @@
-import { Heart } from "lucide-react";
+"use client";
+
+import { useLanguage } from "@/i18n";
+import { ExternalLink, Heart } from "lucide-react";
 import Link from "next/link";
 
 export function Footer() {
+	const { t } = useLanguage();
+
 	return (
 		<footer className="w-full pt-10 pb-24 sm:pb-12 border-t border-white/[0.08] backdrop-blur-xl bg-white/[0.02] text-[var(--color-text-secondary)]">
 			<div className="max-w-6xl mx-auto px-4 sm:px-6 space-y-8">
@@ -23,6 +28,16 @@ export function Footer() {
 							The premier community platform for Alight Motion creators.
 							Discover, share, and import pro XML, QR, and link presets.
 						</p>
+						<a
+							href="https://sociabuzz.com/anonimbro"
+							target="_blank"
+							rel="noopener noreferrer"
+							className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-r from-purple-600/20 to-indigo-600/20 border border-purple-500/30 text-xs font-bold text-purple-300 hover:text-white hover:border-purple-500/60 transition-all shadow-sm"
+						>
+							<Heart className="w-3.5 h-3.5 text-rose-400 fill-rose-400" />
+							<span>{t.common.supportAmhub}</span>
+							<ExternalLink className="w-3 h-3 opacity-70" />
+						</a>
 					</div>
 
 					{/* Navigation Links Grid */}

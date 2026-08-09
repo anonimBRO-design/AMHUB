@@ -1,5 +1,6 @@
 "use client";
 
+import { useLanguage } from "@/i18n";
 import type { User } from "@presethub/types";
 import { AnimatePresence, motion } from "framer-motion";
 import {
@@ -38,6 +39,7 @@ export function DesktopDock({
 	currentUser,
 	unreadNotificationCount = 0,
 }: DesktopDockProps) {
+	const { t } = useLanguage();
 	const pathname = usePathname();
 	const [hoveredId, setHoveredId] = useState<string | null>(null);
 
@@ -48,51 +50,51 @@ export function DesktopDock({
 	const dockItems: DockItem[] = [
 		{
 			id: "home",
-			label: "Feed",
+			label: t.common.home,
 			href: "/home",
 			icon: Sparkles,
 		},
 		{
 			id: "explore",
-			label: "Explore",
+			label: t.common.explore,
 			href: "/explore",
 			icon: Compass,
 		},
 		{
 			id: "upload",
-			label: "Upload",
+			label: t.common.upload,
 			href: "/upload",
 			icon: PlusCircle,
 			isSpecial: true,
 		},
 		{
 			id: "bookmarks",
-			label: "Saved",
+			label: t.common.bookmarks,
 			href: "/bookmarks",
 			icon: Bookmark,
 		},
 		{
 			id: "likes",
-			label: "Likes",
+			label: t.common.likes,
 			href: "/likes",
 			icon: Heart,
 		},
 		{
 			id: "notifications",
-			label: "Notifications",
+			label: t.common.notifications,
 			href: "/notifications",
 			icon: Bell,
 			badge: unreadNotificationCount,
 		},
 		{
 			id: "dashboard",
-			label: "Dashboard",
+			label: t.common.dashboard,
 			href: "/dashboard",
 			icon: LayoutDashboard,
 		},
 		{
 			id: "profile",
-			label: currentUser ? currentUser.display_name : "Sign In",
+			label: currentUser ? currentUser.display_name : t.common.login,
 			href: profileHref,
 			icon: UserIcon,
 			avatarUrl: currentUser?.avatar_url,
