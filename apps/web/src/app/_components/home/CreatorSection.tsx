@@ -29,12 +29,12 @@ export function CreatorSection({ creators = [] }: CreatorSectionProps) {
 						<Users className="w-4 h-4" />
 					</div>
 					<h2 className="font-display text-lg sm:text-xl font-bold tracking-tight text-[var(--color-text-primary)]">
-						Popular Creators
+						{t.home.popularCreators}
 					</h2>
 				</div>
 				<div className="p-8 text-center rounded-3xl bg-[#0f0e14]/50 border border-white/[0.08] backdrop-blur-xl">
 					<p className="text-sm font-semibold text-[var(--color-text-tertiary)]">
-						No community creators yet. Upload your first preset to get featured!
+						{t.home.noCreators}
 					</p>
 				</div>
 			</section>
@@ -49,60 +49,53 @@ export function CreatorSection({ creators = [] }: CreatorSectionProps) {
 						<Users className="w-4 h-4" />
 					</div>
 					<h2 className="font-display text-lg sm:text-xl font-bold tracking-tight text-[var(--color-text-primary)]">
-						Popular Creators ({creators.length})
+						{t.home.popularCreators}
 					</h2>
 				</div>
-				<span className="font-display text-xs font-semibold tracking-wider text-[var(--color-text-tertiary)]">
-					COMMUNITY TOP
+				<span className="font-display text-xs font-semibold tracking-wider text-[var(--color-interactive-primary)] uppercase">
+					{t.home.communityTop}
 				</span>
 			</div>
 
-			<div className="flex items-center gap-3 overflow-x-auto snap-x snap-mandatory pb-2 pt-1 scrollbar-none select-none [-webkit-overflow-scrolling:touch]">
+			<div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
 				{creators.map((creator) => (
 					<Link
 						key={creator.username}
 						href={`/u/${creator.username}`}
-						className="snap-start shrink-0 min-w-[200px] sm:min-w-[220px] p-4.5 rounded-3xl backdrop-blur-xl bg-white/[0.03] border border-white/[0.08] hover:bg-white/[0.06] hover:border-white/[0.12] transition-all duration-300 hover:shadow-[0_0_24px_rgba(124,58,237,0.15)] hover:-translate-y-0.5 active:scale-[0.97] group"
+						className="group flex items-center gap-3.5 p-4 rounded-2xl bg-white/[0.03] border border-white/[0.08] hover:bg-white/[0.07] hover:border-white/[0.15] transition-all duration-300 active:scale-[0.98]"
 					>
-						<div className="flex flex-col items-center text-center space-y-2.5">
-							{/* Avatar with Ring */}
-							<div className="relative">
-								{creator.avatar_url ? (
-									<img
-										src={creator.avatar_url}
-										alt={creator.display_name}
-										className="w-14 h-14 rounded-full object-cover border-2 border-[var(--color-interactive-primary)]/50 group-hover:scale-105 transition-transform duration-300"
-									/>
-								) : (
-									<div className="w-14 h-14 rounded-full bg-purple-600/30 border-2 border-purple-500/50 flex items-center justify-center font-bold text-white text-lg">
-										{creator.display_name.slice(0, 2).toUpperCase()}
-									</div>
-								)}
-								{creator.is_verified && (
-									<div className="absolute -bottom-0.5 -right-0.5 p-0.5 rounded-full bg-[var(--color-interactive-primary)] text-white shadow-md">
-										<CheckCircle2 className="w-3.5 h-3.5 fill-current" />
-									</div>
-								)}
-							</div>
-
-							{/* Names */}
-							<div>
-								<h3 className="font-display text-sm font-bold text-[var(--color-text-primary)] group-hover:text-[var(--color-interactive-primary)] transition-colors line-clamp-1">
+						<div className="relative h-12 w-12 rounded-full overflow-hidden border-2 border-purple-500/40 shrink-0">
+							{creator.avatar_url ? (
+								<img
+									src={creator.avatar_url}
+									alt={creator.display_name}
+									className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+								/>
+							) : (
+								<div className="w-full h-full bg-purple-600/40 flex items-center justify-center text-white font-bold text-sm">
+									{creator.display_name?.slice(0, 2).toUpperCase()}
+								</div>
+							)}
+						</div>
+						<div className="min-w-0 flex-1">
+							<div className="flex items-center gap-1.5">
+								<h3 className="font-bold text-sm text-[var(--color-text-primary)] truncate">
 									{creator.display_name}
 								</h3>
-								<p className="font-body text-[11px] text-[var(--color-text-tertiary)]">
-									@{creator.username}
-								</p>
+								{creator.is_verified && (
+									<CheckCircle2 className="w-3.5 h-3.5 text-purple-400 shrink-0" />
+								)}
 							</div>
-
-							{/* Stats Badge */}
-							<div className="flex items-center justify-between w-full pt-2.5 text-[11px] border-t border-white/[0.08] text-[var(--color-text-secondary)] font-medium font-body">
-								<span>{creator.preset_count ?? 0} Presets</span>
-								<span className="font-semibold text-purple-400">
-									{(creator.follower_count ?? 0) > 1000
-										? `${((creator.follower_count ?? 0) / 1000).toFixed(1)}K`
-										: (creator.follower_count ?? 0)}{" "}
-									Fans
+							<p className="text-xs text-[var(--color-text-tertiary)] truncate">
+								@{creator.username}
+							</p>
+							<div className="flex items-center gap-2 mt-1 text-[11px] font-semibold text-[var(--color-text-secondary)]">
+								<span>
+									{creator.preset_count ?? 0} {t.common.presets}
+								</span>
+								<span>•</span>
+								<span>
+									{creator.follower_count ?? 0} {t.common.followers}
 								</span>
 							</div>
 						</div>

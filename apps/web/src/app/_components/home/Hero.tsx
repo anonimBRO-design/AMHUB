@@ -44,24 +44,18 @@ export function Hero({ stats, featuredPreset }: HeroProps) {
 					{/* Pill Badge */}
 					<div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-semibold backdrop-blur-md bg-purple-500/10 text-[var(--color-interactive-primary)] border border-purple-500/20 shadow-[0_0_16px_rgba(124,58,237,0.15)] transition-all duration-300 hover:scale-105 hover:bg-purple-500/15">
 						<Sparkles className="w-3.5 h-3.5 animate-pulse text-purple-400" />
-						<span>Alight Motion Preset Hub #1</span>
+						<span>AMHUB #1</span>
 						<span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping" />
 					</div>
 
 					{/* Title */}
 					<h1 className="font-display text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight text-white leading-[1.1]">
-						Elevate Your Edits with <br className="hidden sm:inline" />
-						<span className="bg-gradient-to-r from-purple-400 via-indigo-300 to-pink-400 bg-clip-text text-transparent">
-							Pro Alight Motion
-						</span>{" "}
-						Presets
+						{t.home.heroTitle}
 					</h1>
 
 					{/* Subtitle */}
 					<p className="font-body text-base sm:text-lg text-[var(--color-text-secondary)] leading-relaxed max-w-xl mx-auto md:mx-0 font-normal">
-						Discover production-ready XML files, QR codes, and 1-tap links.
-						Download trending velocity ramps, 3D camera shakes, and color
-						grading created by top editors.
+						{t.home.heroSubtitle}
 					</p>
 
 					{/* CTAs */}
@@ -70,7 +64,7 @@ export function Hero({ stats, featuredPreset }: HeroProps) {
 							href="/explore"
 							className="inline-flex items-center justify-center gap-2.5 min-h-[52px] px-8 rounded-2xl bg-gradient-to-r from-[var(--color-interactive-primary)] to-indigo-600 text-white font-extrabold text-sm shadow-[0_0_32px_rgba(124,58,237,0.4)] hover:shadow-[0_0_48px_rgba(124,58,237,0.6)] hover:opacity-95 active:scale-[0.97] transition-all duration-300 hover:-translate-y-0.5"
 						>
-							<span>Explore Catalog</span>
+							<span>{t.common.explore}</span>
 							<ArrowRight className="w-4 h-4" />
 						</Link>
 						<Link
@@ -78,7 +72,7 @@ export function Hero({ stats, featuredPreset }: HeroProps) {
 							className="inline-flex items-center justify-center gap-2.5 min-h-[52px] px-8 rounded-2xl backdrop-blur-xl bg-white/[0.04] text-[var(--color-text-primary)] font-extrabold text-sm border border-white/[0.1] hover:bg-white/[0.08] hover:border-white/[0.2] hover:shadow-[0_0_24px_rgba(124,58,237,0.2)] active:scale-[0.97] transition-all duration-300 hover:-translate-y-0.5"
 						>
 							<Zap className="w-4 h-4 text-amber-400" />
-							<span>Upload Preset</span>
+							<span>{t.common.upload}</span>
 						</Link>
 					</div>
 
@@ -94,7 +88,7 @@ export function Hero({ stats, featuredPreset }: HeroProps) {
 								</span>
 							</div>
 							<span className="font-body text-xs text-[var(--color-text-tertiary)] font-medium mt-0.5">
-								XML Presets
+								{t.home.totalPresets}
 							</span>
 						</div>
 
@@ -108,7 +102,7 @@ export function Hero({ stats, featuredPreset }: HeroProps) {
 								</span>
 							</div>
 							<span className="font-body text-xs text-[var(--color-text-tertiary)] font-medium mt-0.5">
-								Creators
+								{t.home.totalCreators}
 							</span>
 						</div>
 
@@ -122,7 +116,7 @@ export function Hero({ stats, featuredPreset }: HeroProps) {
 								</span>
 							</div>
 							<span className="font-body text-xs text-[var(--color-text-tertiary)] font-medium mt-0.5">
-								Downloads
+								{t.home.totalDownloads}
 							</span>
 						</div>
 					</div>
@@ -246,7 +240,7 @@ export function Hero({ stats, featuredPreset }: HeroProps) {
 										className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-bold text-xs shadow-lg active:scale-95 transition-all"
 									>
 										<Zap className="w-4 h-4 text-amber-300" />
-										<span>Upload Preset</span>
+										<span>{t.common.upload}</span>
 									</Link>
 								</div>
 							)}

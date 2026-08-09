@@ -9,7 +9,6 @@ import {
 	Compass,
 	Heart,
 	LayoutDashboard,
-	LogOut,
 	PlusCircle,
 	Sparkles,
 	User as UserIcon,
@@ -18,8 +17,6 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type React from "react";
 import { useState } from "react";
-import { LanguageSwitcher } from "./LanguageSwitcher";
-import { LogoutButton } from "./LogoutButton";
 
 interface DesktopDockProps {
 	currentUser?: User | null;
@@ -193,50 +190,6 @@ export function DesktopDock({
 						</div>
 					);
 				})}
-
-				{currentUser && (
-					<div
-						className="relative group"
-						onMouseEnter={() => setHoveredId("logout")}
-						onMouseLeave={() => setHoveredId(null)}
-					>
-						<AnimatePresence>
-							{hoveredId === "logout" && (
-								<motion.div
-									initial={{ opacity: 0, y: 6, scale: 0.9 }}
-									animate={{ opacity: 1, y: 0, scale: 1 }}
-									exit={{ opacity: 0, y: 4, scale: 0.95 }}
-									transition={{ duration: 0.15, ease: [0.16, 1, 0.3, 1] }}
-									className="absolute -top-12 left-1/2 -translate-x-1/2 z-50 pointer-events-none hidden sm:block"
-								>
-									<div className="px-3 py-1.5 rounded-xl bg-[#0a090f]/95 border border-white/15 backdrop-blur-md shadow-xl flex items-center gap-1.5 whitespace-nowrap">
-										<span className="text-xs font-bold text-rose-400 font-body tracking-wide">
-											Sign Out
-										</span>
-									</div>
-									<div className="w-2 h-2 bg-[#0a090f]/95 rotate-45 border-r border-b border-white/15 mx-auto -mt-1" />
-								</motion.div>
-							)}
-						</AnimatePresence>
-
-						<LogoutButton className="relative flex flex-col items-center justify-center min-w-[34px] min-h-[34px] sm:min-w-[48px] sm:min-h-[48px] p-0.5 sm:p-2.5 rounded-2xl transition-all duration-200 cursor-pointer">
-							<motion.div
-								animate={{
-									scale: hoveredId === "logout" ? 1.2 : 1,
-									y: hoveredId === "logout" ? -3 : 0,
-								}}
-								transition={{ type: "spring", stiffness: 400, damping: 25 }}
-								className="relative flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 rounded-2xl transition-colors duration-200 overflow-hidden bg-rose-500/10 text-rose-400 border border-rose-500/20 hover:bg-rose-500/20 hover:text-rose-300"
-							>
-								<LogOut className="w-4 h-4 sm:w-5 sm:h-5" />
-							</motion.div>
-						</LogoutButton>
-					</div>
-				)}
-
-				<div className="relative flex items-center justify-center pl-1 sm:pl-1.5 border-l border-white/10 my-1">
-					<LanguageSwitcher variant="compact" position="up" />
-				</div>
 			</motion.div>
 		</div>
 	);
