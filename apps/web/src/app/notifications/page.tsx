@@ -1,6 +1,7 @@
 import { listNotifications } from "@/dal/notifications.dal";
 import { getCurrentProfile } from "@/lib/supabase/auth";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { resolveStorageUrl } from "@/lib/supabase/storage";
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import type { NotificationItemData } from "./_components/NotificationCard";
@@ -37,7 +38,7 @@ export default async function NotificationsPage() {
 			? {
 					username: n.actor.username,
 					displayName: n.actor.display_name,
-					avatarUrl: n.actor.avatar_url,
+					avatarUrl: resolveStorageUrl(n.actor.avatar_url),
 				}
 			: undefined,
 		preset: n.preset

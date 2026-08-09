@@ -5,6 +5,7 @@ import {
 } from "@/dal/presets.dal";
 import { getCurrentProfile } from "@/lib/supabase/auth";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { resolveStorageUrl } from "@/lib/supabase/storage";
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { DashboardClient } from "./_components/DashboardClient";
@@ -32,7 +33,7 @@ export default async function DashboardPage() {
 	const dashboardUserData = {
 		displayName: profile.display_name,
 		username: profile.username,
-		avatarUrl: profile.avatar_url || null,
+		avatarUrl: resolveStorageUrl(profile.avatar_url),
 	};
 
 	const initialPresets = initialPresetsResult.items.map((preset) => ({

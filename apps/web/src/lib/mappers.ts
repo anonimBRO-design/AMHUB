@@ -1,4 +1,5 @@
 import type { PresetWithCreator } from "@/data/presets";
+import { resolveStorageUrl } from "@/lib/supabase/storage";
 import type { PresetCardPreset } from "@presethub/ui";
 
 /**
@@ -24,7 +25,7 @@ export function mapPresetToCardPreset(
 		creator: {
 			username: preset.creator.username,
 			displayName: preset.creator.display_name,
-			avatarUrl: preset.creator.avatar_url ?? undefined,
+			avatarUrl: resolveStorageUrl(preset.creator.avatar_url) ?? undefined,
 			isVerified: preset.creator.is_verified,
 		},
 		isFeatured: preset.is_featured,

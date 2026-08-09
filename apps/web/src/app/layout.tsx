@@ -1,6 +1,7 @@
 import { getUnreadNotificationCount } from "@/data/notifications";
 import { getCurrentProfile } from "@/lib/supabase/auth";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { resolveStorageUrl } from "@/lib/supabase/storage";
 import type { Metadata } from "next";
 import { LayoutShell } from "./_components/layout-shell";
 import "../styles/globals.css";
@@ -27,6 +28,13 @@ export default async function RootLayout({
 	const currentUser = await getCurrentProfile();
 	const supabase = await createSupabaseServerClient();
 
+	const resolvedUser = currentUser
+		? {
+				...currentUser,
+				avatar_url: resolveStorageUrl(currentUser.avatar_url) ?? null,
+			}
+		: null;
+
 	const unreadNotificationCount = currentUser
 		? await getUnreadNotificationCount(supabase, currentUser.id)
 		: 0;
@@ -35,7 +43,7 @@ export default async function RootLayout({
 		<html lang="en" data-theme="dark">
 			<body className="bg-[var(--color-bg-base)] text-[var(--color-text-primary)] antialiased selection:bg-purple-500/30 selection:text-white">
 				<LayoutShell
-					currentUser={currentUser}
+					currentUser={resolvedUser}
 					unreadNotificationCount={unreadNotificationCount}
 				>
 					{children}

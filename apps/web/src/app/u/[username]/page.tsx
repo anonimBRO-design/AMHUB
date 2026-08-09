@@ -7,6 +7,7 @@ import { listCreatorPresets } from "@/data/presets";
 import { mapPresetToCardPreset } from "@/lib/mappers";
 import { getCurrentProfile } from "@/lib/supabase/auth";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { resolveStorageUrl } from "@/lib/supabase/storage";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import type { ActivityItem } from "./_components/ActivitySection";
@@ -118,7 +119,7 @@ export default async function ProfilePage({ params }: PageProps) {
 		id: user.id,
 		username: user.username,
 		displayName: user.display_name,
-		avatarUrl: user.avatar_url,
+		avatarUrl: resolveStorageUrl(user.avatar_url),
 		bio: user.bio,
 		isVerified: user.is_verified,
 		followerCount: user.follower_count,

@@ -1,3 +1,4 @@
+import { resolveStorageUrl } from "@/lib/supabase/storage-url";
 import type { User } from "@presethub/types";
 import { AlertCircle, Check, Loader2, User as UserIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -74,7 +75,7 @@ export function MobileSettingsView({ profile }: MobileSettingsViewProps) {
 				<div className="relative h-16 w-16 overflow-hidden rounded-full border-2 border-[var(--color-interactive-primary)] bg-[var(--color-bg-elevated)] shrink-0">
 					{profile.avatar_url ? (
 						<img
-							src={profile.avatar_url}
+							src={resolveStorageUrl(profile.avatar_url) || ""}
 							alt={profile.display_name || profile.username}
 							className="w-full h-full object-cover"
 						/>

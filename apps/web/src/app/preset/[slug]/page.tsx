@@ -4,6 +4,7 @@ import { getPresetBySlug, listPublishedPresets } from "@/data/presets";
 import { mapPresetToCardPreset } from "@/lib/mappers";
 import { getCurrentUser } from "@/lib/supabase/auth";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { resolveStorageUrl } from "@/lib/supabase/storage";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { PresetDetailClient } from "./_components/preset-detail-client";
@@ -133,7 +134,9 @@ export default async function PresetDetailPage({ params }: PageProps) {
 				username: item.user?.username || "user",
 				displayName:
 					item.user?.display_name || item.user?.displayName || "User",
-				avatarUrl: item.user?.avatar_url || item.user?.avatarUrl || null,
+				avatarUrl:
+					resolveStorageUrl(item.user?.avatar_url || item.user?.avatarUrl) ||
+					null,
 			},
 		};
 	});

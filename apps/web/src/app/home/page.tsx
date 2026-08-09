@@ -1,6 +1,7 @@
 import { listPublishedPresets } from "@/data/presets";
 import { mapPresetToCardPreset } from "@/lib/mappers";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { resolveStorageUrl } from "@/lib/supabase/storage";
 import { CategoryScroller } from "../_components/home/CategoryScroller";
 import { CreatorSection } from "../_components/home/CreatorSection";
 import { FeaturedSection } from "../_components/home/FeaturedSection";
@@ -65,7 +66,10 @@ export default async function HomePage({ searchParams }: HomePageProps) {
 		]);
 
 		presets = rawPresets.map(mapPresetToCardPreset);
-		creators = (rawCreators ?? []) as typeof creators;
+		creators = ((rawCreators ?? []) as typeof creators).map((c) => ({
+			...c,
+			avatar_url: resolveStorageUrl(c.avatar_url),
+		}));
 		totalPresetsCount = presetCount ?? presets.length;
 		totalCreatorsCount = userCount ?? creators.length;
 		const typedDownloads = (downloadSumData ?? []) as {

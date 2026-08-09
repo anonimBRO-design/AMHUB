@@ -1,5 +1,6 @@
 "use client";
 
+import { resolveStorageUrl } from "@/lib/supabase/storage-url";
 import { Camera, Check, Loader2 } from "lucide-react";
 import { type ChangeEvent, useState } from "react";
 
@@ -41,7 +42,7 @@ export function AccountCard({
 				<div className="relative shrink-0">
 					<img
 						src={
-							avatarUrl ||
+							resolveStorageUrl(avatarUrl) ||
 							`https://api.dicebear.com/7.x/identicon/svg?seed=${username}`
 						}
 						alt={displayName}
