@@ -1,4 +1,12 @@
-import { Bot, Brain, Code2, Compass, Cpu, Network, Zap } from "lucide-react";
+import {
+	AntigravityLogo,
+	ChatGPTLogo,
+	ClaudeLogo,
+	CodexLogo,
+	GeminiLogo,
+	NineRouterLogo,
+	OpenCodeLogo,
+} from "./AILogos";
 
 export function AIContributorGrid() {
 	const aiContributors = [
@@ -6,49 +14,49 @@ export function AIContributorGrid() {
 			name: "ChatGPT",
 			provider: "OpenAI",
 			role: "Architecture, debugging, UX planning, and engineering guidance.",
-			icon: Bot,
+			icon: ChatGPTLogo,
 			color: "text-emerald-400 bg-emerald-500/10 border-emerald-500/20",
 		},
 		{
 			name: "Claude",
 			provider: "Anthropic",
 			role: "Large-scale implementation, refactoring, and complex reasoning.",
-			icon: Brain,
+			icon: ClaudeLogo,
 			color: "text-amber-400 bg-amber-500/10 border-amber-500/20",
 		},
 		{
 			name: "Gemini",
 			provider: "Google",
 			role: "Frontend implementation, UI generation, and system verification.",
-			icon: Cpu,
+			icon: GeminiLogo,
 			color: "text-blue-400 bg-blue-500/10 border-blue-500/20",
 		},
 		{
 			name: "Codex",
 			provider: "OpenAI",
 			role: "Code generation and monorepo codebase assistance.",
-			icon: Code2,
+			icon: CodexLogo,
 			color: "text-purple-400 bg-purple-500/10 border-purple-500/20",
 		},
 		{
 			name: "OpenCode",
 			provider: "Autonomous Workflow",
 			role: "Repository automation and autonomous coding workflows.",
-			icon: Zap,
+			icon: OpenCodeLogo,
 			color: "text-rose-400 bg-rose-500/10 border-rose-500/20",
 		},
 		{
 			name: "9Router",
 			provider: "Router Infrastructure",
 			role: "Multi-model routing and provider management.",
-			icon: Network,
+			icon: NineRouterLogo,
 			color: "text-indigo-400 bg-indigo-500/10 border-indigo-500/20",
 		},
 		{
 			name: "Antigravity",
 			provider: "Google DeepMind",
 			role: "AI gateway, tool orchestration, and agentic pair-programming.",
-			icon: Compass,
+			icon: AntigravityLogo,
 			color: "text-cyan-400 bg-cyan-500/10 border-cyan-500/20",
 		},
 	];
