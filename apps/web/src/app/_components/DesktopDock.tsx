@@ -18,6 +18,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type React from "react";
 import { useState } from "react";
+import { LanguageSwitcher } from "./LanguageSwitcher";
 import { LogoutButton } from "./LogoutButton";
 
 interface DesktopDockProps {
@@ -232,6 +233,10 @@ export function DesktopDock({
 						</LogoutButton>
 					</div>
 				)}
+
+				<div className="relative flex items-center justify-center pl-1 sm:pl-1.5 border-l border-white/10 my-1">
+					<LanguageSwitcher variant="compact" />
+				</div>
 			</motion.div>
 		</div>
 	);

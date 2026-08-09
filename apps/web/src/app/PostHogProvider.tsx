@@ -77,7 +77,8 @@ export function PostHogProvider({
 	useEffect(() => {
 		if (!isPostHogInitialized) return;
 
-		posthog.capture("$pageview");
+		const url = pathname + (searchParamsString ? `?${searchParamsString}` : "");
+		posthog.capture("$pageview", { $current_url: url });
 	}, [isPostHogInitialized, pathname, searchParamsString]);
 
 	return children;

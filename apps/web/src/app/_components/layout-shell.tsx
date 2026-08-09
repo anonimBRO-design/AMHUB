@@ -9,6 +9,7 @@ import { usePathname, useRouter } from "next/navigation";
 import type React from "react";
 import { useEffect, useState } from "react";
 import { DesktopDock } from "./DesktopDock";
+import { LanguageSwitcher } from "./LanguageSwitcher";
 import { PointerCaptureGuard } from "./PointerCaptureGuard";
 
 interface LayoutShellProps {
@@ -41,7 +42,7 @@ export const LayoutShell: React.FC<LayoutShellProps> = ({
 					event: "*",
 					schema: "public",
 					table: "notifications",
-					filter: `user_id=eq.${currentUser.id}`,
+					filter: `user_id=${currentUser.id}`,
 				},
 				() => {
 					// Refresh unread count
@@ -93,6 +94,7 @@ export const LayoutShell: React.FC<LayoutShellProps> = ({
 									unreadNotificationCount={unreadCount}
 									isScrolled={false}
 									onSearchSubmit={handleSearchSubmit}
+									rightContent={<LanguageSwitcher variant="compact" />}
 								/>
 							}
 							bottomNav={null}

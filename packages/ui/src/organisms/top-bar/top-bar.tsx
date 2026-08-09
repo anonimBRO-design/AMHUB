@@ -14,9 +14,10 @@ export interface TopBarProps {
 	unreadNotificationCount?: number;
 	isScrolled?: boolean;
 	onSearchSubmit?: (query: string) => void;
+	rightContent?: React.ReactNode;
 }
 
-export const TopBar = ({ pageTitle, isScrolled }: TopBarProps) => {
+export const TopBar = ({ pageTitle, isScrolled, rightContent }: TopBarProps) => {
 	return (
 		<header
 			className={cn(
@@ -44,6 +45,9 @@ export const TopBar = ({ pageTitle, isScrolled }: TopBarProps) => {
 					</span>
 				</a>
 			</div>
+			{rightContent && (
+				<div className="flex items-center gap-3">{rightContent}</div>
+			)}
 		</header>
 	);
 };
