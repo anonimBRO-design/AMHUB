@@ -1,4 +1,4 @@
-import { Award, Plus, ShieldCheck, Sparkles } from "lucide-react";
+import { Award, Plus, ShieldCheck } from "lucide-react";
 import Link from "next/link";
 
 interface DashboardHeroProps {
@@ -6,6 +6,9 @@ interface DashboardHeroProps {
 		displayName: string;
 		username: string;
 		avatarUrl?: string | null;
+		level?: number;
+		isVerified?: boolean;
+		isStaff?: boolean;
 	};
 }
 
@@ -30,14 +33,20 @@ export function DashboardHero({ user }: DashboardHeroProps) {
 							<h1 className="text-xl sm:text-2xl font-extrabold text-[var(--color-text-primary)]">
 								Welcome back, {user.displayName}!
 							</h1>
-							<ShieldCheck className="w-4 h-4 text-[var(--color-interactive-primary)] shrink-0" />
+							{(user.isVerified || user.isStaff) && (
+								<ShieldCheck className="w-4 h-4 text-[var(--color-interactive-primary)] shrink-0" />
+							)}
 						</div>
 						<div className="flex items-center gap-2 text-xs text-[var(--color-text-tertiary)]">
 							<span className="font-semibold">@{user.username}</span>
-							<span>•</span>
-							<span className="inline-flex items-center gap-1 font-bold text-purple-400">
-								<Award className="w-3.5 h-3.5" /> Level 5 Pro Creator
-							</span>
+							{typeof user.level === "number" && (
+								<>
+									<span>•</span>
+									<span className="inline-flex items-center gap-1 font-bold text-purple-400">
+										<Award className="w-3.5 h-3.5" /> Level {user.level} Creator
+									</span>
+								</>
+							)}
 						</div>
 					</div>
 				</div>

@@ -34,6 +34,9 @@ export default async function DashboardPage() {
 		displayName: profile.display_name,
 		username: profile.username,
 		avatarUrl: resolveStorageUrl(profile.avatar_url),
+		level: profile.level,
+		isVerified: profile.is_verified,
+		isStaff: profile.is_staff,
 	};
 
 	const initialPresets = initialPresetsResult.items.map((preset) => ({

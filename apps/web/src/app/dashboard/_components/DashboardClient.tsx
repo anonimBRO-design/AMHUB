@@ -46,6 +46,9 @@ interface DashboardClientProps {
 		displayName: string;
 		username: string;
 		avatarUrl?: string | null;
+		level?: number;
+		isVerified?: boolean;
+		isStaff?: boolean;
 	};
 	stats: {
 		totalDownloads: number;
@@ -66,7 +69,7 @@ export function DashboardClient({
 	initialAnalytics,
 }: DashboardClientProps) {
 	return (
-		<div className="space-y-6 sm:space-y-8 max-w-6xl mx-auto px-4 sm:px-0">
+		<div className="space-y-6 sm:space-y-8 max-w-6xl mx-auto px-4 sm:px-0 pb-16 sm:pb-24">
 			<DashboardHero user={user} />
 			<QuickActions username={user.username} />
 			<StatsCards stats={stats} />
