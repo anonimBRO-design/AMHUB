@@ -73,7 +73,6 @@ export function PostHogProvider({
 		identifiedUserId.current = currentUser.id;
 	}, [currentUser, isPostHogInitialized]);
 
-	// biome-ignore lint/correctness/useExhaustiveDependencies: pathname/searchParamsString intentionally re-trigger the pageview capture on route change
 	useEffect(() => {
 		if (!isPostHogInitialized) return;
 
