@@ -32,7 +32,7 @@ export function CreatorSection({ creators = [] }: CreatorSectionProps) {
 						{t.home.popularCreators}
 					</h2>
 				</div>
-				<div className="p-8 text-center rounded-3xl bg-[#0f0e14]/50 border border-white/[0.08] backdrop-blur-xl">
+				<div className="p-8 text-center rounded-3xl bg-[var(--color-bg-surface)] border border-[var(--color-border-subtle)]">
 					<p className="text-sm font-semibold text-[var(--color-text-tertiary)]">
 						{t.home.noCreators}
 					</p>

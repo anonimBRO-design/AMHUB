@@ -114,9 +114,9 @@ export const PresetCard = React.forwardRef<HTMLDivElement, PresetCardProps>(
 			<div
 				ref={ref}
 				className={cn(
-					"group relative flex flex-col overflow-hidden rounded-[var(--radius-lg)] backdrop-blur-xl bg-white/[0.03] border border-white/[0.08] transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:border-white/[0.16] hover:bg-white/[0.06] hover:-translate-y-1 hover:shadow-[0_8px_32px_rgba(0,0,0,0.5),0_0_24px_rgba(124,58,237,0.2)]",
+					"group relative flex flex-col overflow-hidden rounded-[var(--radius-lg)] bg-[var(--color-bg-surface)] border border-[var(--color-border-subtle)] transition-all duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] hover:border-[var(--color-border-default)] hover:bg-[var(--color-bg-elevated)] hover:-translate-y-0.5 hover:shadow-[var(--shadow-md)]",
 					variant === "featured" &&
-						"border-purple-500/30 shadow-[0_0_24px_rgba(124,58,237,0.25)] hover:border-purple-500/50",
+						"border-[var(--color-interactive-primary)] hover:border-[var(--color-interactive-primary-hover)]",
 					className,
 				)}
 				onMouseEnter={handleMouseEnter}
@@ -147,7 +147,7 @@ export const PresetCard = React.forwardRef<HTMLDivElement, PresetCardProps>(
 						/>
 					)}
 
-					<div className="absolute inset-0 bg-gradient-to-t from-[var(--color-bg-base)] via-transparent to-transparent opacity-80 group-hover:opacity-60 transition-opacity duration-300 pointer-events-none" />
+					<div className="absolute inset-0 bg-[var(--color-bg-base)]/80 group-hover:bg-[var(--color-bg-base)]/60 transition-opacity duration-300 pointer-events-none" />
 
 					<div className="absolute left-3 top-3 flex gap-2 z-10">
 						<Badge variant="category" value={preset.category} size="sm" />
@@ -155,7 +155,7 @@ export const PresetCard = React.forwardRef<HTMLDivElement, PresetCardProps>(
 					</div>
 
 					{variant === "featured" && (
-						<div className="absolute bottom-3 right-3 z-10 rounded-lg backdrop-blur-md bg-purple-500/20 border border-purple-500/30 px-2.5 py-1 text-[var(--font-size-label-sm)] font-bold text-purple-300 shadow-[0_0_12px_rgba(124,58,237,0.4)]">
+						<div className="absolute bottom-3 right-3 z-10 rounded-lg bg-purple-900/40 border border-purple-500/40 px-2.5 py-1 text-[var(--font-size-label-sm)] font-bold text-purple-300">
 							Featured
 						</div>
 					)}

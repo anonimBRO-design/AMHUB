@@ -62,17 +62,17 @@ export function SearchBar() {
 		<div className="w-full max-w-3xl mx-auto space-y-3">
 			<form
 				onSubmit={handleSearchSubmit}
-				className={`relative z-20 w-full backdrop-blur-2xl bg-[#0f0e14]/90 p-2 rounded-2xl border transition-all duration-300 ${
+				className={`relative z-20 w-full bg-[var(--color-bg-surface)] p-2 rounded-2xl border transition-all duration-300 ${
 					isFocused
-						? "border-purple-500/60 ring-4 ring-purple-500/15 shadow-[0_0_32px_rgba(124,58,237,0.25)] scale-[1.01]"
-						: "border-white/[0.1] hover:border-white/[0.18] shadow-2xl"
+						? "border-[var(--color-border-accent)] ring-2 ring-[var(--color-border-accent)]/20 shadow-sm"
+						: "border-[var(--color-border-subtle)] hover:border-[var(--color-border-default)] shadow-md"
 				}`}
 			>
 				<div className="relative flex items-center min-h-[52px] px-4 gap-3">
 					{isPending ? (
-						<Loader2 className="w-5 h-5 text-purple-400 animate-spin shrink-0" />
+						<Loader2 className="w-5 h-5 text-[var(--color-interactive-primary)] animate-spin shrink-0" />
 					) : (
-						<Search className="w-5 h-5 text-[var(--color-text-tertiary)] shrink-0 transition-colors group-hover:text-purple-400" />
+						<Search className="w-5 h-5 text-[var(--color-text-tertiary)] shrink-0" />
 					)}
 
 					<input
@@ -83,7 +83,7 @@ export function SearchBar() {
 						onChange={(e) => setValue(e.target.value)}
 						placeholder="Search Alight Motion XML, velocity, 3D shake, LUTs..."
 						aria-label="Search presets"
-						className="w-full bg-transparent text-sm sm:text-base text-white placeholder:text-[var(--color-text-tertiary)] focus:outline-none font-body font-medium"
+						className="w-full bg-transparent text-sm sm:text-base text-[var(--color-text-primary)] placeholder:text-[var(--color-text-tertiary)] focus:outline-none font-body font-medium"
 					/>
 
 					{value ? (
@@ -91,12 +91,12 @@ export function SearchBar() {
 							type="button"
 							onClick={handleClear}
 							aria-label="Clear search query"
-							className="min-h-[36px] min-w-[36px] flex items-center justify-center rounded-xl bg-white/[0.06] text-[var(--color-text-secondary)] hover:text-white hover:bg-white/[0.12] active:scale-95 transition-all duration-200 cursor-pointer"
+							className="min-h-[36px] min-w-[36px] flex items-center justify-center rounded-xl bg-[var(--color-bg-elevated)] text-[var(--color-text-secondary)] hover:text-white hover:bg-[var(--color-bg-surface)] active:scale-95 transition-all duration-200 cursor-pointer"
 						>
 							<X className="w-4 h-4" />
 						</button>
 					) : (
-						<kbd className="hidden sm:inline-flex items-center gap-1 px-2.5 py-1 text-[11px] font-mono font-semibold text-[var(--color-text-tertiary)] bg-white/[0.04] border border-white/[0.08] rounded-lg">
+						<kbd className="hidden sm:inline-flex items-center gap-1 px-2.5 py-1 text-[11px] font-mono font-semibold text-[var(--color-text-tertiary)] bg-[var(--color-bg-elevated)] border border-[var(--color-border-subtle)] rounded-lg">
 							⌘K
 						</kbd>
 					)}
@@ -114,7 +114,7 @@ export function SearchBar() {
 						key={tag}
 						type="button"
 						onClick={() => handleTagClick(tag)}
-						className="shrink-0 px-3 py-1 rounded-full text-xs font-semibold backdrop-blur-md bg-white/[0.03] text-[var(--color-text-secondary)] border border-white/[0.08] hover:text-white hover:bg-white/[0.08] hover:border-white/[0.16] hover:shadow-[0_0_12px_rgba(124,58,237,0.2)] active:scale-95 transition-all duration-200"
+						className="shrink-0 px-3 py-1 rounded-full text-xs font-semibold bg-[var(--color-bg-elevated)] text-[var(--color-text-secondary)] border border-[var(--color-border-subtle)] hover:text-white hover:bg-[var(--color-bg-surface)] hover:border-[var(--color-border-default)] active:scale-95 transition-all duration-200"
 					>
 						{tag}
 					</button>

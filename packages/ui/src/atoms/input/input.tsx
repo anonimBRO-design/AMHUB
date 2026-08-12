@@ -6,13 +6,13 @@ import * as React from "react";
 import { cn } from "../../lib/utils";
 
 const inputVariants = cva(
-	"flex min-h-[48px] w-full rounded-xl border border-white/[0.08] bg-[#13111a] px-4 py-2.5 text-[var(--font-size-body-md)] text-[var(--color-text-primary)] ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-[var(--color-text-tertiary)] transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] focus-visible:outline-none focus:border-purple-500/50 focus:ring-2 focus:ring-purple-500/20 focus-visible:border-purple-500/50 focus-visible:ring-2 focus-visible:ring-purple-500/20 disabled:cursor-not-allowed disabled:opacity-50 backdrop-blur-md",
+	"flex min-h-[44px] w-full rounded-[var(--radius-md)] border border-[var(--color-border-default)] bg-[var(--color-bg-input)] px-4 py-2 text-[var(--font-size-body-md)] text-[var(--color-text-primary)] ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-[var(--color-text-tertiary)] transition-all duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] focus-visible:outline-none focus:border-[var(--color-interactive-primary)] focus:ring-1 focus:ring-[var(--color-interactive-primary)] focus-visible:border-[var(--color-interactive-primary)] focus-visible:ring-1 focus-visible:ring-[var(--color-interactive-primary)] disabled:cursor-not-allowed disabled:opacity-50",
 	{
 		variants: {
 			variant: {
 				default: "",
 				search:
-					"pl-10 bg-[#13111a] border-white/[0.08] focus:border-purple-500/50 focus:ring-purple-500/20",
+					"pl-10 bg-[var(--color-bg-input)] border-[var(--color-border-default)] focus:border-[var(--color-interactive-primary)] focus:ring-[var(--color-interactive-primary)]",
 				password: "pr-10",
 				prefix: "pl-3",
 				suffix: "pr-3",

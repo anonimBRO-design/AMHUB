@@ -8,7 +8,7 @@ export function Footer() {
 	const { t } = useLanguage();
 
 	return (
-		<footer className="w-full pt-10 pb-24 sm:pb-12 border-t border-white/[0.08] backdrop-blur-xl bg-white/[0.02] text-[var(--color-text-secondary)]">
+		<footer className="w-full pt-10 pb-24 sm:pb-12 border-t border-[var(--color-border-subtle)] bg-[var(--color-bg-surface)] text-[var(--color-text-secondary)]">
 			<div className="max-w-6xl mx-auto px-4 sm:px-6 space-y-8">
 				<div className="flex flex-col md:flex-row items-start justify-between gap-8">
 					{/* Brand Info */}
@@ -32,7 +32,7 @@ export function Footer() {
 							href="https://sociabuzz.com/anonimbro"
 							target="_blank"
 							rel="noopener noreferrer"
-							className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-r from-purple-600/20 to-indigo-600/20 border border-purple-500/30 text-xs font-bold text-purple-300 hover:text-white hover:border-purple-500/60 transition-all shadow-sm"
+							className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[var(--color-bg-accent)] border border-[var(--color-border-accent)] text-xs font-bold text-[var(--color-text-accent)] hover:text-white transition-all shadow-sm"
 						>
 							<Heart className="w-3.5 h-3.5 text-rose-400 fill-rose-400" />
 							<span>{t.common.supportAmhub}</span>
@@ -149,7 +149,7 @@ export function Footer() {
 				</div>
 
 				{/* Bottom Bar */}
-				<div className="pt-6 border-t border-white/[0.08] flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-[var(--color-text-tertiary)] font-body">
+				<div className="pt-6 border-t border-[var(--color-border-subtle)] flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-[var(--color-text-tertiary)] font-body">
 					<p>© {new Date().getFullYear()} AMHUB. All rights reserved.</p>
 					<div className="flex items-center gap-1">
 						<span>Crafted with</span>

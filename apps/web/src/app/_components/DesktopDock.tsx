@@ -105,7 +105,7 @@ export function DesktopDock({
 				initial={{ y: 40, opacity: 0 }}
 				animate={{ y: 0, opacity: 1 }}
 				transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-				className="relative flex items-center gap-0.5 sm:gap-1.5 p-1 sm:p-2 rounded-3xl backdrop-blur-2xl bg-[#0f0e14]/90 border border-white/[0.12] shadow-[0_20px_50px_rgba(0,0,0,0.8),0_0_30px_rgba(124,58,237,0.2)]"
+				className="relative flex items-center gap-0.5 sm:gap-1.5 p-1 sm:p-2 rounded-3xl bg-[var(--color-bg-surface)] border border-[var(--color-border-strong)] shadow-[0_8px_32px_rgba(0,0,0,0.5)]"
 			>
 				{dockItems.map((item) => {
 					const Icon = item.icon;
@@ -131,12 +131,12 @@ export function DesktopDock({
 										transition={{ duration: 0.15, ease: [0.16, 1, 0.3, 1] }}
 										className="absolute -top-12 left-1/2 -translate-x-1/2 z-50 pointer-events-none hidden sm:block"
 									>
-										<div className="px-3 py-1.5 rounded-xl bg-[#0a090f]/95 border border-white/15 backdrop-blur-md shadow-xl flex items-center gap-1.5 whitespace-nowrap">
-											<span className="text-xs font-bold text-white font-body tracking-wide">
+										<div className="px-3 py-1.5 rounded-xl bg-[var(--color-bg-surface)] border border-[var(--color-border-default)] shadow-xl flex items-center gap-1.5 whitespace-nowrap">
+											<span className="text-xs font-bold text-[var(--color-text-primary)] font-body tracking-wide">
 												{item.label}
 											</span>
 										</div>
-										<div className="w-2 h-2 bg-[#0a090f]/95 rotate-45 border-r border-b border-white/15 mx-auto -mt-1" />
+										<div className="w-2 h-2 bg-[var(--color-bg-surface)] rotate-45 border-r border-b border-[var(--color-border-default)] mx-auto -mt-1" />
 									</motion.div>
 								)}
 							</AnimatePresence>
@@ -154,10 +154,10 @@ export function DesktopDock({
 									transition={{ type: "spring", stiffness: 400, damping: 25 }}
 									className={`relative flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 rounded-2xl transition-colors duration-200 overflow-hidden ${
 										item.isSpecial
-											? "bg-gradient-to-tr from-purple-600 to-indigo-600 text-white shadow-[0_0_20px_rgba(124,58,237,0.4)] border border-purple-400/40"
+											? "bg-[var(--color-interactive-primary)] text-white shadow-[0_4px_12px_rgba(0,0,0,0.3)] border border-[var(--color-border-accent)]"
 											: isActive
-												? "bg-white/15 text-white border border-white/20 shadow-md"
-												: "bg-white/[0.03] text-[var(--color-text-secondary)] border border-white/[0.06] hover:bg-white/[0.08] hover:text-white"
+												? "bg-[var(--color-bg-elevated)] text-white border border-[var(--color-border-strong)] shadow-sm"
+												: "bg-[var(--color-bg-input)] text-[var(--color-text-secondary)] border border-[var(--color-border-subtle)] hover:bg-[var(--color-bg-elevated)] hover:text-white"
 									}`}
 								>
 									{item.id === "profile" && item.avatarUrl ? (
@@ -172,7 +172,7 @@ export function DesktopDock({
 
 									{/* Badge Dot */}
 									{item.badge && item.badge > 0 ? (
-										<span className="absolute -top-1 -right-1 flex h-3.5 w-3.5 sm:h-4 sm:w-4 items-center justify-center rounded-full bg-purple-500 text-[9px] sm:text-[10px] font-black text-white shadow-[0_0_8px_rgba(168,85,247,0.8)] border border-black">
+										<span className="absolute -top-1 -right-1 flex h-3.5 w-3.5 sm:h-4 sm:w-4 items-center justify-center rounded-full bg-purple-500 text-[9px] sm:text-[10px] font-black text-white shadow-sm border border-black">
 											{item.badge > 9 ? "9+" : item.badge}
 										</span>
 									) : null}
@@ -182,7 +182,7 @@ export function DesktopDock({
 								{isActive && (
 									<motion.div
 										layoutId="activeDockDot"
-										className="absolute bottom-0.5 sm:bottom-1 w-1.5 h-1.5 rounded-full bg-purple-400 shadow-[0_0_8px_rgba(168,85,247,0.9)]"
+										className="absolute bottom-0.5 sm:bottom-1 w-1.5 h-1.5 rounded-full bg-purple-400"
 										transition={{ type: "spring", stiffness: 500, damping: 30 }}
 									/>
 								)}

@@ -80,7 +80,7 @@ const Avatar = React.forwardRef<HTMLDivElement, AvatarProps>(
 			if (lvl <= 2) return "ring-[var(--color-rarity-common)]";
 			if (lvl <= 4) return "ring-[var(--color-rarity-rare)]";
 			if (lvl <= 6) return "ring-[var(--color-rarity-epic)]";
-			return "ring-transparent bg-gradient-to-br from-[var(--color-rarity-legendary-start)] to-[var(--color-rarity-legendary-end)]";
+			return "ring-[var(--color-rarity-legendary-start)]";
 		};
 
 		return (

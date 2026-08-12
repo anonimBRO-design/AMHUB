@@ -34,7 +34,7 @@ export function FeaturedSection({ presets }: FeaturedSectionProps) {
 					<Link
 						key={preset.id}
 						href={`/preset/${preset.slug}`}
-						className="group relative overflow-hidden rounded-3xl backdrop-blur-xl bg-white/[0.03] border border-white/[0.08] hover:bg-white/[0.06] hover:border-white/[0.12] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_0_24px_rgba(124,58,237,0.15)] active:scale-[0.97]"
+						className="group relative overflow-hidden rounded-3xl bg-[var(--color-bg-surface)] border border-[var(--color-border-subtle)] hover:bg-[var(--color-bg-elevated)] hover:border-[var(--color-border-default)] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md active:scale-[0.97]"
 					>
 						{/* Aspect Ratio Container */}
 						<div className="relative aspect-[16/9] w-full overflow-hidden bg-[var(--color-bg-elevated)]">
@@ -45,20 +45,20 @@ export function FeaturedSection({ presets }: FeaturedSectionProps) {
 								loading="lazy"
 							/>
 							{/* Gradient Overlay */}
-							<div className="absolute inset-0 bg-gradient-to-t from-[var(--color-bg-base)] via-[var(--color-bg-base)]/30 to-transparent" />
+							<div className="absolute inset-0 bg-[var(--color-bg-base)]/40" />
 
 							{/* Format & Category Badges */}
 							<div className="absolute top-3 left-3 flex items-center gap-2">
-								<span className="px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-black/60 backdrop-blur-md text-white border border-white/[0.12]">
+								<span className="px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-black/70 text-white border border-white/20">
 									{preset.difficulty}
 								</span>
-								<span className="px-2.5 py-1 rounded-full text-[10px] font-semibold tracking-wider bg-[var(--color-interactive-primary)]/80 text-white backdrop-blur-md border border-white/10">
+								<span className="px-2.5 py-1 rounded-full text-[10px] font-semibold tracking-wider bg-[var(--color-interactive-primary)] text-white border border-white/10">
 									{preset.category}
 								</span>
 							</div>
 
 							{/* Top Right Action Icon */}
-							<div className="absolute top-3 right-3 p-2 rounded-full bg-black/40 backdrop-blur-md text-white/80 opacity-0 group-hover:opacity-100 transition-all duration-300 group-hover:scale-110 border border-white/10">
+							<div className="absolute top-3 right-3 p-2 rounded-full bg-black/40 text-white/80 opacity-0 group-hover:opacity-100 transition-all duration-300 group-hover:scale-110 border border-white/10">
 								<ArrowUpRight className="w-4 h-4" />
 							</div>
 						</div>
@@ -70,7 +70,7 @@ export function FeaturedSection({ presets }: FeaturedSectionProps) {
 							</h3>
 
 							{/* Creator Info & Stats */}
-							<div className="flex items-center justify-between text-xs text-[var(--color-text-secondary)] pt-2 border-t border-white/[0.08]">
+							<div className="flex items-center justify-between text-xs text-[var(--color-text-secondary)] pt-2 border-t border-[var(--color-border-subtle)]">
 								<div className="flex items-center gap-2">
 									<img
 										src={

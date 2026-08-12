@@ -1,4 +1,4 @@
-import * as React from "react";
+import type * as React from "react";
 import { Avatar } from "../../atoms/avatar";
 import { cn } from "../../lib/utils";
 
@@ -37,7 +37,7 @@ export const MobileBottomNav = ({
 							key={item.href}
 							href={item.href}
 							aria-label="Upload new preset"
-							className="flex h-14 w-14 -translate-y-4 items-center justify-center rounded-full bg-[var(--color-interactive-primary)] text-white shadow-glow-sm transition-transform hover:scale-95"
+							className="flex h-14 w-14 -translate-y-4 items-center justify-center rounded-full bg-[var(--color-interactive-primary)] text-white shadow-md transition-transform hover:scale-95"
 						>
 							<span className="text-2xl">{item.icon}</span>
 						</a>

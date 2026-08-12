@@ -32,7 +32,7 @@ export const ProfileHeader = ({
 }: ProfileHeaderProps) => {
 	return (
 		<header className="relative">
-			<div className="h-48 w-full bg-gradient-to-r from-gray-300 to-gray-100" />
+			<div className="h-48 w-full bg-[var(--color-bg-elevated)]" />
 			<div className="px-6 pb-6">
 				<div className="relative -mt-12 mb-4 flex items-end gap-4">
 					<Avatar

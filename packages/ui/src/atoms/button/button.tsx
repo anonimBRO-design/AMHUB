@@ -5,27 +5,27 @@ import * as React from "react";
 import { cn } from "../../lib/utils";
 
 const buttonVariants = cva(
-	"inline-flex items-center justify-center rounded-[var(--radius-md)] text-[var(--font-size-label-md)] font-medium transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--shadow-focus)] disabled:opacity-40 disabled:pointer-events-none ring-offset-background select-none",
+	"inline-flex items-center justify-center rounded-[var(--radius-md)] text-[var(--font-size-label-md)] font-medium transition-all duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--shadow-focus)] disabled:opacity-40 disabled:pointer-events-none ring-offset-background select-none",
 	{
 		variants: {
 			variant: {
 				default:
-					"bg-[var(--color-interactive-primary)] text-[var(--color-text-inverse)] hover:bg-[var(--color-interactive-primary-hover)] active:bg-[var(--color-interactive-primary-active)] shadow-[0_0_16px_rgba(124,58,237,0.25)] hover:shadow-[0_0_24px_rgba(124,58,237,0.45)] border border-purple-500/20",
+					"bg-[var(--color-interactive-primary)] text-[var(--color-text-inverse)] hover:bg-[var(--color-interactive-primary-hover)] active:bg-[var(--color-interactive-primary-active)] border border-transparent",
 				secondary:
-					"bg-white/[0.05] border border-white/[0.08] text-[var(--color-text-primary)] hover:bg-white/[0.08] hover:border-white/[0.12]",
+					"bg-[var(--color-bg-elevated)] border border-[var(--color-border-subtle)] text-[var(--color-text-primary)] hover:bg-[var(--color-border-subtle)] hover:border-[var(--color-border-default)]",
 				outline:
-					"border border-white/[0.08] bg-transparent text-[var(--color-text-primary)] hover:bg-white/[0.06] hover:border-white/[0.12]",
+					"border border-[var(--color-border-default)] bg-transparent text-[var(--color-text-primary)] hover:bg-[var(--color-bg-elevated)] hover:border-[var(--color-border-strong)]",
 				ghost:
-					"border border-transparent hover:bg-white/[0.06] hover:border-white/[0.08] hover:text-[var(--color-text-primary)] text-[var(--color-text-secondary)]",
+					"border border-transparent hover:bg-[var(--color-bg-elevated)] hover:border-[var(--color-border-subtle)] hover:text-[var(--color-text-primary)] text-[var(--color-text-secondary)]",
 				destructive:
-					"bg-[var(--color-interactive-danger)] text-[var(--color-text-inverse)] hover:bg-[var(--color-interactive-danger-hover)] shadow-[0_0_16px_rgba(239,68,68,0.25)]",
+					"bg-[var(--color-interactive-danger)] text-[var(--color-text-inverse)] hover:bg-[var(--color-interactive-danger-hover)]",
 				link: "text-[var(--color-text-accent)] underline-offset-4 hover:underline",
 			},
 			size: {
-				sm: "min-h-[40px] px-3.5 py-2 text-[var(--font-size-label-sm)] rounded-xl",
-				md: "min-h-[48px] sm:min-h-[44px] px-4 py-2.5 text-[var(--font-size-label-md)] rounded-xl",
-				lg: "min-h-[54px] px-6 py-3.5 text-[var(--font-size-label-lg)] rounded-2xl",
-				icon: "min-h-[48px] min-w-[48px] p-2 rounded-xl",
+				sm: "min-h-[36px] px-3 py-1.5 text-[var(--font-size-label-sm)] rounded-[var(--radius-sm)]",
+				md: "min-h-[44px] px-4 py-2 text-[var(--font-size-label-md)] rounded-[var(--radius-md)]",
+				lg: "min-h-[48px] px-6 py-3 text-[var(--font-size-label-lg)] rounded-[var(--radius-lg)]",
+				icon: "min-h-[40px] min-w-[40px] p-2 rounded-[var(--radius-md)]",
 			},
 		},
 		defaultVariants: {
