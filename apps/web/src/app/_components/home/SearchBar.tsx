@@ -50,14 +50,6 @@ export function SearchBar() {
 		});
 	};
 
-	const popularSearches = [
-		"Velocity",
-		"3D Shake",
-		"Anime AMV",
-		"XML Code",
-		"Color LUT",
-	];
-
 	return (
 		<div className="w-full max-w-3xl mx-auto space-y-3">
 			<form
@@ -97,29 +89,11 @@ export function SearchBar() {
 						</button>
 					) : (
 						<kbd className="hidden sm:inline-flex items-center gap-1 px-2.5 py-1 text-[11px] font-mono font-semibold text-[var(--color-text-tertiary)] bg-[var(--color-bg-elevated)] border border-[var(--color-border-subtle)] rounded-lg">
-							⌘K
+							��⌘K
 						</kbd>
 					)}
 				</div>
 			</form>
-
-			{/* Popular Quick Filter Pills */}
-			<div className="flex items-center gap-2 overflow-x-auto snap-x snap-mandatory scrollbar-none py-1 text-xs select-none">
-				<span className="text-[11px] font-bold tracking-wider uppercase text-[var(--color-text-tertiary)] shrink-0 flex items-center gap-1 pr-1">
-					<Flame className="w-3 h-3 text-rose-400 fill-rose-400" />
-					Popular:
-				</span>
-				{popularSearches.map((tag) => (
-					<button
-						key={tag}
-						type="button"
-						onClick={() => handleTagClick(tag)}
-						className="shrink-0 px-3 py-1 rounded-full text-xs font-semibold bg-[var(--color-bg-elevated)] text-[var(--color-text-secondary)] border border-[var(--color-border-subtle)] hover:text-white hover:bg-[var(--color-bg-surface)] hover:border-[var(--color-border-default)] active:scale-95 transition-all duration-200"
-					>
-						{tag}
-					</button>
-				))}
-			</div>
 		</div>
 	);
 }

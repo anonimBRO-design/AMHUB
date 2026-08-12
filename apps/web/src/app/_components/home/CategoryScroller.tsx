@@ -27,9 +27,11 @@ const CATEGORIES: CategoryDef[] = [
 	{ id: "color", label: "Color Grading", icon: Palette },
 	{ id: "anime", label: "Anime", icon: Tv },
 	{ id: "gaming", label: "Gaming", icon: Gamepad2 },
+	{ id: "jj", label: "JJ", icon: Sparkles },
 	{ id: "lyric", label: "Lyric", icon: Music },
 	{ id: "3d", label: "3D Motion", icon: Layers3 },
 	{ id: "slowmo", label: "Slow Motion", icon: Layers },
+	{ id: "gameplay", label: "Gameplay", icon: Gamepad2 },
 ];
 
 export function CategoryScroller() {
@@ -53,7 +55,7 @@ export function CategoryScroller() {
 	return (
 		<div className="w-full relative">
 			{/* Horizontal Scroll Container */}
-			<div className="flex items-center gap-2.5 overflow-x-auto snap-x snap-mandatory py-1 px-1 scrollbar-none text-xs font-semibold select-none [-webkit-overflow-scrolling:touch]">
+			<div className="flex items-center gap-2 overflow-x-auto snap-x snap-mandatory py-1 px-1 scrollbar-none text-xs font-semibold select-none [-webkit-overflow-scrolling:touch]">
 				{CATEGORIES.map((cat) => {
 					const Icon = cat.icon;
 					const isActive =
@@ -65,16 +67,16 @@ export function CategoryScroller() {
 							key={cat.id}
 							type="button"
 							onClick={() => handleCategoryClick(cat.id)}
-							className={`snap-start shrink-0 inline-flex items-center gap-2 min-h-[52px] px-4.5 rounded-2xl transition-all duration-300 font-body select-none active:scale-[0.97] ${
+							className={`snap-start shrink-0 inline-flex items-center gap-2 min-h-[44px] px-4 rounded-md transition-all duration-300 font-body select-none active:scale-[0.97] ${
 								isActive
-									? "bg-[var(--color-interactive-primary)] text-white border border-[var(--color-interactive-primary)] shadow-[0_0_24px_rgba(124,58,237,0.4)] scale-[1.02]"
-									: "backdrop-blur-xl bg-white/[0.03] text-[var(--color-text-secondary)] border border-white/[0.08] hover:text-[var(--color-text-primary)] hover:bg-white/[0.06] hover:border-white/[0.12] hover:shadow-[0_0_20px_rgba(124,58,237,0.15)]"
+									? "bg-[var(--color-interactive-primary)] text-white border border-[var(--color-interactive-primary)] scale-[1.02]"
+									: "bg-[var(--color-bg-input)] text-[var(--color-text-secondary)] border border-[var(--color-border-subtle)] hover:text-[var(--color-text-primary)] hover:bg-[var(--color-bg-elevated)] hover:border-[var(--color-border-default)]"
 							}`}
 						>
 							<Icon
 								className={`w-4 h-4 ${
 									isActive
-										? "text-white animate-pulse"
+										? "text-white"
 										: "text-[var(--color-text-tertiary)]"
 								}`}
 							/>
