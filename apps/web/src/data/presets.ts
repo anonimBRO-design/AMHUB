@@ -18,7 +18,7 @@ export type PresetWithCreator = {
 	description: string | null;
 	thumbnail_url: string;
 	preview_video_url: string | null;
-	file_type: "xml" | "qr" | "link";
+	file_type: "xml" | "qr" | "link" | "google_drive" | "alight_creative";
 	file_url: string | null;
 	am_link: string | null;
 	category: string;

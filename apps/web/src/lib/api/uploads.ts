@@ -35,6 +35,11 @@ export const UPLOAD_LIMITS = {
 		allowedMimeTypes: ["image/png", "image/jpeg", "image/webp"] as const,
 		allowedExtensions: ["png", "jpg", "jpeg", "webp"] as const,
 	},
+	presetVideo: {
+		maxBytes: 100 * 1024 * 1024, // 100 MB
+		allowedMimeTypes: ["video/mp4", "video/webm"] as const,
+		allowedExtensions: ["mp4", "webm"] as const,
+	},
 } satisfies Record<
 	string,
 	{
@@ -45,6 +50,7 @@ export const UPLOAD_LIMITS = {
 >;
 
 export type UploadKind = keyof typeof UPLOAD_LIMITS;
+// 'avatar' | 'thumbnail' | 'presetXml' | 'presetQr' | 'presetVideo'
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Filename helpers

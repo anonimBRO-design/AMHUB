@@ -7,6 +7,7 @@ const ALLOWED_DOMAINS = [
 	"alight.link",
 	"am.link",
 	"alightmotion.com",
+	"alightcreative.com", // Alight Creative share links
 	"drive.google.com",
 	"dropbox.com",
 	"mediafire.com",

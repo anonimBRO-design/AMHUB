@@ -13,7 +13,7 @@ const createPresetSchema = z.object({
 	description: z.string().max(2000).optional(),
 	thumbnail_url: z.string().url(),
 	preview_video_url: z.string().url().optional(),
-	file_type: z.enum(["xml", "qr", "link"]),
+	file_type: z.enum(["xml", "qr", "link", "google_drive", "alight_creative"]),
 	file_url: z.string().url().optional(),
 	am_link: z.string().url().optional(),
 	category: z.string(),

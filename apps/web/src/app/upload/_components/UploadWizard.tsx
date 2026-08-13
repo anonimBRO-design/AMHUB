@@ -1,6 +1,6 @@
 "use client";
 
-import type { ValidationResult } from "@/lib/validation/types";
+import type { ValidationResult, PresetSourceType } from "@/lib/validation/types";
 import {
 	AlertCircle,
 	ArrowLeft,
@@ -14,15 +14,18 @@ import posthog from "posthog-js";
 import { type FormEvent, useState } from "react";
 import { DetailsStep } from "./DetailsStep";
 import { FilePicker } from "./FilePicker";
+import { PreviewVideoStep } from "./PreviewVideoStep";
 import { ReviewStep } from "./ReviewStep";
 import { ThumbnailStep } from "./ThumbnailStep";
 import { WizardProgress } from "./WizardProgress";
+import type { PresetFileType, Database } from "@presethub/types";
 
 const WIZARD_STEPS = [
 	{ num: 1, label: "Format & File" },
 	{ num: 2, label: "Thumbnail" },
-	{ num: 3, label: "Preset Details" },
-	{ num: 4, label: "Review & Publish" },
+	{ num: 3, label: "Preview Video" },
+	{ num: 4, label: "Preset Details" },
+	{ num: 5, label: "Review & Publish" },
 ];
 
 export function UploadWizard() {
@@ -36,7 +39,9 @@ export function UploadWizard() {
 	const [fileType, setFileType] = useState<"xml" | "qr" | "link">("xml");
 	const [presetFile, setPresetFile] = useState<File | null>(null);
 	const [thumbnailFile, setThumbnailFile] = useState<File | null>(null);
+	const [previewVideoFile, setPreviewVideoFile] = useState<File | null>(null);
 	const [amLink, setAmLink] = useState("");
+	const [amLinkSourceType, setAmLinkSourceType] = useState<PresetSourceType | null>(null);
 	const [title, setTitle] = useState("");
 	const [description, setDescription] = useState("");
 	const [category, setCategory] = useState("velocity");
@@ -59,7 +64,7 @@ export function UploadWizard() {
 		if (currentStep === 2) {
 			return !thumbnailFile;
 		}
-		if (currentStep === 3) {
+		if (currentStep === 4) {
 			return !title.trim();
 		}
 		return false;
@@ -80,11 +85,13 @@ export function UploadWizard() {
 			}
 			setCurrentStep(3);
 		} else if (currentStep === 3) {
+			setCurrentStep(4);
+		} else if (currentStep === 4) {
 			if (!title.trim()) {
 				setError("Title is required.");
 				return;
 			}
-			setCurrentStep(4);
+			setCurrentStep(5);
 		}
 	};
 
@@ -97,7 +104,7 @@ export function UploadWizard() {
 
 	const uploadFile = async (
 		file: File,
-		upload_type: string,
+		upload_type: "xml" | "qr" | "thumbnail" | "presetVideo",
 		content_type: string,
 	): Promise<string> => {
 		const res = await fetch("/api/uploads/preset", {
@@ -138,15 +145,88 @@ export function UploadWizard() {
 		return json.data.storage_path;
 	};
 
+	// Map Zod + ApiError details into user-friendly strings
+	const mapValidationError = (err: any, fileType: PresetFileType): string => {
+		if (!err) return "An unexpected error occurred.";
+
+		// Zod unprocessable_entity (422)
+		if (err.code === "unprocessable_entity" && err.details) {
+			const msgs = (err.details as any[]).map((d: any) => {
+				const path = d.path?.join(".") || "field";
+				let msg = d.message;
+				switch (path) {
+					case "slug":
+						return "Title generated an invalid slug. Try a different title.";
+					case "title":
+						return msg.includes("max") ? "Title is too long (max 100 chars)." : "Title is required.";
+					case "description":
+						return "Description is too long (max 2000 chars).";
+					case "thumbnail_url":
+						return "Thumbnail URL is invalid. Please re-upload.";
+					case "preview_video_url":
+						return "Preview video URL is invalid. Please re-upload.";
+					case "file_type":
+						return "Unsupported preset source type.";
+					case "file_url":
+						return "Preset file reference is missing or invalid.";
+					case "am_link":
+						return "External preset link is invalid or missing.";
+					case "category":
+						return "Category is required and must exist in the database.";
+					case "difficulty":
+						return "Difficulty must be beginner, intermediate, or advanced.";
+					default:
+						return `${path}: ${msg}`;
+				}
+			});
+			return msgs.join(" • ");
+		}
+
+		// Supabase FK violations (category not found)
+		if (err.message?.includes("presets_category_fkey")) {
+			return "Selected category doesn't exist in the database. Please choose a valid category.";
+		}
+
+		// DB constraint: file_type check
+		if (err.message?.includes("presets_file_type_check")) {
+			return "Unsupported preset source type. Please check your link type.";
+		}
+
+		// DB constraint: file_location_check
+		if (err.message?.includes("presets_file_location_check")) {
+			if (fileType === "xml" || fileType === "qr") {
+				return "An uploaded preset file (XML/QR) is required for this source type.";
+			} else {
+				return "An external preset link (Alight Link / Google Drive / Alight Creative) is required for this source type.";
+			}
+		}
+
+		// Rate limit
+		if (err.code === "rate_limited" || err.message?.includes("rate limit")) {
+			return "Too many uploads. Please wait a moment and try again.";
+		}
+
+		// Storage errors
+		if (err.message?.includes("storage")) {
+			return "File upload failed. Please check the file and try again.";
+		}
+
+		return err.message || "Failed to publish preset. Please try again.";
+	};
+
 	const handlePublish = async (e: FormEvent) => {
 		e.preventDefault();
 		setIsLoading(true);
 		setUploadProgress(0);
 		setError(null);
 
+		let finalFileType: Database["public"]["Enums"]["PresetFileType"] = fileType as Database["public"]["Enums"]["PresetFileType"];
+
 		try {
-			let uploadedPresetUrl: string | undefined = undefined;
 			let uploadedThumbnailUrl: string | undefined = undefined;
+			let uploadedPreviewVideoUrl: string | undefined = undefined;
+			let finalFileUrl: string | undefined = undefined;
+			let finalAmLink: string | undefined = undefined;
 
 			// 1. Upload thumbnail
 			if (thumbnailFile) {
@@ -157,16 +237,35 @@ export function UploadWizard() {
 				);
 			}
 
-			// 2. Upload preset file if xml/qr
-			if (fileType !== "link" && presetFile) {
-				uploadedPresetUrl = await uploadFile(
-					presetFile,
-					fileType === "xml" ? "xml" : "qr",
-					presetFile.type || (fileType === "xml" ? "text/xml" : "image/jpeg"),
+			// 2. Upload preview video
+			if (previewVideoFile) {
+				uploadedPreviewVideoUrl = await uploadFile(
+					previewVideoFile,
+					"presetVideo",
+					previewVideoFile.type || "video/mp4",
 				);
 			}
 
-			// 3. Create Preset record
+			// 3. Handle preset source
+			if (fileType === "xml" || fileType === "qr") {
+				if (presetFile) {
+					finalFileUrl = await uploadFile(
+						presetFile,
+						fileType === "xml" ? "xml" : "qr",
+						presetFile.type || (fileType === "xml" ? "text/xml" : "image/jpeg"),
+					);
+				}
+			} else if (fileType === "link") {
+				finalAmLink = amLink.trim() || undefined;
+				// Detect actual type from validation result or selector
+				if (validation.sourceType && validation.sourceType !== "xml_file" && validation.sourceType !== "qr_image") {
+					finalFileType = validation.sourceType as PresetFileType;
+				} else {
+					finalFileType = (amLinkSourceType as PresetFileType) || "link";
+				}
+			}
+
+			// 4. Create Preset record
 			const slug = `${title
 				.toLowerCase()
 				.replace(/[^a-z0-9]+/g, "-")
@@ -180,12 +279,10 @@ export function UploadWizard() {
 					title,
 					description: description.trim() || undefined,
 					thumbnail_url: uploadedThumbnailUrl ?? "/placeholder.jpg",
-					file_type: fileType,
-					file_url: uploadedPresetUrl || undefined,
-					am_link:
-						fileType === "qr" && validation.decodedPayload
-							? validation.decodedPayload
-							: amLink.trim() || undefined,
+					preview_video_url: uploadedPreviewVideoUrl || undefined,
+					file_type: finalFileType,
+					file_url: finalFileUrl || undefined,
+					am_link: finalAmLink || undefined,
 					category,
 					difficulty,
 				}),
@@ -193,18 +290,11 @@ export function UploadWizard() {
 
 			const createJson = await createRes.json();
 			if (!createRes.ok) {
-				// Rollback: Delete uploaded files if database insertion fails
+				// Rollback
 				const cleanupPaths = [];
-				if (uploadedThumbnailUrl)
-					cleanupPaths.push({
-						bucket: "thumbnails",
-						path: uploadedThumbnailUrl,
-					});
-				if (uploadedPresetUrl)
-					cleanupPaths.push({
-						bucket: "preset-files",
-						path: uploadedPresetUrl,
-					});
+				if (uploadedThumbnailUrl) cleanupPaths.push({ bucket: "thumbnails", path: uploadedThumbnailUrl });
+				if (uploadedPreviewVideoUrl) cleanupPaths.push({ bucket: "preset-videos", path: uploadedPreviewVideoUrl });
+				if (finalFileUrl) cleanupPaths.push({ bucket: "preset-files", path: finalFileUrl });
 
 				for (const item of cleanupPaths) {
 					try {
@@ -217,20 +307,27 @@ export function UploadWizard() {
 						console.error("Cleanup failed:", cleanupErr);
 					}
 				}
+
+				// Map specific validation errors if available
+				if (createJson.error?.code === "unprocessable_entity" && createJson.error.details) {
+					const details = createJson.error.details as any[];
+					const msg = details.map(d => `${d.path}: ${d.message}`).join(", ");
+					throw new Error(`Validation Error: ${msg}`);
+				}
+
 				throw new Error(createJson.error?.message || "Failed to create preset");
 			}
 
 			posthog.capture("preset_published", {
 				preset_id: createJson.data?.id ?? createJson.id,
-				file_type: fileType,
+				file_type: finalFileType,
 				category,
 				difficulty,
 			});
 			router.push(`/preset/${slug}`);
 		} catch (err: unknown) {
-			setError(
-				err instanceof Error ? err.message : "An unexpected error occurred.",
-			);
+			const apiError = err as { code?: string; message?: string; details?: any; stack?: string };
+			setError(mapValidationError(apiError, finalFileType));
 			setIsLoading(false);
 		}
 	};
@@ -272,9 +369,14 @@ export function UploadWizard() {
 						presetFile={presetFile}
 						onPresetFileChange={setPresetFile}
 						amLink={amLink}
-						onAmLinkChange={setAmLink}
+						onAmLinkChange={(link, type) => {
+							setAmLink(link);
+							if (type) setAmLinkSourceType(type);
+						}}
 						validation={validation}
 						onValidationChange={setValidation}
+						amLinkSourceType={amLinkSourceType}
+						onAmLinkSourceTypeChange={setAmLinkSourceType}
 					/>
 				)}
 
@@ -286,6 +388,14 @@ export function UploadWizard() {
 				)}
 
 				{currentStep === 3 && (
+					<PreviewVideoStep
+						previewVideoFile={previewVideoFile}
+						onPreviewVideoFileChange={setPreviewVideoFile}
+						thumbnailFile={thumbnailFile}
+					/>
+				)}
+
+				{currentStep === 4 && (
 					<DetailsStep
 						title={title}
 						onTitleChange={setTitle}
@@ -298,7 +408,7 @@ export function UploadWizard() {
 					/>
 				)}
 
-				{currentStep === 4 && (
+				{currentStep === 5 && (
 					<ReviewStep
 						title={title}
 						description={description}
@@ -308,6 +418,8 @@ export function UploadWizard() {
 						presetFile={presetFile}
 						thumbnailFile={thumbnailFile}
 						amLink={amLink}
+						previewVideoFile={previewVideoFile}
+						amLinkSourceType={amLinkSourceType}
 					/>
 				)}
 			</div>
@@ -329,7 +441,7 @@ export function UploadWizard() {
 						<div />
 					)}
 
-					{currentStep < 4 ? (
+					{currentStep < 5 ? (
 						<button
 							type="button"
 							onClick={handleNextStep}

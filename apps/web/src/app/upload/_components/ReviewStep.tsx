@@ -4,7 +4,10 @@ import {
 	FileCode,
 	QrCode,
 	Sparkles,
+	Film,
 } from "lucide-react";
+import type { PresetSourceType } from "@/lib/validation/types";
+import { useState, useRef, useEffect } from "react";
 
 interface ReviewStepProps {
 	title: string;
@@ -15,6 +18,8 @@ interface ReviewStepProps {
 	presetFile: File | null;
 	thumbnailFile: File | null;
 	amLink: string;
+	previewVideoFile?: File | null;
+	amLinkSourceType?: PresetSourceType | null;
 }
 
 export function ReviewStep({
@@ -26,10 +31,45 @@ export function ReviewStep({
 	presetFile,
 	thumbnailFile,
 	amLink,
+	previewVideoFile,
+	amLinkSourceType,
 }: ReviewStepProps) {
 	const thumbnailPreviewUrl = thumbnailFile
 		? URL.createObjectURL(thumbnailFile)
 		: null;
+
+	const videoPreviewUrl = previewVideoFile
+		? URL.createObjectURL(previewVideoFile)
+		: null;
+
+	useEffect(() => {
+		return () => {
+			if (thumbnailPreviewUrl) URL.revokeObjectURL(thumbnailPreviewUrl);
+			if (videoPreviewUrl) URL.revokeObjectURL(videoPreviewUrl);
+		};
+	}, [thumbnailPreviewUrl, videoPreviewUrl]);
+
+	// Format Source Type
+	let displaySourceType = fileType.toUpperCase();
+	let displayIcon = <FileCode className="w-4 h-4 text-blue-400" />;
+	let sourceName = presetFile?.name;
+
+	if (fileType === "qr") {
+		displaySourceType = "QR IMAGE";
+		displayIcon = <QrCode className="w-4 h-4 text-purple-400" />;
+	} else if (fileType === "link") {
+		sourceName = amLink;
+		if (amLinkSourceType === "google_drive") {
+			displaySourceType = "GOOGLE DRIVE";
+			displayIcon = <ExternalLink className="w-4 h-4 text-yellow-400" />;
+		} else if (amLinkSourceType === "alight_creative") {
+			displaySourceType = "ALIGHT CREATIVE";
+			displayIcon = <ExternalLink className="w-4 h-4 text-emerald-400" />;
+		} else {
+			displaySourceType = "AM LINK";
+			displayIcon = <ExternalLink className="w-4 h-4 text-emerald-400" />;
+		}
+	}
 
 	return (
 		<div className="space-y-6">
@@ -42,24 +82,43 @@ export function ReviewStep({
 
 			{/* Review Card */}
 			<div className="p-5 rounded-3xl bg-[var(--color-bg-base)] border border-[var(--color-border-subtle)] space-y-4 shadow-xl">
-				{/* Thumbnail Preview */}
-				{thumbnailPreviewUrl && (
-					<div className="relative aspect-[16/9] w-full overflow-hidden rounded-2xl border border-[var(--color-border-subtle)] bg-[var(--color-bg-elevated)]">
+
+				{/* Thumbnail or Video Preview */}
+				<div className="relative aspect-[16/9] w-full overflow-hidden rounded-2xl border border-[var(--color-border-subtle)] bg-[var(--color-bg-elevated)] group">
+					{videoPreviewUrl ? (
+						<video
+							src={videoPreviewUrl}
+							poster={thumbnailPreviewUrl ?? undefined}
+							className="w-full h-full object-contain bg-black"
+							controls
+						/>
+					) : thumbnailPreviewUrl ? (
 						<img
 							src={thumbnailPreviewUrl}
 							alt={title}
 							className="w-full h-full object-cover"
 						/>
-						<div className="absolute top-3 left-3 flex gap-2">
-							<span className="px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-black/60 backdrop-blur-md text-white border border-white/10">
-								{fileType.toUpperCase()}
-							</span>
-							<span className="px-2.5 py-1 rounded-full text-[10px] font-semibold tracking-wider bg-[var(--color-interactive-primary)] text-white">
-								{category}
-							</span>
-						</div>
+					) : null}
+
+					{/* Top Left Badges */}
+					<div className="absolute top-3 left-3 flex gap-2 pointer-events-none">
+						<span className="px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-black/60 backdrop-blur-md text-white border border-white/10">
+							{displaySourceType}
+						</span>
+						<span className="px-2.5 py-1 rounded-full text-[10px] font-semibold tracking-wider bg-[var(--color-interactive-primary)] text-white">
+							{category}
+						</span>
 					</div>
-				)}
+
+					{/* File Info Badges (Bottom Right) */}
+					<div className="absolute bottom-3 right-3 flex gap-2 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity">
+						{previewVideoFile && (
+							<span className="px-2 py-1 rounded-md text-[10px] font-bold uppercase bg-black/60 backdrop-blur-md text-white border border-white/10 flex items-center gap-1">
+								<Film className="w-3 h-3" /> VIDEO
+							</span>
+						)}
+					</div>
+				</div>
 
 				{/* Title & Description */}
 				<div className="space-y-1">
@@ -93,24 +152,28 @@ export function ReviewStep({
 
 					<div className="col-span-2 p-3 rounded-2xl bg-[var(--color-bg-surface)] border border-[var(--color-border-subtle)] flex items-center justify-between">
 						<div className="flex items-center gap-2">
-							{fileType === "xml" && (
-								<FileCode className="w-4 h-4 text-blue-400" />
-							)}
-							{fileType === "qr" && (
-								<QrCode className="w-4 h-4 text-purple-400" />
-							)}
-							{fileType === "link" && (
-								<ExternalLink className="w-4 h-4 text-emerald-400" />
-							)}
+							{displayIcon}
 							<span className="font-semibold text-[var(--color-text-primary)]">
 								{fileType === "link"
-									? "Alight Motion Import Link"
+									? displaySourceType
 									: `${fileType.toUpperCase()} Preset File`}
 							</span>
 						</div>
-						<span className="text-xs font-mono text-[var(--color-text-tertiary)] truncate max-w-[150px]">
-							{fileType === "link" ? amLink : presetFile?.name}
-						</span>
+						{fileType === "link" ? (
+							<a
+								href={amLink}
+								target="_blank"
+								rel="noopener noreferrer"
+								className="text-xs font-mono text-[var(--color-text-tertiary)] hover:text-[var(--color-interactive-primary)] truncate max-w-[150px] transition-colors"
+								title={amLink}
+							>
+								{sourceName}
+							</a>
+						) : (
+							<span className="text-xs font-mono text-[var(--color-text-tertiary)] truncate max-w-[150px]" title={presetFile?.name}>
+								{sourceName}
+							</span>
+						)}
 					</div>
 				</div>
 			</div>

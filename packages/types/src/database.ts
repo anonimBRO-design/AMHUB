@@ -8,7 +8,25 @@ export type Json =
 	| { [key: string]: Json | undefined }
 	| Json[];
 
-export type PresetFileType = "xml" | "qr" | "link";
+/**
+ * Preset source discriminator stored on `presets.file_type`.
+ *
+ * - `xml` / `qr`     — uploaded assets; the storage reference lives in `file_url`.
+ * - `link`           — legacy generic Alight Motion import link (kept for
+ *                       backwards compatibility with existing presets/URLs).
+ * - `google_drive`   — Google Drive URL; the original URL lives in `am_link`.
+ * - `alight_creative`— https://alightcreative.com/am/share/... URL in `am_link`.
+ *
+ * Storage layout invariant: exactly one of `file_url` (xml/qr) or `am_link`
+ * (link/google_drive/alight_creative) is set, enforced by the
+ * `presets_file_location_check` DB constraint.
+ */
+export type PresetFileType =
+	| "xml"
+	| "qr"
+	| "link"
+	| "google_drive"
+	| "alight_creative";
 export type PresetDifficulty = "beginner" | "intermediate" | "advanced";
 export type PresetStatus = "pending" | "published" | "rejected" | "removed";
 export type DeviceSupport = "android" | "ios" | "both";

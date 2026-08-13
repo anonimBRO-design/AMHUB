@@ -11,7 +11,7 @@ export interface UploadFileInput {
 }
 
 export interface PresetUploadInput extends UploadFileInput {
-	upload_type: "xml" | "qr" | "thumbnail";
+	upload_type: "xml" | "qr" | "thumbnail" | "presetVideo";
 }
 
 export async function prepareAvatarUpload(
@@ -57,6 +57,13 @@ export async function preparePresetUpload(
 				ownerId,
 				fileInput,
 				UPLOAD_LIMITS.thumbnail,
+			);
+		case "presetVideo":
+			return prepareUpload(
+				storageBuckets.presetVideos,
+				ownerId,
+				fileInput,
+				UPLOAD_LIMITS.presetVideo,
 			);
 	}
 }

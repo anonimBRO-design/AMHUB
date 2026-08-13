@@ -31,6 +31,7 @@ const CATEGORIES = [
 	{ id: "lyric", label: "Lyric", icon: Music },
 	{ id: "3d", label: "3D Motion", icon: Layers3 },
 	{ id: "slowmo", label: "Slow Motion", icon: Layers },
+	{ id: "jj", label: "JJ", icon: Zap },
 ];
 
 const DIFFICULTIES = [

@@ -1,4 +1,4 @@
-import type { ValidationCheck, ValidationResult } from "./types";
+import type { ValidationCheck, ValidationResult, PresetSourceType } from "./types";
 
 const ALLOWED_DOMAINS = [
 	"alight.link",
@@ -10,9 +10,47 @@ const ALLOWED_DOMAINS = [
 	"github.com",
 ];
 
-export async function validateAmLink(
-	urlInput: string,
-): Promise<ValidationResult> {
+/**
+ * Classify the URL into one of the supported preset source types.
+ * Returns { sourceType, domain } or { sourceType: "am_link" } as fallback.
+ */
+function classifyUrl(parsedUrl: URL): { sourceType: PresetSourceType; domain: string } {
+	const hostname = parsedUrl.hostname.toLowerCase();
+
+	// Alight Creative share links: https://alightcreative.com/am/share/...
+	if (hostname === "alightcreative.com" && parsedUrl.pathname.startsWith("/am/share/")) {
+		return { sourceType: "alight_creative", domain: hostname };
+	}
+
+	// Google Drive share links: multiple formats
+	if (hostname === "drive.google.com") {
+		return { sourceType: "google_drive", domain: hostname };
+	}
+
+	// Legacy/shortener domains
+	if (
+		hostname === "alight.link" ||
+		hostname === "am.link" ||
+		hostname === "alightmotion.com"
+	) {
+		return { sourceType: "am_link", domain: hostname };
+	}
+
+	// Other allowed file hosts
+	if (ALLOWED_DOMAINS.some((d) => hostname === d || hostname.endsWith(`.${d}`))) {
+		return { sourceType: "am_link", domain: hostname };
+	}
+
+	// Direct XML file
+	if (parsedUrl.pathname.toLowerCase().endsWith(".xml")) {
+		return { sourceType: "am_link", domain: hostname };
+	}
+
+	// Fallback — treat as generic am_link; validation will fail later
+	return { sourceType: "am_link", domain: hostname };
+}
+
+export async function validateAmLink(urlInput: string): Promise<ValidationResult> {
 	const checks: ValidationCheck[] = [
 		{
 			id: "url_format",
@@ -93,18 +131,22 @@ export async function validateAmLink(
 		message: "Valid HTTPS URL format",
 	};
 
-	// 2. Check Supported Hostname
-	const hostname = parsedUrl.hostname.toLowerCase();
-	const isSupported = ALLOWED_DOMAINS.some(
-		(d) => hostname === d || hostname.endsWith(`.${d}`),
-	);
-	const isXmlPath = parsedUrl.pathname.toLowerCase().endsWith(".xml");
+	// 2. Check Supported Hostname & classify source
+	const classification = classifyUrl(parsedUrl);
+	const isSupported =
+		classification.sourceType !== "am_link" ||
+		ALLOWED_DOMAINS.some(
+			(d) =>
+				parsedUrl.hostname.toLowerCase() === d ||
+				parsedUrl.hostname.toLowerCase().endsWith(`.${d}`),
+		) ||
+		parsedUrl.pathname.toLowerCase().endsWith(".xml");
 
-	if (!isSupported && !isXmlPath) {
+	if (!isSupported) {
 		checks[1] = {
 			...checks[1],
 			status: "error",
-			message: `Unsupported hostname "${hostname}". Must be alight.link, am.link, drive.google.com, etc.`,
+			message: `Unsupported hostname "${parsedUrl.hostname}". Must be alightcreative.com, alight.link, am.link, drive.google.com, etc.`,
 		};
 		return {
 			isValid: false,
@@ -117,7 +159,7 @@ export async function validateAmLink(
 	checks[1] = {
 		...checks[1],
 		status: "success",
-		message: `Supported provider (${hostname})`,
+		message: `Supported provider (${classification.domain})`,
 	};
 
 	// 3. Reachability Check via Server Endpoint
@@ -173,5 +215,6 @@ export async function validateAmLink(
 		isValidating: false,
 		checks,
 		error: null,
+		sourceType: classification.sourceType,
 	};
 }

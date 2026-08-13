@@ -26,6 +26,12 @@ const presetUploadRequestSchema = z.discriminatedUnion("upload_type", [
 		content_type: z.enum(["image/jpeg", "image/png", "image/webp"]),
 		size: z.number().int().min(1).max(UPLOAD_LIMITS.thumbnail.maxBytes),
 	}),
+	z.object({
+		upload_type: z.literal("presetVideo"),
+		filename: z.string().trim().min(1).max(255),
+		content_type: z.enum(["video/mp4", "video/webm"]),
+		size: z.number().int().min(1).max(UPLOAD_LIMITS.presetVideo.maxBytes),
+	}),
 ]);
 
 export async function POST(request: NextRequest) {

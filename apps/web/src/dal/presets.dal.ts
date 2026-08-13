@@ -48,7 +48,7 @@ export interface CreatePresetData {
 	description?: string;
 	thumbnail_url: string;
 	preview_video_url?: string;
-	file_type: "xml" | "qr" | "link";
+	file_type: "xml" | "qr" | "link" | "google_drive" | "alight_creative";
 	file_url?: string;
 	am_link?: string;
 	category: string;

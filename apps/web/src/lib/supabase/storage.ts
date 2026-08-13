@@ -6,6 +6,7 @@ export const storageBuckets = {
 	avatars: "avatars",
 	thumbnails: "thumbnails",
 	presetFiles: "preset-files",
+	presetVideos: "preset-videos",
 } as const;
 
 export type StorageBucket =
