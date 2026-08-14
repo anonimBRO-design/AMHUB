@@ -65,20 +65,7 @@ export function Hero({ preset, currentUserId }: HeroProps) {
 	const [hasTrackedDownload, setHasTrackedDownload] = useState(false);
 	const { requireAuth } = useAuth();
 
-	const rawAspect =
-		preset.aspectRatio ||
-		(Array.isArray(preset.aspectRatios) && preset.aspectRatios.length > 0
-			? preset.aspectRatios[0]
-			: undefined);
-
-	const isPortrait = rawAspect === "9:16" || rawAspect === "portrait";
-	const isSquare = rawAspect === "1:1" || rawAspect === "square";
-
-	const ratioClass = isPortrait
-		? "aspect-[9/16] max-w-md mx-auto"
-		: isSquare
-			? "aspect-square max-w-xl mx-auto"
-			: "aspect-[16/9] w-full";
+	const ratioClass = "aspect-[9/16] max-w-sm mx-auto";
 
 	const handleLikeToggle = async () => {
 		if (!requireAuth(undefined, "Sign in to like presets")) return;

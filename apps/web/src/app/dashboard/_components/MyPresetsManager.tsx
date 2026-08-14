@@ -198,7 +198,7 @@ export function MyPresetsManager({ initialPresets }: MyPresetsManagerProps) {
 								className="group relative rounded-3xl bg-[var(--color-bg-surface)] border border-[var(--color-border-subtle)] overflow-hidden hover:border-[var(--color-interactive-primary)]/40 transition-all shadow-md flex flex-col justify-between"
 							>
 								{/* Thumbnail & Badges */}
-								<div className="relative aspect-video w-full bg-[var(--color-bg-elevated)] overflow-hidden">
+								<div className="relative aspect-[9/16] w-full bg-[var(--color-bg-elevated)] overflow-hidden">
 									<Image
 										src={preset.thumbnail_url || "/placeholder.jpg"}
 										alt={preset.title}

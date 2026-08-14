@@ -1,6 +1,6 @@
 "use client";
 
-import type { PresetCardPreset } from "@presethub/ui";
+import { Badge, type PresetCardPreset } from "@presethub/ui";
 import { Share, ShieldCheck, UserPlus } from "lucide-react";
 import React, { useState } from "react";
 
@@ -153,12 +153,7 @@ export function MobileProfileView({ user, presets }: MobileProfileViewProps) {
 							);
 							const PRESET_PLACEHOLDER_SVG =
 								"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='600' height='338' viewBox='0 0 600 338'><rect width='100%' height='100%' fill='%2318181b'/><path d='M270 140l80 45-80 45v-90z' fill='%23a855f7'/><text x='50%' y='78%' text-anchor='middle' fill='%23a1a1aa' font-family='sans-serif' font-size='14' font-weight='600'>ALIGHT MOTION PRESET</text></svg>";
-							const ratioClass =
-								preset.aspectRatio === "9:16"
-									? "aspect-[9/16]"
-									: preset.aspectRatio === "1:1"
-										? "aspect-square"
-										: "aspect-[16/9]";
+							const ratioClass = "aspect-[9/16]";
 
 							return (
 								<a
@@ -197,6 +192,24 @@ export function MobileProfileView({ user, presets }: MobileProfileViewProps) {
 												}}
 											/>
 										)}
+
+										<div className="absolute left-2.5 top-2.5 flex flex-wrap items-center gap-1 pointer-events-none z-10">
+											<Badge
+												variant="fileType"
+												value={preset.fileType || "XML"}
+												size="sm"
+											/>
+											<Badge
+												variant="category"
+												value={preset.category}
+												size="sm"
+											/>
+											<Badge
+												variant="difficulty"
+												value={preset.difficulty}
+												size="sm"
+											/>
+										</div>
 									</div>
 									<div className="p-3">
 										<h3 className="text-sm font-bold text-primary line-clamp-2">

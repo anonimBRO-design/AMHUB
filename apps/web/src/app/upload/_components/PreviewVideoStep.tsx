@@ -83,7 +83,7 @@ export function PreviewVideoStep({
 			</div>
 
 			{videoPreviewUrl ? (
-				<div className="relative group rounded-3xl border border-[var(--color-border-subtle)] bg-black overflow-hidden aspect-video shadow-2xl">
+				<div className="relative group rounded-3xl border border-[var(--color-border-subtle)] bg-black overflow-hidden aspect-[9/16] max-w-sm mx-auto shadow-2xl">
 					<video
 						ref={videoRef}
 						src={videoPreviewUrl}

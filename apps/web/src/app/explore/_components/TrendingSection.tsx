@@ -57,7 +57,7 @@ export function TrendingSection({ presets }: TrendingSectionProps) {
 						href={`/preset/${preset.slug}`}
 						className="group relative overflow-hidden rounded-3xl bg-[var(--color-bg-surface)] border border-[var(--color-border-subtle)] hover:border-[var(--color-interactive-primary)]/50 transition-all duration-300 hover:shadow-2xl hover:shadow-[var(--color-interactive-primary)]/10 active:scale-[0.99]"
 					>
-						<div className="relative aspect-[16/9] w-full overflow-hidden bg-[var(--color-bg-elevated)]">
+						<div className="relative aspect-[9/16] w-full overflow-hidden bg-[var(--color-bg-elevated)]">
 							{preset.thumbnailUrl ? (
 								<img
 									src={preset.thumbnailUrl}

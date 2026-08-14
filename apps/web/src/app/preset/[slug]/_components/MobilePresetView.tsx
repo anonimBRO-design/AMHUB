@@ -38,19 +38,7 @@ export function MobilePresetView({ preset }: MobilePresetViewProps) {
 		}
 	};
 
-	const rawAspect =
-		(preset as { aspectRatio?: string; aspectRatios?: string[] }).aspectRatio ||
-		(Array.isArray((preset as { aspectRatios?: string[] }).aspectRatios) &&
-		(preset as { aspectRatios?: string[] }).aspectRatios!.length > 0
-			? (preset as { aspectRatios?: string[] }).aspectRatios![0]
-			: undefined);
-
-	const ratioClass =
-		rawAspect === "9:16" || rawAspect === "portrait"
-			? "aspect-[9/16]"
-			: rawAspect === "1:1" || rawAspect === "square"
-				? "aspect-square"
-				: "aspect-[16/9]";
+	const ratioClass = "aspect-[9/16]";
 
 	return (
 		<div className="md:hidden space-y-6 pb-32 w-full max-w-full overflow-hidden">

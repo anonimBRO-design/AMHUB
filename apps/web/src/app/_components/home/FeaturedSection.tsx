@@ -37,7 +37,7 @@ export function FeaturedSection({ presets }: FeaturedSectionProps) {
 						className="group relative overflow-hidden rounded-3xl bg-[var(--color-bg-surface)] border border-[var(--color-border-subtle)] hover:bg-[var(--color-bg-elevated)] hover:border-[var(--color-border-default)] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-md active:scale-[0.97]"
 					>
 						{/* Aspect Ratio Container */}
-						<div className="relative aspect-[16/9] w-full overflow-hidden bg-[var(--color-bg-elevated)]">
+						<div className="relative aspect-[9/16] w-full overflow-hidden bg-[var(--color-bg-elevated)]">
 							<img
 								src={preset.thumbnailUrl}
 								alt={preset.title}
