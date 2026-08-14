@@ -103,90 +103,90 @@ export function Hero({ preset, currentUserId }: HeroProps) {
 	};
 
 	return (
-		<section className="space-y-4">
-			{/* Media Preview Container */}
-			<div
-				className={`relative w-full overflow-hidden rounded-3xl bg-[var(--color-bg-elevated)] border border-[var(--color-border-subtle)] shadow-2xl group shrink-0 ${ratioClass}`}
-			>
-				{isPlayingVideo && preset.previewVideoUrl ? (
-					<video
-						autoPlay
-						muted
-						controls
-						playsInline
-						className="absolute inset-0 w-full h-full object-cover"
-					>
-						<source src={preset.previewVideoUrl} type="video/mp4" />
-					</video>
-				) : (
-					<>
-						{preset.thumbnailUrl ? (
-							<img
-								src={preset.thumbnailUrl}
-								alt={preset.title}
-								className="absolute inset-0 w-full h-full object-cover"
-							/>
-						) : (
-							<div className="absolute inset-0 bg-gradient-to-br from-purple-950/80 via-indigo-950/60 to-black flex items-center justify-center">
-								<Sparkles className="w-16 h-16 text-purple-400 opacity-40 animate-pulse" />
-							</div>
-						)}
-						{/* Gradient Overlay */}
-						<div className="absolute inset-0 bg-gradient-to-t from-[var(--color-bg-surface)] via-black/20 to-transparent" />
-
-						{/* Play Video Trigger */}
-						{preset.previewVideoUrl && (
-							<button
-								type="button"
-								onClick={() => setIsPlayingVideo(true)}
-								className="absolute inset-0 flex items-center justify-center bg-black/30 backdrop-blur-[2px] opacity-90 group-hover:opacity-100 transition-opacity"
-							>
-								<div className="p-4 rounded-full bg-[var(--color-interactive-primary)] text-white shadow-xl shadow-[var(--color-interactive-primary)]/40 hover:scale-110 active:scale-95 transition-all">
-									<Play className="w-8 h-8 fill-current ml-1" />
+		<section className="space-y-6">
+			{/* TikTok-style Desktop Video Viewer Container */}
+			<div className="relative w-full flex justify-center items-start py-2">
+				<div className="relative w-full max-w-[420px] aspect-[9/16] overflow-hidden rounded-3xl bg-[var(--color-bg-elevated)] border border-[var(--color-border-subtle)] shadow-2xl group shrink-0">
+					{isPlayingVideo && preset.previewVideoUrl ? (
+						<video
+							autoPlay
+							muted
+							controls
+							playsInline
+							className="absolute inset-0 w-full h-full object-cover"
+						>
+							<source src={preset.previewVideoUrl} type="video/mp4" />
+						</video>
+					) : (
+						<>
+							{preset.thumbnailUrl ? (
+								<img
+									src={preset.thumbnailUrl}
+									alt={preset.title}
+									className="absolute inset-0 w-full h-full object-cover"
+								/>
+							) : (
+								<div className="absolute inset-0 bg-gradient-to-br from-purple-950/80 via-indigo-950/60 to-black flex items-center justify-center">
+									<Sparkles className="w-16 h-16 text-purple-400 opacity-40 animate-pulse" />
 								</div>
-							</button>
-						)}
-					</>
-				)}
+							)}
+							{/* Gradient Overlay */}
+							<div className="absolute inset-0 bg-gradient-to-t from-[var(--color-bg-surface)] via-black/20 to-transparent" />
 
-				{/* Top Badges */}
-				<div className="absolute top-4 left-4 flex flex-wrap gap-2 z-10">
-					<span className="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-black/60 backdrop-blur-md text-white border border-white/10 shadow-md">
-						{preset.fileType || "XML"}
-					</span>
-					<span className="px-3 py-1 rounded-full text-xs font-semibold tracking-wider bg-[var(--color-interactive-primary)] text-white shadow-md">
-						{preset.category}
-					</span>
-					<span className="px-3 py-1 rounded-full text-xs font-semibold capitalize bg-white/10 backdrop-blur-md text-white border border-white/10">
-						{preset.difficulty}
-					</span>
-				</div>
+							{/* Play Video Trigger */}
+							{preset.previewVideoUrl && (
+								<button
+									type="button"
+									onClick={() => setIsPlayingVideo(true)}
+									className="absolute inset-0 flex items-center justify-center bg-black/30 backdrop-blur-[2px] opacity-90 group-hover:opacity-100 transition-opacity"
+								>
+									<div className="p-4 rounded-full bg-[var(--color-interactive-primary)] text-white shadow-xl shadow-[var(--color-interactive-primary)]/40 hover:scale-110 active:scale-95 transition-all">
+										<Play className="w-8 h-8 fill-current ml-1" />
+									</div>
+								</button>
+							)}
+						</>
+					)}
 
-				{/* Quick Actions (Desktop Top Right) */}
-				<div className="absolute top-4 right-4 hidden sm:flex items-center gap-2 z-10">
-					<button
-						type="button"
-						onClick={handleLikeToggle}
-						aria-label={isLiked ? "Unlike preset" : "Like preset"}
-						className={`inline-flex items-center gap-1.5 min-h-[44px] px-4 rounded-2xl backdrop-blur-md border transition-all active:scale-95 ${
-							isLiked
-								? "bg-rose-500/20 text-rose-400 border-rose-500/30"
-								: "bg-black/50 text-white border-white/10 hover:bg-black/70"
-						}`}
-					>
-						<Heart className={`w-4 h-4 ${isLiked ? "fill-rose-400" : ""}`} />
-						<span className="text-xs font-bold">{likeCount}</span>
-					</button>
+					{/* Top Badges */}
+					<div className="absolute top-4 left-4 flex flex-wrap gap-2 z-10 pointer-events-none">
+						<span className="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-black/60 backdrop-blur-md text-white border border-white/10 shadow-md">
+							{preset.fileType || "XML"}
+						</span>
+						<span className="px-3 py-1 rounded-full text-xs font-semibold tracking-wider bg-[var(--color-interactive-primary)] text-white shadow-md">
+							{preset.category}
+						</span>
+						<span className="px-3 py-1 rounded-full text-xs font-semibold capitalize bg-white/10 backdrop-blur-md text-white border border-white/10">
+							{preset.difficulty}
+						</span>
+					</div>
 
-					<BookmarkButton
-						presetId={preset.id}
-						initialBookmarked={preset.isBookmarked}
-					/>
-					<ShareButton title={preset.title} />
+					{/* Quick Actions (Top Right Overlay) */}
+					<div className="absolute top-4 right-4 flex items-center gap-2 z-10">
+						<button
+							type="button"
+							onClick={handleLikeToggle}
+							aria-label={isLiked ? "Unlike preset" : "Like preset"}
+							className={`inline-flex items-center gap-1.5 min-h-[40px] px-3.5 rounded-2xl backdrop-blur-md border transition-all active:scale-95 ${
+								isLiked
+									? "bg-rose-500/20 text-rose-400 border-rose-500/30"
+									: "bg-black/50 text-white border-white/10 hover:bg-black/70"
+							}`}
+						>
+							<Heart className={`w-4 h-4 ${isLiked ? "fill-rose-400" : ""}`} />
+							<span className="text-xs font-bold">{likeCount}</span>
+						</button>
+
+						<BookmarkButton
+							presetId={preset.id}
+							initialBookmarked={preset.isBookmarked}
+						/>
+						<ShareButton title={preset.title} />
+					</div>
 				</div>
 			</div>
 
-			{/* Title & Stats */}
+			{/* Title & Stats (Outside Video Box) */}
 			<div className="space-y-2 px-1">
 				<div className="flex items-center gap-2 text-xs font-bold text-[var(--color-interactive-primary)] uppercase tracking-wider">
 					<Sparkles className="w-4 h-4" />
@@ -214,7 +214,7 @@ export function Hero({ preset, currentUserId }: HeroProps) {
 					</div>
 				)}
 
-				{/* Mobile Stats Pills */}
+				{/* Mobile & Desktop Stats Pills */}
 				<div className="flex flex-wrap items-center gap-4 pt-2 text-xs font-medium text-[var(--color-text-secondary)]">
 					<div className="flex items-center gap-1.5 text-rose-400">
 						<Heart className="w-4 h-4 fill-rose-400/20" />
@@ -241,12 +241,21 @@ export function Hero({ preset, currentUserId }: HeroProps) {
 			</div>
 
 			{showDeleteDialog && (
-				<div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm" onClick={() => !isDeleting && setShowDeleteDialog(false)}>
-					<div className="mx-4 w-full max-w-sm rounded-3xl bg-[var(--color-bg-surface)] border border-[var(--color-border-subtle)] p-6 shadow-2xl space-y-4" onClick={(e) => e.stopPropagation()}>
+				<div
+					className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm"
+					onClick={() => !isDeleting && setShowDeleteDialog(false)}
+				>
+					<div
+						className="mx-4 w-full max-w-sm rounded-3xl bg-[var(--color-bg-surface)] border border-[var(--color-border-subtle)] p-6 shadow-2xl space-y-4"
+						onClick={(e) => e.stopPropagation()}
+					>
 						<div className="space-y-2">
-							<h3 className="text-lg font-bold text-[var(--color-text-primary)]">Delete this preset?</h3>
+							<h3 className="text-lg font-bold text-[var(--color-text-primary)]">
+								Delete this preset?
+							</h3>
 							<p className="text-sm text-[var(--color-text-secondary)]">
-								This action cannot be undone. The preset and all associated files will be permanently removed.
+								This action cannot be undone. The preset and all associated
+								files will be permanently removed.
 							</p>
 						</div>
 						<div className="flex items-center gap-3 pt-2">
@@ -266,7 +275,25 @@ export function Hero({ preset, currentUserId }: HeroProps) {
 							>
 								{isDeleting ? (
 									<>
-										<svg className="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" /><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" /></svg>
+										<svg
+											className="w-4 h-4 animate-spin"
+											viewBox="0 0 24 24"
+											fill="none"
+										>
+											<circle
+												className="opacity-25"
+												cx="12"
+												cy="12"
+												r="10"
+												stroke="currentColor"
+												strokeWidth="4"
+											/>
+											<path
+												className="opacity-75"
+												fill="currentColor"
+												d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
+											/>
+										</svg>
 										<span>Deleting...</span>
 									</>
 								) : (
