@@ -19,7 +19,6 @@ interface ReviewStepProps {
 	amLink: string;
 	gdriveLink?: string;
 	previewVideoFile?: File | null;
-	amLinkSourceType?: PresetSourceType | null;
 }
 
 export function ReviewStep({

@@ -1,6 +1,6 @@
 "use client";
 
-import type { ValidationResult, PresetSourceType } from "@/lib/validation/types";
+import type { ValidationResult } from "@/lib/validation/types";
 import {
 	AlertCircle,
 	ArrowLeft,
@@ -18,7 +18,7 @@ import { PreviewVideoStep } from "./PreviewVideoStep";
 import { ReviewStep } from "./ReviewStep";
 import { ThumbnailStep } from "./ThumbnailStep";
 import { WizardProgress } from "./WizardProgress";
-import type { PresetFileType, Database } from "@presethub/types";
+import type { PresetFileType } from "@presethub/types";
 
 const WIZARD_STEPS = [
 	{ num: 1, label: "Format & File" },
@@ -42,7 +42,6 @@ export function UploadWizard() {
 	const [previewVideoFile, setPreviewVideoFile] = useState<File | null>(null);
 	const [amLink, setAmLink] = useState("");
 	const [gdriveLink, setGdriveLink] = useState("");
-	const [amLinkSourceType, setAmLinkSourceType] = useState<PresetSourceType | null>("alight_creative");
 	const [title, setTitle] = useState("");
 	const [description, setDescription] = useState("");
 	const [category, setCategory] = useState("velocity");
@@ -198,7 +197,7 @@ export function UploadWizard() {
 			if (fileType === "xml") {
 				return "An uploaded XML preset file is required for this source type.";
 			} else {
-				return "An external preset link (Alight Link / Google Drive / Alight Creative) is required for this source type.";
+				return "An external preset link (Alight Motion / Google Drive) is required for this source type.";
 			}
 		}
 
@@ -265,7 +264,7 @@ export function UploadWizard() {
 				if (validation.sourceType && validation.sourceType !== "xml_file") {
 					finalFileType = validation.sourceType as PresetFileType;
 				} else {
-					finalFileType = (amLinkSourceType as PresetFileType) || "link";
+					finalFileType = "alight_creative";
 				}
 			}
 
@@ -372,16 +371,11 @@ export function UploadWizard() {
 						presetFile={presetFile}
 						onPresetFileChange={setPresetFile}
 						amLink={amLink}
-						onAmLinkChange={(link, type) => {
-							setAmLink(link);
-							if (type) setAmLinkSourceType(type);
-						}}
+						onAmLinkChange={(link) => setAmLink(link)}
 						gdriveLink={gdriveLink}
 						onGdriveLinkChange={setGdriveLink}
 						validation={validation}
 						onValidationChange={setValidation}
-						amLinkSourceType={amLinkSourceType}
-						onAmLinkSourceTypeChange={setAmLinkSourceType}
 					/>
 				)}
 
@@ -425,7 +419,6 @@ export function UploadWizard() {
 						amLink={amLink}
 						gdriveLink={gdriveLink}
 						previewVideoFile={previewVideoFile}
-						amLinkSourceType={amLinkSourceType}
 					/>
 				)}
 			</div>

@@ -27,8 +27,6 @@ interface FilePickerProps {
 	onGdriveLinkChange: (link: string) => void;
 	validation: ValidationResult;
 	onValidationChange: (res: ValidationResult) => void;
-	amLinkSourceType: PresetSourceType | null;
-	onAmLinkSourceTypeChange: (type: PresetSourceType | null) => void;
 }
 
 export function FilePicker({
@@ -42,8 +40,6 @@ export function FilePicker({
 	onGdriveLinkChange,
 	validation,
 	onValidationChange,
-	amLinkSourceType,
-	onAmLinkSourceTypeChange,
 }: FilePickerProps) {
 	const [isDragging, setIsDragging] = useState(false);
 	const linkDebounceTimer = useRef<NodeJS.Timeout | null>(null);
@@ -388,30 +384,26 @@ export function FilePicker({
 				</div>
 			) : (
 				<div className="space-y-2">
-					<label
-						htmlFor="am-link-input"
-						className="block text-xs font-bold uppercase tracking-wider text-[var(--color-text-secondary)]"
-					>
-						Alight Motion Import Link
-					</label>
-					<div className="flex items-center gap-2">
-						<input
-							id="am-link-input"
-							type="url"
-							value={amLink}
-							onChange={(e) => onAmLinkChange(e.target.value, "alight_creative")}
-							placeholder="https://alightcreative.com/am/share/..."
-							className="flex-1 min-h-[48px] px-4 rounded-2xl bg-[var(--color-bg-base)] border border-[var(--color-border-subtle)] text-sm text-[var(--color-text-primary)] placeholder:text-[var(--color-text-tertiary)] focus:outline-none focus:border-[var(--color-interactive-primary)]"
-						/>
-
-						<select
-							value="alight_creative"
-							onChange={(e) => onAmLinkSourceTypeChange(e.target.value as PresetSourceType)}
-							className="rounded-2xl border border-[var(--color-border-subtle)] bg-[var(--color-bg-base)] p-2 text-sm text-[var(--color-text-primary)] cursor-pointer min-w-[140px] h-[48px]"
+					<div className="flex items-center justify-between">
+						<label
+							htmlFor="am-link-input"
+							className="block text-xs font-bold uppercase tracking-wider text-[var(--color-text-secondary)]"
 						>
-							<option value="alight_creative">Alight Creative</option>
-						</select>
+							Alight Motion Import Link
+						</label>
+						<div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-[var(--color-bg-elevated)] border border-[var(--color-border-subtle)] text-[11px] font-semibold text-[var(--color-text-secondary)]">
+							<span className="text-[var(--color-text-tertiary)]">Provider:</span>
+							<span className="font-bold text-emerald-400">Alight Creative</span>
+						</div>
 					</div>
+					<input
+						id="am-link-input"
+						type="url"
+						value={amLink}
+						onChange={(e) => onAmLinkChange(e.target.value, "alight_creative")}
+						placeholder="https://alightcreative.com/am/share/..."
+						className="w-full min-h-[48px] px-4 rounded-2xl bg-[var(--color-bg-base)] border border-[var(--color-border-subtle)] text-sm text-[var(--color-text-primary)] placeholder:text-[var(--color-text-tertiary)] focus:outline-none focus:border-[var(--color-interactive-primary)]"
+					/>
 				</div>
 			)}
 
