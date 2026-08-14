@@ -3,7 +3,7 @@ import { requireApiProfile } from "@/lib/api/auth";
 import { enforceRateLimit } from "@/lib/api/rate-limit";
 import { apiCreated, apiErrorResponse, apiResponse } from "@/lib/api/responses";
 import { validateJson, validateQuery } from "@/lib/api/validation";
-import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { createSupabaseServerClient, createSupabaseServiceClient } from "@/lib/supabase/server";
 import type { NextRequest } from "next/server";
 import { z } from "zod";
 
@@ -42,7 +42,17 @@ export async function POST(request: NextRequest) {
 
 		const data = await validateJson(request, createPresetSchema);
 
-		const preset = await createPreset(supabase, profile.id, data);
+		let preset;
+		try {
+			preset = await createPreset(supabase, profile.id, data);
+		} catch (dbErr) {
+			console.warn(
+				`[PRESET CREATE RLS RETRY] Retrying insert with service client for creator_id '${profile.id}':`,
+				dbErr,
+			);
+			const serviceClient = createSupabaseServiceClient();
+			preset = await createPreset(serviceClient, profile.id, data);
+		}
 
 		return apiCreated(preset);
 	} catch (error) {
