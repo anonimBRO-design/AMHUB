@@ -20,17 +20,44 @@ export async function GET(request: NextRequest) {
 
 		const serviceSupabase = createSupabaseServiceClient();
 
+		// Fetch auth users to build email map server-side securely
+		const emailMap = new Map<string, string>();
+		try {
+			const { data: authData } = await serviceSupabase.auth.admin.listUsers();
+			if (authData?.users) {
+				for (const au of authData.users) {
+					if (au.id && au.email) {
+						emailMap.set(au.id, au.email);
+					}
+				}
+			}
+		} catch (e) {
+			console.warn("Could not fetch auth users for email map:", e);
+		}
+
 		let dbQuery = serviceSupabase
 			.from("users")
 			.select(
-				"id, username, display_name, email, avatar_url, level, is_staff, is_verified, created_at, updated_at",
+				"id, username, display_name, avatar_url, level, is_staff, is_verified, created_at, updated_at",
 				{ count: "exact" },
 			);
 
 		if (query) {
-			dbQuery = dbQuery.or(
-				`username.ilike.%${query}%,email.ilike.%${query}%,display_name.ilike.%${query}%`,
-			);
+			const matchingEmailUserIds = Array.from(emailMap.entries())
+				.filter(([_, email]) =>
+					email.toLowerCase().includes(query.toLowerCase()),
+				)
+				.map(([id]) => id);
+
+			if (matchingEmailUserIds.length > 0) {
+				dbQuery = dbQuery.or(
+					`username.ilike.%${query}%,display_name.ilike.%${query}%,id.in.(${matchingEmailUserIds.join(",")})`,
+				);
+			} else {
+				dbQuery = dbQuery.or(
+					`username.ilike.%${query}%,display_name.ilike.%${query}%`,
+				);
+			}
 		}
 
 		dbQuery = dbQuery.order("created_at", { ascending: false });
@@ -50,7 +77,6 @@ export async function GET(request: NextRequest) {
 				id: string;
 				username: string;
 				display_name: string;
-				email: string;
 				avatar_url?: string | null;
 				level: number;
 				is_staff: boolean;
@@ -61,6 +87,7 @@ export async function GET(request: NextRequest) {
 			};
 			return {
 				...raw,
+				email: emailMap.get(raw.id) || "",
 				role:
 					raw.role ||
 					(raw.is_staff || raw.username.toLowerCase() === "afgan"
@@ -239,7 +266,9 @@ export async function DELETE(request: NextRequest) {
 			.select("id")
 			.eq("owner_id", targetUserId);
 
-		const userCollections = (rawCollections || []) as unknown as Array<{ id: string }>;
+		const userCollections = (rawCollections || []) as unknown as Array<{
+			id: string;
+		}>;
 
 		if (userCollections.length > 0) {
 			for (const col of userCollections) {
