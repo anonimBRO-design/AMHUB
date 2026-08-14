@@ -205,6 +205,9 @@ export function UploadWizard() {
 		if (typeof err.message === "string" && err.message.trim().length > 0) {
 			// Specific asset upload errors
 			if (
+				err.message.includes("upload preparation failed") ||
+				err.message.includes("upload failed") ||
+				err.message.includes("too large") ||
 				err.message.startsWith("Thumbnail") ||
 				err.message.startsWith("Preview video") ||
 				err.message.startsWith("Preset XML") ||
@@ -298,12 +301,37 @@ export function UploadWizard() {
 				);
 			}
 
+const getSafeVideoMimeType = (file: File): string => {
+	if (file.type && file.type.startsWith("video/")) {
+		return file.type;
+	}
+	const ext = file.name.split(".").pop()?.toLowerCase();
+	switch (ext) {
+		case "mp4":
+			return "video/mp4";
+		case "webm":
+			return "video/webm";
+		case "mov":
+			return "video/quicktime";
+		case "m4v":
+			return "video/x-m4v";
+		case "mkv":
+			return "video/x-matroska";
+		default:
+			return file.type || "video/mp4";
+	}
+};
+
 			// 2. Upload preview video
 			if (previewVideoFile) {
+				if (previewVideoFile.size > 100 * 1024 * 1024) {
+					throw new Error("Preview video is too large (maximum size is 100 MB).");
+				}
+				const videoContentType = getSafeVideoMimeType(previewVideoFile);
 				uploadedPreviewVideoUrl = await uploadFile(
 					previewVideoFile,
 					"presetVideo",
-					previewVideoFile.type || "video/mp4",
+					videoContentType,
 				);
 			}
 

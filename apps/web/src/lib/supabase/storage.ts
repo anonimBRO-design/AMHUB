@@ -1,4 +1,5 @@
 import type { PresetFileType } from "@presethub/types";
+import { ApiError } from "@/lib/api/errors";
 import { createSupabaseServerClient } from "./server";
 export { resolveStorageUrl } from "./storage-url";
 
@@ -42,7 +43,12 @@ export async function createSignedUploadUrl(
 		.createSignedUploadUrl(path);
 
 	if (error) {
-		throw error;
+		console.error(`[SUPABASE STORAGE ERROR] Bucket '${bucket}', Path '${path}':`, error);
+		throw new ApiError({
+			code: "bad_request",
+			message: `Storage signed upload URL creation failed for bucket '${bucket}': ${error.message}`,
+			cause: error,
+		});
 	}
 
 	return data;

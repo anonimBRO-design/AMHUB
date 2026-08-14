@@ -37,8 +37,15 @@ export const UPLOAD_LIMITS = {
 	},
 	presetVideo: {
 		maxBytes: 100 * 1024 * 1024, // 100 MB
-		allowedMimeTypes: ["video/mp4", "video/webm", "video/quicktime", "video/x-matroska"] as const,
-		allowedExtensions: ["mp4", "webm", "mov", "mkv"] as const,
+		allowedMimeTypes: [
+			"video/mp4",
+			"video/webm",
+			"video/quicktime",
+			"video/x-m4v",
+			"video/m4v",
+			"video/x-matroska",
+		] as const,
+		allowedExtensions: ["mp4", "webm", "mov", "m4v", "mkv"] as const,
 	},
 } satisfies Record<
 	string,
@@ -173,6 +180,8 @@ const MIME_TO_EXT: Record<string, string> = {
 	"video/mp4": "mp4",
 	"video/webm": "webm",
 	"video/quicktime": "mov",
+	"video/x-m4v": "m4v",
+	"video/m4v": "m4v",
 	"video/x-matroska": "mkv",
 };
 
