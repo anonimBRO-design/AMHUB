@@ -36,7 +36,7 @@ export const UPLOAD_LIMITS = {
 		allowedExtensions: ["png", "jpg", "jpeg", "webp"] as const,
 	},
 	presetVideo: {
-		maxBytes: 100 * 1024 * 1024, // 100 MB
+		maxBytes: 50 * 1024 * 1024, // 50 MB (Supabase free tier limit)
 		allowedMimeTypes: [
 			"video/mp4",
 			"video/webm",

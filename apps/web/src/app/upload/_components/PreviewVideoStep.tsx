@@ -146,7 +146,7 @@ export function PreviewVideoStep({
 								Tap or drag preview video
 							</p>
 							<p className="text-xs text-[var(--color-text-tertiary)]">
-								MP4 or WebM (Max 100MB)
+								MP4 or WebM (Max 50MB)
 							</p>
 						</div>
 					</div>

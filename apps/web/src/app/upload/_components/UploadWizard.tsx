@@ -324,8 +324,8 @@ const getSafeVideoMimeType = (file: File): string => {
 
 			// 2. Upload preview video
 			if (previewVideoFile) {
-				if (previewVideoFile.size > 100 * 1024 * 1024) {
-					throw new Error("Preview video is too large (maximum size is 100 MB).");
+				if (previewVideoFile.size > 50 * 1024 * 1024) {
+					throw new Error("Preview video is too large (maximum size is 50 MB).");
 				}
 				const videoContentType = getSafeVideoMimeType(previewVideoFile);
 				uploadedPreviewVideoUrl = await uploadFile(

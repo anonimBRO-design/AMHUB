@@ -20,46 +20,6 @@ export function getPresetStorageBucket(
 	return storageBuckets.presetFiles;
 }
 
-export async function ensureStorageBucket(bucket: StorageBucket): Promise<void> {
-	try {
-		const serviceClient = createSupabaseServiceClient();
-		const { data: bucketInfo, error: getError } = await serviceClient.storage.getBucket(bucket);
-
-		if (getError || !bucketInfo) {
-			console.log(`[SUPABASE STORAGE] Bucket '${bucket}' not found. Initializing bucket...`);
-			const allowedMimeTypes =
-				bucket === "preset-videos"
-					? [
-							"video/mp4",
-							"video/webm",
-							"video/quicktime",
-							"video/x-m4v",
-							"video/m4v",
-							"video/x-matroska",
-						]
-					: bucket === "thumbnails"
-						? ["image/jpeg", "image/jpg", "image/png", "image/webp"]
-						: bucket === "avatars"
-							? ["image/jpeg", "image/jpg", "image/png", "image/webp"]
-							: undefined;
-
-			const { error: createError } = await serviceClient.storage.createBucket(bucket, {
-				public: true,
-				fileSizeLimit: bucket === "preset-videos" ? 104857600 : 10485760,
-				allowedMimeTypes,
-			});
-
-			if (createError && !createError.message?.includes("already exists")) {
-				console.error(`[SUPABASE STORAGE BUCKET CREATE ERROR] Bucket '${bucket}':`, createError);
-			} else {
-				console.log(`[SUPABASE STORAGE] Bucket '${bucket}' initialized successfully.`);
-			}
-		}
-	} catch (err) {
-		console.warn(`[SUPABASE STORAGE BUCKET CHECK WARNING] Could not verify bucket '${bucket}':`, err);
-	}
-}
-
 export async function createSignedDownloadUrl(path: string, expiresIn = 60) {
 	const supabase = await createSupabaseServerClient();
 	const { data, error } = await supabase.storage
@@ -73,47 +33,37 @@ export async function createSignedDownloadUrl(path: string, expiresIn = 60) {
 	return data.signedUrl;
 }
 
+/**
+ * Creates a signed upload URL for a given storage bucket and path.
+ * Uses the service-role client directly because:
+ * 1. This function only runs server-side (API routes / server actions).
+ * 2. The service-role client bypasses RLS, which is required for
+ *    createSignedUploadUrl to insert the upload token row in storage.objects.
+ * 3. The resulting signed URL is short-lived and scoped to one object path,
+ *    so it is safe to return to the authenticated client.
+ */
 export async function createSignedUploadUrl(
 	bucket: StorageBucket,
 	path: string,
 ) {
-	// Auto-ensure storage bucket exists on Supabase project
-	await ensureStorageBucket(bucket);
+	const serviceClient = createSupabaseServiceClient();
 
-	let supabase;
-	try {
-		supabase = await createSupabaseServerClient();
-	} catch {
-		supabase = createSupabaseServiceClient();
-	}
+	console.log(`[STORAGE SIGNED UPLOAD] Creating signed URL: bucket='${bucket}', path='${path}'`);
 
-	const { data, error } = await supabase.storage
+	const { data, error } = await serviceClient.storage
 		.from(bucket)
 		.createSignedUploadUrl(path);
 
 	if (error) {
-		console.warn(
-			`[SUPABASE STORAGE SIGNED URL RETRY] Retrying with service client for bucket '${bucket}', Path '${path}':`,
-			error.message,
+		console.error(
+			`[SUPABASE STORAGE ERROR] Bucket '${bucket}', Path '${path}':`,
+			error,
 		);
-		const serviceClient = createSupabaseServiceClient();
-		const { data: serviceData, error: serviceError } = await serviceClient.storage
-			.from(bucket)
-			.createSignedUploadUrl(path);
-
-		if (serviceError) {
-			console.error(
-				`[SUPABASE STORAGE ERROR] Bucket '${bucket}', Path '${path}':`,
-				serviceError,
-			);
-			throw new ApiError({
-				code: "bad_request",
-				message: `Storage signed upload URL creation failed for bucket '${bucket}': ${serviceError.message}`,
-				cause: serviceError,
-			});
-		}
-
-		return serviceData;
+		throw new ApiError({
+			code: "bad_request",
+			message: `Storage signed upload URL creation failed for bucket '${bucket}': ${error.message}`,
+			cause: error,
+		});
 	}
 
 	return data;
