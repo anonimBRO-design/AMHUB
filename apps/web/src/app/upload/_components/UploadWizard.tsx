@@ -36,11 +36,12 @@ export function UploadWizard() {
 	const [error, setError] = useState<string | null>(null);
 
 	// Form State
-	const [fileType, setFileType] = useState<"xml" | "qr" | "link">("xml");
+	const [fileType, setFileType] = useState<"xml" | "gdrive" | "link">("xml");
 	const [presetFile, setPresetFile] = useState<File | null>(null);
 	const [thumbnailFile, setThumbnailFile] = useState<File | null>(null);
 	const [previewVideoFile, setPreviewVideoFile] = useState<File | null>(null);
 	const [amLink, setAmLink] = useState("");
+	const [gdriveLink, setGdriveLink] = useState("");
 	const [amLinkSourceType, setAmLinkSourceType] = useState<PresetSourceType | null>(null);
 	const [title, setTitle] = useState("");
 	const [description, setDescription] = useState("");
@@ -104,7 +105,7 @@ export function UploadWizard() {
 
 	const uploadFile = async (
 		file: File,
-		upload_type: "xml" | "qr" | "thumbnail" | "presetVideo",
+		upload_type: "xml" | "thumbnail" | "presetVideo",
 		content_type: string,
 	): Promise<string> => {
 		const res = await fetch("/api/uploads/preset", {
@@ -153,7 +154,7 @@ export function UploadWizard() {
 		if (err.code === "unprocessable_entity" && err.details) {
 			const msgs = (err.details as any[]).map((d: any) => {
 				const path = d.path?.join(".") || "field";
-				let msg = d.message;
+				const msg = d.message;
 				switch (path) {
 					case "slug":
 						return "Title generated an invalid slug. Try a different title.";
@@ -194,8 +195,8 @@ export function UploadWizard() {
 
 		// DB constraint: file_location_check
 		if (err.message?.includes("presets_file_location_check")) {
-			if (fileType === "xml" || fileType === "qr") {
-				return "An uploaded preset file (XML/QR) is required for this source type.";
+			if (fileType === "xml") {
+				return "An uploaded XML preset file is required for this source type.";
 			} else {
 				return "An external preset link (Alight Link / Google Drive / Alight Creative) is required for this source type.";
 			}
@@ -220,7 +221,7 @@ export function UploadWizard() {
 		setUploadProgress(0);
 		setError(null);
 
-		let finalFileType: PresetFileType = fileType as PresetFileType;
+		let finalFileType: PresetFileType = fileType === "gdrive" ? "google_drive" : "xml";
 
 		try {
 			let uploadedThumbnailUrl: string | undefined = undefined;
@@ -247,18 +248,21 @@ export function UploadWizard() {
 			}
 
 			// 3. Handle preset source
-			if (fileType === "xml" || fileType === "qr") {
+			if (fileType === "xml") {
+				finalFileType = "xml";
 				if (presetFile) {
 					finalFileUrl = await uploadFile(
 						presetFile,
-						fileType === "xml" ? "xml" : "qr",
-						presetFile.type || (fileType === "xml" ? "text/xml" : "image/jpeg"),
+						"xml",
+						presetFile.type || "text/xml",
 					);
 				}
+			} else if (fileType === "gdrive") {
+				finalFileType = "google_drive";
+				finalAmLink = gdriveLink.trim() || undefined;
 			} else if (fileType === "link") {
 				finalAmLink = amLink.trim() || undefined;
-				// Detect actual type from validation result or selector
-				if (validation.sourceType && validation.sourceType !== "xml_file" && validation.sourceType !== "qr_image") {
+				if (validation.sourceType && validation.sourceType !== "xml_file") {
 					finalFileType = validation.sourceType as PresetFileType;
 				} else {
 					finalFileType = (amLinkSourceType as PresetFileType) || "link";
@@ -308,7 +312,6 @@ export function UploadWizard() {
 					}
 				}
 
-				// Map specific validation errors if available
 				if (createJson.error?.code === "unprocessable_entity" && createJson.error.details) {
 					const details = createJson.error.details as any[];
 					const msg = details.map(d => `${d.path}: ${d.message}`).join(", ");
@@ -373,6 +376,8 @@ export function UploadWizard() {
 							setAmLink(link);
 							if (type) setAmLinkSourceType(type);
 						}}
+						gdriveLink={gdriveLink}
+						onGdriveLinkChange={setGdriveLink}
 						validation={validation}
 						onValidationChange={setValidation}
 						amLinkSourceType={amLinkSourceType}
@@ -418,6 +423,7 @@ export function UploadWizard() {
 						presetFile={presetFile}
 						thumbnailFile={thumbnailFile}
 						amLink={amLink}
+						gdriveLink={gdriveLink}
 						previewVideoFile={previewVideoFile}
 						amLinkSourceType={amLinkSourceType}
 					/>

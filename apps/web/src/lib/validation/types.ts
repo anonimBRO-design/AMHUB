@@ -18,7 +18,6 @@ export interface ValidationResult {
 
 export type PresetSourceType =
 	| "xml_file"
-	| "qr_image"
 	| "am_link"
 	| "google_drive"
 	| "alight_creative";

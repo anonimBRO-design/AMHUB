@@ -1,23 +1,23 @@
 import {
-	CheckCircle,
 	ExternalLink,
 	FileCode,
-	QrCode,
-	Sparkles,
 	Film,
+	HardDrive,
+	Sparkles,
 } from "lucide-react";
 import type { PresetSourceType } from "@/lib/validation/types";
-import { useState, useRef, useEffect } from "react";
+import { useEffect } from "react";
 
 interface ReviewStepProps {
 	title: string;
 	description: string;
 	category: string;
 	difficulty: string;
-	fileType: "xml" | "qr" | "link";
+	fileType: "xml" | "gdrive" | "link";
 	presetFile: File | null;
 	thumbnailFile: File | null;
 	amLink: string;
+	gdriveLink?: string;
 	previewVideoFile?: File | null;
 	amLinkSourceType?: PresetSourceType | null;
 }
@@ -31,6 +31,7 @@ export function ReviewStep({
 	presetFile,
 	thumbnailFile,
 	amLink,
+	gdriveLink,
 	previewVideoFile,
 	amLinkSourceType,
 }: ReviewStepProps) {
@@ -50,13 +51,14 @@ export function ReviewStep({
 	}, [thumbnailPreviewUrl, videoPreviewUrl]);
 
 	// Format Source Type
-	let displaySourceType = fileType.toUpperCase();
+	let displaySourceType = "XML FILE";
 	let displayIcon = <FileCode className="w-4 h-4 text-blue-400" />;
-	let sourceName = presetFile?.name;
+	let sourceName = presetFile?.name || "XML File";
 
-	if (fileType === "qr") {
-		displaySourceType = "QR IMAGE";
-		displayIcon = <QrCode className="w-4 h-4 text-purple-400" />;
+	if (fileType === "gdrive") {
+		displaySourceType = "GOOGLE DRIVE (XML)";
+		displayIcon = <HardDrive className="w-4 h-4 text-amber-400" />;
+		sourceName = gdriveLink || "Google Drive Link";
 	} else if (fileType === "link") {
 		sourceName = amLink;
 		if (amLinkSourceType === "google_drive") {
@@ -154,9 +156,9 @@ export function ReviewStep({
 						<div className="flex items-center gap-2">
 							{displayIcon}
 							<span className="font-semibold text-[var(--color-text-primary)]">
-								{fileType === "link"
+								{fileType === "link" || fileType === "gdrive"
 									? displaySourceType
-									: `${fileType.toUpperCase()} Preset File`}
+									: "XML Preset File"}
 							</span>
 						</div>
 						{fileType === "link" ? (
@@ -166,6 +168,16 @@ export function ReviewStep({
 								rel="noopener noreferrer"
 								className="text-xs font-mono text-[var(--color-text-tertiary)] hover:text-[var(--color-interactive-primary)] truncate max-w-[150px] transition-colors"
 								title={amLink}
+							>
+								{sourceName}
+							</a>
+						) : fileType === "gdrive" ? (
+							<a
+								href={gdriveLink}
+								target="_blank"
+								rel="noopener noreferrer"
+								className="text-xs font-mono text-[var(--color-text-tertiary)] hover:text-[var(--color-interactive-primary)] truncate max-w-[150px] transition-colors"
+								title={gdriveLink}
 							>
 								{sourceName}
 							</a>

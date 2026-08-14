@@ -23,7 +23,7 @@ export function UploadForm() {
 	const [title, setTitle] = useState("");
 	const [description, setDescription] = useState("");
 	const [category, setCategory] = useState("velocity");
-	const [fileType, setFileType] = useState<"xml" | "qr" | "link">("xml");
+	const [fileType, setFileType] = useState<"xml" | "gdrive" | "link">("xml");
 	const [difficulty, setDifficulty] = useState<
 		"beginner" | "intermediate" | "advanced"
 	>("beginner");
@@ -47,7 +47,7 @@ export function UploadForm() {
 		setError(null);
 		if (step === 1) {
 			if (fileType !== "link" && !presetFile) {
-				setError("Please select a preset file (XML or QR code).");
+				setError("Please select a preset file.");
 				return;
 			}
 			if (fileType === "link" && !amLink.trim()) {
@@ -106,18 +106,16 @@ export function UploadForm() {
 				uploadedThumbnailUrl = thumbJson.data.storage_path;
 			}
 
-			// 2. Upload preset file if xml/qr
+			// 2. Upload preset file if xml
 			if (fileType !== "link" && presetFile) {
-				const uploadType = fileType === "xml" ? "xml" : "qr";
+				const uploadType = "xml";
 				const fileRes = await fetch("/api/uploads/preset", {
 					method: "POST",
 					headers: { "Content-Type": "application/json" },
 					body: JSON.stringify({
 						upload_type: uploadType,
 						filename: presetFile.name,
-						content_type:
-							presetFile.type ||
-							(uploadType === "xml" ? "text/xml" : "image/jpeg"),
+						content_type: presetFile.type || "text/xml",
 						size: presetFile.size,
 					}),
 				});
@@ -221,12 +219,12 @@ export function UploadForm() {
 							id="file-type-select"
 							value={fileType}
 							onChange={(e) =>
-								setFileType(e.target.value as "xml" | "qr" | "link")
+								setFileType(e.target.value as "xml" | "gdrive" | "link")
 							}
 							className="w-full rounded-md border border-[var(--color-border-subtle)] bg-[var(--color-bg-base)] p-2 text-sm"
 						>
 							<option value="xml">XML File (.xml)</option>
-							<option value="qr">QR Code Image</option>
+							<option value="gdrive">Google Drive (XML)</option>
 							<option value="link">Alight Motion Link</option>
 						</select>
 					</div>

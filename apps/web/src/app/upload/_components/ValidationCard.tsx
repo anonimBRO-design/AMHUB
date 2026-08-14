@@ -4,7 +4,7 @@ import type { ValidationResult } from "@/lib/validation/types";
 import { CheckCircle2, Loader2, ShieldCheck, XCircle } from "lucide-react";
 
 interface ValidationCardProps {
-	fileType: "xml" | "qr" | "link";
+	fileType: "xml" | "gdrive" | "link";
 	validation: ValidationResult;
 }
 
@@ -14,8 +14,8 @@ export function ValidationCard({ fileType, validation }: ValidationCardProps) {
 	const formatTitle =
 		fileType === "xml"
 			? "XML File"
-			: fileType === "qr"
-				? "Preset QR Code"
+			: fileType === "gdrive"
+				? "Google Drive (XML)"
 				: "AM Link";
 
 	// If no checks have run yet

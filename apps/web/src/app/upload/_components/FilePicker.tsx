@@ -2,14 +2,13 @@
 
 import type { ValidationResult } from "@/lib/validation/types";
 import { validateAmLink } from "@/lib/validation/validateAmLink";
-import { validateQr } from "@/lib/validation/validateQr";
+import { validateGoogleDriveXml } from "@/lib/validation/validateGoogleDriveXml";
 import { validateXml } from "@/lib/validation/validateXml";
 import {
-	Check,
 	ExternalLink,
 	FileCheck,
 	FileCode,
-	QrCode,
+	HardDrive,
 	Upload,
 } from "lucide-react";
 import { type ChangeEvent, useEffect, useRef, useState } from "react";
@@ -18,12 +17,14 @@ import { ValidationCard } from "./ValidationCard";
 import type { PresetSourceType } from "@/lib/validation/types";
 
 interface FilePickerProps {
-	fileType: "xml" | "qr" | "link";
-	onFileTypeChange: (type: "xml" | "qr" | "link") => void;
+	fileType: "xml" | "gdrive" | "link";
+	onFileTypeChange: (type: "xml" | "gdrive" | "link") => void;
 	presetFile: File | null;
 	onPresetFileChange: (file: File | null) => void;
 	amLink: string;
 	onAmLinkChange: (link: string, sourceType?: PresetSourceType) => void;
+	gdriveLink: string;
+	onGdriveLinkChange: (link: string) => void;
 	validation: ValidationResult;
 	onValidationChange: (res: ValidationResult) => void;
 	amLinkSourceType: PresetSourceType | null;
@@ -37,6 +38,8 @@ export function FilePicker({
 	onPresetFileChange,
 	amLink,
 	onAmLinkChange,
+	gdriveLink,
+	onGdriveLinkChange,
 	validation,
 	onValidationChange,
 	amLinkSourceType,
@@ -45,7 +48,7 @@ export function FilePicker({
 	const [isDragging, setIsDragging] = useState(false);
 	const linkDebounceTimer = useRef<NodeJS.Timeout | null>(null);
 
-	// Validate XML or QR whenever presetFile or fileType changes
+	// Validate XML whenever presetFile or fileType changes
 	useEffect(() => {
 		let isCancelled = false;
 
@@ -80,41 +83,80 @@ export function FilePicker({
 					if (!isCancelled) onValidationChange(res);
 				});
 			}
-		} else if (fileType === "qr") {
-			onValidationChange({
-				isValid: false,
-				isValidating: Boolean(presetFile),
-				checks: [
-					{
-						id: "qr_selected",
-						label: "QR image selected",
-						status: presetFile ? "loading" : "idle",
-					},
-					{
-						id: "qr_decoded",
-						label: "QR code detected & decoded",
-						status: "idle",
-					},
-					{
-						id: "preset_payload",
-						label: "Supported preset payload verified",
-						status: "idle",
-					},
-				],
-				error: presetFile ? null : "Please upload a QR code image.",
-			});
-
-			if (presetFile) {
-				validateQr(presetFile).then((res) => {
-					if (!isCancelled) onValidationChange(res);
-				});
-			}
 		}
 
 		return () => {
 			isCancelled = true;
 		};
 	}, [fileType, presetFile, onValidationChange]);
+
+	// Validate Google Drive (XML) with debounce
+	useEffect(() => {
+		if (fileType !== "gdrive") return;
+
+		if (linkDebounceTimer.current) {
+			clearTimeout(linkDebounceTimer.current);
+		}
+
+		if (!gdriveLink.trim()) {
+			onValidationChange({
+				isValid: false,
+				isValidating: false,
+				checks: [
+					{
+						id: "url_format",
+						label: "Valid HTTPS Google Drive URL format",
+						status: "idle",
+					},
+					{
+						id: "xml_file_target",
+						label: "Points to an XML preset file (not a folder)",
+						status: "idle",
+					},
+					{
+						id: "reachable",
+						label: "Link reachable & publicly accessible",
+						status: "idle",
+					},
+				],
+				error: "Please enter a Google Drive link containing an XML preset.",
+			});
+			return;
+		}
+
+		onValidationChange({
+			isValid: false,
+			isValidating: true,
+			checks: [
+				{
+					id: "url_format",
+					label: "Valid HTTPS Google Drive URL format",
+					status: "loading",
+				},
+				{
+					id: "xml_file_target",
+					label: "Points to an XML preset file (not a folder)",
+					status: "idle",
+				},
+				{
+					id: "reachable",
+					label: "Link reachable & publicly accessible",
+					status: "idle",
+				},
+			],
+			error: null,
+		});
+
+		linkDebounceTimer.current = setTimeout(() => {
+			validateGoogleDriveXml(gdriveLink).then((res) => {
+				onValidationChange(res);
+			});
+		}, 400);
+
+		return () => {
+			if (linkDebounceTimer.current) clearTimeout(linkDebounceTimer.current);
+		};
+	}, [fileType, gdriveLink, onValidationChange]);
 
 	// Validate AM Link with debounce
 	useEffect(() => {
@@ -225,22 +267,6 @@ export function FilePicker({
 					<button
 						type="button"
 						onClick={() => {
-							onFileTypeChange("qr");
-							onPresetFileChange(null);
-						}}
-						className={`flex flex-col items-center justify-center p-3.5 rounded-2xl border text-center transition-all active:scale-95 ${
-							fileType === "qr"
-								? "bg-[var(--color-interactive-primary)]/10 text-[var(--color-interactive-primary)] border-[var(--color-interactive-primary)] shadow-md"
-								: "bg-[var(--color-bg-base)] text-[var(--color-text-secondary)] border-[var(--color-border-subtle)] hover:border-[var(--color-border-strong)]"
-						}`}
-					>
-						<QrCode className="w-5 h-5 mb-1 text-purple-400" />
-						<span className="text-xs font-bold">QR Image</span>
-					</button>
-
-					<button
-						type="button"
-						onClick={() => {
 							onFileTypeChange("link");
 							onPresetFileChange(null);
 						}}
@@ -253,17 +279,33 @@ export function FilePicker({
 						<ExternalLink className="w-5 h-5 mb-1 text-emerald-400" />
 						<span className="text-xs font-bold">AM Link</span>
 					</button>
+
+					<button
+						type="button"
+						onClick={() => {
+							onFileTypeChange("gdrive");
+							onPresetFileChange(null);
+						}}
+						className={`flex flex-col items-center justify-center p-3.5 rounded-2xl border text-center transition-all active:scale-95 ${
+							fileType === "gdrive"
+								? "bg-[var(--color-interactive-primary)]/10 text-[var(--color-interactive-primary)] border-[var(--color-interactive-primary)] shadow-md"
+								: "bg-[var(--color-bg-base)] text-[var(--color-text-secondary)] border-[var(--color-border-subtle)] hover:border-[var(--color-border-strong)]"
+						}`}
+					>
+						<HardDrive className="w-5 h-5 mb-1 text-amber-400" />
+						<span className="text-xs font-bold">Google Drive (XML)</span>
+					</button>
 				</div>
 			</div>
 
 			{/* Drop Zone or Input */}
-			{fileType !== "link" ? (
+			{fileType === "xml" ? (
 				<div className="space-y-2">
 					<label
 						htmlFor="preset-file-dropzone"
 						className="block text-xs font-bold uppercase tracking-wider text-[var(--color-text-secondary)]"
 					>
-						Upload {fileType === "xml" ? "XML (.xml)" : "QR Image"} File
+						Upload XML (.xml) File
 					</label>
 
 					<div
@@ -286,7 +328,7 @@ export function FilePicker({
 						<input
 							id="preset-file-dropzone"
 							type="file"
-							accept={fileType === "xml" ? ".xml" : "image/*"}
+							accept=".xml"
 							onChange={handleFileSelect}
 							className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
 						/>
@@ -318,14 +360,31 @@ export function FilePicker({
 									Tap or drag file to upload
 								</p>
 								<p className="text-xs text-[var(--color-text-tertiary)]">
-									Supports{" "}
-									{fileType === "xml"
-										? ".xml project files"
-										: "JPEG, PNG, WebP QR codes"}
+									Supports .xml project files
 								</p>
 							</div>
 						)}
 					</div>
+				</div>
+			) : fileType === "gdrive" ? (
+				<div className="space-y-2">
+					<label
+						htmlFor="gdrive-link-input"
+						className="block text-xs font-bold uppercase tracking-wider text-[var(--color-text-secondary)]"
+					>
+						Google Drive (XML) Link
+					</label>
+					<input
+						id="gdrive-link-input"
+						type="url"
+						value={gdriveLink}
+						onChange={(e) => onGdriveLinkChange(e.target.value)}
+						placeholder="https://drive.google.com/file/d/..."
+						className="w-full min-h-[48px] px-4 rounded-2xl bg-[var(--color-bg-base)] border border-[var(--color-border-subtle)] text-sm text-[var(--color-text-primary)] placeholder:text-[var(--color-text-tertiary)] focus:outline-none focus:border-[var(--color-interactive-primary)]"
+					/>
+					<p className="text-xs text-[var(--color-text-tertiary)] leading-relaxed">
+						Paste a public Google Drive share link pointing directly to your .xml preset file. Make sure link sharing is set to &quot;Anyone with the link&quot;.
+					</p>
 				</div>
 			) : (
 				<div className="space-y-2">
