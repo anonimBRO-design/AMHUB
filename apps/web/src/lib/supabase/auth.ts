@@ -79,65 +79,7 @@ export async function ensureUserProfile(
 	}
 
 	if (existingProfile) {
-		const currentProfile = existingProfile as unknown as Profile;
-		const isInvalidUsername = INVALID_PLACEHOLDERS.includes(
-			currentProfile.username.toLowerCase(),
-		);
-		const isInvalidDisplayName = INVALID_PLACEHOLDERS.includes(
-			currentProfile.display_name.toLowerCase(),
-		);
-
-		if (!isInvalidUsername && !isInvalidDisplayName) {
-			return currentProfile;
-		}
-
-		// Auto-heal existing invalid profile
-		const email = user.email ?? currentProfile.email;
-		const fallbackUsername = `user_${user.id.slice(0, 8)}`;
-		const metadataUsername =
-			input.username ??
-			getMetadataString(user, "username") ??
-			getMetadataString(user, "preferred_username");
-
-		let healedUsername = currentProfile.username;
-		if (isInvalidUsername) {
-			const candidate = normalizeUsername(
-				metadataUsername ?? (email ? email.split("@")[0] : undefined),
-				fallbackUsername,
-			);
-			healedUsername = INVALID_PLACEHOLDERS.includes(candidate.toLowerCase())
-				? fallbackUsername
-				: candidate;
-		}
-
-		let healedDisplayName = currentProfile.display_name;
-		if (isInvalidDisplayName) {
-			const rawDisplayName =
-				input.displayName ??
-				getMetadataString(user, "display_name") ??
-				getMetadataString(user, "full_name") ??
-				getMetadataString(user, "name");
-			healedDisplayName =
-				rawDisplayName &&
-				!INVALID_PLACEHOLDERS.includes(rawDisplayName.trim().toLowerCase())
-					? rawDisplayName.trim()
-					: healedUsername;
-		}
-
-		const { data: updatedProfile, error: updateError } = await supabase
-			.from("users")
-			.update({
-				username: healedUsername,
-				display_name: healedDisplayName,
-				updated_at: new Date().toISOString(),
-			} as never)
-			.eq("id", user.id)
-			.select("*")
-			.single();
-
-		if (!updateError && updatedProfile) {
-			return updatedProfile as unknown as Profile;
-		}
+		return existingProfile as unknown as Profile;
 	}
 
 	const email = user.email;
@@ -189,11 +131,10 @@ export async function ensureUserProfile(
 			id: user.id,
 			username,
 			display_name: displayName,
-			email,
 			avatar_url: avatarUrl,
 			auth_provider: authProvider,
 			last_active_at: new Date().toISOString(),
-		} satisfies ProfileInsert;
+		};
 
 		const { data, error } = await supabase
 			.from("users")
