@@ -19,6 +19,7 @@ import { ReviewStep } from "./ReviewStep";
 import { ThumbnailStep } from "./ThumbnailStep";
 import { WizardProgress } from "./WizardProgress";
 import type { PresetFileType } from "@presethub/types";
+import { resolveStorageUrl } from "@/lib/supabase/storage-url";
 
 const WIZARD_STEPS = [
 	{ num: 1, label: "Format & File" },
@@ -107,6 +108,17 @@ export function UploadWizard() {
 		upload_type: "xml" | "thumbnail" | "presetVideo",
 		content_type: string,
 	): Promise<string> => {
+		const fileLabel =
+			upload_type === "thumbnail"
+				? "Thumbnail"
+				: upload_type === "presetVideo"
+					? "Preview video"
+					: "Preset XML";
+
+		console.log(
+			`[UPLOAD] type=${upload_type} filename=${file.name} size=${file.size} contentType=${content_type}`,
+		);
+
 		const res = await fetch("/api/uploads/preset", {
 			method: "POST",
 			headers: { "Content-Type": "application/json" },
@@ -120,10 +132,20 @@ export function UploadWizard() {
 
 		const json = await res.json();
 		if (!res.ok) {
-			throw new Error(
-				json.error?.message || `Failed to prepare ${upload_type} upload`,
+			const errMsg =
+				json.error?.message ||
+				json.message ||
+				`Failed to prepare ${fileLabel.toLowerCase()} upload`;
+			console.error(
+				`[UPLOAD ERROR] type=${upload_type} prepare failed (HTTP ${res.status}):`,
+				json,
 			);
+			throw new Error(`${fileLabel} upload preparation failed: ${errMsg}`);
 		}
+
+		console.log(
+			`[UPLOAD] type=${upload_type} signed URL received. Uploading to bucket=${json.data.bucket}...`,
+		);
 
 		await new Promise<void>((resolve, reject) => {
 			const xhr = new XMLHttpRequest();
@@ -135,10 +157,35 @@ export function UploadWizard() {
 				}
 			};
 			xhr.onload = () => {
-				if (xhr.status === 200) resolve();
-				else reject(new Error("Upload failed"));
+				if (xhr.status >= 200 && xhr.status < 300) {
+					console.log(
+						`[UPLOAD SUCCESS] type=${upload_type} storage_path=${json.data.storage_path}`,
+					);
+					resolve();
+				} else {
+					console.error(
+						`[UPLOAD ERROR] type=${upload_type} storage PUT failed (HTTP ${xhr.status}):`,
+						xhr.responseText,
+					);
+					reject(
+						new Error(
+							`${fileLabel} upload failed (HTTP ${xhr.status}): ${
+								xhr.statusText || "Storage upload rejected"
+							}`,
+						),
+					);
+				}
 			};
-			xhr.onerror = () => reject(new Error("Upload failed"));
+			xhr.onerror = () => {
+				console.error(
+					`[UPLOAD ERROR] type=${upload_type} network error during storage PUT`,
+				);
+				reject(
+					new Error(
+						`${fileLabel} upload failed due to network connection issue.`,
+					),
+				);
+			};
 			xhr.send(file);
 		});
 
@@ -148,6 +195,18 @@ export function UploadWizard() {
 	// Map Zod + ApiError details into user-friendly strings
 	const mapValidationError = (err: any, fileType: PresetFileType): string => {
 		if (!err) return "An unexpected error occurred.";
+
+		if (typeof err.message === "string" && err.message.trim().length > 0) {
+			// Specific asset upload errors
+			if (
+				err.message.startsWith("Thumbnail") ||
+				err.message.startsWith("Preview video") ||
+				err.message.startsWith("Preset XML") ||
+				err.message.startsWith("Validation Error")
+			) {
+				return err.message;
+			}
+		}
 
 		// Zod unprocessable_entity (422)
 		if (err.code === "unprocessable_entity" && err.details) {
@@ -162,13 +221,13 @@ export function UploadWizard() {
 					case "description":
 						return "Description is too long (max 2000 chars).";
 					case "thumbnail_url":
-						return "Thumbnail URL is invalid. Please re-upload.";
+						return "Thumbnail upload failed: Invalid or missing thumbnail URL.";
 					case "preview_video_url":
-						return "Preview video URL is invalid. Please re-upload.";
+						return "Preview video upload failed: Invalid video URL.";
 					case "file_type":
 						return "Unsupported preset source type.";
 					case "file_url":
-						return "Preset file reference is missing or invalid.";
+						return "Preset XML upload failed: Invalid preset file reference.";
 					case "am_link":
 						return "External preset link is invalid or missing.";
 					case "category":
@@ -195,20 +254,15 @@ export function UploadWizard() {
 		// DB constraint: file_location_check
 		if (err.message?.includes("presets_file_location_check")) {
 			if (fileType === "xml") {
-				return "An uploaded XML preset file is required for this source type.";
+				return "Preset XML upload failed: An uploaded XML file is required for this format.";
 			} else {
-				return "An external preset link (Alight Motion / Google Drive) is required for this source type.";
+				return "External link failed: A valid Google Drive or Alight Motion link is required.";
 			}
 		}
 
 		// Rate limit
 		if (err.code === "rate_limited" || err.message?.includes("rate limit")) {
 			return "Too many uploads. Please wait a moment and try again.";
-		}
-
-		// Storage errors
-		if (err.message?.includes("storage")) {
-			return "File upload failed. Please check the file and try again.";
 		}
 
 		return err.message || "Failed to publish preset. Please try again.";
@@ -268,6 +322,19 @@ export function UploadWizard() {
 				}
 			}
 
+			// Resolve full public URLs or valid string paths for database
+			const resolvedThumbnailUrl = uploadedThumbnailUrl
+				? (resolveStorageUrl(uploadedThumbnailUrl, "thumbnails") || uploadedThumbnailUrl)
+				: "/placeholder.jpg";
+
+			const resolvedPreviewVideoUrl = uploadedPreviewVideoUrl
+				? (resolveStorageUrl(uploadedPreviewVideoUrl, "preset-videos") || uploadedPreviewVideoUrl)
+				: undefined;
+
+			const resolvedFileUrl = finalFileUrl
+				? (resolveStorageUrl(finalFileUrl, "preset-files") || finalFileUrl)
+				: undefined;
+
 			// 4. Create Preset record
 			const slug = `${title
 				.toLowerCase()
@@ -281,10 +348,10 @@ export function UploadWizard() {
 					slug,
 					title,
 					description: description.trim() || undefined,
-					thumbnail_url: uploadedThumbnailUrl ?? "/placeholder.jpg",
-					preview_video_url: uploadedPreviewVideoUrl || undefined,
+					thumbnail_url: resolvedThumbnailUrl,
+					preview_video_url: resolvedPreviewVideoUrl,
 					file_type: finalFileType,
-					file_url: finalFileUrl || undefined,
+					file_url: resolvedFileUrl,
 					am_link: finalAmLink || undefined,
 					category,
 					difficulty,

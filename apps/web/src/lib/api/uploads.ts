@@ -22,23 +22,23 @@ export const UPLOAD_LIMITS = {
 	},
 	thumbnail: {
 		maxBytes: 10 * 1024 * 1024, // 10 MB
-		allowedMimeTypes: ["image/jpeg", "image/png", "image/webp"] as const,
+		allowedMimeTypes: ["image/jpeg", "image/jpg", "image/png", "image/webp"] as const,
 		allowedExtensions: ["jpg", "jpeg", "png", "webp"] as const,
 	},
 	presetXml: {
 		maxBytes: 5 * 1024 * 1024, // 5 MB
-		allowedMimeTypes: ["application/xml", "text/xml"] as const,
+		allowedMimeTypes: ["application/xml", "text/xml", "text/plain"] as const,
 		allowedExtensions: ["xml"] as const,
 	},
 	presetQr: {
 		maxBytes: 5 * 1024 * 1024, // 5 MB
-		allowedMimeTypes: ["image/png", "image/jpeg", "image/webp"] as const,
+		allowedMimeTypes: ["image/png", "image/jpeg", "image/jpg", "image/webp"] as const,
 		allowedExtensions: ["png", "jpg", "jpeg", "webp"] as const,
 	},
 	presetVideo: {
 		maxBytes: 100 * 1024 * 1024, // 100 MB
-		allowedMimeTypes: ["video/mp4", "video/webm"] as const,
-		allowedExtensions: ["mp4", "webm"] as const,
+		allowedMimeTypes: ["video/mp4", "video/webm", "video/quicktime", "video/x-matroska"] as const,
+		allowedExtensions: ["mp4", "webm", "mov", "mkv"] as const,
 	},
 } satisfies Record<
 	string,
@@ -164,10 +164,16 @@ export function buildStoragePath(ownerId: string, mimeType: string): string {
 
 const MIME_TO_EXT: Record<string, string> = {
 	"image/jpeg": "jpg",
+	"image/jpg": "jpg",
 	"image/png": "png",
 	"image/webp": "webp",
 	"application/xml": "xml",
 	"text/xml": "xml",
+	"text/plain": "xml",
+	"video/mp4": "mp4",
+	"video/webm": "webm",
+	"video/quicktime": "mov",
+	"video/x-matroska": "mkv",
 };
 
 function mimeTypeToExtension(mimeType: string): string {
