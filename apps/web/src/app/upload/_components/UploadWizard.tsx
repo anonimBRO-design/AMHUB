@@ -220,7 +220,7 @@ export function UploadWizard() {
 		setUploadProgress(0);
 		setError(null);
 
-		let finalFileType: Database["public"]["Enums"]["PresetFileType"] = fileType as Database["public"]["Enums"]["PresetFileType"];
+		let finalFileType: PresetFileType = fileType as PresetFileType;
 
 		try {
 			let uploadedThumbnailUrl: string | undefined = undefined;

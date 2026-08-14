@@ -510,7 +510,13 @@ export interface Database {
 				Returns: boolean;
 			};
 		};
-		Enums: Record<string, never>;
+		Enums: {
+			PresetFileType: PresetFileType;
+			PresetDifficulty: PresetDifficulty;
+			PresetStatus: PresetStatus;
+			DeviceSupport: DeviceSupport;
+			NotificationType: NotificationType;
+		};
 		CompositeTypes: Record<string, never>;
 	};
 }
