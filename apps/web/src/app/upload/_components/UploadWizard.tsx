@@ -1,6 +1,6 @@
 "use client";
 
-import type { ValidationResult } from "@/lib/validation/types";
+import type { PresetSourceFormat, PresetSourceType, ValidationResult } from "@/lib/validation/types";
 import {
 	AlertCircle,
 	ArrowLeft,
@@ -36,8 +36,10 @@ export function UploadWizard() {
 	const [uploadProgress, setUploadProgress] = useState(0);
 	const [error, setError] = useState<string | null>(null);
 
+	// Multi-Select Preset Sources State
+	const [selectedFileTypes, setSelectedFileTypes] = useState<PresetSourceFormat[]>(["xml"]);
+
 	// Form State
-	const [fileType, setFileType] = useState<"xml" | "gdrive" | "link">("xml");
 	const [presetFile, setPresetFile] = useState<File | null>(null);
 	const [thumbnailFile, setThumbnailFile] = useState<File | null>(null);
 	const [previewVideoFile, setPreviewVideoFile] = useState<File | null>(null);
@@ -60,7 +62,7 @@ export function UploadWizard() {
 
 	const isNextStepDisabled = () => {
 		if (currentStep === 1) {
-			return !validation.isValid || validation.isValidating;
+			return !validation.isValid || validation.isValidating || selectedFileTypes.length === 0;
 		}
 		if (currentStep === 2) {
 			return !thumbnailFile;
@@ -74,8 +76,12 @@ export function UploadWizard() {
 	const handleNextStep = () => {
 		setError(null);
 		if (currentStep === 1) {
+			if (selectedFileTypes.length === 0) {
+				setError("Please select at least one preset source.");
+				return;
+			}
 			if (!validation.isValid) {
-				setError(validation.error || "Please complete asset validation first.");
+				setError(validation.error || "Please complete asset validation for all selected sources.");
 				return;
 			}
 			setCurrentStep(2);
@@ -193,7 +199,7 @@ export function UploadWizard() {
 	};
 
 	// Map Zod + ApiError details into user-friendly strings
-	const mapValidationError = (err: any, fileType: PresetFileType): string => {
+	const mapValidationError = (err: any): string => {
 		if (!err) return "An unexpected error occurred.";
 
 		if (typeof err.message === "string" && err.message.trim().length > 0) {
@@ -202,6 +208,8 @@ export function UploadWizard() {
 				err.message.startsWith("Thumbnail") ||
 				err.message.startsWith("Preview video") ||
 				err.message.startsWith("Preset XML") ||
+				err.message.startsWith("AM Link") ||
+				err.message.startsWith("Google Drive") ||
 				err.message.startsWith("Validation Error")
 			) {
 				return err.message;
@@ -253,11 +261,7 @@ export function UploadWizard() {
 
 		// DB constraint: file_location_check
 		if (err.message?.includes("presets_file_location_check")) {
-			if (fileType === "xml") {
-				return "Preset XML upload failed: An uploaded XML file is required for this format.";
-			} else {
-				return "External link failed: A valid Google Drive or Alight Motion link is required.";
-			}
+			return "Preset source error: Please provide at least one valid preset source file or link.";
 		}
 
 		// Rate limit
@@ -274,13 +278,16 @@ export function UploadWizard() {
 		setUploadProgress(0);
 		setError(null);
 
-		let finalFileType: PresetFileType = fileType === "gdrive" ? "google_drive" : "xml";
-
 		try {
+			if (selectedFileTypes.length === 0) {
+				throw new Error("Please select at least one preset source.");
+			}
+
 			let uploadedThumbnailUrl: string | undefined = undefined;
 			let uploadedPreviewVideoUrl: string | undefined = undefined;
 			let finalFileUrl: string | undefined = undefined;
-			let finalAmLink: string | undefined = undefined;
+			let amLinkValue: string | undefined = undefined;
+			let gdriveLinkValue: string | undefined = undefined;
 
 			// 1. Upload thumbnail
 			if (thumbnailFile) {
@@ -300,9 +307,8 @@ export function UploadWizard() {
 				);
 			}
 
-			// 3. Handle preset source
-			if (fileType === "xml") {
-				finalFileType = "xml";
+			// 3. Process selected preset sources independently
+			if (selectedFileTypes.includes("xml")) {
 				if (presetFile) {
 					finalFileUrl = await uploadFile(
 						presetFile,
@@ -310,17 +316,39 @@ export function UploadWizard() {
 						presetFile.type || "text/xml",
 					);
 				}
-			} else if (fileType === "gdrive") {
-				finalFileType = "google_drive";
-				finalAmLink = gdriveLink.trim() || undefined;
-			} else if (fileType === "link") {
-				finalAmLink = amLink.trim() || undefined;
-				if (validation.sourceType && validation.sourceType !== "xml_file") {
-					finalFileType = validation.sourceType as PresetFileType;
-				} else {
-					finalFileType = "alight_creative";
-				}
 			}
+
+			if (selectedFileTypes.includes("link")) {
+				amLinkValue = amLink.trim() || undefined;
+			}
+
+			if (selectedFileTypes.includes("gdrive")) {
+				gdriveLinkValue = gdriveLink.trim() || undefined;
+			}
+
+			// Combine external links if multiple link sources selected
+			let combinedAmLink: string | undefined = undefined;
+			if (amLinkValue && gdriveLinkValue) {
+				combinedAmLink = `${amLinkValue} | ${gdriveLinkValue}`;
+			} else if (amLinkValue) {
+				combinedAmLink = amLinkValue;
+			} else if (gdriveLinkValue) {
+				combinedAmLink = gdriveLinkValue;
+			}
+
+			// Determine primary file_type for database compatibility
+			let primaryFileType: PresetFileType = "xml";
+			if (selectedFileTypes.includes("xml")) {
+				primaryFileType = "xml";
+			} else if (selectedFileTypes.includes("gdrive")) {
+				primaryFileType = "google_drive";
+			} else if (selectedFileTypes.includes("link")) {
+				primaryFileType = "alight_creative";
+			}
+
+			const fileTypesPayload = selectedFileTypes.map((t) =>
+				t === "xml" ? "xml" : t === "gdrive" ? "google_drive" : "alight_creative",
+			);
 
 			// Resolve full public URLs or valid string paths for database
 			const resolvedThumbnailUrl = uploadedThumbnailUrl
@@ -350,9 +378,10 @@ export function UploadWizard() {
 					description: description.trim() || undefined,
 					thumbnail_url: resolvedThumbnailUrl,
 					preview_video_url: resolvedPreviewVideoUrl,
-					file_type: finalFileType,
+					file_type: primaryFileType,
+					file_types: fileTypesPayload,
 					file_url: resolvedFileUrl,
-					am_link: finalAmLink || undefined,
+					am_link: combinedAmLink,
 					category,
 					difficulty,
 				}),
@@ -360,7 +389,7 @@ export function UploadWizard() {
 
 			const createJson = await createRes.json();
 			if (!createRes.ok) {
-				// Rollback
+				// Rollback uploaded files
 				const cleanupPaths = [];
 				if (uploadedThumbnailUrl) cleanupPaths.push({ bucket: "thumbnails", path: uploadedThumbnailUrl });
 				if (uploadedPreviewVideoUrl) cleanupPaths.push({ bucket: "preset-videos", path: uploadedPreviewVideoUrl });
@@ -389,14 +418,15 @@ export function UploadWizard() {
 
 			posthog.capture("preset_published", {
 				preset_id: createJson.data?.id ?? createJson.id,
-				file_type: finalFileType,
+				file_type: primaryFileType,
+				file_types: fileTypesPayload,
 				category,
 				difficulty,
 			});
 			router.push(`/preset/${slug}`);
 		} catch (err: unknown) {
 			const apiError = err as { code?: string; message?: string; details?: any; stack?: string };
-			setError(mapValidationError(apiError, finalFileType));
+			setError(mapValidationError(apiError));
 			setIsLoading(false);
 		}
 	};
@@ -433,8 +463,8 @@ export function UploadWizard() {
 			<div className="p-6 sm:p-8 rounded-3xl bg-[var(--color-bg-surface)] border border-[var(--color-border-subtle)] shadow-xl">
 				{currentStep === 1 && (
 					<FilePicker
-						fileType={fileType}
-						onFileTypeChange={setFileType}
+						selectedFileTypes={selectedFileTypes}
+						onSelectedFileTypesChange={setSelectedFileTypes}
 						presetFile={presetFile}
 						onPresetFileChange={setPresetFile}
 						amLink={amLink}
@@ -480,7 +510,7 @@ export function UploadWizard() {
 						description={description}
 						category={category}
 						difficulty={difficulty}
-						fileType={fileType}
+						selectedFileTypes={selectedFileTypes}
 						presetFile={presetFile}
 						thumbnailFile={thumbnailFile}
 						amLink={amLink}

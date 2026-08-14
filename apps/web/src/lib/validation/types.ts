@@ -1,5 +1,7 @@
 export type CheckStatus = "idle" | "loading" | "success" | "error";
 
+export type PresetSourceFormat = "xml" | "gdrive" | "link";
+
 export interface ValidationCheck {
 	id: string;
 	label: string;
@@ -14,6 +16,7 @@ export interface ValidationResult {
 	error: string | null;
 	decodedPayload?: string;
 	sourceType?: PresetSourceType;
+	activeSourceFormats?: PresetSourceFormat[];
 }
 
 export type PresetSourceType =

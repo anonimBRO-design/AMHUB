@@ -5,7 +5,7 @@ import {
 	HardDrive,
 	Sparkles,
 } from "lucide-react";
-import type { PresetSourceType } from "@/lib/validation/types";
+import type { PresetSourceFormat } from "@/lib/validation/types";
 import { useEffect } from "react";
 
 interface ReviewStepProps {
@@ -13,7 +13,7 @@ interface ReviewStepProps {
 	description: string;
 	category: string;
 	difficulty: string;
-	fileType: "xml" | "gdrive" | "link";
+	selectedFileTypes: PresetSourceFormat[];
 	presetFile: File | null;
 	thumbnailFile: File | null;
 	amLink: string;
@@ -26,7 +26,7 @@ export function ReviewStep({
 	description,
 	category,
 	difficulty,
-	fileType,
+	selectedFileTypes,
 	presetFile,
 	thumbnailFile,
 	amLink,
@@ -47,21 +47,6 @@ export function ReviewStep({
 			if (videoPreviewUrl) URL.revokeObjectURL(videoPreviewUrl);
 		};
 	}, [thumbnailPreviewUrl, videoPreviewUrl]);
-
-	// Format Source Type
-	let displaySourceType = "XML FILE";
-	let displayIcon = <FileCode className="w-4 h-4 text-blue-400" />;
-	let sourceName = presetFile?.name || "XML File";
-
-	if (fileType === "gdrive") {
-		displaySourceType = "GOOGLE DRIVE (XML)";
-		displayIcon = <HardDrive className="w-4 h-4 text-amber-400" />;
-		sourceName = gdriveLink || "Google Drive Link";
-	} else if (fileType === "link") {
-		sourceName = amLink;
-		displaySourceType = "ALIGHT CREATIVE";
-		displayIcon = <ExternalLink className="w-4 h-4 text-emerald-400" />;
-	}
 
 	return (
 		<div className="space-y-6">
@@ -93,10 +78,22 @@ export function ReviewStep({
 					) : null}
 
 					{/* Top Left Badges */}
-					<div className="absolute top-3 left-3 flex gap-2 pointer-events-none">
-						<span className="px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-black/60 backdrop-blur-md text-white border border-white/10">
-							{displaySourceType}
-						</span>
+					<div className="absolute top-3 left-3 flex flex-wrap gap-1.5 pointer-events-none">
+						{selectedFileTypes.includes("xml") && (
+							<span className="px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-blue-600/80 backdrop-blur-md text-white border border-blue-400/20">
+								XML FILE
+							</span>
+						)}
+						{selectedFileTypes.includes("link") && (
+							<span className="px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-emerald-600/80 backdrop-blur-md text-white border border-emerald-400/20">
+								AM LINK
+							</span>
+						)}
+						{selectedFileTypes.includes("gdrive") && (
+							<span className="px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-amber-600/80 backdrop-blur-md text-white border border-amber-400/20">
+								GOOGLE DRIVE (XML)
+							</span>
+						)}
 						<span className="px-2.5 py-1 rounded-full text-[10px] font-semibold tracking-wider bg-[var(--color-interactive-primary)] text-white">
 							{category}
 						</span>
@@ -142,40 +139,49 @@ export function ReviewStep({
 						</span>
 					</div>
 
-					<div className="col-span-2 p-3 rounded-2xl bg-[var(--color-bg-surface)] border border-[var(--color-border-subtle)] flex items-center justify-between">
-						<div className="flex items-center gap-2">
-							{displayIcon}
-							<span className="font-semibold text-[var(--color-text-primary)]">
-								{fileType === "link" || fileType === "gdrive"
-									? displaySourceType
-									: "XML Preset File"}
-							</span>
+					{/* Selected Sources List */}
+					<div className="col-span-2 space-y-2 p-3 rounded-2xl bg-[var(--color-bg-surface)] border border-[var(--color-border-subtle)]">
+						<span className="text-[var(--color-text-tertiary)] block text-[10px] font-bold uppercase">
+							Attached Preset Sources ({selectedFileTypes.length})
+						</span>
+
+						<div className="space-y-1.5">
+							{selectedFileTypes.includes("xml") && (
+								<div className="flex items-center justify-between text-xs">
+									<div className="flex items-center gap-2 text-blue-400 font-semibold">
+										<FileCode className="w-4 h-4" />
+										<span>XML File</span>
+									</div>
+									<span className="font-mono text-[11px] text-[var(--color-text-tertiary)] truncate max-w-[180px]">
+										{presetFile?.name || "XML file attached"}
+									</span>
+								</div>
+							)}
+
+							{selectedFileTypes.includes("link") && (
+								<div className="flex items-center justify-between text-xs">
+									<div className="flex items-center gap-2 text-emerald-400 font-semibold">
+										<ExternalLink className="w-4 h-4" />
+										<span>AM Link</span>
+									</div>
+									<span className="font-mono text-[11px] text-[var(--color-text-tertiary)] truncate max-w-[180px]">
+										{amLink || "Alight Creative Link"}
+									</span>
+								</div>
+							)}
+
+							{selectedFileTypes.includes("gdrive") && (
+								<div className="flex items-center justify-between text-xs">
+									<div className="flex items-center gap-2 text-amber-400 font-semibold">
+										<HardDrive className="w-4 h-4" />
+										<span>Google Drive (XML)</span>
+									</div>
+									<span className="font-mono text-[11px] text-[var(--color-text-tertiary)] truncate max-w-[180px]">
+										{gdriveLink || "Google Drive Link"}
+									</span>
+								</div>
+							)}
 						</div>
-						{fileType === "link" ? (
-							<a
-								href={amLink}
-								target="_blank"
-								rel="noopener noreferrer"
-								className="text-xs font-mono text-[var(--color-text-tertiary)] hover:text-[var(--color-interactive-primary)] truncate max-w-[150px] transition-colors"
-								title={amLink}
-							>
-								{sourceName}
-							</a>
-						) : fileType === "gdrive" ? (
-							<a
-								href={gdriveLink}
-								target="_blank"
-								rel="noopener noreferrer"
-								className="text-xs font-mono text-[var(--color-text-tertiary)] hover:text-[var(--color-interactive-primary)] truncate max-w-[150px] transition-colors"
-								title={gdriveLink}
-							>
-								{sourceName}
-							</a>
-						) : (
-							<span className="text-xs font-mono text-[var(--color-text-tertiary)] truncate max-w-[150px]" title={presetFile?.name}>
-								{sourceName}
-							</span>
-						)}
 					</div>
 				</div>
 			</div>

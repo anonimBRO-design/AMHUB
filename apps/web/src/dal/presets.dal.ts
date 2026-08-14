@@ -49,6 +49,7 @@ export interface CreatePresetData {
 	thumbnail_url: string;
 	preview_video_url?: string;
 	file_type: "xml" | "qr" | "link" | "google_drive" | "alight_creative";
+	file_types?: string[];
 	file_url?: string;
 	am_link?: string;
 	category: string;
@@ -97,11 +98,12 @@ export async function createPreset(
 	creatorId: string,
 	data: CreatePresetData,
 ) {
+	const { file_types, ...insertData } = data;
 	const { data: preset, error } = await client
 		.from("presets")
 		.insert([
 			{
-				...data,
+				...insertData,
 				creator_id: creatorId,
 			},
 		] as never)

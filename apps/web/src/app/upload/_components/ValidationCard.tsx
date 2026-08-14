@@ -1,22 +1,19 @@
 "use client";
 
-import type { ValidationResult } from "@/lib/validation/types";
+import type { PresetSourceFormat, ValidationResult } from "@/lib/validation/types";
 import { CheckCircle2, Loader2, ShieldCheck, XCircle } from "lucide-react";
 
 interface ValidationCardProps {
-	fileType: "xml" | "gdrive" | "link";
+	selectedFileTypes: PresetSourceFormat[];
 	validation: ValidationResult;
 }
 
-export function ValidationCard({ fileType, validation }: ValidationCardProps) {
+export function ValidationCard({ selectedFileTypes, validation }: ValidationCardProps) {
 	const { isValid, isValidating, checks, error } = validation;
 
-	const formatTitle =
-		fileType === "xml"
-			? "XML File"
-			: fileType === "gdrive"
-				? "Google Drive (XML)"
-				: "AM Link";
+	const formatTitle = selectedFileTypes
+		.map((t) => (t === "xml" ? "XML File" : t === "gdrive" ? "Google Drive (XML)" : "AM Link"))
+		.join(" + ") || "Preset Sources";
 
 	// If no checks have run yet
 	if (checks.every((c) => c.status === "idle") && !isValidating && !error) {
@@ -91,7 +88,7 @@ export function ValidationCard({ fileType, validation }: ValidationCardProps) {
 					<div className="flex items-center justify-between p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-xs font-bold">
 						<div className="flex items-center gap-2">
 							<span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
-							<span>🟢 Valid {formatTitle}</span>
+							<span>🟢 All Selected Sources Valid</span>
 						</div>
 						<span className="text-[11px] font-normal text-emerald-400">
 							Ready to continue
@@ -100,7 +97,7 @@ export function ValidationCard({ fileType, validation }: ValidationCardProps) {
 				) : error ? (
 					<div className="p-3 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-300 text-xs space-y-1">
 						<div className="flex items-center gap-2 font-bold text-rose-400">
-							<span>🔴 Invalid {formatTitle}</span>
+							<span>🔴 Validation Required</span>
 						</div>
 						<p className="text-[11px] font-normal text-rose-300/90 leading-relaxed">
 							{error}
