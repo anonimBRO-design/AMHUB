@@ -97,27 +97,29 @@ export async function listPresets(
 
 async function ensureCategoryExists(categorySlug: string) {
 	if (!categorySlug) return;
-	try {
-		const serviceClient = createSupabaseServiceClient();
-		const { data: existing } = await serviceClient
+	const serviceClient = createSupabaseServiceClient();
+	const { data: existing, error: selectErr } = await serviceClient
+		.from("categories")
+		.select("slug")
+		.eq("slug", categorySlug)
+		.maybeSingle();
+
+	if (selectErr) {
+		console.error(`[CATEGORIES SELECT ERROR] '${categorySlug}':`, selectErr);
+		throw selectErr;
+	}
+
+	if (!existing) {
+		console.log(`[CATEGORIES] Auto-populating missing category '${categorySlug}' in DB via service client...`);
+		const label = categorySlug.charAt(0).toUpperCase() + categorySlug.slice(1);
+		const { error: insErr } = await serviceClient
 			.from("categories")
-			.select("slug")
-			.eq("slug", categorySlug)
-			.maybeSingle();
+			.insert([{ slug: categorySlug, label, is_active: true }] as never);
 
-		if (!existing) {
-			console.log(`[CATEGORIES] Auto-populating missing category '${categorySlug}' in DB via service client...`);
-			const label = categorySlug.charAt(0).toUpperCase() + categorySlug.slice(1);
-			const { error: insErr } = await serviceClient
-				.from("categories")
-				.insert([{ slug: categorySlug, label, is_active: true }] as never);
-
-			if (insErr) {
-				console.error(`[CATEGORIES INSERT ERROR] '${categorySlug}':`, insErr);
-			}
+		if (insErr) {
+			console.error(`[CATEGORIES INSERT ERROR] '${categorySlug}':`, insErr);
+			throw insErr;
 		}
-	} catch (catErr) {
-		console.warn(`[CATEGORIES CHECK] Could not verify category '${categorySlug}':`, catErr);
 	}
 }
 
