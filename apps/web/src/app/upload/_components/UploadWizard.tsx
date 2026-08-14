@@ -42,7 +42,7 @@ export function UploadWizard() {
 	const [previewVideoFile, setPreviewVideoFile] = useState<File | null>(null);
 	const [amLink, setAmLink] = useState("");
 	const [gdriveLink, setGdriveLink] = useState("");
-	const [amLinkSourceType, setAmLinkSourceType] = useState<PresetSourceType | null>(null);
+	const [amLinkSourceType, setAmLinkSourceType] = useState<PresetSourceType | null>("alight_creative");
 	const [title, setTitle] = useState("");
 	const [description, setDescription] = useState("");
 	const [category, setCategory] = useState("velocity");

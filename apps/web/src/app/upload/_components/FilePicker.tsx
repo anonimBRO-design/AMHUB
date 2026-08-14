@@ -399,18 +399,16 @@ export function FilePicker({
 							id="am-link-input"
 							type="url"
 							value={amLink}
-							onChange={(e) => onAmLinkChange(e.target.value, amLinkSourceType ?? "am_link")}
-							placeholder={amLinkSourceType === "google_drive" ? "https://drive.google.com/..." : "https://alight.link/..."}
+							onChange={(e) => onAmLinkChange(e.target.value, "alight_creative")}
+							placeholder="https://alightcreative.com/am/share/..."
 							className="flex-1 min-h-[48px] px-4 rounded-2xl bg-[var(--color-bg-base)] border border-[var(--color-border-subtle)] text-sm text-[var(--color-text-primary)] placeholder:text-[var(--color-text-tertiary)] focus:outline-none focus:border-[var(--color-interactive-primary)]"
 						/>
 
 						<select
-							value={amLinkSourceType ?? "am_link"}
+							value="alight_creative"
 							onChange={(e) => onAmLinkSourceTypeChange(e.target.value as PresetSourceType)}
 							className="rounded-2xl border border-[var(--color-border-subtle)] bg-[var(--color-bg-base)] p-2 text-sm text-[var(--color-text-primary)] cursor-pointer min-w-[140px] h-[48px]"
 						>
-							<option value="am_link">Alight Link</option>
-							<option value="google_drive">Google Drive</option>
 							<option value="alight_creative">Alight Creative</option>
 						</select>
 					</div>

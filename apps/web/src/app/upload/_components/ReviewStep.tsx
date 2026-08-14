@@ -61,16 +61,8 @@ export function ReviewStep({
 		sourceName = gdriveLink || "Google Drive Link";
 	} else if (fileType === "link") {
 		sourceName = amLink;
-		if (amLinkSourceType === "google_drive") {
-			displaySourceType = "GOOGLE DRIVE";
-			displayIcon = <ExternalLink className="w-4 h-4 text-yellow-400" />;
-		} else if (amLinkSourceType === "alight_creative") {
-			displaySourceType = "ALIGHT CREATIVE";
-			displayIcon = <ExternalLink className="w-4 h-4 text-emerald-400" />;
-		} else {
-			displaySourceType = "AM LINK";
-			displayIcon = <ExternalLink className="w-4 h-4 text-emerald-400" />;
-		}
+		displaySourceType = "ALIGHT CREATIVE";
+		displayIcon = <ExternalLink className="w-4 h-4 text-emerald-400" />;
 	}
 
 	return (
