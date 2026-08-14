@@ -1,5 +1,6 @@
 "use client";
 
+import { resolveStorageUrl } from "@/lib/supabase/storage-url";
 import type { User as Profile } from "@presethub/types";
 import {
 	AlertTriangle,
@@ -13,8 +14,10 @@ import {
 	ShieldCheck,
 	Trash2,
 	UserCheck,
+	UserX,
 	Users,
 } from "lucide-react";
+import Link from "next/link";
 import React, { useCallback, useEffect, useState } from "react";
 
 interface AdminUserRecord {
@@ -52,6 +55,14 @@ export function AdminDashboardClient({
 	const [targetUser, setTargetUser] = useState<AdminUserRecord | null>(null);
 	const [isDeleting, setIsDeleting] = useState<boolean>(false);
 	const [deleteError, setDeleteError] = useState<string | null>(null);
+
+	// Verification Modal State
+	const [verifyTarget, setVerifyTarget] = useState<{
+		user: AdminUserRecord;
+		targetStatus: boolean;
+	} | null>(null);
+	const [isVerifying, setIsVerifying] = useState<boolean>(false);
+	const [verifyError, setVerifyError] = useState<string | null>(null);
 
 	const fetchUsers = useCallback(async (query = "") => {
 		setIsLoading(true);
@@ -120,8 +131,57 @@ export function AdminDashboardClient({
 		}
 	};
 
+	const handleVerifyConfirm = async () => {
+		if (!verifyTarget) return;
+		setIsVerifying(true);
+		setVerifyError(null);
+
+		const { user: target, targetStatus } = verifyTarget;
+
+		try {
+			const res = await fetch("/api/admin/users/verify", {
+				method: "PATCH",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({
+					userId: target.id,
+					is_verified: targetStatus,
+				}),
+			});
+			const json = await res.json();
+
+			if (!res.ok) {
+				throw new Error(
+					json.error?.message || "Failed to update verification status.",
+				);
+			}
+
+			// Update users state locally with zero full page reload
+			setUsers((prev) =>
+				prev.map((u) =>
+					u.id === target.id ? { ...u, is_verified: targetStatus } : u,
+				),
+			);
+
+			setToast({
+				type: "success",
+				message: `Account @${target.username} ${targetStatus ? "verified" : "unverified"} successfully.`,
+			});
+			setVerifyTarget(null);
+		} catch (err) {
+			console.error("Verify user failed:", err);
+			setVerifyError(
+				err instanceof Error
+					? err.message
+					: "Failed to update verification status.",
+			);
+		} finally {
+			setIsVerifying(false);
+		}
+	};
+
 	const adminCount = users.filter(
-		(u) => u.username.toLowerCase() === "afgan" || u.role === "admin" || u.is_staff,
+		(u) =>
+			u.username.toLowerCase() === "afgan" || u.role === "admin" || u.is_staff,
 	).length;
 
 	const verifiedCount = users.filter((u) => u.is_verified).length;
@@ -164,7 +224,11 @@ export function AdminDashboardClient({
 						User Management & Security
 					</h1>
 					<p className="text-xs sm:text-sm text-[var(--color-text-secondary)]">
-						Logged in as <span className="font-bold text-white">@{currentAdmin.username}</span> (System Administrator)
+						Logged in as{" "}
+						<span className="font-bold text-white">
+							@{currentAdmin.username}
+						</span>{" "}
+						(System Administrator)
 					</p>
 				</div>
 
@@ -174,7 +238,9 @@ export function AdminDashboardClient({
 					disabled={isLoading}
 					className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-2xl bg-[var(--color-bg-elevated)] border border-[var(--color-border-subtle)] hover:bg-[var(--color-bg-base)] text-xs font-semibold text-[var(--color-text-primary)] transition-all active:scale-95 disabled:opacity-50"
 				>
-					<RefreshCw className={`w-4 h-4 ${isLoading ? "animate-spin" : ""}`} />
+					<RefreshCw
+						className={`w-4 h-4 ${isLoading ? "animate-spin" : ""}`}
+					/>
 					<span>Refresh List</span>
 				</button>
 			</div>
@@ -272,6 +338,7 @@ export function AdminDashboardClient({
 									<th className="px-6 py-4">User</th>
 									<th className="px-6 py-4">Email</th>
 									<th className="px-6 py-4">Role / Staff</th>
+									<th className="px-6 py-4">Verification</th>
 									<th className="px-6 py-4">Joined Date</th>
 									<th className="px-6 py-4 text-right">Actions</th>
 								</tr>
@@ -283,6 +350,7 @@ export function AdminDashboardClient({
 										u.role === "admin" ||
 										u.is_staff;
 									const isSelf = u.id === currentAdmin.id;
+									const avatarUrl = resolveStorageUrl(u.avatar_url);
 
 									return (
 										<tr
@@ -292,10 +360,13 @@ export function AdminDashboardClient({
 											{/* User info */}
 											<td className="px-6 py-4">
 												<div className="flex items-center gap-3">
-													<div className="w-9 h-9 rounded-full overflow-hidden bg-[var(--color-bg-elevated)] shrink-0 border border-white/10">
-														{u.avatar_url ? (
+													<Link
+														href={`/u/${u.username}`}
+														className="w-9 h-9 rounded-full overflow-hidden bg-[var(--color-bg-elevated)] shrink-0 border border-white/10 hover:opacity-80 transition-opacity"
+													>
+														{avatarUrl ? (
 															<img
-																src={u.avatar_url}
+																src={avatarUrl}
 																alt={u.display_name}
 																className="w-full h-full object-cover"
 															/>
@@ -304,26 +375,27 @@ export function AdminDashboardClient({
 																{u.display_name[0]?.toUpperCase() || "U"}
 															</div>
 														)}
-													</div>
+													</Link>
 													<div>
 														<div className="font-bold text-[var(--color-text-primary)] text-sm flex items-center gap-1.5">
-															<a
+															<Link
 																href={`/u/${u.username}`}
-																target="_blank"
-																rel="noreferrer"
 																className="hover:underline hover:text-[var(--color-interactive-primary)]"
 															>
 																{u.display_name}
-															</a>
+															</Link>
 															{u.is_verified && (
-																<span className="w-3.5 h-3.5 rounded-full bg-emerald-500 text-black flex items-center justify-center text-[8px] font-black">
+																<span className="w-3.5 h-3.5 rounded-full bg-emerald-500 text-black flex items-center justify-center text-[8px] font-black shrink-0">
 																	✓
 																</span>
 															)}
 														</div>
-														<div className="text-[var(--color-text-secondary)] font-mono">
+														<Link
+															href={`/u/${u.username}`}
+															className="text-[var(--color-text-secondary)] font-mono text-[11px] hover:underline"
+														>
 															@{u.username}
-														</div>
+														</Link>
 													</div>
 												</div>
 											</td>
@@ -349,6 +421,19 @@ export function AdminDashboardClient({
 												)}
 											</td>
 
+											{/* Verification Status */}
+											<td className="px-6 py-4">
+												{u.is_verified ? (
+													<span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+														<UserCheck className="w-3 h-3" /> Verified ✓
+													</span>
+												) : (
+													<span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-semibold tracking-wider bg-white/5 text-[var(--color-text-tertiary)] border border-white/5">
+														Unverified
+													</span>
+												)}
+											</td>
+
 											{/* Joined Date */}
 											<td className="px-6 py-4 text-[var(--color-text-secondary)]">
 												<div className="flex items-center gap-1.5">
@@ -368,24 +453,58 @@ export function AdminDashboardClient({
 
 											{/* Actions */}
 											<td className="px-6 py-4 text-right">
-												{isSelf ? (
-													<span className="text-[10px] font-semibold text-[var(--color-text-tertiary)] italic">
-														Your account
-													</span>
-												) : isUserAdmin ? (
-													<span className="text-[10px] font-semibold text-amber-500/60 italic">
-														Admin protected
-													</span>
-												) : (
-													<button
-														type="button"
-														onClick={() => setTargetUser(u)}
-														className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-rose-500/10 text-rose-400 border border-rose-500/20 hover:bg-rose-500/20 hover:border-rose-500/30 transition-all font-semibold active:scale-95"
-													>
-														<Trash2 className="w-3.5 h-3.5" />
-														<span>Delete User</span>
-													</button>
-												)}
+												<div className="flex items-center justify-end gap-2">
+													{/* Verification Action */}
+													{u.is_verified ? (
+														<button
+															type="button"
+															onClick={() =>
+																setVerifyTarget({
+																	user: u,
+																	targetStatus: false,
+																})
+															}
+															className="inline-flex items-center gap-1 px-2.5 py-1 rounded-xl bg-amber-500/10 text-amber-400 border border-amber-500/20 hover:bg-amber-500/20 text-[11px] font-semibold transition-all active:scale-95"
+														>
+															<UserX className="w-3 h-3" />
+															<span>Remove</span>
+														</button>
+													) : (
+														<button
+															type="button"
+															onClick={() =>
+																setVerifyTarget({
+																	user: u,
+																	targetStatus: true,
+																})
+															}
+															className="inline-flex items-center gap-1 px-2.5 py-1 rounded-xl bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 hover:bg-emerald-500/20 text-[11px] font-semibold transition-all active:scale-95"
+														>
+															<UserCheck className="w-3 h-3" />
+															<span>Verify</span>
+														</button>
+													)}
+
+													{/* Delete Action */}
+													{isSelf ? (
+														<span className="text-[10px] font-semibold text-[var(--color-text-tertiary)] italic px-1">
+															Self
+														</span>
+													) : isUserAdmin ? (
+														<span className="text-[10px] font-semibold text-amber-500/60 italic px-1">
+															Protected
+														</span>
+													) : (
+														<button
+															type="button"
+															onClick={() => setTargetUser(u)}
+															className="inline-flex items-center gap-1 px-2.5 py-1 rounded-xl bg-rose-500/10 text-rose-400 border border-rose-500/20 hover:bg-rose-500/20 transition-all text-[11px] font-semibold active:scale-95"
+														>
+															<Trash2 className="w-3 h-3" />
+															<span>Delete</span>
+														</button>
+													)}
+												</div>
 											</td>
 										</tr>
 									);
@@ -395,6 +514,85 @@ export function AdminDashboardClient({
 					</div>
 				)}
 			</div>
+
+			{/* Verification Confirmation Modal */}
+			{verifyTarget && (
+				<div
+					className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4 animate-in fade-in"
+					onClick={() => !isVerifying && setVerifyTarget(null)}
+				>
+					<div
+						className="w-full max-w-md rounded-3xl bg-[var(--color-bg-surface)] border border-[var(--color-border-subtle)] p-6 shadow-2xl space-y-4 text-left"
+						onClick={(e) => e.stopPropagation()}
+					>
+						<div className="flex items-center gap-3 text-emerald-400">
+							<div className="p-3 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 shrink-0">
+								{verifyTarget.targetStatus ? (
+									<UserCheck className="w-6 h-6 text-emerald-400" />
+								) : (
+									<UserX className="w-6 h-6 text-amber-400" />
+								)}
+							</div>
+							<div>
+								<h3 className="text-lg font-extrabold text-[var(--color-text-primary)]">
+									{verifyTarget.targetStatus
+										? `Verify @${verifyTarget.user.username}?`
+										: `Remove verification from @${verifyTarget.user.username}?`}
+								</h3>
+								<p className="text-xs text-[var(--color-text-secondary)]">
+									{verifyTarget.targetStatus
+										? "Give this account the official verified badge?"
+										: "Remove official verified badge from this account?"}
+								</p>
+							</div>
+						</div>
+
+						{verifyError && (
+							<div className="p-3 rounded-xl bg-rose-500/10 border border-rose-500/20 text-xs font-semibold text-rose-400">
+								{verifyError}
+							</div>
+						)}
+
+						<div className="flex items-center gap-3 pt-2">
+							<button
+								type="button"
+								onClick={() => setVerifyTarget(null)}
+								disabled={isVerifying}
+								className="flex-1 min-h-[44px] rounded-2xl bg-[var(--color-bg-elevated)] border border-[var(--color-border-subtle)] text-xs font-semibold text-[var(--color-text-primary)] hover:bg-[var(--color-bg-base)] transition-colors disabled:opacity-50"
+							>
+								Cancel
+							</button>
+
+							<button
+								type="button"
+								onClick={handleVerifyConfirm}
+								disabled={isVerifying}
+								className={`flex-1 min-h-[44px] rounded-2xl text-xs font-bold active:scale-95 transition-all disabled:opacity-50 flex items-center justify-center gap-2 shadow-lg ${
+									verifyTarget.targetStatus
+										? "bg-emerald-600 hover:bg-emerald-700 text-white shadow-emerald-600/30"
+										: "bg-amber-600 hover:bg-amber-700 text-white shadow-amber-600/30"
+								}`}
+							>
+								{isVerifying ? (
+									<>
+										<Loader2 className="w-4 h-4 animate-spin" />
+										<span>Updating...</span>
+									</>
+								) : (
+									<>
+										<UserCheck className="w-4 h-4" />
+										<span>
+											{verifyTarget.targetStatus
+												? "Confirm Verification"
+												: "Confirm Removal"}
+										</span>
+									</>
+								)}
+							</button>
+						</div>
+					</div>
+				</div>
+			)}
 
 			{/* Delete Permanent Confirmation Modal */}
 			{targetUser && (
