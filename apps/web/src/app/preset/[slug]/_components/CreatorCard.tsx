@@ -20,14 +20,23 @@ interface CreatorCardProps {
 }
 
 export function CreatorCard({ creator }: CreatorCardProps) {
-	const [isFollowing, setIsFollowing] = useState(creator.isFollowing ?? false);
+	const { currentUser, requireAuth } = useAuth();
+	const isOwnProfile = Boolean(
+		currentUser &&
+			((creator.id && currentUser.id === creator.id) ||
+				currentUser.username.toLowerCase() === creator.username.toLowerCase()),
+	);
+
+	const [isFollowing, setIsFollowing] = useState(
+		isOwnProfile ? false : (creator.isFollowing ?? false),
+	);
 	const [followerCount, setFollowerCount] = useState(
 		creator.followerCount ?? 0,
 	);
 	const [isLoading, setIsLoading] = useState(false);
-	const { requireAuth } = useAuth();
 
 	const handleFollowToggle = async () => {
+		if (isOwnProfile) return;
 		if (!requireAuth(undefined, "Sign in to follow creators")) return;
 		setIsLoading(true);
 		const nextState = !isFollowing;
@@ -35,9 +44,10 @@ export function CreatorCard({ creator }: CreatorCardProps) {
 		setFollowerCount((prev) => (nextState ? prev + 1 : Math.max(0, prev - 1)));
 
 		try {
-			await fetch(`/api/users/${creator.username}/follow`, {
+			const res = await fetch(`/api/users/${creator.username}/follow`, {
 				method: nextState ? "POST" : "DELETE",
 			});
+			if (!res.ok) throw new Error("Failed to toggle follow");
 		} catch (e) {
 			console.error("Failed to toggle follow", e);
 			setIsFollowing(!nextState);
@@ -90,28 +100,37 @@ export function CreatorCard({ creator }: CreatorCardProps) {
 					</div>
 				</Link>
 
-				<button
-					type="button"
-					onClick={handleFollowToggle}
-					disabled={isLoading}
-					className={`inline-flex items-center justify-center gap-1.5 min-h-[44px] px-4 rounded-2xl text-xs font-bold transition-all active:scale-95 shrink-0 ${
-						isFollowing
-							? "bg-[var(--color-bg-elevated)] text-[var(--color-text-secondary)] border border-[var(--color-border-subtle)]"
-							: "bg-[var(--color-interactive-primary)] text-white hover:bg-[var(--color-interactive-primary-hover)] shadow-md shadow-[var(--color-interactive-primary)]/20"
-					}`}
-				>
-					{isFollowing ? (
-						<>
-							<UserCheck className="w-4 h-4 text-emerald-400" />
-							<span>Following</span>
-						</>
-					) : (
-						<>
-							<UserPlus className="w-4 h-4" />
-							<span>Follow</span>
-						</>
-					)}
-				</button>
+				{isOwnProfile ? (
+					<Link
+						href="/settings"
+						className="inline-flex items-center justify-center gap-1.5 min-h-[44px] px-4 rounded-2xl text-xs font-bold bg-[var(--color-bg-elevated)] text-[var(--color-text-secondary)] border border-[var(--color-border-subtle)] hover:text-[var(--color-text-primary)] hover:border-[var(--color-border-strong)] transition-all active:scale-95 shrink-0"
+					>
+						<span>Your Profile</span>
+					</Link>
+				) : (
+					<button
+						type="button"
+						onClick={handleFollowToggle}
+						disabled={isLoading}
+						className={`inline-flex items-center justify-center gap-1.5 min-h-[44px] px-4 rounded-2xl text-xs font-bold transition-all active:scale-95 shrink-0 ${
+							isFollowing
+								? "bg-[var(--color-bg-elevated)] text-[var(--color-text-secondary)] border border-[var(--color-border-subtle)]"
+								: "bg-[var(--color-interactive-primary)] text-white hover:bg-[var(--color-interactive-primary-hover)] shadow-md shadow-[var(--color-interactive-primary)]/20"
+						}`}
+					>
+						{isFollowing ? (
+							<>
+								<UserCheck className="w-4 h-4 text-emerald-400" />
+								<span>Following</span>
+							</>
+						) : (
+							<>
+								<UserPlus className="w-4 h-4" />
+								<span>Follow</span>
+							</>
+						)}
+					</button>
+				)}
 			</div>
 
 			{/* Creator Stats Row */}

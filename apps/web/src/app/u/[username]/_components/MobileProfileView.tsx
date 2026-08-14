@@ -143,24 +143,69 @@ export function MobileProfileView({ user, presets }: MobileProfileViewProps) {
 			{/* TAB CONTENT */}
 			<div className="mt-4 px-4">
 				{activeTab === "presets" ? (
-					<div className="grid grid-cols-2 gap-2">
-						{presets.map((preset) => (
-							<div
-								key={preset.id}
-								className="rounded-2xl overflow-hidden bg-surface flex flex-col border border-[var(--color-border-subtle)] shadow-sm"
-							>
-								<img
-									src={preset.thumbnailUrl || "/placeholder-preset.jpg"}
-									alt={preset.title}
-									className="aspect-[3/4] object-cover w-full bg-base"
-								/>
-								<div className="p-3">
-									<h3 className="text-sm font-bold text-primary line-clamp-2">
-										{preset.title}
-									</h3>
-								</div>
-							</div>
-						))}
+					<div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+						{presets.map((preset) => {
+							const hasVideo = Boolean(
+								preset.previewVideoUrl && preset.previewVideoUrl.trim(),
+							);
+							const hasThumb = Boolean(
+								preset.thumbnailUrl && preset.thumbnailUrl.trim(),
+							);
+							const PRESET_PLACEHOLDER_SVG =
+								"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='600' height='338' viewBox='0 0 600 338'><rect width='100%' height='100%' fill='%2318181b'/><path d='M270 140l80 45-80 45v-90z' fill='%23a855f7'/><text x='50%' y='78%' text-anchor='middle' fill='%23a1a1aa' font-family='sans-serif' font-size='14' font-weight='600'>ALIGHT MOTION PRESET</text></svg>";
+							const ratioClass =
+								preset.aspectRatio === "9:16"
+									? "aspect-[9/16]"
+									: preset.aspectRatio === "1:1"
+										? "aspect-square"
+										: "aspect-[16/9]";
+
+							return (
+								<a
+									key={preset.id}
+									href={`/preset/${preset.slug}`}
+									className="rounded-2xl overflow-hidden bg-surface flex flex-col border border-[var(--color-border-subtle)] shadow-sm group"
+								>
+									<div
+										className={`relative w-full overflow-hidden shrink-0 bg-base ${ratioClass}`}
+									>
+										{hasVideo ? (
+											<video
+												src={preset.previewVideoUrl}
+												poster={
+													hasThumb ? preset.thumbnailUrl : PRESET_PLACEHOLDER_SVG
+												}
+												autoPlay
+												muted
+												loop
+												playsInline
+												className="absolute inset-0 w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+											/>
+										) : (
+											<img
+												src={
+													hasThumb ? preset.thumbnailUrl : PRESET_PLACEHOLDER_SVG
+												}
+												alt={preset.title}
+												className="absolute inset-0 w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+												loading="lazy"
+												onError={(e) => {
+													const target = e.currentTarget;
+													if (target.src !== PRESET_PLACEHOLDER_SVG) {
+														target.src = PRESET_PLACEHOLDER_SVG;
+													}
+												}}
+											/>
+										)}
+									</div>
+									<div className="p-3">
+										<h3 className="text-sm font-bold text-primary line-clamp-2">
+											{preset.title}
+										</h3>
+									</div>
+								</a>
+							);
+						})}
 					</div>
 				) : (
 					<div className="p-5 rounded-3xl bg-surface border border-[var(--color-border-subtle)] shadow-sm">

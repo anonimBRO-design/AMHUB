@@ -31,6 +31,27 @@ export interface PresetCardPreset {
 	isLiked?: boolean;
 	isBookmarked?: boolean;
 	createdAt: string;
+	aspectRatio?: "16:9" | "9:16" | "1:1" | string;
+	aspectRatios?: string[];
+}
+
+const PRESET_PLACEHOLDER_SVG =
+	"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='600' height='338' viewBox='0 0 600 338'><rect width='100%' height='100%' fill='%2318181b'/><path d='M270 140l80 45-80 45v-90z' fill='%23a855f7'/><text x='50%' y='78%' text-anchor='middle' fill='%23a1a1aa' font-family='sans-serif' font-size='14' font-weight='600'>ALIGHT MOTION PRESET</text></svg>";
+
+function getAspectRatioClass(preset: PresetCardPreset): string {
+	const rawRatio =
+		preset.aspectRatio ||
+		(Array.isArray(preset.aspectRatios) && preset.aspectRatios.length > 0
+			? preset.aspectRatios[0]
+			: undefined);
+
+	if (rawRatio === "9:16" || rawRatio === "portrait") {
+		return "aspect-[9/16]";
+	}
+	if (rawRatio === "1:1" || rawRatio === "square") {
+		return "aspect-square";
+	}
+	return "aspect-[16/9]";
 }
 
 interface PresetCardProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -76,8 +97,13 @@ export const PresetCard = React.forwardRef<HTMLDivElement, PresetCardProps>(
 			return () => mediaQuery.removeEventListener("change", listener);
 		}, []);
 
-		const showVideo =
-			isHovered && !prefersReducedMotion && preset.previewVideoUrl;
+		const hasVideo = Boolean(
+			preset.previewVideoUrl && preset.previewVideoUrl.trim(),
+		);
+		const hasThumbnail = Boolean(
+			preset.thumbnailUrl && preset.thumbnailUrl.trim(),
+		);
+		const aspectRatioClass = getAspectRatioClass(preset);
 
 		const handleMouseEnter = () => setIsHovered(true);
 		const handleMouseLeave = () => {
@@ -114,7 +140,7 @@ export const PresetCard = React.forwardRef<HTMLDivElement, PresetCardProps>(
 			<div
 				ref={ref}
 				className={cn(
-					"group relative flex flex-col overflow-hidden rounded-[var(--radius-lg)] bg-[var(--color-bg-surface)] border border-[var(--color-border-subtle)] transition-all duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] hover:border-[var(--color-border-default)] hover:bg-[var(--color-bg-elevated)] hover:-translate-y-0.5 hover:shadow-[var(--shadow-md)]",
+					"group relative flex flex-col overflow-hidden rounded-[var(--radius-lg)] bg-[var(--color-bg-surface)] border border-[var(--color-border-subtle)] transition-all duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] hover:border-[var(--color-border-default)] hover:bg-[var(--color-bg-elevated)] hover:-translate-y-0.5 hover:shadow-[var(--shadow-md)] w-full max-w-full",
 					variant === "featured" &&
 						"border-[var(--color-interactive-primary)] hover:border-[var(--color-interactive-primary-hover)]",
 					className,
@@ -127,23 +153,37 @@ export const PresetCard = React.forwardRef<HTMLDivElement, PresetCardProps>(
 					<span className="sr-only">{preset.title}</span>
 				</a>
 
-				<div className="relative aspect-[4/3] w-full overflow-hidden">
-					{showVideo ? (
+				<div
+					className={cn(
+						"relative w-full overflow-hidden shrink-0 bg-[var(--color-bg-base)]",
+						aspectRatioClass,
+					)}
+				>
+					{hasVideo ? (
 						<video
 							ref={videoRef}
 							src={preset.previewVideoUrl}
+							poster={
+								hasThumbnail ? preset.thumbnailUrl : PRESET_PLACEHOLDER_SVG
+							}
 							autoPlay
 							muted
 							loop
 							playsInline
-							className="h-full w-full object-cover transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-105"
+							className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-105"
 						/>
 					) : (
 						<img
-							src={preset.thumbnailUrl}
-							alt={`${preset.title} by ${preset.creator.displayName} — ${preset.category} preset`}
-							className="h-full w-full object-cover transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-105"
+							src={hasThumbnail ? preset.thumbnailUrl : PRESET_PLACEHOLDER_SVG}
+							alt={`${preset.title} — ${preset.category} preset`}
+							className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-105"
 							loading="lazy"
+							onError={(e) => {
+								const target = e.currentTarget;
+								if (target.src !== PRESET_PLACEHOLDER_SVG) {
+									target.src = PRESET_PLACEHOLDER_SVG;
+								}
+							}}
 						/>
 					)}
 

@@ -1,5 +1,6 @@
 import { followUser, unfollowUser } from "@/dal/users.dal";
 import { requireApiProfile } from "@/lib/api/auth";
+import { ApiError } from "@/lib/api/errors";
 import { enforceRateLimit } from "@/lib/api/rate-limit";
 import {
 	apiErrorResponse,
@@ -30,6 +31,13 @@ export async function POST(
 		);
 		const { supabase, profile } = await requireApiProfile();
 
+		if (profile.username.toLowerCase() === username.toLowerCase()) {
+			throw new ApiError({
+				code: "bad_request",
+				message: "You cannot follow yourself.",
+			});
+		}
+
 		await enforceRateLimit({
 			request,
 			scope: "user:follow",
@@ -56,6 +64,13 @@ export async function DELETE(
 			usernameRouteParamsSchema,
 		);
 		const { supabase, profile } = await requireApiProfile();
+
+		if (profile.username.toLowerCase() === username.toLowerCase()) {
+			throw new ApiError({
+				code: "bad_request",
+				message: "You cannot follow yourself.",
+			});
+		}
 
 		await enforceRateLimit({
 			request,

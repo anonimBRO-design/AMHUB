@@ -100,9 +100,13 @@ export default async function PresetDetailPage({ params }: PageProps) {
 		isBookmarked: Boolean(bookmarkRecord),
 		creator: {
 			...cardPreset.creator,
+			id: rawPreset.creator.id,
 			followerCount,
 			presetCount: creatorPresetCount ?? 1,
-			isFollowing: Boolean(followRecord),
+			isFollowing:
+				currentUser?.id === rawPreset.creator.id
+					? false
+					: Boolean(followRecord),
 		},
 	};
 

@@ -24,12 +24,21 @@ export function FollowSection({
 	isOwnProfile,
 	initialFollowing = false,
 }: FollowSectionProps) {
-	const [isFollowing, setIsFollowing] = useState(initialFollowing);
+	const { currentUser, requireAuth } = useAuth();
+	const isOwnProfileState = Boolean(
+		isOwnProfile ||
+			(currentUser &&
+				currentUser.username.toLowerCase() === username.toLowerCase()),
+	);
+
+	const [isFollowing, setIsFollowing] = useState(
+		isOwnProfileState ? false : initialFollowing,
+	);
 	const [isLoading, setIsLoading] = useState(false);
 	const [copied, setCopied] = useState(false);
-	const { requireAuth } = useAuth();
 
 	const handleFollowToggle = async () => {
+		if (isOwnProfileState) return;
 		if (!requireAuth(undefined, "Sign in to follow creators")) return;
 		setIsLoading(true);
 		const nextState = !isFollowing;
@@ -81,7 +90,7 @@ export function FollowSection({
 
 	return (
 		<div className="flex items-center gap-2">
-			{isOwnProfile ? (
+			{isOwnProfileState ? (
 				<Link
 					href="/settings"
 					className="flex-1 inline-flex items-center justify-center gap-2 min-h-[44px] px-5 rounded-2xl bg-[var(--color-bg-surface)] text-[var(--color-text-primary)] font-bold text-xs border border-[var(--color-border-subtle)] hover:border-[var(--color-border-strong)] active:scale-95 transition-all"

@@ -11,7 +11,7 @@ export interface PresetGridProps {
 	isLoading: boolean;
 	hasMore: boolean;
 	onLoadMore: () => void;
-	columns?: { xs: 1; sm: 1; md: 2; lg: 3; xl: 4; "2xl": 5 };
+	columns?: { xs?: number; sm?: number; md?: number; lg?: number; xl?: number; "2xl"?: number };
 	variant?: "masonry" | "equal";
 	emptyState?: React.ReactNode;
 }
@@ -21,7 +21,7 @@ export const PresetGrid = ({
 	isLoading,
 	hasMore,
 	onLoadMore,
-	columns = { xs: 1, sm: 1, md: 2, lg: 3, xl: 4, "2xl": 5 },
+	columns = { xs: 1, sm: 2, md: 2, lg: 3, xl: 3, "2xl": 4 },
 	variant = "masonry",
 	emptyState,
 }: PresetGridProps) => {
@@ -31,21 +31,16 @@ export const PresetGrid = ({
 			aria-label="Preset gallery"
 			aria-busy={isLoading}
 			className={cn(
-				"grid gap-4",
+				"grid gap-4 w-full max-w-full overflow-hidden",
 				variant === "masonry" ? "items-start" : "items-stretch",
-				columns.xs === 1 && "grid-cols-1",
-				columns.sm === 1 && "sm:grid-cols-1",
-				columns.md === 2 && "md:grid-cols-2",
-				columns.lg === 3 && "lg:grid-cols-3",
-				columns.xl === 4 && "xl:grid-cols-4",
-				columns["2xl"] === 5 && "2xl:grid-cols-5",
+				"grid-cols-1 sm:grid-cols-2 lg:grid-cols-3",
 			)}
 		>
 			{presets.map((preset) => (
 				<PresetCard key={preset.id} preset={preset} />
 			))}
 			{isLoading &&
-				Array.from({ length: columns.md }).map((_, i) => (
+				Array.from({ length: 3 }).map((_, i) => (
 					// biome-ignore lint/suspicious/noArrayIndexKey: Fixed length skeleton list
 					<Skeleton key={`skeleton-${i}`} variant="card" />
 				))}

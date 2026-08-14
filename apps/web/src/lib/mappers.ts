@@ -9,12 +9,20 @@ import type { PresetCardPreset } from "@presethub/ui";
 export function mapPresetToCardPreset(
 	preset: PresetWithCreator,
 ): PresetCardPreset {
+	const rawAspect =
+		(preset as { aspect_ratio?: string; aspectRatio?: string; aspect_ratios?: string[] }).aspect_ratio ||
+		(preset as { aspect_ratio?: string; aspectRatio?: string; aspect_ratios?: string[] }).aspectRatio ||
+		(Array.isArray((preset as { aspect_ratios?: string[] }).aspect_ratios) &&
+		(preset as { aspect_ratios?: string[] }).aspect_ratios!.length > 0
+			? (preset as { aspect_ratios?: string[] }).aspect_ratios![0]
+			: undefined);
+
 	return {
 		id: preset.id,
 		slug: preset.slug,
 		title: preset.title,
 		description: preset.description ?? undefined,
-		thumbnailUrl: preset.thumbnail_url,
+		thumbnailUrl: preset.thumbnail_url ?? "",
 		previewVideoUrl: preset.preview_video_url ?? undefined,
 		category: preset.category,
 		difficulty: preset.difficulty as "beginner" | "intermediate" | "advanced",
@@ -30,5 +38,6 @@ export function mapPresetToCardPreset(
 		},
 		isFeatured: preset.is_featured,
 		createdAt: preset.created_at,
+		aspectRatio: rawAspect ?? "16:9",
 	};
 }

@@ -456,6 +456,13 @@ export async function unfollowUser(
 		"User was not found.",
 	) as unknown as { id: string; username?: string };
 
+	if (validTargetUser.id === followerId) {
+		throw new ApiError({
+			code: "bad_request",
+			message: "You cannot follow yourself.",
+		});
+	}
+
 	const { error: deleteError } = await client
 		.from("follows")
 		.delete()
