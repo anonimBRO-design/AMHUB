@@ -23,6 +23,9 @@ const createPresetSchema = z.object({
 	difficulty: z
 		.enum(["beginner", "intermediate", "advanced"])
 		.default("beginner"),
+	status: z
+		.enum(["pending", "published", "rejected", "removed"])
+		.default("published"),
 	am_version_min: z.string().optional(),
 	am_version_max: z.string().optional(),
 	device_support: z.array(z.enum(["android", "ios", "both"])).default(["both"]),
@@ -30,7 +33,7 @@ const createPresetSchema = z.object({
 
 export async function POST(request: NextRequest) {
 	try {
-		const { supabase, profile } = await requireApiProfile();
+		const { supabase, user, profile } = await requireApiProfile();
 
 		await enforceRateLimit({
 			request,
@@ -43,17 +46,28 @@ export async function POST(request: NextRequest) {
 		const data = await validateJson(request, createPresetSchema);
 
 		console.log("[PUBLISH DB CONTEXT]", {
-			hasUser: !!profile,
-			userId: profile.id,
+			authenticatedUserExists: !!user,
+			authenticatedUserId: user?.id,
+			profileId: profile.id,
+			supabaseProjectUrl: process.env.NEXT_PUBLIC_SUPABASE_URL,
+			ownershipColumn: "creator_id",
+			ownershipValue: profile.id,
 			category: data.category,
-			file_type: data.file_type,
+			fileType: data.file_type,
+			status: data.status,
 		});
 
 		const preset = await createPreset(supabase, profile.id, data);
 
 		return apiCreated(preset);
 	} catch (error) {
-		console.error("[PRESET CREATE API ERROR]", error);
+		console.error("[PRESET CREATE API ERROR]", {
+			code: (error as any)?.code,
+			message: (error as any)?.message,
+			details: (error as any)?.details,
+			hint: (error as any)?.hint,
+			error,
+		});
 		return apiErrorResponse(error);
 	}
 }

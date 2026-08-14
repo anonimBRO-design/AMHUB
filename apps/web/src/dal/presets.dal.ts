@@ -57,6 +57,7 @@ export interface CreatePresetData {
 	style?: string[];
 	tags?: string[];
 	difficulty?: "beginner" | "intermediate" | "advanced";
+	status?: "pending" | "published" | "rejected" | "removed";
 	am_version_min?: string;
 	am_version_max?: string;
 	device_support?: ("android" | "ios" | "both")[];
@@ -135,6 +136,7 @@ export async function createPreset(
 		.insert([
 			{
 				...insertData,
+				status: insertData.status || "published",
 				creator_id: creatorId,
 			},
 		] as never)
