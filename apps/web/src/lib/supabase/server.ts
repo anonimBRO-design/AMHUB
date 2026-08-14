@@ -36,16 +36,22 @@ export const createSupabaseServerClient = cache(
 );
 
 export function createSupabaseServiceClient(): PresetHubSupabaseClient {
-	const env = validateServerEnv();
+	const supabaseUrl =
+		process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.SUPABASE_URL;
+	const serviceRoleKey =
+		process.env.SUPABASE_SERVICE_ROLE_KEY ||
+		process.env.SUPABASE_SERVICE_KEY;
 
-	return createClient<Database>(
-		env.NEXT_PUBLIC_SUPABASE_URL,
-		env.SUPABASE_SERVICE_ROLE_KEY,
-		{
-			auth: {
-				autoRefreshToken: false,
-				persistSession: false,
-			},
+	if (!supabaseUrl || !serviceRoleKey) {
+		throw new Error(
+			"Missing SUPABASE_SERVICE_ROLE_KEY or SUPABASE_URL in server environment",
+		);
+	}
+
+	return createClient<Database>(supabaseUrl, serviceRoleKey, {
+		auth: {
+			autoRefreshToken: false,
+			persistSession: false,
 		},
-	) as unknown as PresetHubSupabaseClient;
+	}) as unknown as PresetHubSupabaseClient;
 }
