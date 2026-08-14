@@ -323,7 +323,7 @@ export async function DELETE(request: NextRequest) {
 			console.error("Failed to delete user profile:", deleteProfileErr);
 			throw new ApiError({
 				code: "internal_server_error",
-				message: "Failed to delete user profile record.",
+				message: `Failed to delete user profile record (${deleteProfileErr.code || "UNKNOWN"}): ${deleteProfileErr.message || JSON.stringify(deleteProfileErr)}`,
 			});
 		}
 
