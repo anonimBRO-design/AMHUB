@@ -130,23 +130,6 @@ export async function createPreset(
 		await ensureCategoryExists(data.category);
 	}
 
-	const {
-		data: { user: insertClientUser },
-		error: authError,
-	} = await (client as any).auth.getUser();
-
-	console.log("[PUBLISH INSERT AUTH DEBUG]", {
-		userId: insertClientUser?.id ?? null,
-		authError: authError?.message ?? null,
-	});
-
-	try {
-		const { data: dbAuthContext } = await (client as any).rpc("get_auth_context");
-		console.log("[DATABASE AUTH CONTEXT]", dbAuthContext);
-	} catch (rpcErr) {
-		console.warn("[DATABASE AUTH CONTEXT RPC SKIPPED]", rpcErr);
-	}
-
 	const { file_types, ...insertData } = data;
 
 	const insertPayload = {
@@ -156,35 +139,35 @@ export async function createPreset(
 	};
 
 	console.log("[PUBLISH INSERT ROW DEBUG]", {
-		authUserId: insertClientUser?.id ?? null,
+		authUserId: creatorId,
 		creatorIdFromPayload: insertPayload?.creator_id ?? null,
-		creatorIdMatchesAuth: insertPayload?.creator_id === insertClientUser?.id,
+		creatorIdMatchesAuth: insertPayload?.creator_id === creatorId,
 		status: insertPayload?.status ?? null,
 		category: insertPayload?.category ?? null,
 	});
 
-	console.log("[TESTING RAW INSERT WITHOUT SELECT]...");
-	const rawInsertResult = await client
+	console.log("[FINAL RAW INSERT EXECUTING]...");
+	const { error: insertError } = await client
 		.from("presets")
 		.insert([insertPayload] as never);
 
-	console.log("[RAW INSERT RESULT]", {
-		error: rawInsertResult.error,
-		status: rawInsertResult.status,
-		statusText: rawInsertResult.statusText,
-	});
-
-	if (rawInsertResult.error) {
-		throw rawInsertResult.error;
+	if (insertError) {
+		console.error("[FINAL RAW INSERT ERROR]", insertError);
+		throw insertError;
 	}
 
-	const { data: preset, error } = await client
+	console.log("[FINAL RAW INSERT SUCCESS, FETCHING CREATED RECORD]...");
+	const { data: preset, error: selectError } = await client
 		.from("presets")
 		.select("*")
 		.eq("slug", insertPayload.slug)
 		.single();
 
-	if (error) throw error;
+	if (selectError) {
+		console.error("[FINAL SELECT ERROR]", selectError);
+		throw selectError;
+	}
+
 	return preset;
 }
 

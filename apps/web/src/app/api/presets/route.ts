@@ -64,7 +64,9 @@ export async function POST(request: NextRequest) {
 
 		const preset = await createPreset(supabase, profile.id, data);
 
-		return apiCreated(preset);
+		return apiCreated(preset, {
+			headers: { "X-AMHUB-PUBLISH-VERSION": "raw-insert-v2" },
+		});
 	} catch (error) {
 		console.error("[PRESET CREATE API ERROR]", {
 			code: (error as any)?.code,
@@ -73,7 +75,9 @@ export async function POST(request: NextRequest) {
 			hint: (error as any)?.hint,
 			error,
 		});
-		return apiErrorResponse(error);
+		return apiErrorResponse(error, {
+			headers: { "X-AMHUB-PUBLISH-VERSION": "raw-insert-v2" },
+		});
 	}
 }
 
