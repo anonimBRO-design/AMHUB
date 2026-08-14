@@ -148,16 +148,40 @@ export async function createPreset(
 	}
 
 	const { file_types, ...insertData } = data;
+
+	const insertPayload = {
+		...insertData,
+		status: insertData.status || "published",
+		creator_id: creatorId,
+	};
+
+	console.log("[PUBLISH INSERT ROW DEBUG]", {
+		authUserId: insertClientUser?.id ?? null,
+		creatorIdFromPayload: insertPayload?.creator_id ?? null,
+		creatorIdMatchesAuth: insertPayload?.creator_id === insertClientUser?.id,
+		status: insertPayload?.status ?? null,
+		category: insertPayload?.category ?? null,
+	});
+
+	console.log("[TESTING RAW INSERT WITHOUT SELECT]...");
+	const rawInsertResult = await client
+		.from("presets")
+		.insert([insertPayload] as never);
+
+	console.log("[RAW INSERT RESULT]", {
+		error: rawInsertResult.error,
+		status: rawInsertResult.status,
+		statusText: rawInsertResult.statusText,
+	});
+
+	if (rawInsertResult.error) {
+		throw rawInsertResult.error;
+	}
+
 	const { data: preset, error } = await client
 		.from("presets")
-		.insert([
-			{
-				...insertData,
-				status: insertData.status || "published",
-				creator_id: creatorId,
-			},
-		] as never)
-		.select()
+		.select("*")
+		.eq("slug", insertPayload.slug)
 		.single();
 
 	if (error) throw error;
