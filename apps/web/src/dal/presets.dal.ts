@@ -93,11 +93,36 @@ export async function listPresets(
 	};
 }
 
+async function ensureCategoryExists(client: DalClient, categorySlug: string) {
+	if (!categorySlug) return;
+	try {
+		const { data: existing } = await client
+			.from("categories")
+			.select("slug")
+			.eq("slug", categorySlug)
+			.maybeSingle();
+
+		if (!existing) {
+			console.log(`[CATEGORIES] Auto-populating missing category '${categorySlug}' in DB...`);
+			const label = categorySlug.charAt(0).toUpperCase() + categorySlug.slice(1);
+			await client
+				.from("categories")
+				.insert([{ slug: categorySlug, label, is_active: true }] as never);
+		}
+	} catch (catErr) {
+		console.warn(`[CATEGORIES CHECK] Could not verify category '${categorySlug}':`, catErr);
+	}
+}
+
 export async function createPreset(
 	client: DalClient,
 	creatorId: string,
 	data: CreatePresetData,
 ) {
+	if (data.category) {
+		await ensureCategoryExists(client, data.category);
+	}
+
 	const { file_types, ...insertData } = data;
 	const { data: preset, error } = await client
 		.from("presets")
