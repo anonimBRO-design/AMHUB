@@ -35,16 +35,18 @@ interface PresetDetailClientProps {
 	};
 	relatedPresets: PresetCardPreset[];
 	comments?: CommentItem[];
+	currentUserId?: string;
 }
 
 export function PresetDetailClient({
 	preset,
 	relatedPresets,
 	comments = [],
+	currentUserId,
 }: PresetDetailClientProps) {
 	return (
 		<div className="space-y-8 pb-24 sm:pb-12 max-w-5xl mx-auto px-4 sm:px-0">
-			<Hero preset={preset} />
+			<Hero preset={preset} currentUserId={currentUserId} />
 
 			<div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
 				<div className="lg:col-span-2 space-y-6">

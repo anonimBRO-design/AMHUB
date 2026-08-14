@@ -1,9 +1,10 @@
 "use client";
 
 import { useAuth } from "@/context/AuthContext";
-import { Download, Eye, Heart, Play, Sparkles } from "lucide-react";
+import { Download, Eye, Heart, Play, Sparkles, MoreHorizontal, Trash2 } from "lucide-react";
 import posthog from "posthog-js";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { BookmarkButton } from "./BookmarkButton";
 import { ShareButton } from "./ShareButton";
 
@@ -24,10 +25,39 @@ interface HeroProps {
 		isBookmarked?: boolean;
 		aspectRatio?: "16:9" | "9:16" | "1:1" | string;
 		aspectRatios?: string[];
+		creator: {
+			id?: string;
+			username?: string;
+			displayName?: string;
+		};
 	};
+	currentUserId?: string;
 }
 
-export function Hero({ preset }: HeroProps) {
+export function Hero({ preset, currentUserId }: HeroProps) {
+	const router = useRouter();
+	const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+	const [isDeleting, setIsDeleting] = useState(false);
+
+	const isOwner = Boolean(currentUserId && preset.creator?.id && currentUserId === preset.creator.id);
+
+	const handleDeletePreset = async () => {
+		setIsDeleting(true);
+		try {
+			const res = await fetch(`/api/presets/${preset.id}`, { method: "DELETE" });
+			if (!res.ok) {
+				const json = await res.json().catch(() => ({}));
+				throw new Error(json.error?.message || "Failed to delete preset");
+			}
+			setShowDeleteDialog(false);
+			router.push(preset.creator?.username ? `/u/${preset.creator.username}` : "/explore");
+			router.refresh();
+		} catch (err) {
+			console.error("Delete preset failed:", err);
+			setIsDeleting(false);
+		}
+	};
+
 	const [isLiked, setIsLiked] = useState(preset.isLiked ?? false);
 	const [likeCount, setLikeCount] = useState(preset.likeCount);
 	const [downloadCount, setDownloadCount] = useState(preset.downloadCount);
@@ -184,6 +214,19 @@ export function Hero({ preset }: HeroProps) {
 					</p>
 				)}
 
+				{isOwner && (
+					<div className="flex items-center gap-2 pt-1">
+						<button
+							type="button"
+							onClick={() => setShowDeleteDialog(true)}
+							className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-rose-500/10 text-rose-400 border border-rose-500/20 hover:bg-rose-500/20 transition-all text-xs font-semibold"
+						>
+							<Trash2 className="w-3.5 h-3.5" />
+							<span>Delete Preset</span>
+						</button>
+					</div>
+				)}
+
 				{/* Mobile Stats Pills */}
 				<div className="flex flex-wrap items-center gap-4 pt-2 text-xs font-medium text-[var(--color-text-secondary)]">
 					<div className="flex items-center gap-1.5 text-rose-400">
@@ -209,6 +252,44 @@ export function Hero({ preset }: HeroProps) {
 					</div>
 				</div>
 			</div>
+
+			{showDeleteDialog && (
+				<div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm" onClick={() => !isDeleting && setShowDeleteDialog(false)}>
+					<div className="mx-4 w-full max-w-sm rounded-3xl bg-[var(--color-bg-surface)] border border-[var(--color-border-subtle)] p-6 shadow-2xl space-y-4" onClick={(e) => e.stopPropagation()}>
+						<div className="space-y-2">
+							<h3 className="text-lg font-bold text-[var(--color-text-primary)]">Delete this preset?</h3>
+							<p className="text-sm text-[var(--color-text-secondary)]">
+								This action cannot be undone. The preset and all associated files will be permanently removed.
+							</p>
+						</div>
+						<div className="flex items-center gap-3 pt-2">
+							<button
+								type="button"
+								onClick={() => setShowDeleteDialog(false)}
+								disabled={isDeleting}
+								className="flex-1 min-h-[44px] rounded-2xl bg-[var(--color-bg-elevated)] border border-[var(--color-border-subtle)] text-sm font-semibold text-[var(--color-text-primary)] hover:bg-[var(--color-bg-base)] transition-colors disabled:opacity-50"
+							>
+								Cancel
+							</button>
+							<button
+								type="button"
+								onClick={handleDeletePreset}
+								disabled={isDeleting}
+								className="flex-1 min-h-[44px] rounded-2xl bg-rose-500 text-white text-sm font-bold hover:bg-rose-600 active:scale-95 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+							>
+								{isDeleting ? (
+									<>
+										<svg className="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" /><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" /></svg>
+										<span>Deleting...</span>
+									</>
+								) : (
+									<span>Delete</span>
+								)}
+							</button>
+						</div>
+					</div>
+				</div>
+			)}
 		</section>
 	);
 }

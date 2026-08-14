@@ -1,6 +1,7 @@
 "use client";
 
 import { useLanguage } from "@/i18n";
+import { resolveStorageUrl } from "@/lib/supabase/storage-url";
 import type { User } from "@presethub/types";
 import { AlertCircle, Check, Loader2, Sparkles } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -37,6 +38,7 @@ export function SettingsClient({ profile }: SettingsClientProps) {
 	);
 	const [youtubeUrl, setYoutubeUrl] = useState(profile.youtube_url ?? "");
 	const [avatarUrl, setAvatarUrl] = useState(profile.avatar_url ?? "");
+	const [bannerUrl, setBannerUrl] = useState(profile.banner_url ?? "");
 
 	const [pushNotifications, setPushNotifications] = useState(true);
 	const [emailNotifications, setEmailNotifications] = useState(true);
@@ -69,6 +71,32 @@ export function SettingsClient({ profile }: SettingsClientProps) {
 		setAvatarUrl(json.data.storage_path);
 	};
 
+	const handleBannerUpload = async (file: File) => {
+		setError(null);
+		const res = await fetch("/api/uploads/avatar", {
+			method: "POST",
+			headers: { "Content-Type": "application/json" },
+			body: JSON.stringify({
+				filename: file.name,
+				content_type: file.type || "image/jpeg",
+				size: file.size,
+			}),
+		});
+
+		const json = await res.json();
+		if (!res.ok) {
+			throw new Error(json.error?.message || "Failed to prepare banner upload");
+		}
+
+		await fetch(json.data.upload_url, {
+			method: "PUT",
+			headers: { "Content-Type": file.type || "image/jpeg" },
+			body: file,
+		});
+
+		setBannerUrl(json.data.storage_path);
+	};
+
 	const handleSubmit = async (e: FormEvent) => {
 		e.preventDefault();
 		if (!isUsernameValid || isUsernameChecking) return;
@@ -86,6 +114,7 @@ export function SettingsClient({ profile }: SettingsClientProps) {
 					display_name: displayName.trim() || profile.display_name,
 					bio: bio.trim() || null,
 					avatar_url: avatarUrl.trim() || null,
+					banner_url: bannerUrl.trim() || null,
 					website_url: websiteUrl.trim() || null,
 					tiktok_handle: tiktokHandle.trim() || null,
 					instagram_handle: instagramHandle.trim() || null,
@@ -155,6 +184,71 @@ export function SettingsClient({ profile }: SettingsClientProps) {
 					avatarUrl={avatarUrl}
 					onAvatarUpload={handleAvatarUpload}
 				/>
+
+				<SettingsGroup title="Profile Background">
+					<div className="p-4 space-y-4">
+						<p className="text-xs text-[var(--color-text-tertiary)]">
+							Upload an image for your profile header background.
+						</p>
+
+						{/* Banner Preview */}
+						<div className="relative w-full h-32 rounded-2xl overflow-hidden border border-[var(--color-border-subtle)]">
+							{bannerUrl ? (
+								<>
+									<img
+										src={resolveStorageUrl(bannerUrl) || bannerUrl}
+										alt="Profile banner preview"
+										className="absolute inset-0 w-full h-full object-cover"
+									/>
+									<div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
+								</>
+							) : (
+								<div className="absolute inset-0 bg-gradient-to-r from-purple-900/60 via-indigo-900/60 to-violet-900/60">
+									<div className="absolute inset-0 bg-gradient-to-t from-[var(--color-bg-surface)] via-transparent to-black/30" />
+								</div>
+							)}
+						</div>
+
+						{/* Upload / Remove Buttons */}
+						<div className="flex items-center gap-3">
+							<label
+								htmlFor="banner-upload-file"
+								className="inline-flex items-center gap-2 px-4 py-2 rounded-2xl bg-[var(--color-interactive-primary)] text-white text-xs font-bold cursor-pointer hover:bg-[var(--color-interactive-primary-hover)] active:scale-95 transition-all"
+							>
+								Upload Banner
+							</label>
+							<input
+								id="banner-upload-file"
+								type="file"
+								accept="image/jpeg,image/png,image/webp"
+								onChange={async (e) => {
+									if (e.target.files?.[0]) {
+										try {
+											await handleBannerUpload(e.target.files[0]);
+										} catch (err) {
+											console.error("Banner upload failed", err);
+											setError(
+												err instanceof Error
+													? err.message
+													: "Failed to upload banner"
+											);
+										}
+									}
+								}}
+								className="hidden"
+							/>
+							{bannerUrl && (
+								<button
+									type="button"
+									onClick={() => setBannerUrl("")}
+									className="inline-flex items-center gap-2 px-4 py-2 rounded-2xl bg-rose-500/10 text-rose-400 border border-rose-500/20 text-xs font-bold hover:bg-rose-500/20 active:scale-95 transition-all"
+								>
+									Remove Background
+								</button>
+							)}
+						</div>
+					</div>
+				</SettingsGroup>
 
 				<SettingsGroup title="Public Profile Information">
 					<div className="p-4 space-y-4">

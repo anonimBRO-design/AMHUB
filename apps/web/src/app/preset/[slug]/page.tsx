@@ -155,6 +155,7 @@ export default async function PresetDetailPage({ params }: PageProps) {
 			preset={presetForDetail}
 			relatedPresets={relatedPresets}
 			comments={initialComments}
+			currentUserId={currentUser?.id}
 		/>
 	);
 }

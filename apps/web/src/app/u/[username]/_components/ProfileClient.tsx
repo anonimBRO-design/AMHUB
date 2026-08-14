@@ -17,6 +17,7 @@ interface ProfileClientProps {
 		username: string;
 		displayName: string;
 		avatarUrl?: string | null;
+		bannerUrl?: string | null;
 		bio?: string | null;
 		isVerified?: boolean;
 		followerCount?: number;

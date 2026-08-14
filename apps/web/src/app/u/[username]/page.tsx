@@ -120,6 +120,7 @@ export default async function ProfilePage({ params }: PageProps) {
 		username: user.username,
 		displayName: user.display_name,
 		avatarUrl: resolveStorageUrl(user.avatar_url),
+		bannerUrl: resolveStorageUrl(user.banner_url),
 		bio: user.bio,
 		isVerified: user.is_verified,
 		followerCount: user.follower_count,
