@@ -62,7 +62,11 @@ export function AdminDashboardClient({
 			);
 			const json = await res.json();
 			if (!res.ok) {
-				throw new Error(json.error?.message || "Failed to fetch users");
+				const details =
+					json.error?.message ||
+					json.error?.code ||
+					`HTTP ${res.status} ${res.statusText}`;
+				throw new Error(`[HTTP ${res.status}] ${details}`);
 			}
 			setUsers(json.data?.users || []);
 			setTotalCount(json.data?.total_count || 0);

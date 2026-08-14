@@ -7,11 +7,26 @@ import type { NextRequest } from "next/server";
 
 export async function GET(request: NextRequest) {
 	try {
-		const { supabase, profile, user } = await requireApiProfile();
+		let authContext: Awaited<ReturnType<typeof requireApiProfile>>;
+		try {
+			authContext = await requireApiProfile();
+		} catch (authErr) {
+			console.error("Admin user list auth error:", authErr);
+			const msg =
+				authErr instanceof Error ? authErr.message : "Authentication failed";
+			return apiErrorResponse(
+				new ApiError({ code: "unauthorized", message: `Auth Error: ${msg}` }),
+			);
+		}
+
+		const { supabase, profile, user } = authContext;
 
 		if (!isAdminProfile(profile, user)) {
 			return apiErrorResponse(
-				new ApiError({ code: "forbidden", message: "Admin access required" }),
+				new ApiError({
+					code: "forbidden",
+					message: `Admin access required (Logged in as @${profile?.username || "unknown"})`,
+				}),
 			);
 		}
 
@@ -50,7 +65,7 @@ export async function GET(request: NextRequest) {
 			}
 		}
 
-		// Use select("*", { count: "exact" }) matching the pattern used by Home page to select user records safely
+		// Query users matching the pattern used by Home page (select("*"))
 		let dbQuery = dbClient.from("users").select("*", { count: "exact" });
 
 		if (query) {
@@ -71,15 +86,24 @@ export async function GET(request: NextRequest) {
 			}
 		}
 
-		dbQuery = dbQuery.order("created_at", { ascending: false });
+		// Try ordering by created_at, fallback to unordered query if created_at column is missing
+		let usersResult = await dbQuery.order("created_at", { ascending: false });
 
-		const { data: users, count, error } = await dbQuery;
+		if (usersResult.error) {
+			console.warn(
+				"Order by created_at failed, retrying without ordering:",
+				usersResult.error,
+			);
+			usersResult = await dbQuery;
+		}
+
+		const { data: users, count, error } = usersResult;
 
 		if (error) {
 			console.error("Admin user search failed:", error);
 			throw new ApiError({
 				code: "internal_server_error",
-				message: "Failed to fetch user list.",
+				message: `Database error (${error.code || "UNKNOWN"}): ${error.message || JSON.stringify(error)}`,
 			});
 		}
 
