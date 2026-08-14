@@ -174,7 +174,7 @@ export function MobileProfileView({ user, presets }: MobileProfileViewProps) {
 												muted
 												loop
 												playsInline
-												className="absolute inset-0 w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+												className="absolute inset-0 w-full h-full object-contain transition-transform duration-300 group-hover:scale-105"
 											/>
 										) : (
 											<img
@@ -182,7 +182,7 @@ export function MobileProfileView({ user, presets }: MobileProfileViewProps) {
 													hasThumb ? preset.thumbnailUrl : PRESET_PLACEHOLDER_SVG
 												}
 												alt={preset.title}
-												className="absolute inset-0 w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+												className="absolute inset-0 w-full h-full object-contain transition-transform duration-300 group-hover:scale-105"
 												loading="lazy"
 												onError={(e) => {
 													const target = e.currentTarget;

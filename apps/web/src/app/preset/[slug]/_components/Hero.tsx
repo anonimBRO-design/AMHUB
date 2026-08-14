@@ -113,7 +113,7 @@ export function Hero({ preset, currentUserId }: HeroProps) {
 							muted
 							controls
 							playsInline
-							className="absolute inset-0 w-full h-full object-cover"
+							className="absolute inset-0 w-full h-full object-contain"
 						>
 							<source src={preset.previewVideoUrl} type="video/mp4" />
 						</video>
@@ -123,7 +123,7 @@ export function Hero({ preset, currentUserId }: HeroProps) {
 								<img
 									src={preset.thumbnailUrl}
 									alt={preset.title}
-									className="absolute inset-0 w-full h-full object-cover"
+									className="absolute inset-0 w-full h-full object-contain"
 								/>
 							) : (
 								<div className="absolute inset-0 bg-gradient-to-br from-purple-950/80 via-indigo-950/60 to-black flex items-center justify-center">

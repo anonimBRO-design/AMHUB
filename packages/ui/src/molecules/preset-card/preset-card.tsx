@@ -191,7 +191,7 @@ export const PresetCard = React.forwardRef<HTMLDivElement, PresetCardProps>(
 				{/* Media Preview Container */}
 				<div
 					className={cn(
-						"relative w-full overflow-hidden shrink-0 bg-[var(--color-bg-base)] pointer-events-none",
+						"relative w-full overflow-hidden shrink-0 bg-[var(--color-bg-base)] flex items-center justify-center pointer-events-none",
 						aspectRatioClass,
 					)}
 				>
@@ -206,13 +206,13 @@ export const PresetCard = React.forwardRef<HTMLDivElement, PresetCardProps>(
 							muted
 							loop
 							playsInline
-							className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-105"
+							className="absolute inset-0 h-full w-full object-contain transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-[1.02]"
 						/>
 					) : (
 						<img
 							src={hasThumbnail ? preset.thumbnailUrl : PRESET_PLACEHOLDER_SVG}
 							alt={`${preset.title} — ${preset.category} preset`}
-							className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-105"
+							className="absolute inset-0 h-full w-full object-contain transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-[1.02]"
 							loading="lazy"
 							onError={(e) => {
 								const target = e.currentTarget;
@@ -223,7 +223,7 @@ export const PresetCard = React.forwardRef<HTMLDivElement, PresetCardProps>(
 						/>
 					)}
 
-					<div className="absolute inset-0 bg-[var(--color-bg-base)]/80 group-hover:bg-[var(--color-bg-base)]/60 transition-opacity duration-300 pointer-events-none" />
+					<div className="absolute inset-0 bg-gradient-to-t from-[var(--color-bg-surface)]/80 via-transparent to-black/30 pointer-events-none" />
 
 					{/* Top Badges Overlay */}
 					<div className="absolute left-3 top-3 flex flex-wrap items-center gap-1.5 pointer-events-none z-20">

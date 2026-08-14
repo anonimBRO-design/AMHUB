@@ -66,14 +66,14 @@ export function ReviewStep({
 						<video
 							src={videoPreviewUrl}
 							poster={thumbnailPreviewUrl ?? undefined}
-							className="w-full h-full object-contain bg-black"
+							className="absolute inset-0 w-full h-full object-contain"
 							controls
 						/>
 					) : thumbnailPreviewUrl ? (
 						<img
 							src={thumbnailPreviewUrl}
 							alt={title}
-							className="w-full h-full object-cover"
+							className="absolute inset-0 w-full h-full object-contain"
 						/>
 					) : null}
 

@@ -50,7 +50,7 @@ export function MobilePresetView({ preset }: MobilePresetViewProps) {
 					src={preset.thumbnailUrl || "/placeholder.png"}
 					alt={preset.title}
 					fill
-					className="object-cover absolute inset-0 w-full h-full"
+					className="object-contain absolute inset-0 w-full h-full"
 					sizes="100vw"
 					priority
 				/>
