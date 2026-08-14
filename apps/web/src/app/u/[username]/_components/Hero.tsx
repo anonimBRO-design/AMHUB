@@ -33,31 +33,29 @@ export function Hero({ user }: HeroProps) {
 		: "Member";
 
 	return (
-		<div className="relative overflow-hidden rounded-3xl bg-[var(--color-bg-surface)] border border-[var(--color-border-subtle)] shadow-2xl">
-			{/* Cover Banner */}
-			<div className="relative h-36 sm:h-52 w-full overflow-hidden">
-				{user.bannerUrl ? (
-					<>
-						<img
-							src={user.bannerUrl}
-							alt="Profile banner"
-							className="absolute inset-0 w-full h-full object-cover"
-						/>
-						<div className="absolute inset-0 bg-gradient-to-t from-[var(--color-bg-surface)] via-black/20 to-black/10" />
-					</>
-				) : (
-					<>
-						<div className="absolute inset-0 bg-gradient-to-r from-purple-900/60 via-indigo-900/60 to-violet-900/60" />
-						<div className="absolute inset-0 bg-gradient-to-t from-[var(--color-bg-surface)] via-transparent to-black/30" />
-						<div className="absolute -top-12 -left-12 w-64 h-64 bg-[var(--color-interactive-primary)]/20 rounded-full blur-3xl pointer-events-none" />
-					</>
-				)}
-			</div>
+		<div className="relative overflow-hidden rounded-3xl bg-[var(--color-bg-surface)] border border-[var(--color-border-subtle)] shadow-2xl min-h-[220px]">
+			{/* Full Hero Cover Background Layer */}
+			{user.bannerUrl ? (
+				<>
+					<img
+						src={user.bannerUrl}
+						alt={`${user.displayName}'s profile banner`}
+						className="absolute inset-0 w-full h-full object-cover object-center z-0 pointer-events-none"
+					/>
+					<div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/75 to-[var(--color-bg-surface)]/95 z-0 pointer-events-none" />
+				</>
+			) : (
+				<>
+					<div className="absolute inset-0 bg-gradient-to-r from-purple-900/60 via-indigo-900/60 to-violet-900/60 z-0 pointer-events-none" />
+					<div className="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-[var(--color-bg-surface)]/90 z-0 pointer-events-none" />
+					<div className="absolute -top-12 -left-12 w-64 h-64 bg-[var(--color-interactive-primary)]/20 rounded-full blur-3xl pointer-events-none z-0" />
+				</>
+			)}
 
-			{/* Profile Info Container */}
-			<div className="relative px-5 pb-6 pt-0 space-y-4">
+			{/* Profile Info Content Layer */}
+			<div className="relative z-10 p-5 sm:p-6 space-y-4">
 				{/* Avatar & Header Row */}
-				<div className="flex items-end justify-between -mt-14 sm:-mt-18 gap-4">
+				<div className="flex items-end justify-between gap-4">
 					<div className="relative shrink-0 w-24 h-24 sm:w-28 sm:h-28 overflow-hidden rounded-full aspect-square">
 						<img
 							src={

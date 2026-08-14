@@ -1,6 +1,15 @@
 "use client";
 
-import { Bookmark, Heart, Share2, UserPlus } from "lucide-react";
+import {
+	Bookmark,
+	ExternalLink,
+	Heart,
+	Loader2,
+	MoreHorizontal,
+	Share2,
+	Trash2,
+	UserPlus,
+} from "lucide-react";
 import * as React from "react";
 import { Avatar } from "../../atoms/avatar";
 import { Badge } from "../../atoms/badge";
@@ -21,6 +30,7 @@ export interface PresetCardPreset {
 	commentCount: number;
 	viewCount: number;
 	creator: {
+		id?: string;
 		username: string;
 		displayName: string;
 		avatarUrl?: string;
@@ -54,14 +64,16 @@ function getAspectRatioClass(preset: PresetCardPreset): string {
 	return "aspect-[16/9]";
 }
 
-interface PresetCardProps extends React.HTMLAttributes<HTMLDivElement> {
+export interface PresetCardProps extends React.HTMLAttributes<HTMLDivElement> {
 	preset: PresetCardPreset;
 	variant?: "default" | "featured" | "trending" | "compact";
 	showFollow?: boolean;
+	isOwner?: boolean;
 	onLike?: (presetId: string) => void;
 	onBookmark?: (presetId: string) => void;
 	onShare?: (presetId: string) => void;
 	onFollow?: (presetId: string) => void;
+	onDelete?: (presetId: string) => Promise<void> | void;
 }
 
 export const PresetCard = React.forwardRef<HTMLDivElement, PresetCardProps>(
@@ -70,10 +82,12 @@ export const PresetCard = React.forwardRef<HTMLDivElement, PresetCardProps>(
 			preset,
 			variant = "default",
 			showFollow,
+			isOwner = false,
 			onLike,
 			onBookmark,
 			onShare,
 			onFollow,
+			onDelete,
 			className,
 			...props
 		},
@@ -86,6 +100,9 @@ export const PresetCard = React.forwardRef<HTMLDivElement, PresetCardProps>(
 		const [isBookmarked, setIsBookmarked] = React.useState(
 			!!preset.isBookmarked,
 		);
+		const [showMenu, setShowMenu] = React.useState(false);
+		const [showDeleteModal, setShowDeleteModal] = React.useState(false);
+		const [isDeleting, setIsDeleting] = React.useState(false);
 		const videoRef = React.useRef<HTMLVideoElement>(null);
 
 		React.useEffect(() => {
@@ -116,24 +133,50 @@ export const PresetCard = React.forwardRef<HTMLDivElement, PresetCardProps>(
 
 		const handleLike = (e: React.MouseEvent) => {
 			e.stopPropagation();
+			e.preventDefault();
 			setIsLiked(!isLiked);
 			onLike?.(preset.id);
 		};
 
 		const handleBookmark = (e: React.MouseEvent) => {
 			e.stopPropagation();
+			e.preventDefault();
 			setIsBookmarked(!isBookmarked);
 			onBookmark?.(preset.id);
 		};
 
 		const handleShare = (e: React.MouseEvent) => {
 			e.stopPropagation();
+			e.preventDefault();
 			onShare?.(preset.id);
 		};
 
 		const handleFollow = (e: React.MouseEvent) => {
 			e.stopPropagation();
+			e.preventDefault();
 			onFollow?.(preset.id);
+		};
+
+		const handleDelete = async () => {
+			setIsDeleting(true);
+			try {
+				if (onDelete) {
+					await onDelete(preset.id);
+				} else {
+					const res = await fetch(`/api/presets/${preset.id}`, {
+						method: "DELETE",
+					});
+					if (!res.ok) {
+						const json = await res.json().catch(() => ({}));
+						throw new Error(json.error?.message || "Failed to delete preset");
+					}
+					window.location.reload();
+				}
+				setShowDeleteModal(false);
+			} catch (err) {
+				console.error("Delete preset failed:", err);
+				setIsDeleting(false);
+			}
 		};
 
 		return (
@@ -149,13 +192,18 @@ export const PresetCard = React.forwardRef<HTMLDivElement, PresetCardProps>(
 				onMouseLeave={handleMouseLeave}
 				{...props}
 			>
-				<a href={`/preset/${preset.slug}`} className="absolute inset-0 z-0">
-					<span className="sr-only">{preset.title}</span>
+				{/* Full-card Clickable Navigation Overlay */}
+				<a
+					href={`/preset/${preset.slug}`}
+					className="absolute inset-0 z-10 block cursor-pointer"
+				>
+					<span className="sr-only">Open {preset.title}</span>
 				</a>
 
+				{/* Media Preview Container */}
 				<div
 					className={cn(
-						"relative w-full overflow-hidden shrink-0 bg-[var(--color-bg-base)]",
+						"relative w-full overflow-hidden shrink-0 bg-[var(--color-bg-base)] pointer-events-none",
 						aspectRatioClass,
 					)}
 				>
@@ -189,43 +237,51 @@ export const PresetCard = React.forwardRef<HTMLDivElement, PresetCardProps>(
 
 					<div className="absolute inset-0 bg-[var(--color-bg-base)]/80 group-hover:bg-[var(--color-bg-base)]/60 transition-opacity duration-300 pointer-events-none" />
 
-					<div className="absolute left-3 top-3 flex gap-2 z-10">
+					<div className="absolute left-3 top-3 flex gap-2 pointer-events-none z-0">
 						<Badge variant="category" value={preset.category} size="sm" />
 						<Badge variant="difficulty" value={preset.difficulty} size="sm" />
 					</div>
 
 					{variant === "featured" && (
-						<div className="absolute bottom-3 right-3 z-10 rounded-lg bg-purple-900/40 border border-purple-500/40 px-2.5 py-1 text-[var(--font-size-label-sm)] font-bold text-purple-300">
+						<div className="absolute bottom-3 right-3 pointer-events-none z-0 rounded-lg bg-purple-900/40 border border-purple-500/40 px-2.5 py-1 text-[var(--font-size-label-sm)] font-bold text-purple-300">
 							Featured
 						</div>
 					)}
 				</div>
 
-				<div className="flex flex-1 flex-col p-4 relative z-10">
+				{/* Content Section */}
+				<div className="flex flex-1 flex-col p-4 relative">
+					{/* Creator Header */}
 					<div className="mb-3 flex items-center justify-between">
-						<div className="flex items-center gap-2">
-							<div
-								className="w-7 h-7 min-w-7 min-h-7 max-w-7 max-h-7 shrink-0 overflow-hidden rounded-full aspect-square flex items-center justify-center"
-								style={{
-									width: 28,
-									height: 28,
-									minWidth: 28,
-									minHeight: 28,
-									maxWidth: 28,
-									maxHeight: 28,
-								}}
+						<div className="flex items-center gap-2 relative z-20">
+							<a
+								href={`/u/${preset.creator.username}`}
+								onClick={(e) => e.stopPropagation()}
+								className="flex items-center gap-2 hover:opacity-80 transition-opacity"
 							>
-								<Avatar
-									displayName={preset.creator.displayName}
-									src={preset.creator.avatarUrl}
-									alt={`${preset.creator.displayName}'s profile photo`}
-									size="sm"
-									isVerified={preset.creator.isVerified}
-								/>
-							</div>
-							<span className="text-[var(--font-size-label-md)] font-medium text-[var(--color-text-primary)]">
-								@{preset.creator.username}
-							</span>
+								<div
+									className="w-7 h-7 min-w-7 min-h-7 max-w-7 max-h-7 shrink-0 overflow-hidden rounded-full aspect-square flex items-center justify-center"
+									style={{
+										width: 28,
+										height: 28,
+										minWidth: 28,
+										minHeight: 28,
+										maxWidth: 28,
+										maxHeight: 28,
+									}}
+								>
+									<Avatar
+										displayName={preset.creator.displayName}
+										src={preset.creator.avatarUrl}
+										alt={`${preset.creator.displayName}'s profile photo`}
+										size="sm"
+										isVerified={preset.creator.isVerified}
+									/>
+								</div>
+								<span className="text-[var(--font-size-label-md)] font-medium text-[var(--color-text-primary)]">
+									@{preset.creator.username}
+								</span>
+							</a>
 						</div>
 						{showFollow && (
 							<Button
@@ -233,12 +289,14 @@ export const PresetCard = React.forwardRef<HTMLDivElement, PresetCardProps>(
 								size="sm"
 								onClick={handleFollow}
 								aria-label="Follow creator"
+								className="relative z-20"
 							>
 								<UserPlus className="h-4 w-4" />
 							</Button>
 						)}
 					</div>
 
+					{/* Title & Description */}
 					<h3 className="mb-1 text-[var(--font-size-heading-md)] font-semibold text-[var(--color-text-primary)] group-hover:text-purple-300 transition-colors">
 						{preset.title}
 					</h3>
@@ -246,48 +304,170 @@ export const PresetCard = React.forwardRef<HTMLDivElement, PresetCardProps>(
 						{preset.description}
 					</p>
 
-					<div className="mt-auto flex items-center gap-2">
-						<Button
-							variant="ghost"
-							size="sm"
-							onClick={handleLike}
-							aria-label={isLiked ? "Unlike preset" : "Like preset"}
-							aria-pressed={isLiked}
-						>
-							<Heart
-								className={cn(
-									"h-4 w-4 transition-colors",
-									isLiked && "fill-rose-500 text-rose-500",
-								)}
-							/>
-						</Button>
-						<Button
-							variant="ghost"
-							size="sm"
-							onClick={handleBookmark}
-							aria-label={isBookmarked ? "Remove bookmark" : "Bookmark preset"}
-							aria-pressed={isBookmarked}
-						>
-							<Bookmark
-								className={cn(
-									"h-4 w-4 transition-colors",
-									isBookmarked && "fill-purple-400 text-purple-400",
-								)}
-							/>
-						</Button>
-						<Button
-							variant="ghost"
-							size="sm"
-							onClick={handleShare}
-							aria-label="Share preset"
-						>
-							<Share2 className="h-4 w-4" />
-						</Button>
+					{/* Actions Footer Row */}
+					<div className="mt-auto flex items-center justify-between">
+						<div className="flex items-center gap-2 relative z-20">
+							<Button
+								variant="ghost"
+								size="sm"
+								onClick={handleLike}
+								aria-label={isLiked ? "Unlike preset" : "Like preset"}
+								aria-pressed={isLiked}
+							>
+								<Heart
+									className={cn(
+										"h-4 w-4 transition-colors",
+										isLiked && "fill-rose-500 text-rose-500",
+									)}
+								/>
+							</Button>
+							<Button
+								variant="ghost"
+								size="sm"
+								onClick={handleBookmark}
+								aria-label={
+									isBookmarked ? "Remove bookmark" : "Bookmark preset"
+								}
+								aria-pressed={isBookmarked}
+							>
+								<Bookmark
+									className={cn(
+										"h-4 w-4 transition-colors",
+										isBookmarked && "fill-purple-400 text-purple-400",
+									)}
+								/>
+							</Button>
+							<Button
+								variant="ghost"
+								size="sm"
+								onClick={handleShare}
+								aria-label="Share preset"
+							>
+								<Share2 className="h-4 w-4" />
+							</Button>
+						</div>
+
+						{/* 3-Dot Options Menu */}
+						<div className="relative z-20">
+							<Button
+								variant="ghost"
+								size="sm"
+								onClick={(e) => {
+									e.stopPropagation();
+									e.preventDefault();
+									setShowMenu(!showMenu);
+								}}
+								aria-label="Preset options"
+							>
+								<MoreHorizontal className="h-4 w-4" />
+							</Button>
+
+							{showMenu && (
+								<>
+									<div
+										className="fixed inset-0 z-30"
+										onClick={(e) => {
+											e.stopPropagation();
+											e.preventDefault();
+											setShowMenu(false);
+										}}
+									/>
+
+									<div
+										className="absolute right-0 bottom-full mb-1 z-40 min-w-[140px] rounded-2xl bg-[var(--color-bg-elevated)] border border-[var(--color-border-subtle)] p-1.5 shadow-xl space-y-1"
+										onClick={(e) => e.stopPropagation()}
+									>
+										<a
+											href={`/preset/${preset.slug}`}
+											onClick={() => setShowMenu(false)}
+											className="flex items-center gap-2 px-3 py-2 text-xs font-semibold text-[var(--color-text-primary)] hover:bg-[var(--color-bg-surface)] rounded-xl transition-colors w-full text-left"
+										>
+											<ExternalLink className="w-3.5 h-3.5" />
+											<span>Open Preset</span>
+										</a>
+
+										{isOwner && (
+											<button
+												type="button"
+												onClick={() => {
+													setShowMenu(false);
+													setShowDeleteModal(true);
+												}}
+												className="flex items-center gap-2 px-3 py-2 text-xs font-semibold text-rose-400 hover:bg-rose-500/10 rounded-xl transition-colors w-full text-left"
+											>
+												<Trash2 className="w-3.5 h-3.5" />
+												<span>Delete Preset</span>
+											</button>
+										)}
+									</div>
+								</>
+							)}
+						</div>
 					</div>
 				</div>
+
+				{/* Delete Confirmation Dialog Modal */}
+				{showDeleteModal && (
+					<div
+						className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm"
+						onClick={(e) => {
+							e.stopPropagation();
+							if (!isDeleting) setShowDeleteModal(false);
+						}}
+					>
+						<div
+							className="mx-4 w-full max-w-sm rounded-3xl bg-[var(--color-bg-surface)] border border-[var(--color-border-subtle)] p-6 shadow-2xl space-y-4 text-left"
+							onClick={(e) => e.stopPropagation()}
+						>
+							<div className="space-y-2">
+								<h3 className="text-lg font-bold text-[var(--color-text-primary)]">
+									Delete this preset?
+								</h3>
+								<p className="text-sm text-[var(--color-text-secondary)]">
+									This action cannot be undone. The preset and all associated
+									files will be permanently removed.
+								</p>
+							</div>
+
+							<div className="flex items-center gap-3 pt-2">
+								<button
+									type="button"
+									onClick={(e) => {
+										e.stopPropagation();
+										setShowDeleteModal(false);
+									}}
+									disabled={isDeleting}
+									className="flex-1 min-h-[44px] rounded-2xl bg-[var(--color-bg-elevated)] border border-[var(--color-border-subtle)] text-sm font-semibold text-[var(--color-text-primary)] hover:bg-[var(--color-bg-base)] transition-colors disabled:opacity-50"
+								>
+									Cancel
+								</button>
+
+								<button
+									type="button"
+									onClick={(e) => {
+										e.stopPropagation();
+										handleDelete();
+									}}
+									disabled={isDeleting}
+									className="flex-1 min-h-[44px] rounded-2xl bg-rose-500 text-white text-sm font-bold hover:bg-rose-600 active:scale-95 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+								>
+									{isDeleting ? (
+										<>
+											<Loader2 className="w-4 h-4 animate-spin" />
+											<span>Deleting...</span>
+										</>
+									) : (
+										<span>Delete</span>
+									)}
+								</button>
+							</div>
+						</div>
+					</div>
+				)}
 			</div>
 		);
 	},
 );
 
 PresetCard.displayName = "PresetCard";
+

@@ -14,6 +14,9 @@ export interface PresetGridProps {
 	columns?: { xs?: number; sm?: number; md?: number; lg?: number; xl?: number; "2xl"?: number };
 	variant?: "masonry" | "equal";
 	emptyState?: React.ReactNode;
+	isOwnProfile?: boolean;
+	currentUserId?: string;
+	onDeletePreset?: (presetId: string) => Promise<void> | void;
 }
 
 export const PresetGrid = ({
@@ -24,6 +27,9 @@ export const PresetGrid = ({
 	columns = { xs: 1, sm: 2, md: 2, lg: 3, xl: 3, "2xl": 4 },
 	variant = "masonry",
 	emptyState,
+	isOwnProfile = false,
+	currentUserId,
+	onDeletePreset,
 }: PresetGridProps) => {
 	return (
 		<div
@@ -36,9 +42,23 @@ export const PresetGrid = ({
 				"grid-cols-1 sm:grid-cols-2 lg:grid-cols-3",
 			)}
 		>
-			{presets.map((preset) => (
-				<PresetCard key={preset.id} preset={preset} />
-			))}
+			{presets.map((preset) => {
+				const isOwner =
+					isOwnProfile ||
+					Boolean(
+						currentUserId &&
+							preset.creator?.id &&
+							currentUserId === preset.creator.id,
+					);
+				return (
+					<PresetCard
+						key={preset.id}
+						preset={preset}
+						isOwner={isOwner}
+						onDelete={onDeletePreset}
+					/>
+				);
+			})}
 			{isLoading &&
 				Array.from({ length: 3 }).map((_, i) => (
 					// biome-ignore lint/suspicious/noArrayIndexKey: Fixed length skeleton list

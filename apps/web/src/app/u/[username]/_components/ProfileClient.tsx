@@ -3,7 +3,8 @@
 import type { PresetCardPreset } from "@presethub/ui";
 import { PresetGrid } from "@presethub/ui";
 import { Grid, Info, Sparkles } from "lucide-react";
-import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import { AchievementBadges } from "./AchievementBadges";
 import { type ActivityItem, ActivitySection } from "./ActivitySection";
 import { FollowSection } from "./FollowSection";
@@ -42,13 +43,34 @@ export function ProfileClient({
 	presets,
 	activities,
 }: ProfileClientProps) {
+	const router = useRouter();
 	const [activeTab, setActiveTab] = useState<ProfileTabType>("presets");
+	const [presetItems, setPresetItems] = useState<PresetCardPreset[]>(presets);
 
-	const totalDownloads = presets.reduce(
+	useEffect(() => {
+		setPresetItems(presets);
+	}, [presets]);
+
+	const handleDeletePreset = async (presetId: string) => {
+		const res = await fetch(`/api/presets/${presetId}`, {
+			method: "DELETE",
+		});
+		if (!res.ok) {
+			const json = await res.json().catch(() => ({}));
+			throw new Error(json.error?.message || "Failed to delete preset");
+		}
+		setPresetItems((prev) => prev.filter((p) => p.id !== presetId));
+		router.refresh();
+	};
+
+	const totalDownloads = presetItems.reduce(
 		(sum, p) => sum + (p.downloadCount || 0),
 		0,
 	);
-	const totalLikes = presets.reduce((sum, p) => sum + (p.likeCount || 0), 0);
+	const totalLikes = presetItems.reduce(
+		(sum, p) => sum + (p.likeCount || 0),
+		0,
+	);
 
 	return (
 		<div className="space-y-6 sm:space-y-8 pb-16 max-w-5xl mx-auto px-4 sm:px-0">
@@ -63,7 +85,7 @@ export function ProfileClient({
 			</div>
 
 			<ProfileStats
-				presetCount={user.presetCount ?? presets.length}
+				presetCount={user.presetCount ?? presetItems.length}
 				followerCount={user.followerCount ?? 0}
 				followingCount={user.followingCount ?? 0}
 				totalDownloads={totalDownloads}
@@ -73,7 +95,7 @@ export function ProfileClient({
 			<ProfileTabs
 				activeTab={activeTab}
 				onChangeTab={setActiveTab}
-				presetCount={presets.length}
+				presetCount={presetItems.length}
 				collectionCount={0}
 			/>
 
@@ -81,16 +103,19 @@ export function ProfileClient({
 				<section className="space-y-4">
 					<div className="flex items-center justify-between px-1">
 						<h2 className="text-base sm:text-lg font-bold text-[var(--color-text-primary)]">
-							Published Presets ({presets.length})
+							Published Presets ({presetItems.length})
 						</h2>
 					</div>
 
-					{presets.length > 0 ? (
+					{presetItems.length > 0 ? (
 						<PresetGrid
-							presets={presets}
+							presets={presetItems}
 							isLoading={false}
 							hasMore={false}
 							onLoadMore={() => {}}
+							isOwnProfile={isOwnProfile}
+							currentUserId={user.id}
+							onDeletePreset={isOwnProfile ? handleDeletePreset : undefined}
 						/>
 					) : (
 						<div className="flex flex-col items-center justify-center p-12 text-center rounded-3xl bg-[var(--color-bg-surface)] border border-[var(--color-border-subtle)] space-y-3">

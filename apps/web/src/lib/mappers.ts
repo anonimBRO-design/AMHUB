@@ -31,6 +31,7 @@ export function mapPresetToCardPreset(
 		commentCount: preset.comment_count,
 		viewCount: preset.view_count,
 		creator: {
+			id: preset.creator.id,
 			username: preset.creator.username,
 			displayName: preset.creator.display_name,
 			avatarUrl: resolveStorageUrl(preset.creator.avatar_url) ?? undefined,
