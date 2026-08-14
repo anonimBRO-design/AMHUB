@@ -125,7 +125,11 @@ export async function createPreset(
 	client: DalClient,
 	creatorId: string,
 	data: CreatePresetData,
+	requestId?: string,
 ) {
+	const tag = requestId ? `[${requestId}]` : "";
+	console.log(`[CREATE PRESET PATH] ${tag}`);
+
 	if (data.category) {
 		await ensureCategoryExists(data.category);
 	}
@@ -138,25 +142,39 @@ export async function createPreset(
 		creator_id: creatorId,
 	};
 
-	console.log("[PUBLISH INSERT ROW DEBUG]", {
-		authUserId: creatorId,
-		creatorIdFromPayload: insertPayload?.creator_id ?? null,
-		creatorIdMatchesAuth: insertPayload?.creator_id === creatorId,
-		status: insertPayload?.status ?? null,
-		category: insertPayload?.category ?? null,
+	const {
+		data: { user: insertClientUser },
+	} = await (client as any).auth.getUser();
+
+	console.log(`[FINAL INSERT DEBUG] ${tag}`, {
+		userId: insertClientUser?.id ?? null,
+		creatorId: insertPayload.creator_id ?? null,
+		creatorMatchesAuth: insertPayload.creator_id === insertClientUser?.id,
+		slug: insertPayload.slug ?? null,
+		category: insertPayload.category ?? null,
+		status: insertPayload.status ?? null,
 	});
 
-	console.log("[FINAL RAW INSERT EXECUTING]...");
-	const { error: insertError } = await client
+	console.log(`[FINAL RAW INSERT EXECUTING] ${tag}...`);
+	const rawInsertResult = await client
 		.from("presets")
 		.insert([insertPayload] as never);
 
-	if (insertError) {
-		console.error("[FINAL RAW INSERT ERROR]", insertError);
-		throw insertError;
+	console.log(`[FINAL INSERT RESULT] ${tag}`, {
+		status: rawInsertResult.status,
+		statusText: rawInsertResult.statusText,
+		errorCode: rawInsertResult.error?.code ?? null,
+		errorMessage: rawInsertResult.error?.message ?? null,
+		errorDetails: rawInsertResult.error?.details ?? null,
+		errorHint: rawInsertResult.error?.hint ?? null,
+	});
+
+	if (rawInsertResult.error) {
+		console.error(`[FINAL RAW INSERT ERROR] ${tag}`, rawInsertResult.error);
+		throw rawInsertResult.error;
 	}
 
-	console.log("[FINAL RAW INSERT SUCCESS, FETCHING CREATED RECORD]...");
+	console.log(`[FINAL RAW INSERT SUCCESS, FETCHING CREATED RECORD] ${tag}...`);
 	const { data: preset, error: selectError } = await client
 		.from("presets")
 		.select("*")
@@ -164,7 +182,7 @@ export async function createPreset(
 		.single();
 
 	if (selectError) {
-		console.error("[FINAL SELECT ERROR]", selectError);
+		console.error(`[FINAL SELECT ERROR] ${tag}`, selectError);
 		throw selectError;
 	}
 

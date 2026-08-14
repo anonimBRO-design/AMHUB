@@ -32,8 +32,22 @@ const createPresetSchema = z.object({
 });
 
 export async function POST(request: NextRequest) {
+	const requestId = `req_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
 	try {
+		console.log(`[PUBLISH REQUEST DEBUG] [${requestId}]`, {
+			buildVersion: "raw-insert-v2",
+			requestMethod: request.method,
+			url: request.url,
+		});
+
 		const { supabase, user, profile } = await requireApiProfile();
+
+		console.log(`[PUBLISH AUTH DEBUG] [${requestId}]`, {
+			authenticatedUserExists: !!user,
+			authenticatedUserId: user?.id,
+			profileId: profile?.id ?? null,
+			hasProfile: !!profile,
+		});
 
 		await enforceRateLimit({
 			request,
@@ -45,30 +59,24 @@ export async function POST(request: NextRequest) {
 
 		const data = await validateJson(request, createPresetSchema);
 
-		console.log("[PUBLISH AUTH DEBUG]", {
-			userId: profile?.id ?? null,
-			hasProfile: !!profile,
-		});
-
-		console.log("[PUBLISH DB CONTEXT]", {
-			authenticatedUserExists: !!user,
-			authenticatedUserId: user?.id,
-			profileId: profile.id,
-			supabaseProjectUrl: process.env.NEXT_PUBLIC_SUPABASE_URL,
-			ownershipColumn: "creator_id",
-			ownershipValue: profile.id,
-			category: data.category,
+		console.log(`[PUBLISH ROUTE PATH] [${requestId}]`, {
+			payloadCreatorId: profile.id,
+			payloadCategory: data.category,
+			payloadStatus: data.status,
+			payloadSlug: data.slug,
 			fileType: data.file_type,
-			status: data.status,
 		});
 
-		const preset = await createPreset(supabase, profile.id, data);
+		const preset = await createPreset(supabase, profile.id, data, requestId);
 
 		return apiCreated(preset, {
-			headers: { "X-AMHUB-PUBLISH-VERSION": "raw-insert-v2" },
+			headers: {
+				"X-AMHUB-PUBLISH-VERSION": "raw-insert-v2",
+				"X-AMHUB-REQUEST-ID": requestId,
+			},
 		});
 	} catch (error) {
-		console.error("[PRESET CREATE API ERROR]", {
+		console.error(`[PRESET CREATE API ERROR] [${requestId}]`, {
 			code: (error as any)?.code,
 			message: (error as any)?.message,
 			details: (error as any)?.details,
@@ -76,7 +84,10 @@ export async function POST(request: NextRequest) {
 			error,
 		});
 		return apiErrorResponse(error, {
-			headers: { "X-AMHUB-PUBLISH-VERSION": "raw-insert-v2" },
+			headers: {
+				"X-AMHUB-PUBLISH-VERSION": "raw-insert-v2",
+				"X-AMHUB-REQUEST-ID": requestId,
+			},
 		});
 	}
 }
