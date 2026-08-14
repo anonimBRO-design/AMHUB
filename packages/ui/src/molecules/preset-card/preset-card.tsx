@@ -2,10 +2,8 @@
 
 import {
 	Bookmark,
-	ExternalLink,
 	Heart,
 	Loader2,
-	MoreHorizontal,
 	Share2,
 	Trash2,
 	UserPlus,
@@ -89,9 +87,9 @@ export const PresetCard = React.forwardRef<HTMLDivElement, PresetCardProps>(
 		const [isBookmarked, setIsBookmarked] = React.useState(
 			!!preset.isBookmarked,
 		);
-		const [showMenu, setShowMenu] = React.useState(false);
 		const [showDeleteModal, setShowDeleteModal] = React.useState(false);
 		const [isDeleting, setIsDeleting] = React.useState(false);
+		const [deleteError, setDeleteError] = React.useState<string | null>(null);
 		const videoRef = React.useRef<HTMLVideoElement>(null);
 
 		React.useEffect(() => {
@@ -148,6 +146,7 @@ export const PresetCard = React.forwardRef<HTMLDivElement, PresetCardProps>(
 
 		const handleDelete = async () => {
 			setIsDeleting(true);
+			setDeleteError(null);
 			try {
 				if (onDelete) {
 					await onDelete(preset.id);
@@ -157,13 +156,16 @@ export const PresetCard = React.forwardRef<HTMLDivElement, PresetCardProps>(
 					});
 					if (!res.ok) {
 						const json = await res.json().catch(() => ({}));
-						throw new Error(json.error?.message || "Failed to delete preset");
+						throw new Error(json.error?.message || "Failed to delete preset.");
 					}
 					window.location.reload();
 				}
 				setShowDeleteModal(false);
 			} catch (err) {
 				console.error("Delete preset failed:", err);
+				setDeleteError(
+					err instanceof Error ? err.message : "Failed to delete preset.",
+				);
 				setIsDeleting(false);
 			}
 		};
@@ -299,8 +301,8 @@ export const PresetCard = React.forwardRef<HTMLDivElement, PresetCardProps>(
 					</p>
 
 					{/* Actions Footer Row */}
-					<div className="mt-auto flex items-center justify-between">
-						<div className="flex items-center gap-2 relative z-20">
+					<div className="mt-auto flex items-center justify-between relative z-20">
+						<div className="flex items-center gap-2">
 							<Button
 								variant="ghost"
 								size="sm"
@@ -315,6 +317,7 @@ export const PresetCard = React.forwardRef<HTMLDivElement, PresetCardProps>(
 									)}
 								/>
 							</Button>
+
 							<Button
 								variant="ghost"
 								size="sm"
@@ -331,6 +334,7 @@ export const PresetCard = React.forwardRef<HTMLDivElement, PresetCardProps>(
 									)}
 								/>
 							</Button>
+
 							<Button
 								variant="ghost"
 								size="sm"
@@ -339,62 +343,24 @@ export const PresetCard = React.forwardRef<HTMLDivElement, PresetCardProps>(
 							>
 								<Share2 className="h-4 w-4" />
 							</Button>
-						</div>
 
-						{/* 3-Dot Options Menu */}
-						<div className="relative z-20">
-							<Button
-								variant="ghost"
-								size="sm"
-								onClick={(e) => {
-									e.stopPropagation();
-									e.preventDefault();
-									setShowMenu(!showMenu);
-								}}
-								aria-label="Preset options"
-							>
-								<MoreHorizontal className="h-4 w-4" />
-							</Button>
-
-							{showMenu && (
-								<>
-									<div
-										className="fixed inset-0 z-30"
-										onClick={(e) => {
-											e.stopPropagation();
-											e.preventDefault();
-											setShowMenu(false);
-										}}
-									/>
-
-									<div
-										className="absolute right-0 bottom-full mb-1 z-40 min-w-[140px] rounded-2xl bg-[var(--color-bg-elevated)] border border-[var(--color-border-subtle)] p-1.5 shadow-xl space-y-1"
-										onClick={(e) => e.stopPropagation()}
-									>
-										<a
-											href={`/preset/${preset.slug}`}
-											onClick={() => setShowMenu(false)}
-											className="flex items-center gap-2 px-3 py-2 text-xs font-semibold text-[var(--color-text-primary)] hover:bg-[var(--color-bg-surface)] rounded-xl transition-colors w-full text-left"
-										>
-											<ExternalLink className="w-3.5 h-3.5" />
-											<span>Open Preset</span>
-										</a>
-
-										{isOwner && (
-											<button
-												type="button"
-												onClick={() => {
-													setShowMenu(false);
-													setShowDeleteModal(true);
-												}}
-												className="flex items-center gap-2 px-3 py-2 text-xs font-semibold text-rose-400 hover:bg-rose-500/10 rounded-xl transition-colors w-full text-left"
-											>
-												<Trash2 className="w-3.5 h-3.5" />
-												<span>Delete Preset</span>
-											</button>
-										)}
-									</div>
-								</>
+							{/* Owner Trash Icon Button */}
+							{isOwner && (
+								<Button
+									variant="ghost"
+									size="sm"
+									onClick={(e) => {
+										e.stopPropagation();
+										e.preventDefault();
+										setDeleteError(null);
+										setShowDeleteModal(true);
+									}}
+									aria-label="Delete preset"
+									title="Delete preset"
+									className="text-[var(--color-text-secondary)] hover:text-rose-400 hover:bg-rose-500/10 transition-colors"
+								>
+									<Trash2 className="h-4 w-4" />
+								</Button>
 							)}
 						</div>
 					</div>
@@ -415,12 +381,17 @@ export const PresetCard = React.forwardRef<HTMLDivElement, PresetCardProps>(
 						>
 							<div className="space-y-2">
 								<h3 className="text-lg font-bold text-[var(--color-text-primary)]">
-									Delete this preset?
+									Delete preset?
 								</h3>
 								<p className="text-sm text-[var(--color-text-secondary)]">
-									This action cannot be undone. The preset and all associated
-									files will be permanently removed.
+									Are you sure you want to delete &ldquo;{preset.title}&rdquo;?
+									This action cannot be undone.
 								</p>
+								{deleteError && (
+									<p className="text-xs font-semibold text-rose-400 bg-rose-500/10 p-2.5 rounded-xl border border-rose-500/20">
+										{deleteError}
+									</p>
+								)}
 							</div>
 
 							<div className="flex items-center gap-3 pt-2">
@@ -464,4 +435,5 @@ export const PresetCard = React.forwardRef<HTMLDivElement, PresetCardProps>(
 );
 
 PresetCard.displayName = "PresetCard";
+
 
