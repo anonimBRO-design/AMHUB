@@ -96,6 +96,11 @@ export default async function PresetDetailPage({ params }: PageProps) {
 		fileType: rawPreset.file_type,
 		fileUrl: rawPreset.file_url,
 		amLink: rawPreset.am_link,
+		aspectRatio: cardPreset.aspectRatio,
+		aspectRatios:
+			(rawPreset as { aspect_ratios?: string[]; aspectRatios?: string[] }).aspect_ratios ||
+			(rawPreset as { aspect_ratios?: string[]; aspectRatios?: string[] }).aspectRatios ||
+			undefined,
 		isLiked: Boolean(likeRecord),
 		isBookmarked: Boolean(bookmarkRecord),
 		creator: {

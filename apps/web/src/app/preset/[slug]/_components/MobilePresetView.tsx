@@ -38,15 +38,31 @@ export function MobilePresetView({ preset }: MobilePresetViewProps) {
 		}
 	};
 
+	const rawAspect =
+		(preset as { aspectRatio?: string; aspectRatios?: string[] }).aspectRatio ||
+		(Array.isArray((preset as { aspectRatios?: string[] }).aspectRatios) &&
+		(preset as { aspectRatios?: string[] }).aspectRatios!.length > 0
+			? (preset as { aspectRatios?: string[] }).aspectRatios![0]
+			: undefined);
+
+	const ratioClass =
+		rawAspect === "9:16" || rawAspect === "portrait"
+			? "aspect-[9/16]"
+			: rawAspect === "1:1" || rawAspect === "square"
+				? "aspect-square"
+				: "aspect-[16/9]";
+
 	return (
 		<div className="md:hidden space-y-6 pb-32 w-full max-w-full overflow-hidden">
-			{/* FULL-BLEED PREVIEW */}
-			<div className="-mx-4 relative aspect-[4/5] w-full rounded-3xl overflow-hidden bg-base">
+			{/* PREVIEW CONTAINER */}
+			<div
+				className={`-mx-4 relative w-full rounded-3xl overflow-hidden bg-base shrink-0 ${ratioClass}`}
+			>
 				<Image
 					src={preset.thumbnailUrl || "/placeholder.png"}
 					alt={preset.title}
 					fill
-					className="object-cover"
+					className="object-cover absolute inset-0 w-full h-full"
 					sizes="100vw"
 					priority
 				/>

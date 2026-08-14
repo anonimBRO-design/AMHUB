@@ -22,6 +22,8 @@ interface HeroProps {
 		viewCount: number;
 		isLiked?: boolean;
 		isBookmarked?: boolean;
+		aspectRatio?: "16:9" | "9:16" | "1:1" | string;
+		aspectRatios?: string[];
 	};
 }
 
@@ -32,6 +34,21 @@ export function Hero({ preset }: HeroProps) {
 	const [isPlayingVideo, setIsPlayingVideo] = useState(false);
 	const [hasTrackedDownload, setHasTrackedDownload] = useState(false);
 	const { requireAuth } = useAuth();
+
+	const rawAspect =
+		preset.aspectRatio ||
+		(Array.isArray(preset.aspectRatios) && preset.aspectRatios.length > 0
+			? preset.aspectRatios[0]
+			: undefined);
+
+	const isPortrait = rawAspect === "9:16" || rawAspect === "portrait";
+	const isSquare = rawAspect === "1:1" || rawAspect === "square";
+
+	const ratioClass = isPortrait
+		? "aspect-[9/16] max-w-md mx-auto"
+		: isSquare
+			? "aspect-square max-w-xl mx-auto"
+			: "aspect-[16/9] w-full";
 
 	const handleLikeToggle = async () => {
 		if (!requireAuth(undefined, "Sign in to like presets")) return;
@@ -71,14 +88,16 @@ export function Hero({ preset }: HeroProps) {
 	return (
 		<section className="space-y-4">
 			{/* Media Preview Container */}
-			<div className="relative aspect-[16/9] sm:aspect-[21/9] w-full overflow-hidden rounded-3xl bg-[var(--color-bg-elevated)] border border-[var(--color-border-subtle)] shadow-2xl group">
+			<div
+				className={`relative w-full overflow-hidden rounded-3xl bg-[var(--color-bg-elevated)] border border-[var(--color-border-subtle)] shadow-2xl group shrink-0 ${ratioClass}`}
+			>
 				{isPlayingVideo && preset.previewVideoUrl ? (
 					<video
 						autoPlay
 						muted
 						controls
 						playsInline
-						className="w-full h-full object-cover"
+						className="absolute inset-0 w-full h-full object-cover"
 					>
 						<source src={preset.previewVideoUrl} type="video/mp4" />
 					</video>
@@ -88,10 +107,10 @@ export function Hero({ preset }: HeroProps) {
 							<img
 								src={preset.thumbnailUrl}
 								alt={preset.title}
-								className="w-full h-full object-cover"
+								className="absolute inset-0 w-full h-full object-cover"
 							/>
 						) : (
-							<div className="w-full h-full bg-gradient-to-br from-purple-950/80 via-indigo-950/60 to-black flex items-center justify-center">
+							<div className="absolute inset-0 bg-gradient-to-br from-purple-950/80 via-indigo-950/60 to-black flex items-center justify-center">
 								<Sparkles className="w-16 h-16 text-purple-400 opacity-40 animate-pulse" />
 							</div>
 						)}
