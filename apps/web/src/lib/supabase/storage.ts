@@ -1,6 +1,6 @@
 import type { PresetFileType } from "@presethub/types";
 import { ApiError } from "@/lib/api/errors";
-import { createSupabaseServerClient } from "./server";
+import { createSupabaseServerClient, createSupabaseServiceClient } from "./server";
 export { resolveStorageUrl } from "./storage-url";
 
 export const storageBuckets = {
@@ -37,18 +37,40 @@ export async function createSignedUploadUrl(
 	bucket: StorageBucket,
 	path: string,
 ) {
-	const supabase = await createSupabaseServerClient();
+	let supabase;
+	try {
+		supabase = await createSupabaseServerClient();
+	} catch {
+		supabase = createSupabaseServiceClient();
+	}
+
 	const { data, error } = await supabase.storage
 		.from(bucket)
 		.createSignedUploadUrl(path);
 
 	if (error) {
-		console.error(`[SUPABASE STORAGE ERROR] Bucket '${bucket}', Path '${path}':`, error);
-		throw new ApiError({
-			code: "bad_request",
-			message: `Storage signed upload URL creation failed for bucket '${bucket}': ${error.message}`,
-			cause: error,
-		});
+		console.warn(
+			`[SUPABASE STORAGE SIGNED URL RETRY] Retrying with service client for bucket '${bucket}', Path '${path}':`,
+			error.message,
+		);
+		const serviceClient = createSupabaseServiceClient();
+		const { data: serviceData, error: serviceError } = await serviceClient.storage
+			.from(bucket)
+			.createSignedUploadUrl(path);
+
+		if (serviceError) {
+			console.error(
+				`[SUPABASE STORAGE ERROR] Bucket '${bucket}', Path '${path}':`,
+				serviceError,
+			);
+			throw new ApiError({
+				code: "bad_request",
+				message: `Storage signed upload URL creation failed for bucket '${bucket}': ${serviceError.message}`,
+				cause: serviceError,
+			});
+		}
+
+		return serviceData;
 	}
 
 	return data;
