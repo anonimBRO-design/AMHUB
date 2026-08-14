@@ -1,5 +1,6 @@
 "use client";
 
+import { isAdminProfile } from "@/lib/admin";
 import { useLanguage } from "@/i18n";
 import type { User } from "@presethub/types";
 import { AnimatePresence, motion } from "framer-motion";
@@ -10,6 +11,7 @@ import {
 	Heart,
 	LayoutDashboard,
 	PlusCircle,
+	ShieldAlert,
 	Sparkles,
 	User as UserIcon,
 } from "lucide-react";
@@ -44,6 +46,8 @@ export function DesktopDock({
 	const profileHref = currentUser
 		? `/u/${currentUser.username}`
 		: "/auth/login";
+
+	const isAdmin = isAdminProfile(currentUser);
 
 	const dockItems: DockItem[] = [
 		{
@@ -90,14 +94,24 @@ export function DesktopDock({
 			href: "/dashboard",
 			icon: LayoutDashboard,
 		},
-		{
-			id: "profile",
-			label: currentUser ? currentUser.display_name : t.common.login,
-			href: profileHref,
-			icon: UserIcon,
-			avatarUrl: currentUser?.avatar_url,
-		},
 	];
+
+	if (isAdmin) {
+		dockItems.push({
+			id: "admin",
+			label: "Admin",
+			href: "/admin",
+			icon: ShieldAlert,
+		});
+	}
+
+	dockItems.push({
+		id: "profile",
+		label: currentUser ? currentUser.display_name : t.common.login,
+		href: profileHref,
+		icon: UserIcon,
+		avatarUrl: currentUser?.avatar_url,
+	});
 
 	return (
 		<div className="flex fixed bottom-3 sm:bottom-6 left-1/2 -translate-x-1/2 z-50 pointer-events-auto select-none max-w-[98vw] sm:max-w-none">

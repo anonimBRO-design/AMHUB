@@ -60,6 +60,7 @@ export interface Database {
 					level: number;
 					is_verified: boolean;
 					is_staff: boolean;
+					role?: Nullable<string>;
 					country_code: Nullable<string>;
 					auth_provider: Nullable<string>;
 					last_active_at: Nullable<string>;
@@ -83,6 +84,7 @@ export interface Database {
 					level?: number;
 					is_verified?: boolean;
 					is_staff?: boolean;
+					role?: Nullable<string>;
 					country_code?: Nullable<string>;
 					auth_provider?: Nullable<string>;
 					last_active_at?: Nullable<string>;

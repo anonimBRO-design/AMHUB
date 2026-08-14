@@ -22,6 +22,7 @@ export const PUBLIC_USER_SELECT = `
 	level,
 	is_verified,
 	is_staff,
+	role,
 	country_code,
 	created_at,
 	updated_at
