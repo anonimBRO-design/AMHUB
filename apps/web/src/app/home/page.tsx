@@ -3,13 +3,11 @@ import { listPopularCreators } from "@/data/users";
 import { mapPresetToCardPreset } from "@/lib/mappers";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { resolveStorageUrl } from "@/lib/supabase/storage";
-import { CategoryScroller } from "../_components/home/CategoryScroller";
 import { CreatorSection } from "../_components/home/CreatorSection";
 import { FeaturedSection } from "../_components/home/FeaturedSection";
 import { Footer } from "../_components/home/Footer";
 import { Hero } from "../_components/home/Hero";
 import { PresetCarousel } from "../_components/home/PresetCarousel";
-import { SearchBar } from "../_components/home/SearchBar";
 import { StatsSection } from "../_components/home/StatsSection";
 
 interface HomePageProps {
@@ -94,12 +92,6 @@ export default async function HomePage({ searchParams }: HomePageProps) {
 		<div className="flex flex-col space-y-8 md:space-y-12 pb-16 w-full max-w-full overflow-x-hidden">
 			{/* Unified Responsive Hero (100% Supabase Driven) */}
 			<Hero stats={stats} featuredPreset={featuredPreset} />
-
-			{/* Search & Category Filter Section */}
-			<div className="space-y-4">
-				<SearchBar />
-				<CategoryScroller />
-			</div>
 
 			{/* Featured Pro Selections */}
 			{!searchQuery && <FeaturedSection presets={presets} />}
