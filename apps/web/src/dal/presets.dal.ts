@@ -130,6 +130,23 @@ export async function createPreset(
 		await ensureCategoryExists(data.category);
 	}
 
+	const {
+		data: { user: insertClientUser },
+		error: authError,
+	} = await (client as any).auth.getUser();
+
+	console.log("[PUBLISH INSERT AUTH DEBUG]", {
+		userId: insertClientUser?.id ?? null,
+		authError: authError?.message ?? null,
+	});
+
+	try {
+		const { data: dbAuthContext } = await (client as any).rpc("get_auth_context");
+		console.log("[DATABASE AUTH CONTEXT]", dbAuthContext);
+	} catch (rpcErr) {
+		console.warn("[DATABASE AUTH CONTEXT RPC SKIPPED]", rpcErr);
+	}
+
 	const { file_types, ...insertData } = data;
 	const { data: preset, error } = await client
 		.from("presets")

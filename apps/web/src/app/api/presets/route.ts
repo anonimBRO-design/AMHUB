@@ -45,6 +45,11 @@ export async function POST(request: NextRequest) {
 
 		const data = await validateJson(request, createPresetSchema);
 
+		console.log("[PUBLISH AUTH DEBUG]", {
+			userId: profile?.id ?? null,
+			hasProfile: !!profile,
+		});
+
 		console.log("[PUBLISH DB CONTEXT]", {
 			authenticatedUserExists: !!user,
 			authenticatedUserId: user?.id,
