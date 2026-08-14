@@ -2,6 +2,7 @@ import type {
 	ExtendedListQueryParams,
 	PresetWithCreator,
 } from "@/data/presets";
+import { createSupabaseServiceClient } from "@/lib/supabase/server";
 import type { Database } from "@presethub/types";
 import { assertExists } from "./helpers";
 import type { DalClient } from "./types";
@@ -93,21 +94,26 @@ export async function listPresets(
 	};
 }
 
-async function ensureCategoryExists(client: DalClient, categorySlug: string) {
+async function ensureCategoryExists(categorySlug: string) {
 	if (!categorySlug) return;
 	try {
-		const { data: existing } = await client
+		const serviceClient = createSupabaseServiceClient();
+		const { data: existing } = await serviceClient
 			.from("categories")
 			.select("slug")
 			.eq("slug", categorySlug)
 			.maybeSingle();
 
 		if (!existing) {
-			console.log(`[CATEGORIES] Auto-populating missing category '${categorySlug}' in DB...`);
+			console.log(`[CATEGORIES] Auto-populating missing category '${categorySlug}' in DB via service client...`);
 			const label = categorySlug.charAt(0).toUpperCase() + categorySlug.slice(1);
-			await client
+			const { error: insErr } = await serviceClient
 				.from("categories")
 				.insert([{ slug: categorySlug, label, is_active: true }] as never);
+
+			if (insErr) {
+				console.error(`[CATEGORIES INSERT ERROR] '${categorySlug}':`, insErr);
+			}
 		}
 	} catch (catErr) {
 		console.warn(`[CATEGORIES CHECK] Could not verify category '${categorySlug}':`, catErr);
@@ -120,7 +126,7 @@ export async function createPreset(
 	data: CreatePresetData,
 ) {
 	if (data.category) {
-		await ensureCategoryExists(client, data.category);
+		await ensureCategoryExists(data.category);
 	}
 
 	const { file_types, ...insertData } = data;
