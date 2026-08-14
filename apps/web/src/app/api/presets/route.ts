@@ -46,6 +46,7 @@ export async function POST(request: NextRequest) {
 
 		return apiCreated(preset);
 	} catch (error) {
+		console.error("[PRESET CREATE API ERROR]", error);
 		return apiErrorResponse(error);
 	}
 }

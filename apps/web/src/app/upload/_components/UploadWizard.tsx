@@ -364,14 +364,12 @@ const getSafeVideoMimeType = (file: File): string => {
 				combinedAmLink = gdriveLinkValue;
 			}
 
-			// Determine primary file_type for database compatibility
+			// Determine primary file_type for database compatibility ('xml' or 'link')
 			let primaryFileType: PresetFileType = "xml";
 			if (selectedFileTypes.includes("xml")) {
 				primaryFileType = "xml";
-			} else if (selectedFileTypes.includes("gdrive")) {
-				primaryFileType = "google_drive";
-			} else if (selectedFileTypes.includes("link")) {
-				primaryFileType = "alight_creative";
+			} else {
+				primaryFileType = "link";
 			}
 
 			const fileTypesPayload = selectedFileTypes.map((t) =>

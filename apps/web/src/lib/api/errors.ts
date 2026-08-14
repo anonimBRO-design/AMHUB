@@ -98,8 +98,19 @@ export function toApiError(error: unknown): ApiError {
 		});
 	}
 
+	if (error && typeof error === "object" && "message" in error && typeof (error as any).message === "string") {
+		const errObj = error as { message: string; code?: string; details?: string; hint?: string };
+		return new ApiError({
+			code: "bad_request",
+			message: errObj.message,
+			details: { code: errObj.code, details: errObj.details, hint: errObj.hint },
+			cause: error,
+		});
+	}
+
 	return new ApiError({
 		code: "internal_server_error",
+		message: error instanceof Error ? error.message : "An unexpected error occurred.",
 		cause: error,
 	});
 }
