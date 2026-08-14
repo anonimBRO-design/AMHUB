@@ -22,7 +22,6 @@ export const PUBLIC_USER_SELECT = `
 	level,
 	is_verified,
 	is_staff,
-	role,
 	country_code,
 	created_at,
 	updated_at
@@ -34,10 +33,11 @@ export async function getUserByUsername(
 	currentUserId?: string,
 ) {
 	try {
+		const cleanUsername = username.replace(/^@/, "").trim();
 		const { data: user, error } = await client
 			.from("users")
 			.select(PUBLIC_USER_SELECT)
-			.ilike("username", username)
+			.ilike("username", cleanUsername)
 			.maybeSingle();
 
 		if (error || !user) {
@@ -139,10 +139,11 @@ export async function getUserByUsernameOrNull(
 	username: string,
 ) {
 	try {
+		const cleanUsername = username.replace(/^@/, "").trim();
 		const { data, error } = await client
 			.from("users")
 			.select("*")
-			.eq("username", username)
+			.ilike("username", cleanUsername)
 			.maybeSingle();
 
 		if (error || !data) return null;

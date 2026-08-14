@@ -23,7 +23,7 @@ export async function GET(request: NextRequest) {
 		let dbQuery = serviceSupabase
 			.from("users")
 			.select(
-				"id, username, display_name, email, role, avatar_url, level, is_staff, is_verified, created_at, updated_at",
+				"id, username, display_name, email, avatar_url, level, is_staff, is_verified, created_at, updated_at",
 				{ count: "exact" },
 			);
 
@@ -45,9 +45,33 @@ export async function GET(request: NextRequest) {
 			});
 		}
 
+		const mappedUsers = (users || []).map((u) => {
+			const raw = u as unknown as {
+				id: string;
+				username: string;
+				display_name: string;
+				email: string;
+				avatar_url?: string | null;
+				level: number;
+				is_staff: boolean;
+				is_verified: boolean;
+				created_at: string;
+				updated_at: string;
+				role?: string | null;
+			};
+			return {
+				...raw,
+				role:
+					raw.role ||
+					(raw.is_staff || raw.username.toLowerCase() === "afgan"
+						? "admin"
+						: "user"),
+			};
+		});
+
 		return apiResponse({
-			users: users || [],
-			total_count: count ?? users?.length ?? 0,
+			users: mappedUsers,
+			total_count: count ?? mappedUsers.length,
 		});
 	} catch (error) {
 		return apiErrorResponse(error);
@@ -91,7 +115,7 @@ export async function DELETE(request: NextRequest) {
 		// Fetch target user profile
 		const { data: targetUser, error: fetchErr } = await serviceSupabase
 			.from("users")
-			.select("id, username, role, is_staff")
+			.select("id, username, is_staff")
 			.eq("id", targetUserId)
 			.maybeSingle();
 
@@ -111,6 +135,7 @@ export async function DELETE(request: NextRequest) {
 		// Prevent deleting another admin or @afgan
 		if (
 			targetProfile.username.toLowerCase() === "afgan" ||
+			targetProfile.is_staff ||
 			targetProfile.role === "admin"
 		) {
 			return apiErrorResponse(

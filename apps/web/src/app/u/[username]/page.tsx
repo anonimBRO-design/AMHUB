@@ -20,7 +20,8 @@ interface PageProps {
 export async function generateMetadata({
 	params,
 }: PageProps): Promise<Metadata> {
-	const { username } = await params;
+	const { username: rawUsername } = await params;
+	const username = decodeURIComponent(rawUsername).replace(/^@/, "").trim();
 	const supabase = await createSupabaseServerClient();
 	const rawUser = await getUserByUsernameOrNull(supabase, username);
 	const user = rawUser as unknown as {
@@ -82,7 +83,8 @@ async function fetchUserActivities(
 }
 
 export default async function ProfilePage({ params }: PageProps) {
-	const { username } = await params;
+	const { username: rawUsername } = await params;
+	const username = decodeURIComponent(rawUsername).replace(/^@/, "").trim();
 	const currentUser = await getCurrentProfile();
 	const supabase = await createSupabaseServerClient();
 
