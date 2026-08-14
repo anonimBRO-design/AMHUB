@@ -32,7 +32,6 @@ export function ReviewStep({
 	amLink,
 	gdriveLink,
 	previewVideoFile,
-	amLinkSourceType,
 }: ReviewStepProps) {
 	const thumbnailPreviewUrl = thumbnailFile
 		? URL.createObjectURL(thumbnailFile)
