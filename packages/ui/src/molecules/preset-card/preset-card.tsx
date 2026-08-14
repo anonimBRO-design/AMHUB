@@ -43,6 +43,7 @@ export interface PresetCardPreset {
 	createdAt: string;
 	aspectRatio?: "16:9" | "9:16" | "1:1" | string;
 	aspectRatios?: string[];
+	fileType?: string;
 }
 
 const PRESET_PLACEHOLDER_SVG =
@@ -195,10 +196,9 @@ export const PresetCard = React.forwardRef<HTMLDivElement, PresetCardProps>(
 				{/* Full-card Clickable Navigation Overlay */}
 				<a
 					href={`/preset/${preset.slug}`}
+					aria-label={`Open ${preset.title}`}
 					className="absolute inset-0 z-10 block cursor-pointer"
-				>
-					<span className="sr-only">Open {preset.title}</span>
-				</a>
+				/>
 
 				{/* Media Preview Container */}
 				<div
@@ -237,7 +237,13 @@ export const PresetCard = React.forwardRef<HTMLDivElement, PresetCardProps>(
 
 					<div className="absolute inset-0 bg-[var(--color-bg-base)]/80 group-hover:bg-[var(--color-bg-base)]/60 transition-opacity duration-300 pointer-events-none" />
 
-					<div className="absolute left-3 top-3 flex gap-2 pointer-events-none z-0">
+					{/* Top Badges Overlay */}
+					<div className="absolute left-3 top-3 flex flex-wrap items-center gap-1.5 pointer-events-none z-20">
+						<Badge
+							variant="fileType"
+							value={preset.fileType || "XML"}
+							size="sm"
+						/>
 						<Badge variant="category" value={preset.category} size="sm" />
 						<Badge variant="difficulty" value={preset.difficulty} size="sm" />
 					</div>

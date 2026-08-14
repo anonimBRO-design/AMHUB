@@ -26,6 +26,7 @@ export function mapPresetToCardPreset(
 		previewVideoUrl: preset.preview_video_url ?? undefined,
 		category: preset.category,
 		difficulty: preset.difficulty as "beginner" | "intermediate" | "advanced",
+		fileType: (preset.file_type || "xml").toUpperCase(),
 		downloadCount: preset.download_count,
 		likeCount: preset.like_count,
 		commentCount: preset.comment_count,
