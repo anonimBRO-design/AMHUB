@@ -5,18 +5,28 @@ import { Check } from "lucide-react";
 import * as React from "react";
 import { cn } from "../../lib/utils";
 
+const avatarSizesPx = {
+	xs: 20,
+	sm: 28,
+	md: 36,
+	lg: 48,
+	xl: 64,
+	"2xl": 96,
+	"3xl": 128,
+} as const;
+
 const avatarVariants = cva(
-	"relative flex shrink-0 overflow-hidden rounded-[var(--radius-full)] items-center justify-center",
+	"relative flex shrink-0 overflow-hidden rounded-full items-center justify-center aspect-square",
 	{
 		variants: {
 			size: {
-				xs: "h-[20px] w-[20px] text-[8px]",
-				sm: "h-[28px] w-[28px] text-[11px]",
-				md: "h-[36px] w-[36px] text-[14px]",
-				lg: "h-[48px] w-[48px] text-[18px]",
-				xl: "h-[64px] w-[64px] text-[24px]",
-				"2xl": "h-[96px] w-[96px] text-[36px]",
-				"3xl": "h-[128px] w-[128px] text-[48px]",
+				xs: "w-5 h-5 min-w-5 min-h-5 max-w-5 max-h-5 text-[8px]",
+				sm: "w-7 h-7 min-w-7 min-h-7 max-w-7 max-h-7 text-[11px]",
+				md: "w-9 h-9 min-w-9 min-h-9 max-w-9 max-h-9 text-[14px]",
+				lg: "w-12 h-12 min-w-12 min-h-12 max-w-12 max-h-12 text-[18px]",
+				xl: "w-16 h-16 min-w-16 min-h-16 max-w-16 max-h-16 text-[24px]",
+				"2xl": "w-24 h-24 min-w-24 min-h-24 max-w-24 max-h-24 text-[36px]",
+				"3xl": "w-32 h-32 min-w-32 min-h-32 max-w-32 max-h-32 text-[48px]",
 			},
 		},
 		defaultVariants: {
@@ -25,7 +35,9 @@ const avatarVariants = cva(
 	},
 );
 
-export interface AvatarProps extends VariantProps<typeof avatarVariants> {
+export interface AvatarProps
+	extends VariantProps<typeof avatarVariants>,
+		React.HTMLAttributes<HTMLDivElement> {
 	src?: string;
 	alt: string;
 	displayName: string;
@@ -34,6 +46,7 @@ export interface AvatarProps extends VariantProps<typeof avatarVariants> {
 	isVerified?: boolean;
 	ring?: boolean;
 	className?: string;
+	style?: React.CSSProperties;
 }
 
 const getInitials = (name: string) => {
@@ -57,7 +70,7 @@ const Avatar = React.forwardRef<HTMLDivElement, AvatarProps>(
 	(
 		{
 			className,
-			size,
+			size = "md",
 			src,
 			alt,
 			displayName,
@@ -65,6 +78,7 @@ const Avatar = React.forwardRef<HTMLDivElement, AvatarProps>(
 			level,
 			isVerified,
 			ring,
+			style,
 			...props
 		},
 		ref,
@@ -74,6 +88,7 @@ const Avatar = React.forwardRef<HTMLDivElement, AvatarProps>(
 
 		const seedColor = getSeedColor(displayName);
 		const seedColorVar = `var(--color-avatar-seed-${seedColor})`;
+		const pixelDimension = avatarSizesPx[size || "md"] || 36;
 
 		const getLevelGradient = (lvl?: number) => {
 			if (!lvl) return "";
@@ -94,13 +109,29 @@ const Avatar = React.forwardRef<HTMLDivElement, AvatarProps>(
 					level && "p-0.5 ring-2",
 					getLevelGradient(level),
 				)}
+				style={{
+					width: pixelDimension,
+					height: pixelDimension,
+					minWidth: pixelDimension,
+					minHeight: pixelDimension,
+					maxWidth: pixelDimension,
+					maxHeight: pixelDimension,
+					...style,
+				}}
 				{...props}
 			>
 				{!imageError && src ? (
 					<img
 						src={src}
 						alt={alt}
-						className="h-full w-full object-cover rounded-full"
+						className="h-full w-full object-cover rounded-full pointer-events-none block shrink-0"
+						style={{
+							width: "100%",
+							height: "100%",
+							objectFit: "cover",
+							maxWidth: "100%",
+							maxHeight: "100%",
+						}}
 						onLoad={() => setImageLoaded(true)}
 						onError={() => setImageError(true)}
 					/>

@@ -204,13 +204,25 @@ export const PresetCard = React.forwardRef<HTMLDivElement, PresetCardProps>(
 				<div className="flex flex-1 flex-col p-4 relative z-10">
 					<div className="mb-3 flex items-center justify-between">
 						<div className="flex items-center gap-2">
-							<Avatar
-								displayName={preset.creator.displayName}
-								src={preset.creator.avatarUrl}
-								alt={`${preset.creator.displayName}'s profile photo`}
-								size="sm"
-								isVerified={preset.creator.isVerified}
-							/>
+							<div
+								className="w-7 h-7 min-w-7 min-h-7 max-w-7 max-h-7 shrink-0 overflow-hidden rounded-full aspect-square flex items-center justify-center"
+								style={{
+									width: 28,
+									height: 28,
+									minWidth: 28,
+									minHeight: 28,
+									maxWidth: 28,
+									maxHeight: 28,
+								}}
+							>
+								<Avatar
+									displayName={preset.creator.displayName}
+									src={preset.creator.avatarUrl}
+									alt={`${preset.creator.displayName}'s profile photo`}
+									size="sm"
+									isVerified={preset.creator.isVerified}
+								/>
+							</div>
 							<span className="text-[var(--font-size-label-md)] font-medium text-[var(--color-text-primary)]">
 								@{preset.creator.username}
 							</span>

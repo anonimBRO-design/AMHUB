@@ -43,17 +43,22 @@ export function Hero({ user }: HeroProps) {
 			<div className="relative px-5 pb-6 pt-0 space-y-4">
 				{/* Avatar & Header Row */}
 				<div className="flex items-end justify-between -mt-14 sm:-mt-18 gap-4">
-					<div className="relative shrink-0">
+					<div className="relative shrink-0 w-24 h-24 sm:w-28 sm:h-28 overflow-hidden rounded-full aspect-square">
 						<img
 							src={
 								user.avatarUrl ||
 								`https://api.dicebear.com/7.x/identicon/svg?seed=${user.username}`
 							}
 							alt={user.displayName}
-							className="w-24 h-24 sm:w-28 sm:h-28 rounded-full object-cover border-4 border-[var(--color-bg-surface)] bg-[var(--color-bg-elevated)] shadow-2xl"
+							className="w-24 h-24 sm:w-28 sm:h-28 rounded-full object-cover border-4 border-[var(--color-bg-surface)] bg-[var(--color-bg-elevated)] shadow-2xl block shrink-0"
+							style={{
+								objectFit: "cover",
+								maxWidth: "100%",
+								maxHeight: "100%",
+							}}
 						/>
 						{user.isVerified && (
-							<div className="absolute bottom-1 right-1 p-1 rounded-full bg-[var(--color-interactive-primary)] text-white shadow-lg">
+							<div className="absolute bottom-1 right-1 p-1 rounded-full bg-[var(--color-interactive-primary)] text-white shadow-lg z-10">
 								<CheckCircle2 className="w-4 h-4 fill-current" />
 							</div>
 						)}
