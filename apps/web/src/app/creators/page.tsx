@@ -1,3 +1,4 @@
+import { getCreatorReputation } from "@/dal/reputation.dal";
 import { PUBLIC_USER_SELECT } from "@/dal/users.dal";
 import { getCurrentProfile } from "@/lib/supabase/auth";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
@@ -22,7 +23,11 @@ export default async function CreatorsPage() {
 		const currentProfile = await getCurrentProfile();
 		const currentUserId = currentProfile?.id;
 
-		const { data: rawUsers, count, error } = await supabase
+		const {
+			data: rawUsers,
+			count,
+			error,
+		} = await supabase
 			.from("users")
 			.select(PUBLIC_USER_SELECT, { count: "exact" })
 			.order("created_at", { ascending: false })
@@ -52,7 +57,9 @@ export default async function CreatorsPage() {
 
 				if (followRecords) {
 					for (const f of followRecords) {
-						followingSet.add((f as unknown as { following_id: string }).following_id);
+						followingSet.add(
+							(f as unknown as { following_id: string }).following_id,
+						);
 					}
 				}
 			}
@@ -60,14 +67,11 @@ export default async function CreatorsPage() {
 			initialCreators = await Promise.all(
 				usersList.map(async (u) => {
 					const [
-						{ count: followerCount },
+						reputationData,
 						{ count: followingCount },
 						{ count: presetCount },
 					] = await Promise.all([
-						supabase
-							.from("follows")
-							.select("*", { count: "exact", head: true })
-							.eq("following_id", u.id),
+						getCreatorReputation(supabase, u.id),
 						supabase
 							.from("follows")
 							.select("*", { count: "exact", head: true })
@@ -87,9 +91,12 @@ export default async function CreatorsPage() {
 						bio: u.bio,
 						is_verified: u.is_verified,
 						created_at: u.created_at,
-						follower_count: followerCount ?? 0,
+						follower_count: reputationData.followerCount,
+						active_follower_count: reputationData.activeFollowers,
 						following_count: followingCount ?? 0,
 						preset_count: presetCount ?? 0,
+						unique_download_count: reputationData.uniqueDownloads,
+						reputation_score: reputationData.reputationScore,
 						is_following: currentUserId ? followingSet.has(u.id) : false,
 						is_self: currentUserId ? currentUserId === u.id : false,
 					};

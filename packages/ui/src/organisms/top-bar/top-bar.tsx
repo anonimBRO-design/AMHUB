@@ -18,7 +18,11 @@ export interface TopBarProps {
 	rightContent?: React.ReactNode;
 }
 
-export const TopBar = ({ pageTitle, isScrolled, rightContent }: TopBarProps) => {
+export const TopBar = ({
+	pageTitle,
+	isScrolled,
+	rightContent,
+}: TopBarProps) => {
 	return (
 		<header
 			className={cn(

@@ -186,3 +186,57 @@ export interface PresignedUploadResponse {
 export interface PresetUploadResponse extends PresignedUploadResponse {
 	upload_type: PresetUploadType;
 }
+
+export interface PresetDownloadResponse {
+	success: boolean;
+	preset_id: string;
+	is_unique: boolean;
+	total_downloads: number;
+	unique_downloads: number;
+	anonymous_token?: string;
+}
+
+export interface CreatorReputationScoreBreakdown {
+	unique_downloads: number;
+	quality_likes: number;
+	active_followers: number;
+	account_age_bonus: number;
+	suspicious_penalty: number;
+	total_score: number;
+}
+
+export interface CreatorStatsResponse {
+	creator_id: string;
+	total_downloads: number;
+	unique_downloads: number;
+	like_count: number;
+	quality_likes: number;
+	follower_count: number;
+	active_followers: number;
+	reputation_score: number;
+	breakdown?: CreatorReputationScoreBreakdown;
+}
+
+export interface PresetOrderResponse {
+	id: string;
+	order_number: string;
+	preset_id: string;
+	buyer_id: string;
+	seller_id: string;
+	gross_amount: number;
+	currency: string;
+	payment_provider: string;
+	payment_reference: string | null;
+	payment_status: "pending" | "paid" | "failed" | "refunded" | "cancelled";
+	processor_fee: number;
+	net_amount: number;
+	creator_payout_amount: number;
+	platform_fee_amount: number;
+	paid_at: string | null;
+	created_at: string;
+}
+
+export interface CreatePresetOrderInput {
+	preset_id: string;
+	payment_provider?: string;
+}

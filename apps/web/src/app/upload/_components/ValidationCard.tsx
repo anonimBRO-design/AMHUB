@@ -1,6 +1,9 @@
 "use client";
 
-import type { PresetSourceFormat, ValidationResult } from "@/lib/validation/types";
+import type {
+	PresetSourceFormat,
+	ValidationResult,
+} from "@/lib/validation/types";
 import { CheckCircle2, Loader2, ShieldCheck, XCircle } from "lucide-react";
 
 interface ValidationCardProps {
@@ -8,12 +11,22 @@ interface ValidationCardProps {
 	validation: ValidationResult;
 }
 
-export function ValidationCard({ selectedFileTypes, validation }: ValidationCardProps) {
+export function ValidationCard({
+	selectedFileTypes,
+	validation,
+}: ValidationCardProps) {
 	const { isValid, isValidating, checks, error } = validation;
 
-	const formatTitle = selectedFileTypes
-		.map((t) => (t === "xml" ? "XML File" : t === "gdrive" ? "Google Drive (XML)" : "AM Link"))
-		.join(" + ") || "Preset Sources";
+	const formatTitle =
+		selectedFileTypes
+			.map((t) =>
+				t === "xml"
+					? "XML File"
+					: t === "gdrive"
+						? "Google Drive (XML)"
+						: "AM Link",
+			)
+			.join(" + ") || "Preset Sources";
 
 	// If no checks have run yet
 	if (checks.every((c) => c.status === "idle") && !isValidating && !error) {

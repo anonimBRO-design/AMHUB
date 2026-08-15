@@ -1,7 +1,7 @@
 "use client";
 
-import { resolveStorageUrl } from "@/lib/supabase/storage-url";
 import type { PublicCreatorCardData } from "@/app/api/creators/route";
+import { resolveStorageUrl } from "@/lib/supabase/storage-url";
 import {
 	AlertTriangle,
 	CheckCircle2,
@@ -17,7 +17,8 @@ import {
 	Video,
 } from "lucide-react";
 import Link from "next/link";
-import React, { useCallback, useEffect, useState } from "react";
+import type React from "react";
+import { useCallback, useEffect, useState } from "react";
 
 interface CreatorsClientProps {
 	initialCreators: PublicCreatorCardData[];
@@ -40,13 +41,17 @@ export function CreatorsClient({
 	const [activeSort, setActiveSort] = useState<SortType>("newest");
 
 	const [page, setPage] = useState<number>(1);
-	const [hasMore, setHasMore] = useState<boolean>(initialCreators.length < initialTotal);
+	const [hasMore, setHasMore] = useState<boolean>(
+		initialCreators.length < initialTotal,
+	);
 	const [isLoading, setIsLoading] = useState<boolean>(false);
 	const [isLoadingMore, setIsLoadingMore] = useState<boolean>(false);
 	const [error, setError] = useState<string | null>(null);
 
 	// Follow Action Pending State per user ID
-	const [followPendingMap, setFollowPendingMap] = useState<Record<string, boolean>>({});
+	const [followPendingMap, setFollowPendingMap] = useState<
+		Record<string, boolean>
+	>({});
 
 	// Debounce search input by 300ms
 	useEffect(() => {
@@ -123,13 +128,7 @@ export function CreatorsClient({
 
 	const handleLoadMore = () => {
 		if (hasMore && !isLoadingMore) {
-			fetchCreators(
-				debouncedQuery,
-				activeFilter,
-				activeSort,
-				page + 1,
-				true,
-			);
+			fetchCreators(debouncedQuery, activeFilter, activeSort, page + 1, true);
 		}
 	};
 
@@ -165,13 +164,18 @@ export function CreatorsClient({
 
 		try {
 			const method = is_following ? "DELETE" : "POST";
-			const res = await fetch(`/api/users/${encodeURIComponent(username)}/follow`, {
-				method,
-			});
+			const res = await fetch(
+				`/api/users/${encodeURIComponent(username)}/follow`,
+				{
+					method,
+				},
+			);
 
 			if (!res.ok) {
 				const json = await res.json().catch(() => ({}));
-				throw new Error(json.error?.message || "Failed to update follow status.");
+				throw new Error(
+					json.error?.message || "Failed to update follow status.",
+				);
 			}
 		} catch (err) {
 			console.error("Follow toggle failed:", err);
@@ -208,7 +212,8 @@ export function CreatorsClient({
 						Jelajahi Kreator & User
 					</h1>
 					<p className="text-xs sm:text-sm text-[var(--color-text-secondary)]">
-						Temukan pembuat preset Alight Motion terbaik, ikuti kreator favorit, dan jelajahi karya mereka.
+						Temukan pembuat preset Alight Motion terbaik, ikuti kreator favorit,
+						dan jelajahi karya mereka.
 					</p>
 
 					{/* Navigation Tabs */}
@@ -282,7 +287,9 @@ export function CreatorsClient({
 					{/* Sorting Dropdown */}
 					<div className="flex items-center gap-2 px-2 shrink-0">
 						<Filter className="w-3.5 h-3.5 text-[var(--color-text-tertiary)]" />
-						<span className="text-xs text-[var(--color-text-secondary)] font-medium">Urutkan:</span>
+						<span className="text-xs text-[var(--color-text-secondary)] font-medium">
+							Urutkan:
+						</span>
 						<select
 							value={activeSort}
 							onChange={(e) => setActiveSort(e.target.value as SortType)}

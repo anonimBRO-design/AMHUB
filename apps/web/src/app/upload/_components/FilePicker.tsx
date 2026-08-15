@@ -1,6 +1,11 @@
 "use client";
 
-import type { PresetSourceFormat, PresetSourceType, ValidationCheck, ValidationResult } from "@/lib/validation/types";
+import type {
+	PresetSourceFormat,
+	PresetSourceType,
+	ValidationCheck,
+	ValidationResult,
+} from "@/lib/validation/types";
 import { validateAmLink } from "@/lib/validation/validateAmLink";
 import { validateGoogleDriveXml } from "@/lib/validation/validateGoogleDriveXml";
 import { validateXml } from "@/lib/validation/validateXml";
@@ -47,7 +52,9 @@ export function FilePicker({
 	const toggleSourceFormat = (format: PresetSourceFormat) => {
 		if (selectedFileTypes.includes(format)) {
 			if (selectedFileTypes.length > 1) {
-				onSelectedFileTypesChange(selectedFileTypes.filter((t) => t !== format));
+				onSelectedFileTypesChange(
+					selectedFileTypes.filter((t) => t !== format),
+				);
 			}
 		} else {
 			onSelectedFileTypesChange([...selectedFileTypes, format]);
@@ -82,7 +89,8 @@ export function FilePicker({
 			if (selectedFileTypes.includes("xml")) {
 				if (!presetFile) {
 					overallValid = false;
-					if (!firstError) firstError = "XML File: Please upload an Alight Motion .xml file.";
+					if (!firstError)
+						firstError = "XML File: Please upload an Alight Motion .xml file.";
 					allChecks.push(
 						{ id: "xml_selected", label: "XML file selected", status: "idle" },
 						{ id: "xml_syntax", label: "XML syntax valid", status: "idle" },
@@ -91,7 +99,8 @@ export function FilePicker({
 					const xmlRes = await validateXml(presetFile);
 					if (!xmlRes.isValid) overallValid = false;
 					if (xmlRes.isValidating) overallValidating = true;
-					if (xmlRes.error && !firstError) firstError = `XML File: ${xmlRes.error}`;
+					if (xmlRes.error && !firstError)
+						firstError = `XML File: ${xmlRes.error}`;
 					allChecks.push(...xmlRes.checks);
 				}
 			}
@@ -100,16 +109,22 @@ export function FilePicker({
 			if (selectedFileTypes.includes("link")) {
 				if (!amLink.trim()) {
 					overallValid = false;
-					if (!firstError) firstError = "AM Link: Please enter an Alight Motion import link.";
+					if (!firstError)
+						firstError = "AM Link: Please enter an Alight Motion import link.";
 					allChecks.push(
-						{ id: "am_url_format", label: "AM Link URL format valid", status: "idle" },
+						{
+							id: "am_url_format",
+							label: "AM Link URL format valid",
+							status: "idle",
+						},
 						{ id: "am_reachable", label: "AM Link reachable", status: "idle" },
 					);
 				} else {
 					const amRes = await validateAmLink(amLink);
 					if (!amRes.isValid) overallValid = false;
 					if (amRes.isValidating) overallValidating = true;
-					if (amRes.error && !firstError) firstError = `AM Link: ${amRes.error}`;
+					if (amRes.error && !firstError)
+						firstError = `AM Link: ${amRes.error}`;
 					allChecks.push(...amRes.checks);
 				}
 			}
@@ -118,16 +133,27 @@ export function FilePicker({
 			if (selectedFileTypes.includes("gdrive")) {
 				if (!gdriveLink.trim()) {
 					overallValid = false;
-					if (!firstError) firstError = "Google Drive: Please enter a Google Drive link containing an XML preset.";
+					if (!firstError)
+						firstError =
+							"Google Drive: Please enter a Google Drive link containing an XML preset.";
 					allChecks.push(
-						{ id: "gdrive_url_format", label: "Google Drive URL format valid", status: "idle" },
-						{ id: "gdrive_reachable", label: "Google Drive XML file reachable", status: "idle" },
+						{
+							id: "gdrive_url_format",
+							label: "Google Drive URL format valid",
+							status: "idle",
+						},
+						{
+							id: "gdrive_reachable",
+							label: "Google Drive XML file reachable",
+							status: "idle",
+						},
 					);
 				} else {
 					const gdriveRes = await validateGoogleDriveXml(gdriveLink);
 					if (!gdriveRes.isValid) overallValid = false;
 					if (gdriveRes.isValidating) overallValidating = true;
-					if (gdriveRes.error && !firstError) firstError = `Google Drive: ${gdriveRes.error}`;
+					if (gdriveRes.error && !firstError)
+						firstError = `Google Drive: ${gdriveRes.error}`;
 					allChecks.push(...gdriveRes.checks);
 				}
 			}
@@ -196,7 +222,9 @@ export function FilePicker({
 								<FileCode className="w-4 h-4 text-blue-400" />
 								<span className="text-xs font-bold truncate">XML File</span>
 							</div>
-							<span className="text-[10px] text-[var(--color-text-tertiary)] block">Direct XML upload</span>
+							<span className="text-[10px] text-[var(--color-text-tertiary)] block">
+								Direct XML upload
+							</span>
 						</div>
 					</button>
 
@@ -220,7 +248,9 @@ export function FilePicker({
 								<ExternalLink className="w-4 h-4 text-emerald-400" />
 								<span className="text-xs font-bold truncate">AM Link</span>
 							</div>
-							<span className="text-[10px] text-[var(--color-text-tertiary)] block">Alight Creative share</span>
+							<span className="text-[10px] text-[var(--color-text-tertiary)] block">
+								Alight Creative share
+							</span>
 						</div>
 					</button>
 
@@ -242,9 +272,13 @@ export function FilePicker({
 						<div className="flex-1 min-w-0">
 							<div className="flex items-center gap-1.5">
 								<HardDrive className="w-4 h-4 text-amber-400" />
-								<span className="text-xs font-bold truncate">Google Drive (XML)</span>
+								<span className="text-xs font-bold truncate">
+									Google Drive (XML)
+								</span>
 							</div>
-							<span className="text-[10px] text-[var(--color-text-tertiary)] block">Cloud XML link</span>
+							<span className="text-[10px] text-[var(--color-text-tertiary)] block">
+								Cloud XML link
+							</span>
 						</div>
 					</button>
 				</div>
@@ -325,15 +359,21 @@ export function FilePicker({
 								ALIGHT MOTION IMPORT LINK
 							</label>
 							<div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-[var(--color-bg-elevated)] border border-[var(--color-border-subtle)] text-[11px] font-semibold text-[var(--color-text-secondary)]">
-								<span className="text-[var(--color-text-tertiary)]">Provider:</span>
-								<span className="font-bold text-emerald-400">Alight Creative</span>
+								<span className="text-[var(--color-text-tertiary)]">
+									Provider:
+								</span>
+								<span className="font-bold text-emerald-400">
+									Alight Creative
+								</span>
 							</div>
 						</div>
 						<input
 							id="am-link-input"
 							type="url"
 							value={amLink}
-							onChange={(e) => onAmLinkChange(e.target.value, "alight_creative")}
+							onChange={(e) =>
+								onAmLinkChange(e.target.value, "alight_creative")
+							}
 							placeholder="https://alightcreative.com/am/share/..."
 							className="w-full min-h-[48px] px-4 rounded-2xl bg-[var(--color-bg-surface)] border border-[var(--color-border-subtle)] text-sm text-[var(--color-text-primary)] placeholder:text-[var(--color-text-tertiary)] focus:outline-none focus:border-emerald-500"
 						/>
@@ -358,14 +398,18 @@ export function FilePicker({
 							className="w-full min-h-[48px] px-4 rounded-2xl bg-[var(--color-bg-surface)] border border-[var(--color-border-subtle)] text-sm text-[var(--color-text-primary)] placeholder:text-[var(--color-text-tertiary)] focus:outline-none focus:border-amber-500"
 						/>
 						<p className="text-[11px] text-[var(--color-text-tertiary)] leading-relaxed">
-							Paste a public Google Drive share link pointing directly to your .xml preset file.
+							Paste a public Google Drive share link pointing directly to your
+							.xml preset file.
 						</p>
 					</div>
 				)}
 			</div>
 
 			{/* Real-time Combined Validation Card */}
-			<ValidationCard selectedFileTypes={selectedFileTypes} validation={validation} />
+			<ValidationCard
+				selectedFileTypes={selectedFileTypes}
+				validation={validation}
+			/>
 		</div>
 	);
 }

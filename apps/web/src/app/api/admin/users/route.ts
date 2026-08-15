@@ -52,8 +52,7 @@ export async function GET(request: NextRequest) {
 		const emailMap = new Map<string, string>();
 		if (serviceSupabase) {
 			try {
-				const { data: authData } =
-					await serviceSupabase.auth.admin.listUsers();
+				const { data: authData } = await serviceSupabase.auth.admin.listUsers();
 				if (authData?.users) {
 					for (const au of authData.users) {
 						if (au.id && au.email) {
@@ -177,7 +176,11 @@ export async function DELETE(request: NextRequest) {
 		const body = await request.json().catch(() => ({}));
 		const { userId: targetUserId } = body;
 
-		if (!targetUserId || typeof targetUserId !== "string" || !targetUserId.trim()) {
+		if (
+			!targetUserId ||
+			typeof targetUserId !== "string" ||
+			!targetUserId.trim()
+		) {
 			return apiErrorResponse(
 				new ApiError({
 					code: "bad_request",
@@ -242,7 +245,12 @@ export async function DELETE(request: NextRequest) {
 
 		// 7. Clean up Storage Files if serviceSupabase is available
 		if (serviceSupabase) {
-			const buckets = ["avatars", "thumbnails", "preset-files", "preset-videos"];
+			const buckets = [
+				"avatars",
+				"thumbnails",
+				"preset-files",
+				"preset-videos",
+			];
 			for (const bucket of buckets) {
 				try {
 					const { data: files } = await serviceSupabase.storage
@@ -426,5 +434,3 @@ export async function DELETE(request: NextRequest) {
 		return apiErrorResponse(error);
 	}
 }
-
-

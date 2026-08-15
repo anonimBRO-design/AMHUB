@@ -1,3 +1,4 @@
+import { getCreatorReputation } from "@/dal/reputation.dal";
 import { PUBLIC_USER_SELECT } from "@/dal/users.dal";
 import { getApiUser } from "@/lib/api/auth";
 import { ApiError } from "@/lib/api/errors";
@@ -9,7 +10,10 @@ import { z } from "zod";
 const creatorsQuerySchema = z.object({
 	q: z.string().optional().default(""),
 	filter: z.enum(["all", "creators", "verified"]).optional().default("all"),
-	sort: z.enum(["newest", "popular", "followers"]).optional().default("newest"),
+	sort: z
+		.enum(["newest", "popular", "followers", "score", "downloads"])
+		.optional()
+		.default("popular"),
 	page: z.coerce.number().int().min(1).optional().default(1),
 	limit: z.coerce.number().int().min(1).max(50).optional().default(12),
 });
@@ -23,8 +27,11 @@ export interface PublicCreatorCardData {
 	is_verified: boolean;
 	created_at: string;
 	follower_count: number;
+	active_follower_count: number;
 	following_count: number;
 	preset_count: number;
+	unique_download_count: number;
+	reputation_score: number;
 	is_following?: boolean;
 	is_self?: boolean;
 }
@@ -97,7 +104,7 @@ export async function GET(request: NextRequest) {
 			}
 		}
 
-		// 4. Default sorting for database query
+		// 4. Default database sorting if newest
 		if (sort === "newest") {
 			dbQuery = dbQuery.order("created_at", { ascending: false });
 		}
@@ -125,11 +132,9 @@ export async function GET(request: NextRequest) {
 		};
 
 		const usersList = rawUsers as unknown as RawUser[];
-
-		// 5. Batch calculate stats (followers, following, published presets) and follow status for each user
 		const userIds = usersList.map((u) => u.id);
 
-		// Batch follow status for viewer
+		// 5. Batch follow status for viewer
 		const followingSet = new Set<string>();
 		if (currentUserId && userIds.length > 0) {
 			const { data: followRecords } = await supabase
@@ -140,23 +145,22 @@ export async function GET(request: NextRequest) {
 
 			if (followRecords) {
 				for (const f of followRecords) {
-					followingSet.add((f as unknown as { following_id: string }).following_id);
+					followingSet.add(
+						(f as unknown as { following_id: string }).following_id,
+					);
 				}
 			}
 		}
 
-		// Batch stats computation
+		// 6. Multi-signal reputation and stats computation per creator
 		const creatorsWithStats: PublicCreatorCardData[] = await Promise.all(
 			usersList.map(async (u) => {
 				const [
-					{ count: followerCount },
+					reputationData,
 					{ count: followingCount },
 					{ count: presetCount },
 				] = await Promise.all([
-					supabase
-						.from("follows")
-						.select("*", { count: "exact", head: true })
-						.eq("following_id", u.id),
+					getCreatorReputation(supabase, u.id),
 					supabase
 						.from("follows")
 						.select("*", { count: "exact", head: true })
@@ -176,28 +180,40 @@ export async function GET(request: NextRequest) {
 					bio: u.bio,
 					is_verified: u.is_verified,
 					created_at: u.created_at,
-					follower_count: followerCount ?? 0,
+					follower_count: reputationData.followerCount,
+					active_follower_count: reputationData.activeFollowers,
 					following_count: followingCount ?? 0,
 					preset_count: presetCount ?? 0,
+					unique_download_count: reputationData.uniqueDownloads,
+					reputation_score: reputationData.reputationScore,
 					is_following: currentUserId ? followingSet.has(u.id) : false,
 					is_self: currentUserId ? currentUserId === u.id : false,
 				};
 			}),
 		);
 
-		// 6. Apply sorting (popular or followers) if needed
+		// 7. Apply deterministic ranking based on chosen sort
 		if (sort === "followers") {
 			creatorsWithStats.sort((a, b) => b.follower_count - a.follower_count);
-		} else if (sort === "popular") {
+		} else if (sort === "downloads") {
 			creatorsWithStats.sort(
-				(a, b) =>
-					b.follower_count * 2 +
-					b.preset_count -
-					(a.follower_count * 2 + a.preset_count),
+				(a, b) => b.unique_download_count - a.unique_download_count,
 			);
+		} else if (sort === "popular" || sort === "score") {
+			// Rank by finalized multi-signal reputation score
+			creatorsWithStats.sort((a, b) => {
+				if (b.reputation_score !== a.reputation_score) {
+					return b.reputation_score - a.reputation_score;
+				}
+				// Secondary tie-breaker: unique downloads, then preset count
+				if (b.unique_download_count !== a.unique_download_count) {
+					return b.unique_download_count - a.unique_download_count;
+				}
+				return b.preset_count - a.preset_count;
+			});
 		}
 
-		// 7. Paginate the resulting array
+		// 8. Paginate resulting list
 		const total = count ?? creatorsWithStats.length;
 		const startIndex = (page - 1) * limit;
 		const paginatedUsers = creatorsWithStats.slice(

@@ -1,7 +1,7 @@
 "use client";
 
-import { isAdminProfile } from "@/lib/admin";
 import { useLanguage } from "@/i18n";
+import { isAdminProfile } from "@/lib/admin";
 import type { User } from "@presethub/types";
 import { AnimatePresence, motion } from "framer-motion";
 import {

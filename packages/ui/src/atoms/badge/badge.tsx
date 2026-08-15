@@ -8,8 +8,7 @@ const badgeVariants = cva(
 	{
 		variants: {
 			variant: {
-				category:
-					"bg-[var(--color-interactive-primary)] text-white shadow-sm",
+				category: "bg-[var(--color-interactive-primary)] text-white shadow-sm",
 				difficulty:
 					"bg-white/10 backdrop-blur-md text-white border border-white/15 shadow-sm capitalize",
 				fileType:
@@ -48,37 +47,30 @@ export interface BadgeProps {
 
 const styleMap: Record<string, Record<string, string>> = {
 	category: {
-		velocity:
-			"bg-[var(--color-category-velocity)] text-white shadow-sm",
-		transition:
-			"bg-[var(--color-category-transition)] text-white shadow-sm",
-		color:
-			"bg-[var(--color-category-color)] text-white shadow-sm",
-		anime:
-			"bg-[var(--color-category-anime)] text-white shadow-sm",
-		gaming:
-			"bg-[var(--color-category-gaming)] text-white shadow-sm",
-		lyric:
-			"bg-[var(--color-category-lyric)] text-white shadow-sm",
+		velocity: "bg-[var(--color-category-velocity)] text-white shadow-sm",
+		transition: "bg-[var(--color-category-transition)] text-white shadow-sm",
+		color: "bg-[var(--color-category-color)] text-white shadow-sm",
+		anime: "bg-[var(--color-category-anime)] text-white shadow-sm",
+		gaming: "bg-[var(--color-category-gaming)] text-white shadow-sm",
+		lyric: "bg-[var(--color-category-lyric)] text-white shadow-sm",
 		"3d": "bg-[var(--color-category-3d)] text-white shadow-sm",
-		other:
-			"bg-[var(--color-category-other)] text-white shadow-sm",
+		other: "bg-[var(--color-category-other)] text-white shadow-sm",
 	},
 	rarity: {
-		common:
-			"bg-slate-500/20 text-slate-300 border border-slate-500/30",
+		common: "bg-slate-500/20 text-slate-300 border border-slate-500/30",
 		rare: "bg-blue-500/20 text-blue-300 border border-blue-500/30",
 		epic: "bg-purple-500/20 text-purple-300 border border-purple-500/30",
-		legendary: "bg-amber-500/20 text-amber-300 border border-amber-500/30 font-extrabold",
+		legendary:
+			"bg-amber-500/20 text-amber-300 border border-amber-500/30 font-extrabold",
 	},
 	difficulty: {
 		beginner: "bg-emerald-500/20 text-emerald-300 border border-emerald-500/30",
-		intermediate:
-			"bg-amber-500/20 text-amber-300 border border-amber-500/30",
+		intermediate: "bg-amber-500/20 text-amber-300 border border-amber-500/30",
 		advanced: "bg-rose-500/20 text-rose-300 border border-rose-500/30",
 	},
 	status: {
-		published: "bg-emerald-500/20 text-emerald-300 border border-emerald-500/30",
+		published:
+			"bg-emerald-500/20 text-emerald-300 border border-emerald-500/30",
 		pending: "bg-amber-500/20 text-amber-300 border border-amber-500/30",
 		rejected: "bg-rose-500/20 text-rose-300 border border-rose-500/30",
 		removed: "bg-rose-500/20 text-rose-300 border border-rose-500/30",
@@ -96,10 +88,11 @@ export const Badge = ({
 	const variantStyles = styleMap[variant]?.[val] || "";
 
 	return (
-		<span className={cn(badgeVariants({ variant, size }), variantStyles, className)}>
+		<span
+			className={cn(badgeVariants({ variant, size }), variantStyles, className)}
+		>
 			{Icon && <Icon className="mr-1 h-3 w-3" />}
 			{value}
 		</span>
 	);
 };
-

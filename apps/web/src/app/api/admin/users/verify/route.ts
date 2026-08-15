@@ -168,5 +168,3 @@ export async function PATCH(request: NextRequest) {
 		return apiErrorResponse(error);
 	}
 }
-
-

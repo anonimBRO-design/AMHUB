@@ -109,7 +109,8 @@ export async function validateGoogleDriveXml(
 			isValid: false,
 			isValidating: false,
 			checks,
-			error: "Google Drive link must point directly to an XML file, not a folder.",
+			error:
+				"Google Drive link must point directly to an XML file, not a folder.",
 		};
 	}
 

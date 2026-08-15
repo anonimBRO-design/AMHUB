@@ -1,7 +1,7 @@
 "use client";
 
-import { Check, Film, Upload, X, Play, Pause } from "lucide-react";
-import { type ChangeEvent, useState, useRef, useEffect } from "react";
+import { Check, Film, Pause, Play, Upload, X } from "lucide-react";
+import { type ChangeEvent, useEffect, useRef, useState } from "react";
 
 interface PreviewVideoStepProps {
 	previewVideoFile: File | null;
@@ -100,7 +100,11 @@ export function PreviewVideoStep({
 							onClick={togglePlay}
 							className="p-4 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white hover:scale-110 active:scale-95 transition-all"
 						>
-							{isPlaying ? <Pause className="w-8 h-8 fill-current" /> : <Play className="w-8 h-8 fill-current ml-1" />}
+							{isPlaying ? (
+								<Pause className="w-8 h-8 fill-current" />
+							) : (
+								<Play className="w-8 h-8 fill-current ml-1" />
+							)}
 						</button>
 					</div>
 
@@ -113,7 +117,12 @@ export function PreviewVideoStep({
 					</button>
 
 					<div className="absolute bottom-4 left-4 px-3 py-1.5 rounded-full bg-black/60 backdrop-blur-md border border-white/10 text-[10px] font-bold text-white uppercase tracking-wider z-30">
-						{previewVideoFile?.name.split('.').pop()?.toUpperCase()} • {(previewVideoFile?.size ? previewVideoFile.size / (1024 * 1024) : 0).toFixed(1)} MB
+						{previewVideoFile?.name.split(".").pop()?.toUpperCase()} •{" "}
+						{(previewVideoFile?.size
+							? previewVideoFile.size / (1024 * 1024)
+							: 0
+						).toFixed(1)}{" "}
+						MB
 					</div>
 				</div>
 			) : (

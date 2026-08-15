@@ -34,9 +34,7 @@ export const AppLayoutTemplate: React.FC<AppLayoutTemplateProps> = ({
 				)}
 			>
 				{/* Top Bar - Sticky */}
-				<div className="sticky top-0 z-[100] min-w-0 max-w-full">
-					{topBar}
-				</div>
+				<div className="sticky top-0 z-[100] min-w-0 max-w-full">{topBar}</div>
 
 				{/* Main Content */}
 				<main className="relative z-0 flex-1 p-4 sm:p-6 pb-24 min-w-0 max-w-full">

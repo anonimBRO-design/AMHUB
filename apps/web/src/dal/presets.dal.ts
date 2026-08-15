@@ -22,6 +22,10 @@ export const PRESET_SELECT_WITH_CREATOR = `
 	tags,
 	status,
 	download_count,
+	unique_download_count,
+	price,
+	is_paid,
+	currency,
 	view_count,
 	like_count,
 	bookmark_count,
@@ -58,6 +62,9 @@ export interface CreatePresetData {
 	tags?: string[];
 	difficulty?: "beginner" | "intermediate" | "advanced";
 	status?: "pending" | "published" | "rejected" | "removed";
+	price?: number;
+	is_paid?: boolean;
+	currency?: string;
 	am_version_min?: string;
 	am_version_max?: string;
 	device_support?: ("android" | "ios" | "both")[];
@@ -110,7 +117,9 @@ async function ensureCategoryExists(categorySlug: string) {
 	}
 
 	if (!existing) {
-		console.log(`[CATEGORIES] Auto-populating missing category '${categorySlug}' in DB via service client...`);
+		console.log(
+			`[CATEGORIES] Auto-populating missing category '${categorySlug}' in DB via service client...`,
+		);
 		const label = categorySlug.charAt(0).toUpperCase() + categorySlug.slice(1);
 		const { error: insErr } = await serviceClient
 			.from("categories")
@@ -633,7 +642,7 @@ export async function getCreatorAnalytics(
 	const { data: topPresetsData } = await client
 		.from("presets")
 		.select(
-			"id, title, slug, thumbnail_url, download_count, like_count, view_count, status, created_at",
+			"id, title, slug, thumbnail_url, download_count, unique_download_count, like_count, view_count, status, created_at",
 		)
 		.eq("creator_id", creatorId)
 		.order("download_count", { ascending: false })
@@ -641,12 +650,22 @@ export async function getCreatorAnalytics(
 
 	const { data: creatorPresetIds } = await client
 		.from("presets")
-		.select("id")
+		.select("id, download_count, unique_download_count")
 		.eq("creator_id", creatorId);
 
-	const presetIds = (
-		(creatorPresetIds || []) as unknown as { id: string }[]
-	).map((p) => p.id);
+	const presetRows = (creatorPresetIds || []) as unknown as {
+		id: string;
+		download_count?: number;
+		unique_download_count?: number;
+	}[];
+
+	const presetIds = presetRows.map((p) => p.id);
+	let totalDownloads = 0;
+	let uniqueDownloads = 0;
+	for (const p of presetRows) {
+		totalDownloads += p.download_count ?? 0;
+		uniqueDownloads += p.unique_download_count ?? 0;
+	}
 
 	let likesOverTime: { date: string; count: number }[] = [];
 	if (presetIds.length > 0) {
@@ -670,12 +689,36 @@ export async function getCreatorAnalytics(
 		}
 	}
 
+	// Monetization sales statistics
+	let totalSalesCount = 0;
+	let totalGrossRevenue = 0;
+	let totalCreatorEarnings = 0;
+
+	const { data: salesData } = await client
+		.from("preset_orders")
+		.select("gross_amount, creator_payout_amount, payment_status")
+		.eq("seller_id", creatorId)
+		.eq("payment_status", "paid");
+
+	if (salesData) {
+		const sales = salesData as unknown as {
+			gross_amount: number;
+			creator_payout_amount: number;
+		}[];
+		totalSalesCount = sales.length;
+		for (const s of sales) {
+			totalGrossRevenue += Number(s.gross_amount || 0);
+			totalCreatorEarnings += Number(s.creator_payout_amount || 0);
+		}
+	}
+
 	const topPresets = (topPresetsData || []) as unknown as {
 		id: string;
 		title: string;
 		slug: string;
 		thumbnail_url: string;
 		download_count: number;
+		unique_download_count?: number;
 		like_count: number;
 		view_count: number;
 		status: string;
@@ -685,12 +728,21 @@ export async function getCreatorAnalytics(
 	const hasData =
 		topPresets.some(
 			(p) => p.download_count > 0 || p.like_count > 0 || p.view_count > 0,
-		) || likesOverTime.length > 0;
+		) ||
+		likesOverTime.length > 0 ||
+		totalSalesCount > 0;
 
 	return {
 		timeframe,
 		hasData,
+		totalDownloads,
+		uniqueDownloads,
 		topPresets,
 		likesOverTime,
+		monetization: {
+			totalSalesCount,
+			totalGrossRevenue: Number(totalGrossRevenue.toFixed(2)),
+			totalCreatorEarnings: Number(totalCreatorEarnings.toFixed(2)),
+		},
 	};
 }

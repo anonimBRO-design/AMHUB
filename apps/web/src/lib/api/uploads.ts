@@ -22,7 +22,12 @@ export const UPLOAD_LIMITS = {
 	},
 	thumbnail: {
 		maxBytes: 10 * 1024 * 1024, // 10 MB
-		allowedMimeTypes: ["image/jpeg", "image/jpg", "image/png", "image/webp"] as const,
+		allowedMimeTypes: [
+			"image/jpeg",
+			"image/jpg",
+			"image/png",
+			"image/webp",
+		] as const,
 		allowedExtensions: ["jpg", "jpeg", "png", "webp"] as const,
 	},
 	presetXml: {
@@ -32,7 +37,12 @@ export const UPLOAD_LIMITS = {
 	},
 	presetQr: {
 		maxBytes: 5 * 1024 * 1024, // 5 MB
-		allowedMimeTypes: ["image/png", "image/jpeg", "image/jpg", "image/webp"] as const,
+		allowedMimeTypes: [
+			"image/png",
+			"image/jpeg",
+			"image/jpg",
+			"image/webp",
+		] as const,
 		allowedExtensions: ["png", "jpg", "jpeg", "webp"] as const,
 	},
 	presetVideo: {

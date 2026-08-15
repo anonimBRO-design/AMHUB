@@ -168,7 +168,9 @@ export function MobileProfileView({ user, presets }: MobileProfileViewProps) {
 											<video
 												src={preset.previewVideoUrl}
 												poster={
-													hasThumb ? preset.thumbnailUrl : PRESET_PLACEHOLDER_SVG
+													hasThumb
+														? preset.thumbnailUrl
+														: PRESET_PLACEHOLDER_SVG
 												}
 												autoPlay
 												muted
@@ -179,7 +181,9 @@ export function MobileProfileView({ user, presets }: MobileProfileViewProps) {
 										) : (
 											<img
 												src={
-													hasThumb ? preset.thumbnailUrl : PRESET_PLACEHOLDER_SVG
+													hasThumb
+														? preset.thumbnailUrl
+														: PRESET_PLACEHOLDER_SVG
 												}
 												alt={preset.title}
 												className="absolute inset-0 w-full h-full object-contain transition-transform duration-300 group-hover:scale-105"

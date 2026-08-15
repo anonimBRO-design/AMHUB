@@ -1,10 +1,18 @@
 "use client";
 
 import { useAuth } from "@/context/AuthContext";
-import { Download, Eye, Heart, Play, Sparkles, MoreHorizontal, Trash2 } from "lucide-react";
+import {
+	Download,
+	Eye,
+	Heart,
+	MoreHorizontal,
+	Play,
+	Sparkles,
+	Trash2,
+} from "lucide-react";
+import { useRouter } from "next/navigation";
 import posthog from "posthog-js";
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { BookmarkButton } from "./BookmarkButton";
 import { ShareButton } from "./ShareButton";
 
@@ -39,18 +47,24 @@ export function Hero({ preset, currentUserId }: HeroProps) {
 	const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 	const [isDeleting, setIsDeleting] = useState(false);
 
-	const isOwner = Boolean(currentUserId && preset.creator?.id && currentUserId === preset.creator.id);
+	const isOwner = Boolean(
+		currentUserId && preset.creator?.id && currentUserId === preset.creator.id,
+	);
 
 	const handleDeletePreset = async () => {
 		setIsDeleting(true);
 		try {
-			const res = await fetch(`/api/presets/${preset.id}`, { method: "DELETE" });
+			const res = await fetch(`/api/presets/${preset.id}`, {
+				method: "DELETE",
+			});
 			if (!res.ok) {
 				const json = await res.json().catch(() => ({}));
 				throw new Error(json.error?.message || "Failed to delete preset");
 			}
 			setShowDeleteDialog(false);
-			router.push(preset.creator?.username ? `/u/${preset.creator.username}` : "/explore");
+			router.push(
+				preset.creator?.username ? `/u/${preset.creator.username}` : "/explore",
+			);
 			router.refresh();
 		} catch (err) {
 			console.error("Delete preset failed:", err);

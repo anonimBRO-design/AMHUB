@@ -24,6 +24,10 @@ export type PresetWithCreator = {
 	category: string;
 	difficulty: "beginner" | "intermediate" | "advanced";
 	download_count: number;
+	unique_download_count?: number;
+	price?: number;
+	is_paid?: boolean;
+	currency?: string;
 	view_count: number;
 	like_count: number;
 	bookmark_count: number;

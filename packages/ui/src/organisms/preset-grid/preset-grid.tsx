@@ -11,7 +11,14 @@ export interface PresetGridProps {
 	isLoading: boolean;
 	hasMore: boolean;
 	onLoadMore: () => void;
-	columns?: { xs?: number; sm?: number; md?: number; lg?: number; xl?: number; "2xl"?: number };
+	columns?: {
+		xs?: number;
+		sm?: number;
+		md?: number;
+		lg?: number;
+		xl?: number;
+		"2xl"?: number;
+	};
 	variant?: "masonry" | "equal";
 	emptyState?: React.ReactNode;
 	isOwnProfile?: boolean;

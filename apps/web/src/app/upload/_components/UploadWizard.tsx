@@ -1,6 +1,12 @@
 "use client";
 
-import type { PresetSourceFormat, PresetSourceType, ValidationResult } from "@/lib/validation/types";
+import { resolveStorageUrl } from "@/lib/supabase/storage-url";
+import type {
+	PresetSourceFormat,
+	PresetSourceType,
+	ValidationResult,
+} from "@/lib/validation/types";
+import type { PresetFileType } from "@presethub/types";
 import {
 	AlertCircle,
 	ArrowLeft,
@@ -18,8 +24,6 @@ import { PreviewVideoStep } from "./PreviewVideoStep";
 import { ReviewStep } from "./ReviewStep";
 import { ThumbnailStep } from "./ThumbnailStep";
 import { WizardProgress } from "./WizardProgress";
-import type { PresetFileType } from "@presethub/types";
-import { resolveStorageUrl } from "@/lib/supabase/storage-url";
 
 const WIZARD_STEPS = [
 	{ num: 1, label: "Format & File" },
@@ -37,7 +41,9 @@ export function UploadWizard() {
 	const [error, setError] = useState<string | null>(null);
 
 	// Multi-Select Preset Sources State
-	const [selectedFileTypes, setSelectedFileTypes] = useState<PresetSourceFormat[]>(["xml"]);
+	const [selectedFileTypes, setSelectedFileTypes] = useState<
+		PresetSourceFormat[]
+	>(["xml"]);
 
 	// Form State
 	const [presetFile, setPresetFile] = useState<File | null>(null);
@@ -62,7 +68,11 @@ export function UploadWizard() {
 
 	const isNextStepDisabled = () => {
 		if (currentStep === 1) {
-			return !validation.isValid || validation.isValidating || selectedFileTypes.length === 0;
+			return (
+				!validation.isValid ||
+				validation.isValidating ||
+				selectedFileTypes.length === 0
+			);
 		}
 		if (currentStep === 2) {
 			return !thumbnailFile;
@@ -81,7 +91,10 @@ export function UploadWizard() {
 				return;
 			}
 			if (!validation.isValid) {
-				setError(validation.error || "Please complete asset validation for all selected sources.");
+				setError(
+					validation.error ||
+						"Please complete asset validation for all selected sources.",
+				);
 				return;
 			}
 			setCurrentStep(2);
@@ -228,7 +241,9 @@ export function UploadWizard() {
 					case "slug":
 						return "Title generated an invalid slug. Try a different title.";
 					case "title":
-						return msg.includes("max") ? "Title is too long (max 100 chars)." : "Title is required.";
+						return msg.includes("max")
+							? "Title is too long (max 100 chars)."
+							: "Title is required.";
 					case "description":
 						return "Description is too long (max 2000 chars).";
 					case "thumbnail_url":
@@ -301,31 +316,33 @@ export function UploadWizard() {
 				);
 			}
 
-const getSafeVideoMimeType = (file: File): string => {
-	if (file.type && file.type.startsWith("video/")) {
-		return file.type;
-	}
-	const ext = file.name.split(".").pop()?.toLowerCase();
-	switch (ext) {
-		case "mp4":
-			return "video/mp4";
-		case "webm":
-			return "video/webm";
-		case "mov":
-			return "video/quicktime";
-		case "m4v":
-			return "video/x-m4v";
-		case "mkv":
-			return "video/x-matroska";
-		default:
-			return file.type || "video/mp4";
-	}
-};
+			const getSafeVideoMimeType = (file: File): string => {
+				if (file.type && file.type.startsWith("video/")) {
+					return file.type;
+				}
+				const ext = file.name.split(".").pop()?.toLowerCase();
+				switch (ext) {
+					case "mp4":
+						return "video/mp4";
+					case "webm":
+						return "video/webm";
+					case "mov":
+						return "video/quicktime";
+					case "m4v":
+						return "video/x-m4v";
+					case "mkv":
+						return "video/x-matroska";
+					default:
+						return file.type || "video/mp4";
+				}
+			};
 
 			// 2. Upload preview video
 			if (previewVideoFile) {
 				if (previewVideoFile.size > 50 * 1024 * 1024) {
-					throw new Error("Preview video is too large (maximum size is 50 MB).");
+					throw new Error(
+						"Preview video is too large (maximum size is 50 MB).",
+					);
 				}
 				const videoContentType = getSafeVideoMimeType(previewVideoFile);
 				uploadedPreviewVideoUrl = await uploadFile(
@@ -373,20 +390,26 @@ const getSafeVideoMimeType = (file: File): string => {
 			}
 
 			const fileTypesPayload = selectedFileTypes.map((t) =>
-				t === "xml" ? "xml" : t === "gdrive" ? "google_drive" : "alight_creative",
+				t === "xml"
+					? "xml"
+					: t === "gdrive"
+						? "google_drive"
+						: "alight_creative",
 			);
 
 			// Resolve full public URLs or valid string paths for database
 			const resolvedThumbnailUrl = uploadedThumbnailUrl
-				? (resolveStorageUrl(uploadedThumbnailUrl, "thumbnails") || uploadedThumbnailUrl)
+				? resolveStorageUrl(uploadedThumbnailUrl, "thumbnails") ||
+					uploadedThumbnailUrl
 				: "/placeholder.jpg";
 
 			const resolvedPreviewVideoUrl = uploadedPreviewVideoUrl
-				? (resolveStorageUrl(uploadedPreviewVideoUrl, "preset-videos") || uploadedPreviewVideoUrl)
+				? resolveStorageUrl(uploadedPreviewVideoUrl, "preset-videos") ||
+					uploadedPreviewVideoUrl
 				: undefined;
 
 			const resolvedFileUrl = finalFileUrl
-				? (resolveStorageUrl(finalFileUrl, "preset-files") || finalFileUrl)
+				? resolveStorageUrl(finalFileUrl, "preset-files") || finalFileUrl
 				: undefined;
 
 			// 4. Create Preset record
@@ -417,9 +440,18 @@ const getSafeVideoMimeType = (file: File): string => {
 			if (!createRes.ok) {
 				// Rollback uploaded files
 				const cleanupPaths = [];
-				if (uploadedThumbnailUrl) cleanupPaths.push({ bucket: "thumbnails", path: uploadedThumbnailUrl });
-				if (uploadedPreviewVideoUrl) cleanupPaths.push({ bucket: "preset-videos", path: uploadedPreviewVideoUrl });
-				if (finalFileUrl) cleanupPaths.push({ bucket: "preset-files", path: finalFileUrl });
+				if (uploadedThumbnailUrl)
+					cleanupPaths.push({
+						bucket: "thumbnails",
+						path: uploadedThumbnailUrl,
+					});
+				if (uploadedPreviewVideoUrl)
+					cleanupPaths.push({
+						bucket: "preset-videos",
+						path: uploadedPreviewVideoUrl,
+					});
+				if (finalFileUrl)
+					cleanupPaths.push({ bucket: "preset-files", path: finalFileUrl });
 
 				for (const item of cleanupPaths) {
 					try {
@@ -433,9 +465,12 @@ const getSafeVideoMimeType = (file: File): string => {
 					}
 				}
 
-				if (createJson.error?.code === "unprocessable_entity" && createJson.error.details) {
+				if (
+					createJson.error?.code === "unprocessable_entity" &&
+					createJson.error.details
+				) {
 					const details = createJson.error.details as any[];
-					const msg = details.map(d => `${d.path}: ${d.message}`).join(", ");
+					const msg = details.map((d) => `${d.path}: ${d.message}`).join(", ");
 					throw new Error(`Validation Error: ${msg}`);
 				}
 
@@ -451,7 +486,12 @@ const getSafeVideoMimeType = (file: File): string => {
 			});
 			router.push(`/preset/${slug}`);
 		} catch (err: unknown) {
-			const apiError = err as { code?: string; message?: string; details?: any; stack?: string };
+			const apiError = err as {
+				code?: string;
+				message?: string;
+				details?: any;
+				stack?: string;
+			};
 			setError(mapValidationError(apiError));
 			setIsLoading(false);
 		}

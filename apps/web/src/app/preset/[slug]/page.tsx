@@ -98,8 +98,10 @@ export default async function PresetDetailPage({ params }: PageProps) {
 		amLink: rawPreset.am_link,
 		aspectRatio: cardPreset.aspectRatio,
 		aspectRatios:
-			(rawPreset as { aspect_ratios?: string[]; aspectRatios?: string[] }).aspect_ratios ||
-			(rawPreset as { aspect_ratios?: string[]; aspectRatios?: string[] }).aspectRatios ||
+			(rawPreset as { aspect_ratios?: string[]; aspectRatios?: string[] })
+				.aspect_ratios ||
+			(rawPreset as { aspect_ratios?: string[]; aspectRatios?: string[] })
+				.aspectRatios ||
 			undefined,
 		isLiked: Boolean(likeRecord),
 		isBookmarked: Boolean(bookmarkRecord),

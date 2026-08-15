@@ -1,3 +1,4 @@
+import type { PresetSourceFormat } from "@/lib/validation/types";
 import {
 	ExternalLink,
 	FileCode,
@@ -5,7 +6,6 @@ import {
 	HardDrive,
 	Sparkles,
 } from "lucide-react";
-import type { PresetSourceFormat } from "@/lib/validation/types";
 import { useEffect } from "react";
 
 interface ReviewStepProps {
@@ -59,7 +59,6 @@ export function ReviewStep({
 
 			{/* Review Card */}
 			<div className="p-5 rounded-3xl bg-[var(--color-bg-base)] border border-[var(--color-border-subtle)] space-y-4 shadow-xl">
-
 				{/* Thumbnail or Video Preview */}
 				<div className="relative aspect-[9/16] w-full overflow-hidden rounded-2xl border border-[var(--color-border-subtle)] bg-[var(--color-bg-elevated)] group">
 					{videoPreviewUrl ? (

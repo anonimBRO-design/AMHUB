@@ -1,4 +1,8 @@
-import type { ValidationCheck, ValidationResult, PresetSourceType } from "./types";
+import type {
+	PresetSourceType,
+	ValidationCheck,
+	ValidationResult,
+} from "./types";
 
 const ALLOWED_DOMAINS = [
 	"alight.link",
@@ -14,11 +18,17 @@ const ALLOWED_DOMAINS = [
  * Classify the URL into one of the supported preset source types.
  * Returns { sourceType, domain } or { sourceType: "am_link" } as fallback.
  */
-function classifyUrl(parsedUrl: URL): { sourceType: PresetSourceType; domain: string } {
+function classifyUrl(parsedUrl: URL): {
+	sourceType: PresetSourceType;
+	domain: string;
+} {
 	const hostname = parsedUrl.hostname.toLowerCase();
 
 	// Alight Creative share links: https://alightcreative.com/am/share/...
-	if (hostname === "alightcreative.com" && parsedUrl.pathname.startsWith("/am/share/")) {
+	if (
+		hostname === "alightcreative.com" &&
+		parsedUrl.pathname.startsWith("/am/share/")
+	) {
 		return { sourceType: "alight_creative", domain: hostname };
 	}
 
@@ -37,7 +47,9 @@ function classifyUrl(parsedUrl: URL): { sourceType: PresetSourceType; domain: st
 	}
 
 	// Other allowed file hosts
-	if (ALLOWED_DOMAINS.some((d) => hostname === d || hostname.endsWith(`.${d}`))) {
+	if (
+		ALLOWED_DOMAINS.some((d) => hostname === d || hostname.endsWith(`.${d}`))
+	) {
 		return { sourceType: "am_link", domain: hostname };
 	}
 
@@ -50,7 +62,9 @@ function classifyUrl(parsedUrl: URL): { sourceType: PresetSourceType; domain: st
 	return { sourceType: "am_link", domain: hostname };
 }
 
-export async function validateAmLink(urlInput: string): Promise<ValidationResult> {
+export async function validateAmLink(
+	urlInput: string,
+): Promise<ValidationResult> {
 	const checks: ValidationCheck[] = [
 		{
 			id: "url_format",

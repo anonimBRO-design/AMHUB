@@ -238,9 +238,7 @@ export function AdminDashboardClient({
 					disabled={isLoading}
 					className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-2xl bg-[var(--color-bg-elevated)] border border-[var(--color-border-subtle)] hover:bg-[var(--color-bg-base)] text-xs font-semibold text-[var(--color-text-primary)] transition-all active:scale-95 disabled:opacity-50"
 				>
-					<RefreshCw
-						className={`w-4 h-4 ${isLoading ? "animate-spin" : ""}`}
-					/>
+					<RefreshCw className={`w-4 h-4 ${isLoading ? "animate-spin" : ""}`} />
 					<span>Refresh List</span>
 				</button>
 			</div>

@@ -230,7 +230,7 @@ export function SettingsClient({ profile }: SettingsClientProps) {
 											setError(
 												err instanceof Error
 													? err.message
-													: "Failed to upload banner"
+													: "Failed to upload banner",
 											);
 										}
 									}

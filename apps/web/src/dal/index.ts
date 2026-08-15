@@ -8,3 +8,6 @@ export * from "./likes.dal";
 export * from "./bookmarks.dal";
 export * from "./notifications.dal";
 export * from "./uploads.dal";
+export * from "./downloads.dal";
+export * from "./orders.dal";
+export * from "./reputation.dal";

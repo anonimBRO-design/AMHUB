@@ -221,38 +221,38 @@
 
 /* Glassmorphism Utility Classes (Replaced with Solid) */
 .glass-card {
-    background: var(--glass-bg);
-    /* backdrop-filter: blur(var(--glass-blur)); */
-    /* -webkit-backdrop-filter: blur(var(--glass-blur)); */
-    border: 1px solid var(--glass-border);
-    transition: all 0.3s var(--ease-expo-out);
+	background: var(--glass-bg);
+	/* backdrop-filter: blur(var(--glass-blur)); */
+	/* -webkit-backdrop-filter: blur(var(--glass-blur)); */
+	border: 1px solid var(--glass-border);
+	transition: all 0.3s var(--ease-expo-out);
 }
 
 .glass-card:hover {
-    background: var(--glass-bg-hover);
-    border-color: var(--glass-border-hover);
-    box-shadow: var(--shadow-card-hover);
+	background: var(--glass-bg-hover);
+	border-color: var(--glass-border-hover);
+	box-shadow: var(--shadow-card-hover);
 }
 
 .glass-header {
-    background: var(--color-bg-base);
-    border-bottom: 1px solid var(--glass-border);
+	background: var(--color-bg-base);
+	border-bottom: 1px solid var(--glass-border);
 }
 
 .glass-pill {
-    background: var(--glass-bg);
-    border: 1px solid var(--glass-border);
-    transition: all 0.2s var(--ease-expo-out);
+	background: var(--glass-bg);
+	border: 1px solid var(--glass-border);
+	transition: all 0.2s var(--ease-expo-out);
 }
 
 .glass-pill:hover {
-    background: var(--glass-bg-hover);
-    border-color: var(--glass-border-hover);
+	background: var(--glass-bg-hover);
+	border-color: var(--glass-border-hover);
 }
 
 .glass-pill-active {
-    background: var(--color-interactive-primary);
-    border: 1px solid var(--color-interactive-primary-hover);
+	background: var(--color-interactive-primary);
+	border: 1px solid var(--color-interactive-primary-hover);
 }
 
 /* Animations */

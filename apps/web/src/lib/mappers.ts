@@ -10,8 +10,20 @@ export function mapPresetToCardPreset(
 	preset: PresetWithCreator,
 ): PresetCardPreset {
 	const rawAspect =
-		(preset as { aspect_ratio?: string; aspectRatio?: string; aspect_ratios?: string[] }).aspect_ratio ||
-		(preset as { aspect_ratio?: string; aspectRatio?: string; aspect_ratios?: string[] }).aspectRatio ||
+		(
+			preset as {
+				aspect_ratio?: string;
+				aspectRatio?: string;
+				aspect_ratios?: string[];
+			}
+		).aspect_ratio ||
+		(
+			preset as {
+				aspect_ratio?: string;
+				aspectRatio?: string;
+				aspect_ratios?: string[];
+			}
+		).aspectRatio ||
 		(Array.isArray((preset as { aspect_ratios?: string[] }).aspect_ratios) &&
 		(preset as { aspect_ratios?: string[] }).aspect_ratios!.length > 0
 			? (preset as { aspect_ratios?: string[] }).aspect_ratios![0]

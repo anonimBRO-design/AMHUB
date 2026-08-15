@@ -75,9 +75,7 @@ export function CategoryScroller() {
 						>
 							<Icon
 								className={`w-4 h-4 ${
-									isActive
-										? "text-white"
-										: "text-[var(--color-text-tertiary)]"
+									isActive ? "text-white" : "text-[var(--color-text-tertiary)]"
 								}`}
 							/>
 							<span className="whitespace-nowrap font-medium">{cat.label}</span>

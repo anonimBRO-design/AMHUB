@@ -167,6 +167,10 @@ export interface Database {
 					am_version_max: Nullable<string>;
 					device_support: DeviceSupport[];
 					download_count: number;
+					unique_download_count: number;
+					price: number;
+					is_paid: boolean;
+					currency: string;
 					view_count: number;
 					like_count: number;
 					bookmark_count: number;
@@ -199,6 +203,10 @@ export interface Database {
 					am_version_max?: Nullable<string>;
 					device_support?: DeviceSupport[];
 					download_count?: number;
+					unique_download_count?: number;
+					price?: number;
+					is_paid?: boolean;
+					currency?: string;
 					view_count?: number;
 					like_count?: number;
 					bookmark_count?: number;
@@ -225,6 +233,116 @@ export interface Database {
 						columns: ["category"];
 						referencedRelation: "categories";
 						referencedColumns: ["slug"];
+					},
+				];
+			};
+			preset_downloads: {
+				Row: {
+					id: string;
+					preset_id: string;
+					user_id: Nullable<string>;
+					anonymous_token: Nullable<string>;
+					ip_hash: string;
+					user_agent_hash: Nullable<string>;
+					created_at: string;
+				};
+				Insert: {
+					id?: string;
+					preset_id: string;
+					user_id?: Nullable<string>;
+					anonymous_token?: Nullable<string>;
+					ip_hash: string;
+					user_agent_hash?: Nullable<string>;
+					created_at?: string;
+				};
+				Update: Partial<
+					Database["public"]["Tables"]["preset_downloads"]["Insert"]
+				>;
+				Relationships: [
+					{
+						foreignKeyName: "preset_downloads_preset_id_fkey";
+						columns: ["preset_id"];
+						referencedRelation: "presets";
+						referencedColumns: ["id"];
+					},
+					{
+						foreignKeyName: "preset_downloads_user_id_fkey";
+						columns: ["user_id"];
+						referencedRelation: "users";
+						referencedColumns: ["id"];
+					},
+				];
+			};
+			preset_orders: {
+				Row: {
+					id: string;
+					order_number: string;
+					preset_id: string;
+					buyer_id: string;
+					seller_id: string;
+					gross_amount: number;
+					currency: string;
+					payment_provider: string;
+					payment_reference: Nullable<string>;
+					payment_status:
+						| "pending"
+						| "paid"
+						| "failed"
+						| "refunded"
+						| "cancelled";
+					processor_fee: number;
+					net_amount: number;
+					creator_payout_amount: number;
+					platform_fee_amount: number;
+					paid_at: Nullable<string>;
+					created_at: string;
+					updated_at: string;
+				};
+				Insert: {
+					id?: string;
+					order_number: string;
+					preset_id: string;
+					buyer_id: string;
+					seller_id: string;
+					gross_amount: number;
+					currency?: string;
+					payment_provider?: string;
+					payment_reference?: Nullable<string>;
+					payment_status?:
+						| "pending"
+						| "paid"
+						| "failed"
+						| "refunded"
+						| "cancelled";
+					processor_fee?: number;
+					net_amount?: number;
+					creator_payout_amount?: number;
+					platform_fee_amount?: number;
+					paid_at?: Nullable<string>;
+					created_at?: string;
+					updated_at?: string;
+				};
+				Update: Partial<
+					Database["public"]["Tables"]["preset_orders"]["Insert"]
+				>;
+				Relationships: [
+					{
+						foreignKeyName: "preset_orders_preset_id_fkey";
+						columns: ["preset_id"];
+						referencedRelation: "presets";
+						referencedColumns: ["id"];
+					},
+					{
+						foreignKeyName: "preset_orders_buyer_id_fkey";
+						columns: ["buyer_id"];
+						referencedRelation: "users";
+						referencedColumns: ["id"];
+					},
+					{
+						foreignKeyName: "preset_orders_seller_id_fkey";
+						columns: ["seller_id"];
+						referencedRelation: "users";
+						referencedColumns: ["id"];
 					},
 				];
 			};
@@ -538,6 +656,8 @@ export type UserMini = {
 export type Category = Tables<"categories">;
 export type Tag = Tables<"tags">;
 export type Preset = Tables<"presets">;
+export type PresetDownload = Tables<"preset_downloads">;
+export type PresetOrder = Tables<"preset_orders">;
 export type PresetTag = Tables<"preset_tags">;
 export type PresetLike = Tables<"preset_likes">;
 export type Bookmark = Tables<"preset_bookmarks">;

@@ -17,13 +17,23 @@ const presetUploadRequestSchema = z.discriminatedUnion("upload_type", [
 	z.object({
 		upload_type: z.literal("qr"),
 		filename: z.string().trim().min(1).max(255),
-		content_type: z.enum(["image/jpeg", "image/jpg", "image/png", "image/webp"]),
+		content_type: z.enum([
+			"image/jpeg",
+			"image/jpg",
+			"image/png",
+			"image/webp",
+		]),
 		size: z.number().int().min(1).max(UPLOAD_LIMITS.presetQr.maxBytes),
 	}),
 	z.object({
 		upload_type: z.literal("thumbnail"),
 		filename: z.string().trim().min(1).max(255),
-		content_type: z.enum(["image/jpeg", "image/jpg", "image/png", "image/webp"]),
+		content_type: z.enum([
+			"image/jpeg",
+			"image/jpg",
+			"image/png",
+			"image/webp",
+		]),
 		size: z.number().int().min(1).max(UPLOAD_LIMITS.thumbnail.maxBytes),
 	}),
 	z.object({

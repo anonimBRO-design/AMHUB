@@ -1,6 +1,9 @@
-import type { PresetFileType } from "@presethub/types";
 import { ApiError } from "@/lib/api/errors";
-import { createSupabaseServerClient, createSupabaseServiceClient } from "./server";
+import type { PresetFileType } from "@presethub/types";
+import {
+	createSupabaseServerClient,
+	createSupabaseServiceClient,
+} from "./server";
 export { resolveStorageUrl } from "./storage-url";
 
 export const storageBuckets = {
@@ -48,7 +51,9 @@ export async function createSignedUploadUrl(
 ) {
 	const serviceClient = createSupabaseServiceClient();
 
-	console.log(`[STORAGE SIGNED UPLOAD] Creating signed URL: bucket='${bucket}', path='${path}'`);
+	console.log(
+		`[STORAGE SIGNED UPLOAD] Creating signed URL: bucket='${bucket}', path='${path}'`,
+	);
 
 	const { data, error } = await serviceClient.storage
 		.from(bucket)
