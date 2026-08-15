@@ -136,15 +136,21 @@ export async function PATCH(request: NextRequest) {
 
 		if (!updatedUser) {
 			console.error("Failed to update verification status:", updateErr);
-			const errObj = updateErr as { message?: string } | null;
-			let userMsg = errObj?.message || "Failed to update verification status";
-			if (
-				userMsg.includes("schema cache") ||
-				userMsg.includes("permission denied")
+			const errObj = updateErr as { message?: string; code?: string } | null;
+			const rawMsg = errObj?.message || "";
+			let userMsg = rawMsg || "Failed to update verification status";
+
+			if (rawMsg.includes("schema cache") || errObj?.code === "PGRST202") {
+				userMsg =
+					"Database migration required: Function public.admin_verify_user is not installed in Supabase. Please run 20260815000000_admin_users_rpc_permissions.sql in Supabase SQL Editor.";
+			} else if (
+				rawMsg.includes("permission denied") ||
+				errObj?.code === "42501"
 			) {
 				userMsg =
-					"Migration required: Run 20260815000000_admin_users_rpc_permissions.sql in Supabase SQL Editor & check SUPABASE_SERVICE_ROLE_KEY in Vercel.";
+					"Permission denied (42501): Ensure SUPABASE_SERVICE_ROLE_KEY is configured in Vercel Environment Variables and run 20260815000000_admin_users_rpc_permissions.sql in Supabase SQL Editor.";
 			}
+
 			return apiErrorResponse(
 				new ApiError({
 					code: "internal_server_error",
