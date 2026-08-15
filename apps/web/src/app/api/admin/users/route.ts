@@ -164,7 +164,7 @@ export async function DELETE(request: NextRequest) {
 			);
 		}
 
-		const { profile: callerProfile, user: callerUser } = authContext;
+		const { supabase, profile: callerProfile, user: callerUser } = authContext;
 
 		// 2. Validate admin role from server-verified profile / auth token
 		if (!isAdminProfile(callerProfile, callerUser)) {
@@ -196,22 +196,18 @@ export async function DELETE(request: NextRequest) {
 		}
 
 		// 4. Instantiate Service Role Client for privileged deletion
-		let serviceSupabase: ReturnType<typeof createSupabaseServiceClient>;
+		let serviceSupabase: ReturnType<typeof createSupabaseServiceClient> | null =
+			null;
 		try {
 			serviceSupabase = createSupabaseServiceClient();
 		} catch (e) {
-			console.error("Service role client unavailable for delete operation:", e);
-			return apiErrorResponse(
-				new ApiError({
-					code: "internal_server_error",
-					message:
-						"Server configuration error: Service role credentials unavailable",
-				}),
-			);
+			console.warn("Service role client unavailable for delete operation:", e);
 		}
 
+		const activeClient = serviceSupabase || supabase;
+
 		// 5. Fetch target user profile
-		const { data: targetUser, error: fetchErr } = await serviceSupabase
+		const { data: targetUser, error: fetchErr } = await activeClient
 			.from("users")
 			.select("*")
 			.eq("id", targetUserId)
@@ -244,138 +240,166 @@ export async function DELETE(request: NextRequest) {
 			);
 		}
 
-		// 7. Clean up Storage Files
-		const buckets = ["avatars", "thumbnails", "preset-files", "preset-videos"];
-		for (const bucket of buckets) {
-			try {
-				const { data: files } = await serviceSupabase.storage
-					.from(bucket)
-					.list(targetUserId);
-				if (files && files.length > 0) {
-					const paths = files.map((f) => `${targetUserId}/${f.name}`);
-					await serviceSupabase.storage.from(bucket).remove(paths);
+		// 7. Clean up Storage Files if serviceSupabase is available
+		if (serviceSupabase) {
+			const buckets = ["avatars", "thumbnails", "preset-files", "preset-videos"];
+			for (const bucket of buckets) {
+				try {
+					const { data: files } = await serviceSupabase.storage
+						.from(bucket)
+						.list(targetUserId);
+					if (files && files.length > 0) {
+						const paths = files.map((f) => `${targetUserId}/${f.name}`);
+						await serviceSupabase.storage.from(bucket).remove(paths);
+					}
+				} catch (e) {
+					console.warn(`Storage cleanup warning for bucket ${bucket}:`, e);
 				}
-			} catch (e) {
-				console.warn(`Storage cleanup warning for bucket ${bucket}:`, e);
 			}
 		}
 
-		// 8. Delete related DB content safely
-		// 8a. Notifications
-		await serviceSupabase
-			.from("notifications")
-			.delete()
-			.or(`user_id.eq.${targetUserId},actor_id.eq.${targetUserId}`);
+		// 8. Delete from DB using Security Definer RPC or direct service role deletion cascade
+		let deleteSuccess = false;
+		let deleteErr: unknown = null;
 
-		// 8b. Likes & Bookmarks
-		await serviceSupabase
-			.from("preset_likes")
-			.delete()
-			.eq("user_id", targetUserId);
-		await serviceSupabase
-			.from("preset_bookmarks")
-			.delete()
-			.eq("user_id", targetUserId);
+		// 8a. Try Security Definer RPC first (bypasses RLS & PostgreSQL table permissions)
+		try {
+			const rpcRes = await (
+				activeClient.rpc as unknown as (
+					fn: string,
+					args: Record<string, unknown>,
+				) => Promise<{ data: unknown; error: unknown }>
+			)("admin_delete_user", {
+				target_user_id: targetUserId,
+			});
 
-		// 8c. Follows
-		await serviceSupabase
-			.from("follows")
-			.delete()
-			.or(`follower_id.eq.${targetUserId},following_id.eq.${targetUserId}`);
+			if (!rpcRes.error) {
+				deleteSuccess = true;
+			} else {
+				deleteErr = rpcRes.error;
+			}
+		} catch (e) {
+			deleteErr = e;
+		}
 
-		// 8d. Comments
-		await serviceSupabase
-			.from("comments")
-			.delete()
-			.eq("user_id", targetUserId);
-
-		// 8e. Presets created by user
-		const { data: rawPresets } = await serviceSupabase
-			.from("presets")
-			.select("id")
-			.eq("creator_id", targetUserId);
-
-		const userPresets = (rawPresets || []) as unknown as Array<{ id: string }>;
-
-		if (userPresets.length > 0) {
-			const presetIds = userPresets.map((p) => p.id);
-			for (const pid of presetIds) {
-				await serviceSupabase
-					.from("preset_tags")
-					.delete()
-					.eq("preset_id", pid);
-				await serviceSupabase
-					.from("preset_likes")
-					.delete()
-					.eq("preset_id", pid);
-				await serviceSupabase
-					.from("preset_bookmarks")
-					.delete()
-					.eq("preset_id", pid);
-				await serviceSupabase
-					.from("collection_items")
-					.delete()
-					.eq("preset_id", pid);
-				await serviceSupabase
-					.from("comments")
-					.delete()
-					.eq("preset_id", pid);
+		// 8b. Direct table cascade fallback if RPC is not installed on remote database yet
+		if (!deleteSuccess && serviceSupabase) {
+			try {
 				await serviceSupabase
 					.from("notifications")
 					.delete()
-					.eq("preset_id", pid);
-			}
-			await serviceSupabase
-				.from("presets")
-				.delete()
-				.eq("creator_id", targetUserId);
-		}
-
-		// 8f. Collections owned by user
-		const { data: rawCollections } = await serviceSupabase
-			.from("collections")
-			.select("id")
-			.eq("owner_id", targetUserId);
-
-		const userCollections = (rawCollections || []) as unknown as Array<{
-			id: string;
-		}>;
-
-		if (userCollections.length > 0) {
-			for (const col of userCollections) {
+					.or(`user_id.eq.${targetUserId},actor_id.eq.${targetUserId}`);
 				await serviceSupabase
-					.from("collection_items")
+					.from("preset_likes")
 					.delete()
-					.eq("collection_id", col.id);
+					.eq("user_id", targetUserId);
+				await serviceSupabase
+					.from("preset_bookmarks")
+					.delete()
+					.eq("user_id", targetUserId);
+				await serviceSupabase
+					.from("follows")
+					.delete()
+					.or(`follower_id.eq.${targetUserId},following_id.eq.${targetUserId}`);
+				await serviceSupabase
+					.from("comments")
+					.delete()
+					.eq("user_id", targetUserId);
+
+				const { data: rawPresets } = await serviceSupabase
+					.from("presets")
+					.select("id")
+					.eq("creator_id", targetUserId);
+				const userPresets = (rawPresets || []) as unknown as Array<{
+					id: string;
+				}>;
+				if (userPresets.length > 0) {
+					for (const pid of userPresets.map((p) => p.id)) {
+						await serviceSupabase
+							.from("preset_tags")
+							.delete()
+							.eq("preset_id", pid);
+						await serviceSupabase
+							.from("preset_likes")
+							.delete()
+							.eq("preset_id", pid);
+						await serviceSupabase
+							.from("preset_bookmarks")
+							.delete()
+							.eq("preset_id", pid);
+						await serviceSupabase
+							.from("collection_items")
+							.delete()
+							.eq("preset_id", pid);
+						await serviceSupabase
+							.from("comments")
+							.delete()
+							.eq("preset_id", pid);
+						await serviceSupabase
+							.from("notifications")
+							.delete()
+							.eq("preset_id", pid);
+					}
+					await serviceSupabase
+						.from("presets")
+						.delete()
+						.eq("creator_id", targetUserId);
+				}
+
+				const { data: rawCollections } = await serviceSupabase
+					.from("collections")
+					.select("id")
+					.eq("owner_id", targetUserId);
+				const userCollections = (rawCollections || []) as unknown as Array<{
+					id: string;
+				}>;
+				if (userCollections.length > 0) {
+					for (const col of userCollections) {
+						await serviceSupabase
+							.from("collection_items")
+							.delete()
+							.eq("collection_id", col.id);
+					}
+					await serviceSupabase
+						.from("collections")
+						.delete()
+						.eq("owner_id", targetUserId);
+				}
+
+				const { error: profileErr } = await serviceSupabase
+					.from("users")
+					.delete()
+					.eq("id", targetUserId);
+
+				if (!profileErr) {
+					deleteSuccess = true;
+				} else {
+					deleteErr = profileErr;
+				}
+			} catch (e) {
+				deleteErr = e;
 			}
-			await serviceSupabase
-				.from("collections")
-				.delete()
-				.eq("owner_id", targetUserId);
 		}
 
-		// 8g. Delete from public.users table using Service Role
-		const { error: deleteProfileErr } = await serviceSupabase
-			.from("users")
-			.delete()
-			.eq("id", targetUserId);
-
-		if (deleteProfileErr) {
-			console.error("Failed to delete user profile:", deleteProfileErr);
+		if (!deleteSuccess) {
+			console.error("Failed to delete user profile:", deleteErr);
+			const errObj = deleteErr as { message?: string } | null;
 			return apiErrorResponse(
 				new ApiError({
 					code: "internal_server_error",
-					message: "Failed to delete user profile record",
+					message: errObj?.message || "Failed to delete user profile record",
 				}),
 			);
 		}
 
 		// 9. Delete Auth User from auth.users using Supabase Admin Auth API
-		const { error: deleteAuthErr } =
-			await serviceSupabase.auth.admin.deleteUser(targetUserId);
+		if (serviceSupabase) {
+			const { error: deleteAuthErr } =
+				await serviceSupabase.auth.admin.deleteUser(targetUserId);
 
-		if (deleteAuthErr) {
-			console.warn("Auth user delete warning:", deleteAuthErr);
+			if (deleteAuthErr) {
+				console.warn("Auth user delete warning:", deleteAuthErr);
+			}
 		}
 
 		return apiResponse({
@@ -387,4 +411,5 @@ export async function DELETE(request: NextRequest) {
 		return apiErrorResponse(error);
 	}
 }
+
 

@@ -20,7 +20,7 @@ export async function PATCH(request: NextRequest) {
 			);
 		}
 
-		const { profile, user } = authContext;
+		const { supabase, profile, user } = authContext;
 
 		// 2. Validate admin role from server-verified profile / auth token
 		if (!isAdminProfile(profile, user)) {
@@ -49,22 +49,18 @@ export async function PATCH(request: NextRequest) {
 		}
 
 		// 4. Instantiate Service Role Client for privileged update
-		let serviceSupabase: ReturnType<typeof createSupabaseServiceClient>;
+		let serviceSupabase: ReturnType<typeof createSupabaseServiceClient> | null =
+			null;
 		try {
 			serviceSupabase = createSupabaseServiceClient();
 		} catch (e) {
-			console.error("Service role client unavailable for verify operation:", e);
-			return apiErrorResponse(
-				new ApiError({
-					code: "internal_server_error",
-					message:
-						"Server configuration error: Service role credentials unavailable",
-				}),
-			);
+			console.warn("Service role client unavailable for verify operation:", e);
 		}
 
+		const activeClient = serviceSupabase || supabase;
+
 		// 5. Verify target user exists
-		const { data: targetUser, error: fetchErr } = await serviceSupabase
+		const { data: targetUser, error: fetchErr } = await activeClient
 			.from("users")
 			.select("id, username, display_name, is_verified")
 			.eq("id", userId)
@@ -76,38 +72,83 @@ export async function PATCH(request: NextRequest) {
 			);
 		}
 
-		// 6. Perform UPDATE on public.users
-		const { data: updatedUser, error: updateErr } = await serviceSupabase
-			.from("users")
-			.update({ is_verified } as never)
-			.eq("id", userId)
-			.select("id, username, display_name, is_verified")
-			.single();
-
-		if (updateErr || !updatedUser) {
-			console.error("Failed to update verification status:", updateErr);
-			return apiErrorResponse(
-				new ApiError({
-					code: "internal_server_error",
-					message: "Failed to update verification status",
-				}),
-			);
-		}
-
-		const target = updatedUser as unknown as {
+		// 6. Perform UPDATE on public.users using Service Role or Security Definer RPC
+		let updatedUser: {
 			id: string;
 			username: string;
 			display_name: string;
 			is_verified: boolean;
-		};
+		} | null = null;
+		let updateErr: unknown = null;
+
+		if (serviceSupabase) {
+			const res = await serviceSupabase
+				.from("users")
+				.update({ is_verified } as never)
+				.eq("id", userId)
+				.select("id, username, display_name, is_verified")
+				.maybeSingle();
+
+			if (!res.error && res.data) {
+				updatedUser = res.data as unknown as {
+					id: string;
+					username: string;
+					display_name: string;
+					is_verified: boolean;
+				};
+			} else {
+				updateErr = res.error;
+			}
+		}
+
+		// Fallback to SECURITY DEFINER RPC function if direct update failed or serviceSupabase unavailable
+		if (!updatedUser) {
+			const rpcRes = await (
+				activeClient.rpc as unknown as (
+					fn: string,
+					args: Record<string, unknown>,
+				) => Promise<{ data: unknown; error: unknown }>
+			)("admin_verify_user", {
+				target_user_id: userId,
+				target_status: is_verified,
+			});
+
+			if (!rpcRes.error && rpcRes.data) {
+				const rpcData = rpcRes.data as unknown as {
+					id: string;
+					username: string;
+					is_verified: boolean;
+				};
+				updatedUser = {
+					id: rpcData.id,
+					username: rpcData.username,
+					display_name: (targetUser as { display_name: string }).display_name,
+					is_verified: rpcData.is_verified,
+				};
+			} else if (rpcRes.error) {
+				updateErr = rpcRes.error;
+			}
+		}
+
+		if (!updatedUser) {
+			console.error("Failed to update verification status:", updateErr);
+			const errObj = updateErr as { message?: string } | null;
+			return apiErrorResponse(
+				new ApiError({
+					code: "internal_server_error",
+					message: errObj?.message || "Failed to update verification status",
+				}),
+			);
+		}
 
 		return apiResponse({
 			success: true,
-			user: target,
-			message: `Account @${target.username} ${is_verified ? "verified" : "unverified"} successfully.`,
+			user: updatedUser,
+			message: `Account @${updatedUser.username} ${is_verified ? "verified" : "unverified"} successfully.`,
 		});
 	} catch (error) {
 		return apiErrorResponse(error);
 	}
 }
+
 
