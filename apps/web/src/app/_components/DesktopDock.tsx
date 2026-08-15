@@ -14,6 +14,7 @@ import {
 	ShieldAlert,
 	Sparkles,
 	User as UserIcon,
+	Users,
 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -61,6 +62,12 @@ export function DesktopDock({
 			label: t.common.explore,
 			href: "/explore",
 			icon: Compass,
+		},
+		{
+			id: "creators",
+			label: "Kreator",
+			href: "/creators",
+			icon: Users,
 		},
 		{
 			id: "upload",

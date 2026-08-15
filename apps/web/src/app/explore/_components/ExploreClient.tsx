@@ -48,8 +48,20 @@ export function ExploreClient({ presets }: ExploreClientProps) {
 						<span>Explore Catalog</span>
 					</div>
 					<h1 className="font-display text-3xl sm:text-4xl font-extrabold tracking-tight text-white">
-						Discover Alight Motion Presets
+						Discover AMHUB Catalog
 					</h1>
+					{/* Navigation Tabs */}
+					<div className="flex items-center gap-2 pt-2">
+						<span className="px-4 py-1.5 rounded-xl bg-purple-600 text-white text-xs font-bold shadow-md shadow-purple-600/30">
+							Presets
+						</span>
+						<a
+							href="/creators"
+							className="px-4 py-1.5 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 text-white/70 hover:text-white text-xs font-semibold transition-all"
+						>
+							Jelajahi Kreator
+						</a>
+					</div>
 				</div>
 
 				<div className="relative z-10 flex items-center gap-2 px-4 py-2 rounded-2xl backdrop-blur-xl bg-purple-500/10 border border-purple-500/20 text-purple-300 text-xs font-bold tracking-wide w-fit">
