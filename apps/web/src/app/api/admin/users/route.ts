@@ -12,10 +12,11 @@ export async function GET(request: NextRequest) {
 			authContext = await requireApiProfile();
 		} catch (authErr) {
 			console.error("Admin user list auth error:", authErr);
-			const msg =
-				authErr instanceof Error ? authErr.message : "Authentication failed";
 			return apiErrorResponse(
-				new ApiError({ code: "unauthorized", message: `Auth Error: ${msg}` }),
+				new ApiError({
+					code: "unauthorized",
+					message: "Authentication is required",
+				}),
 			);
 		}
 
@@ -33,7 +34,7 @@ export async function GET(request: NextRequest) {
 		const { searchParams } = new URL(request.url);
 		const query = searchParams.get("q")?.trim() || "";
 
-		// Attempt to instantiate service role client, fallback to authenticated caller client if key is missing/invalid
+		// Attempt to instantiate service role client, fallback to caller client for read-only user query
 		let dbClient = supabase;
 		let serviceSupabase: ReturnType<typeof createSupabaseServiceClient> | null =
 			null;
@@ -42,7 +43,7 @@ export async function GET(request: NextRequest) {
 			dbClient = serviceSupabase;
 		} catch (e) {
 			console.warn(
-				"Service role client unavailable, using authenticated admin client:",
+				"Service role client unavailable, using authenticated admin client for search:",
 				e,
 			);
 		}
@@ -65,7 +66,7 @@ export async function GET(request: NextRequest) {
 			}
 		}
 
-		// Query users matching the pattern used by Home page (select("*"))
+		// Query users matching the pattern used by Home page
 		let dbQuery = dbClient.from("users").select("*", { count: "exact" });
 
 		if (query) {
@@ -86,7 +87,6 @@ export async function GET(request: NextRequest) {
 			}
 		}
 
-		// Try ordering by created_at, fallback to unordered query if created_at column is missing
 		let usersResult = await dbQuery.order("created_at", { ascending: false });
 
 		if (usersResult.error) {
@@ -101,10 +101,12 @@ export async function GET(request: NextRequest) {
 
 		if (error) {
 			console.error("Admin user search failed:", error);
-			throw new ApiError({
-				code: "internal_server_error",
-				message: `Database error (${error.code || "UNKNOWN"}): ${error.message || JSON.stringify(error)}`,
-			});
+			return apiErrorResponse(
+				new ApiError({
+					code: "internal_server_error",
+					message: "Database error while fetching users",
+				}),
+			);
 		}
 
 		const mappedUsers = (users || []).map((u) => {
@@ -149,19 +151,33 @@ export async function GET(request: NextRequest) {
 
 export async function DELETE(request: NextRequest) {
 	try {
-		const { supabase, profile: callerProfile, user: callerUser } =
-			await requireApiProfile();
+		// 1. Authenticate caller and ensure user profile exists
+		let authContext: Awaited<ReturnType<typeof requireApiProfile>>;
+		try {
+			authContext = await requireApiProfile();
+		} catch {
+			return apiErrorResponse(
+				new ApiError({
+					code: "unauthorized",
+					message: "Authentication is required",
+				}),
+			);
+		}
 
+		const { profile: callerProfile, user: callerUser } = authContext;
+
+		// 2. Validate admin role from server-verified profile / auth token
 		if (!isAdminProfile(callerProfile, callerUser)) {
 			return apiErrorResponse(
 				new ApiError({ code: "forbidden", message: "Admin access required" }),
 			);
 		}
 
+		// 3. Validate request payload
 		const body = await request.json().catch(() => ({}));
 		const { userId: targetUserId } = body;
 
-		if (!targetUserId || typeof targetUserId !== "string") {
+		if (!targetUserId || typeof targetUserId !== "string" || !targetUserId.trim()) {
 			return apiErrorResponse(
 				new ApiError({
 					code: "bad_request",
@@ -179,18 +195,23 @@ export async function DELETE(request: NextRequest) {
 			);
 		}
 
-		let serviceSupabase: ReturnType<typeof createSupabaseServiceClient> | null =
-			null;
+		// 4. Instantiate Service Role Client for privileged deletion
+		let serviceSupabase: ReturnType<typeof createSupabaseServiceClient>;
 		try {
 			serviceSupabase = createSupabaseServiceClient();
 		} catch (e) {
-			console.warn("Service role client unavailable for delete operation:", e);
+			console.error("Service role client unavailable for delete operation:", e);
+			return apiErrorResponse(
+				new ApiError({
+					code: "internal_server_error",
+					message:
+						"Server configuration error: Service role credentials unavailable",
+				}),
+			);
 		}
 
-		const dbClient = serviceSupabase || supabase;
-
-		// Fetch target user profile
-		const { data: targetUser, error: fetchErr } = await dbClient
+		// 5. Fetch target user profile
+		const { data: targetUser, error: fetchErr } = await serviceSupabase
 			.from("users")
 			.select("*")
 			.eq("id", targetUserId)
@@ -209,7 +230,7 @@ export async function DELETE(request: NextRequest) {
 			is_staff?: boolean;
 		};
 
-		// Prevent deleting another admin or @afgan
+		// 6. Prevent deleting another admin or @afgan
 		if (
 			targetProfile.username.toLowerCase() === "afgan" ||
 			targetProfile.is_staff ||
@@ -223,54 +244,53 @@ export async function DELETE(request: NextRequest) {
 			);
 		}
 
-		// Step 1: Clean up Storage Files if serviceSupabase is available
-		if (serviceSupabase) {
-			const buckets = [
-				"avatars",
-				"thumbnails",
-				"preset-files",
-				"preset-videos",
-			];
-			for (const bucket of buckets) {
-				try {
-					const { data: files } = await serviceSupabase.storage
-						.from(bucket)
-						.list(targetUserId);
-					if (files && files.length > 0) {
-						const paths = files.map((f) => `${targetUserId}/${f.name}`);
-						await serviceSupabase.storage.from(bucket).remove(paths);
-					}
-				} catch (e) {
-					console.warn(`Storage cleanup warning for bucket ${bucket}:`, e);
+		// 7. Clean up Storage Files
+		const buckets = ["avatars", "thumbnails", "preset-files", "preset-videos"];
+		for (const bucket of buckets) {
+			try {
+				const { data: files } = await serviceSupabase.storage
+					.from(bucket)
+					.list(targetUserId);
+				if (files && files.length > 0) {
+					const paths = files.map((f) => `${targetUserId}/${f.name}`);
+					await serviceSupabase.storage.from(bucket).remove(paths);
 				}
+			} catch (e) {
+				console.warn(`Storage cleanup warning for bucket ${bucket}:`, e);
 			}
 		}
 
-		// Step 2: Delete related DB content safely
-		// 2a. Notifications
-		await dbClient
+		// 8. Delete related DB content safely
+		// 8a. Notifications
+		await serviceSupabase
 			.from("notifications")
 			.delete()
 			.or(`user_id.eq.${targetUserId},actor_id.eq.${targetUserId}`);
 
-		// 2b. Likes & Bookmarks
-		await dbClient.from("preset_likes").delete().eq("user_id", targetUserId);
-		await dbClient
+		// 8b. Likes & Bookmarks
+		await serviceSupabase
+			.from("preset_likes")
+			.delete()
+			.eq("user_id", targetUserId);
+		await serviceSupabase
 			.from("preset_bookmarks")
 			.delete()
 			.eq("user_id", targetUserId);
 
-		// 2c. Follows
-		await dbClient
+		// 8c. Follows
+		await serviceSupabase
 			.from("follows")
 			.delete()
 			.or(`follower_id.eq.${targetUserId},following_id.eq.${targetUserId}`);
 
-		// 2d. Comments
-		await dbClient.from("comments").delete().eq("user_id", targetUserId);
+		// 8d. Comments
+		await serviceSupabase
+			.from("comments")
+			.delete()
+			.eq("user_id", targetUserId);
 
-		// 2e. Presets created by user
-		const { data: rawPresets } = await dbClient
+		// 8e. Presets created by user
+		const { data: rawPresets } = await serviceSupabase
 			.from("presets")
 			.select("id")
 			.eq("creator_id", targetUserId);
@@ -280,18 +300,39 @@ export async function DELETE(request: NextRequest) {
 		if (userPresets.length > 0) {
 			const presetIds = userPresets.map((p) => p.id);
 			for (const pid of presetIds) {
-				await dbClient.from("preset_tags").delete().eq("preset_id", pid);
-				await dbClient.from("preset_likes").delete().eq("preset_id", pid);
-				await dbClient.from("preset_bookmarks").delete().eq("preset_id", pid);
-				await dbClient.from("collection_items").delete().eq("preset_id", pid);
-				await dbClient.from("comments").delete().eq("preset_id", pid);
-				await dbClient.from("notifications").delete().eq("preset_id", pid);
+				await serviceSupabase
+					.from("preset_tags")
+					.delete()
+					.eq("preset_id", pid);
+				await serviceSupabase
+					.from("preset_likes")
+					.delete()
+					.eq("preset_id", pid);
+				await serviceSupabase
+					.from("preset_bookmarks")
+					.delete()
+					.eq("preset_id", pid);
+				await serviceSupabase
+					.from("collection_items")
+					.delete()
+					.eq("preset_id", pid);
+				await serviceSupabase
+					.from("comments")
+					.delete()
+					.eq("preset_id", pid);
+				await serviceSupabase
+					.from("notifications")
+					.delete()
+					.eq("preset_id", pid);
 			}
-			await dbClient.from("presets").delete().eq("creator_id", targetUserId);
+			await serviceSupabase
+				.from("presets")
+				.delete()
+				.eq("creator_id", targetUserId);
 		}
 
-		// 2f. Collections owned by user
-		const { data: rawCollections } = await dbClient
+		// 8f. Collections owned by user
+		const { data: rawCollections } = await serviceSupabase
 			.from("collections")
 			.select("id")
 			.eq("owner_id", targetUserId);
@@ -302,39 +343,39 @@ export async function DELETE(request: NextRequest) {
 
 		if (userCollections.length > 0) {
 			for (const col of userCollections) {
-				await dbClient
+				await serviceSupabase
 					.from("collection_items")
 					.delete()
 					.eq("collection_id", col.id);
 			}
-			await dbClient
+			await serviceSupabase
 				.from("collections")
 				.delete()
 				.eq("owner_id", targetUserId);
 		}
 
-		// 2g. Delete from public.users table
-		const { error: deleteProfileErr } = await dbClient
+		// 8g. Delete from public.users table using Service Role
+		const { error: deleteProfileErr } = await serviceSupabase
 			.from("users")
 			.delete()
 			.eq("id", targetUserId);
 
 		if (deleteProfileErr) {
 			console.error("Failed to delete user profile:", deleteProfileErr);
-			throw new ApiError({
-				code: "internal_server_error",
-				message: `Failed to delete user profile record (${deleteProfileErr.code || "UNKNOWN"}): ${deleteProfileErr.message || JSON.stringify(deleteProfileErr)}`,
-			});
+			return apiErrorResponse(
+				new ApiError({
+					code: "internal_server_error",
+					message: "Failed to delete user profile record",
+				}),
+			);
 		}
 
-		// Step 3: Delete Auth User from auth.users using Supabase Admin Auth API if serviceSupabase available
-		if (serviceSupabase) {
-			const { error: deleteAuthErr } =
-				await serviceSupabase.auth.admin.deleteUser(targetUserId);
+		// 9. Delete Auth User from auth.users using Supabase Admin Auth API
+		const { error: deleteAuthErr } =
+			await serviceSupabase.auth.admin.deleteUser(targetUserId);
 
-			if (deleteAuthErr) {
-				console.warn("Auth user delete warning:", deleteAuthErr);
-			}
+		if (deleteAuthErr) {
+			console.warn("Auth user delete warning:", deleteAuthErr);
 		}
 
 		return apiResponse({
@@ -346,3 +387,4 @@ export async function DELETE(request: NextRequest) {
 		return apiErrorResponse(error);
 	}
 }
+
