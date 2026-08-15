@@ -103,40 +103,52 @@ export async function PATCH(request: NextRequest) {
 
 		// Fallback to SECURITY DEFINER RPC function if direct update failed or serviceSupabase unavailable
 		if (!updatedUser) {
-			const rpcRes = await (
-				activeClient.rpc as unknown as (
-					fn: string,
-					args: Record<string, unknown>,
-				) => Promise<{ data: unknown; error: unknown }>
-			)("admin_verify_user", {
-				target_user_id: userId,
-				target_status: is_verified,
-			});
+			try {
+				const rpcRes = await (
+					activeClient.rpc as unknown as (
+						fn: string,
+						args: Record<string, unknown>,
+					) => Promise<{ data: unknown; error: unknown }>
+				)("admin_verify_user", {
+					target_user_id: userId,
+					target_status: is_verified,
+				});
 
-			if (!rpcRes.error && rpcRes.data) {
-				const rpcData = rpcRes.data as unknown as {
-					id: string;
-					username: string;
-					is_verified: boolean;
-				};
-				updatedUser = {
-					id: rpcData.id,
-					username: rpcData.username,
-					display_name: (targetUser as { display_name: string }).display_name,
-					is_verified: rpcData.is_verified,
-				};
-			} else if (rpcRes.error) {
-				updateErr = rpcRes.error;
+				if (!rpcRes.error && rpcRes.data) {
+					const rpcData = rpcRes.data as unknown as {
+						id: string;
+						username: string;
+						is_verified: boolean;
+					};
+					updatedUser = {
+						id: rpcData.id,
+						username: rpcData.username,
+						display_name: (targetUser as { display_name: string }).display_name,
+						is_verified: rpcData.is_verified,
+					};
+				} else if (rpcRes.error) {
+					updateErr = rpcRes.error;
+				}
+			} catch (e) {
+				updateErr = e;
 			}
 		}
 
 		if (!updatedUser) {
 			console.error("Failed to update verification status:", updateErr);
 			const errObj = updateErr as { message?: string } | null;
+			let userMsg = errObj?.message || "Failed to update verification status";
+			if (
+				userMsg.includes("schema cache") ||
+				userMsg.includes("permission denied")
+			) {
+				userMsg =
+					"Migration required: Run 20260815000000_admin_users_rpc_permissions.sql in Supabase SQL Editor & check SUPABASE_SERVICE_ROLE_KEY in Vercel.";
+			}
 			return apiErrorResponse(
 				new ApiError({
 					code: "internal_server_error",
-					message: errObj?.message || "Failed to update verification status",
+					message: userMsg,
 				}),
 			);
 		}

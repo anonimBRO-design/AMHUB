@@ -258,32 +258,11 @@ export async function DELETE(request: NextRequest) {
 			}
 		}
 
-		// 8. Delete from DB using Security Definer RPC or direct service role deletion cascade
+		// 8. Delete from DB using Service Role direct cascade or Security Definer RPC
 		let deleteSuccess = false;
 		let deleteErr: unknown = null;
 
-		// 8a. Try Security Definer RPC first (bypasses RLS & PostgreSQL table permissions)
-		try {
-			const rpcRes = await (
-				activeClient.rpc as unknown as (
-					fn: string,
-					args: Record<string, unknown>,
-				) => Promise<{ data: unknown; error: unknown }>
-			)("admin_delete_user", {
-				target_user_id: targetUserId,
-			});
-
-			if (!rpcRes.error) {
-				deleteSuccess = true;
-			} else {
-				deleteErr = rpcRes.error;
-			}
-		} catch (e) {
-			deleteErr = e;
-		}
-
-		// 8b. Direct table cascade fallback if RPC is not installed on remote database yet
-		if (!deleteSuccess && serviceSupabase) {
+		if (serviceSupabase) {
 			try {
 				await serviceSupabase
 					.from("notifications")
@@ -381,13 +360,43 @@ export async function DELETE(request: NextRequest) {
 			}
 		}
 
+		// Fallback to Security Definer RPC if direct service role deletion failed or serviceSupabase unavailable
+		if (!deleteSuccess) {
+			try {
+				const rpcRes = await (
+					activeClient.rpc as unknown as (
+						fn: string,
+						args: Record<string, unknown>,
+					) => Promise<{ data: unknown; error: unknown }>
+				)("admin_delete_user", {
+					target_user_id: targetUserId,
+				});
+
+				if (!rpcRes.error) {
+					deleteSuccess = true;
+				} else {
+					deleteErr = rpcRes.error;
+				}
+			} catch (e) {
+				deleteErr = e;
+			}
+		}
+
 		if (!deleteSuccess) {
 			console.error("Failed to delete user profile:", deleteErr);
 			const errObj = deleteErr as { message?: string } | null;
+			let userMsg = errObj?.message || "Failed to delete user profile record";
+			if (
+				userMsg.includes("schema cache") ||
+				userMsg.includes("permission denied")
+			) {
+				userMsg =
+					"Migration required: Run 20260815000000_admin_users_rpc_permissions.sql in Supabase SQL Editor & check SUPABASE_SERVICE_ROLE_KEY in Vercel.";
+			}
 			return apiErrorResponse(
 				new ApiError({
 					code: "internal_server_error",
-					message: errObj?.message || "Failed to delete user profile record",
+					message: userMsg,
 				}),
 			);
 		}
