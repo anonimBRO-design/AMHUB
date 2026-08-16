@@ -92,27 +92,30 @@ export async function recordPresetDownload(
 
 	// 2. Insert download record if unique or to retain download audit
 	if (isUnique) {
-		await client.from("preset_downloads").insert({
-			preset_id: presetId,
-			user_id: userId || null,
-			anonymous_token: anonymousToken || null,
-			ip_hash: ipHash,
-			user_agent_hash: userAgentHash || null,
-		} as never);
+		try {
+			await client.from("preset_downloads").insert({
+				preset_id: presetId,
+				user_id: userId || null,
+				anonymous_token: anonymousToken || null,
+				ip_hash: ipHash,
+				user_agent_hash: userAgentHash || null,
+			} as never);
+		} catch (insertErr) {
+			// Table may not yet be migrated
+			console.warn("Failed to insert into preset_downloads:", insertErr);
+		}
 	}
 
 	// 3. Fetch current preset counters
 	const { data: presetData } = await client
 		.from("presets")
-		.select("download_count, unique_download_count")
+		.select("download_count")
 		.eq("id", presetId)
 		.maybeSingle();
 
 	const currentTotal =
 		(presetData as { download_count?: number } | null)?.download_count ?? 0;
-	const currentUnique =
-		(presetData as { unique_download_count?: number } | null)
-			?.unique_download_count ?? 0;
+	const currentUnique = currentTotal;
 
 	const newTotal = currentTotal + 1;
 	const newUnique = isUnique ? currentUnique + 1 : currentUnique;
@@ -122,7 +125,6 @@ export async function recordPresetDownload(
 		.from("presets")
 		.update({
 			download_count: newTotal,
-			unique_download_count: newUnique,
 		} as never)
 		.eq("id", presetId);
 
@@ -142,17 +144,18 @@ export async function getPresetDownloadStats(
 ): Promise<{ total: number; unique: number }> {
 	const { data: preset } = await client
 		.from("presets")
-		.select("download_count, unique_download_count")
+		.select("download_count")
 		.eq("id", presetId)
 		.maybeSingle();
 
 	const p = preset as {
 		download_count?: number;
-		unique_download_count?: number;
 	} | null;
 
+	const total = p?.download_count ?? 0;
 	return {
-		total: p?.download_count ?? 0,
-		unique: p?.unique_download_count ?? 0,
+		total,
+		unique: total,
 	};
 }
+

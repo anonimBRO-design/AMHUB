@@ -177,7 +177,7 @@ export async function checkUserPresetAccess(
 ): Promise<{ hasAccess: boolean; isPaid: boolean; price: number }> {
 	const { data: preset } = await client
 		.from("presets")
-		.select("creator_id, is_paid, price")
+		.select("creator_id")
 		.eq("id", presetId)
 		.maybeSingle();
 
@@ -185,31 +185,42 @@ export async function checkUserPresetAccess(
 		return { hasAccess: false, isPaid: false, price: 0 };
 	}
 
-	const p = preset as { creator_id: string; is_paid: boolean; price: number };
+	const p = preset as { creator_id: string; is_paid?: boolean; price?: number };
+	const isPaid = Boolean(p.is_paid && (p.price ?? 0) > 0);
+	const price = p.price ?? 0;
 
-	if (!p.is_paid || p.price <= 0) {
+	if (!isPaid) {
 		return { hasAccess: true, isPaid: false, price: 0 };
 	}
 
 	if (userId && p.creator_id === userId) {
-		return { hasAccess: true, isPaid: true, price: p.price };
+		return { hasAccess: true, isPaid: true, price };
 	}
 
 	if (!userId) {
-		return { hasAccess: false, isPaid: true, price: p.price };
+		return { hasAccess: false, isPaid: true, price };
 	}
 
-	const { data: order } = await client
-		.from("preset_orders")
-		.select("id")
-		.eq("preset_id", presetId)
-		.eq("buyer_id", userId)
-		.eq("payment_status", "paid")
-		.maybeSingle();
+	try {
+		const { data: order } = await client
+			.from("preset_orders")
+			.select("id")
+			.eq("preset_id", presetId)
+			.eq("buyer_id", userId)
+			.eq("payment_status", "paid")
+			.maybeSingle();
 
-	return {
-		hasAccess: Boolean(order),
-		isPaid: true,
-		price: p.price,
-	};
+		return {
+			hasAccess: Boolean(order),
+			isPaid: true,
+			price,
+		};
+	} catch {
+		return {
+			hasAccess: true,
+			isPaid: false,
+			price: 0,
+		};
+	}
 }
+

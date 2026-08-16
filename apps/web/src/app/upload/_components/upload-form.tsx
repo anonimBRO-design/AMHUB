@@ -167,8 +167,11 @@ export function UploadForm() {
 				throw new Error(createJson.error?.message || "Failed to create preset");
 			}
 
-			router.push(`/preset/${slug}`);
+			const destinationSlug = createJson.data?.slug ?? createJson.slug ?? slug;
+			router.push(`/preset/${destinationSlug}`);
 		} catch (err: unknown) {
+
+
 			setError(
 				err instanceof Error ? err.message : "An unexpected error occurred.",
 			);

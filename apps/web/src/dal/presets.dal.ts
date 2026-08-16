@@ -22,10 +22,6 @@ export const PRESET_SELECT_WITH_CREATOR = `
 	tags,
 	status,
 	download_count,
-	unique_download_count,
-	price,
-	is_paid,
-	currency,
 	view_count,
 	like_count,
 	bookmark_count,
@@ -40,6 +36,7 @@ export const PRESET_SELECT_WITH_CREATOR = `
 		is_verified
 	)
 `;
+
 
 export interface ListPresetsFilter {
 	page: number;
@@ -147,58 +144,54 @@ export async function createPreset(
 
 	const { file_types, ...insertData } = data;
 
-	const insertPayload = {
-		...insertData,
-		status: insertData.status || "published",
-		creator_id: creatorId,
-	};
+	let currentSlug = insertData.slug;
+	let attempts = 0;
+	let lastError: any = null;
 
-	const {
-		data: { user: insertClientUser },
-	} = await (client as any).auth.getUser();
+	while (attempts < 3) {
+		attempts++;
+		const insertPayload = {
+			...insertData,
+			slug: currentSlug,
+			status: insertData.status || "published",
+			creator_id: creatorId,
+		};
 
-	console.log(`[FINAL INSERT DEBUG] ${tag}`, {
-		userId: insertClientUser?.id ?? null,
-		creatorId: insertPayload.creator_id ?? null,
-		creatorMatchesAuth: insertPayload.creator_id === insertClientUser?.id,
-		slug: insertPayload.slug ?? null,
-		category: insertPayload.category ?? null,
-		status: insertPayload.status ?? null,
-	});
+		console.log(`[FINAL RAW INSERT EXECUTING] ${tag} (attempt ${attempts}, slug: ${currentSlug})...`);
+		const rawInsertResult = await client
+			.from("presets")
+			.insert([insertPayload] as never);
 
-	console.log(`[FINAL RAW INSERT EXECUTING] ${tag}...`);
-	const rawInsertResult = await client
-		.from("presets")
-		.insert([insertPayload] as never);
+		if (rawInsertResult.error) {
+			lastError = rawInsertResult.error;
+			// If unique violation on slug, retry with random suffix
+			if (rawInsertResult.error.code === "23505" && rawInsertResult.error.message?.includes("slug")) {
+				console.warn(`[SLUG COLLISION DETECTED] ${tag} slug ${currentSlug} already exists, retrying with unique suffix...`);
+				currentSlug = `${insertData.slug.slice(0, 80)}-${Math.random().toString(36).slice(2, 6)}`;
+				continue;
+			}
+			console.error(`[FINAL RAW INSERT ERROR] ${tag}`, rawInsertResult.error);
+			throw rawInsertResult.error;
+		}
 
-	console.log(`[FINAL INSERT RESULT] ${tag}`, {
-		status: rawInsertResult.status,
-		statusText: rawInsertResult.statusText,
-		errorCode: rawInsertResult.error?.code ?? null,
-		errorMessage: rawInsertResult.error?.message ?? null,
-		errorDetails: rawInsertResult.error?.details ?? null,
-		errorHint: rawInsertResult.error?.hint ?? null,
-	});
+		console.log(`[FINAL RAW INSERT SUCCESS, FETCHING CREATED RECORD] ${tag}...`);
+		const { data: preset, error: selectError } = await client
+			.from("presets")
+			.select("*")
+			.eq("slug", currentSlug)
+			.single();
 
-	if (rawInsertResult.error) {
-		console.error(`[FINAL RAW INSERT ERROR] ${tag}`, rawInsertResult.error);
-		throw rawInsertResult.error;
+		if (selectError) {
+			console.error(`[FINAL SELECT ERROR] ${tag}`, selectError);
+			throw selectError;
+		}
+
+		return preset;
 	}
 
-	console.log(`[FINAL RAW INSERT SUCCESS, FETCHING CREATED RECORD] ${tag}...`);
-	const { data: preset, error: selectError } = await client
-		.from("presets")
-		.select("*")
-		.eq("slug", insertPayload.slug)
-		.single();
-
-	if (selectError) {
-		console.error(`[FINAL SELECT ERROR] ${tag}`, selectError);
-		throw selectError;
-	}
-
-	return preset;
+	throw lastError || new Error("Failed to create preset after multiple attempts.");
 }
+
 
 export async function getPresetById(client: DalClient, id: string) {
 	const { data: preset, error } = await client
@@ -642,7 +635,7 @@ export async function getCreatorAnalytics(
 	const { data: topPresetsData } = await client
 		.from("presets")
 		.select(
-			"id, title, slug, thumbnail_url, download_count, unique_download_count, like_count, view_count, status, created_at",
+			"id, title, slug, thumbnail_url, download_count, like_count, view_count, status, created_at",
 		)
 		.eq("creator_id", creatorId)
 		.order("download_count", { ascending: false })
@@ -650,22 +643,20 @@ export async function getCreatorAnalytics(
 
 	const { data: creatorPresetIds } = await client
 		.from("presets")
-		.select("id, download_count, unique_download_count")
+		.select("id, download_count")
 		.eq("creator_id", creatorId);
 
 	const presetRows = (creatorPresetIds || []) as unknown as {
 		id: string;
 		download_count?: number;
-		unique_download_count?: number;
 	}[];
 
 	const presetIds = presetRows.map((p) => p.id);
 	let totalDownloads = 0;
-	let uniqueDownloads = 0;
 	for (const p of presetRows) {
 		totalDownloads += p.download_count ?? 0;
-		uniqueDownloads += p.unique_download_count ?? 0;
 	}
+	const uniqueDownloads = totalDownloads;
 
 	let likesOverTime: { date: string; count: number }[] = [];
 	if (presetIds.length > 0) {
@@ -694,22 +685,26 @@ export async function getCreatorAnalytics(
 	let totalGrossRevenue = 0;
 	let totalCreatorEarnings = 0;
 
-	const { data: salesData } = await client
-		.from("preset_orders")
-		.select("gross_amount, creator_payout_amount, payment_status")
-		.eq("seller_id", creatorId)
-		.eq("payment_status", "paid");
+	try {
+		const { data: salesData } = await client
+			.from("preset_orders")
+			.select("gross_amount, creator_payout_amount, payment_status")
+			.eq("seller_id", creatorId)
+			.eq("payment_status", "paid");
 
-	if (salesData) {
-		const sales = salesData as unknown as {
-			gross_amount: number;
-			creator_payout_amount: number;
-		}[];
-		totalSalesCount = sales.length;
-		for (const s of sales) {
-			totalGrossRevenue += Number(s.gross_amount || 0);
-			totalCreatorEarnings += Number(s.creator_payout_amount || 0);
+		if (salesData) {
+			const sales = salesData as unknown as {
+				gross_amount: number;
+				creator_payout_amount: number;
+			}[];
+			totalSalesCount = sales.length;
+			for (const s of sales) {
+				totalGrossRevenue += Number(s.gross_amount || 0);
+				totalCreatorEarnings += Number(s.creator_payout_amount || 0);
+			}
 		}
+	} catch {
+		// Table may not yet exist in remote database
 	}
 
 	const topPresets = (topPresetsData || []) as unknown as {

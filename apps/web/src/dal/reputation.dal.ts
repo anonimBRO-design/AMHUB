@@ -42,28 +42,27 @@ export async function getCreatorReputation(
 	// 2. Fetch Creator's published presets and download counters
 	const { data: presetsData } = await client
 		.from("presets")
-		.select("id, download_count, unique_download_count, like_count")
+		.select("id, download_count, like_count")
 		.eq("creator_id", creatorId)
 		.eq("status", "published");
 
 	const presets = (presetsData || []) as unknown as {
 		id: string;
 		download_count: number;
-		unique_download_count: number;
 		like_count: number;
 	}[];
 
 	const presetIds = presets.map((p) => p.id);
 
 	let totalDownloads = 0;
-	let uniqueDownloads = 0;
 	let totalRawLikes = 0;
 
 	for (const p of presets) {
 		totalDownloads += p.download_count ?? 0;
-		uniqueDownloads += p.unique_download_count ?? 0;
 		totalRawLikes += p.like_count ?? 0;
 	}
+	const uniqueDownloads = totalDownloads;
+
 
 	// 3. Evaluate Quality Likes
 	let qualityLikes = 0;

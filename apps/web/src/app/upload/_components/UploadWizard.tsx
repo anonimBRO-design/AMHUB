@@ -484,8 +484,10 @@ export function UploadWizard() {
 				category,
 				difficulty,
 			});
-			router.push(`/preset/${slug}`);
+			const destinationSlug = createJson.data?.slug ?? createJson.slug ?? slug;
+			router.push(`/preset/${destinationSlug}`);
 		} catch (err: unknown) {
+
 			const apiError = err as {
 				code?: string;
 				message?: string;
