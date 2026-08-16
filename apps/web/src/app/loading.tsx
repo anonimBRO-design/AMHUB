@@ -7,10 +7,14 @@ export default function Loading() {
 				<img
 					src="/logo.png"
 					alt="AMHUB Logo"
-					className="w-18 h-18 object-contain rounded-2xl animate-pulse"
+					width={64}
+					height={64}
+					className="w-16 h-16 object-contain rounded-2xl animate-pulse shrink-0"
+					style={{ width: 64, height: 64, maxWidth: 64, maxHeight: 64 }}
 				/>
 				<Loader2 className="w-6 h-6 text-[var(--color-interactive-primary)] animate-spin absolute -bottom-2 -right-2 bg-[var(--color-bg-surface)] rounded-full p-0.5 border border-[var(--color-border-subtle)]" />
 			</div>
+
 			<div className="space-y-1">
 				<h2 className="text-base font-extrabold text-[var(--color-text-primary)]">
 					AMHUB

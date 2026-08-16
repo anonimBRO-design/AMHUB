@@ -10,8 +10,12 @@ export function Hero() {
 				<img
 					src="/logo.png"
 					alt="AMHUB Logo"
-					className="w-20 h-20 sm:w-24 sm:h-24 object-contain rounded-2xl shadow-2xl border-2 border-[var(--color-border-subtle)]"
+					width={80}
+					height={80}
+					className="w-20 h-20 sm:w-24 sm:h-24 object-contain rounded-2xl shadow-2xl border-2 border-[var(--color-border-subtle)] shrink-0"
+					style={{ width: "100%", height: "100%", maxWidth: 96, maxHeight: 96 }}
 				/>
+
 
 				<div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[var(--color-interactive-primary)]/10 text-[var(--color-interactive-primary)] border border-[var(--color-interactive-primary)]/20 text-xs font-bold uppercase tracking-wider">
 					<Sparkles className="w-3.5 h-3.5" />

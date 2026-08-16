@@ -38,13 +38,20 @@ export const TopBar = ({
 					aria-label="AMHUB — Home"
 					className="flex items-center gap-3 hover:opacity-90 transition-all duration-300 active:scale-[0.97]"
 				>
-					<div className="relative p-1.5 rounded-xl bg-[var(--color-interactive-primary)]/10 border border-[var(--color-border-accent)]/20">
+					<div
+						className="relative p-1.5 rounded-xl bg-[var(--color-interactive-primary)]/10 border border-[var(--color-border-accent)]/20 shrink-0 flex items-center justify-center overflow-hidden"
+						style={{ width: 36, height: 36, minWidth: 36, minHeight: 36 }}
+					>
 						<img
 							src="/logo.png"
 							alt="AMHUB Logo"
-							className="h-7 w-7 object-contain rounded-lg"
+							width={28}
+							height={28}
+							className="h-7 w-7 object-contain rounded-lg shrink-0"
+							style={{ width: 28, height: 28, maxWidth: 28, maxHeight: 28 }}
 						/>
 					</div>
+
 					<span className="font-display text-xl font-extrabold tracking-tight text-white">
 						{pageTitle || "AMHUB"}
 					</span>

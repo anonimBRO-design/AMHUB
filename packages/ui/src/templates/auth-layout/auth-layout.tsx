@@ -27,8 +27,12 @@ export const AuthLayout = ({ children }: AuthLayoutProps) => {
 					<img
 						src="/logo.png"
 						alt="AMHUB Logo"
-						className="h-10 w-10 object-contain rounded-xl shadow-md"
+						width={40}
+						height={40}
+						className="h-10 w-10 object-contain rounded-xl shadow-md shrink-0"
+						style={{ width: 40, height: 40, maxWidth: 40, maxHeight: 40 }}
 					/>
+
 					<span className="text-2xl font-extrabold tracking-tight text-[var(--color-text-primary)]">
 						AMHUB
 					</span>

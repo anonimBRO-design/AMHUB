@@ -54,8 +54,12 @@ export const NavigationSidebar = ({
 					<img
 						src="/logo.png"
 						alt="AMHUB Logo"
-						className="h-9 w-9 object-contain rounded-lg"
+						width={36}
+						height={36}
+						className="h-9 w-9 object-contain rounded-lg shrink-0"
+						style={{ width: 36, height: 36, maxWidth: 36, maxHeight: 36 }}
 					/>
+
 					<span className="text-xl font-extrabold tracking-tight text-[var(--color-text-primary)]">
 						AMHUB
 					</span>

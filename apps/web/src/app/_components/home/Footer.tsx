@@ -20,8 +20,12 @@ export function Footer() {
 							<img
 								src="/logo.png"
 								alt="AMHUB Logo"
-								className="h-8 w-8 object-contain rounded-lg"
+								width={32}
+								height={32}
+								className="h-8 w-8 object-contain rounded-lg shrink-0"
+								style={{ width: 32, height: 32, maxWidth: 32, maxHeight: 32 }}
 							/>
+
 							<span>AMHUB</span>
 						</Link>
 						<p className="font-body text-xs text-[var(--color-text-tertiary)] leading-relaxed">
