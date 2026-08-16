@@ -70,13 +70,9 @@ export function Hero({ user }: HeroProps) {
 								maxHeight: "100%",
 							}}
 						/>
-						{user.isVerified && (
-							<div className="absolute bottom-1 right-1 p-1 rounded-full bg-[var(--color-interactive-primary)] text-white shadow-lg z-10">
-								<CheckCircle2 className="w-4 h-4 fill-current" />
-							</div>
-						)}
 					</div>
 				</div>
+
 
 				{/* Identity Info */}
 				<div className="space-y-2">

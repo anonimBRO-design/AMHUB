@@ -82,7 +82,6 @@ export const CreatorCard = React.forwardRef<HTMLDivElement, CreatorCardProps>(
 						src={creator.avatarUrl}
 						alt={`${creator.displayName}'s profile photo`}
 						size={variant === "card" ? "xl" : "sm"}
-						isVerified={creator.isVerified}
 						level={creator.level}
 					/>
 
@@ -92,12 +91,23 @@ export const CreatorCard = React.forwardRef<HTMLDivElement, CreatorCardProps>(
 							variant === "card" ? "items-center" : "items-start",
 						)}
 					>
-						<h3 className="text-[var(--font-size-heading-sm)] font-semibold text-[var(--color-text-primary)]">
-							{creator.displayName}
-						</h3>
+						<div className="flex items-center gap-1.5">
+							<h3 className="text-[var(--font-size-heading-sm)] font-semibold text-[var(--color-text-primary)]">
+								{creator.displayName}
+							</h3>
+							{creator.isVerified && (
+								<span
+									className="inline-flex items-center justify-center h-4 w-4 rounded-full bg-[var(--color-interactive-primary)] text-white text-[9px] font-bold shrink-0"
+									title="Verified Creator"
+								>
+									✓
+								</span>
+							)}
+						</div>
 						<p className="text-[var(--font-size-body-sm)] text-[var(--color-text-secondary)]">
 							@{creator.username}
 						</p>
+
 						{variant === "card" && creator.bio && (
 							<p className="mt-2 text-[var(--font-size-body-sm)] text-[var(--color-text-secondary)]">
 								{creator.bio}

@@ -78,12 +78,8 @@ export function CreatorCard({ creator }: CreatorCardProps) {
 								{creator.displayName.slice(0, 2).toUpperCase()}
 							</div>
 						)}
-						{creator.isVerified && (
-							<div className="absolute -bottom-0.5 -right-0.5 p-0.5 rounded-full bg-[var(--color-interactive-primary)] text-white shadow-md">
-								<CheckCircle2 className="w-3.5 h-3.5 fill-current" />
-							</div>
-						)}
 					</div>
+
 
 					<div className="min-w-0">
 						<div className="flex items-center gap-1.5">

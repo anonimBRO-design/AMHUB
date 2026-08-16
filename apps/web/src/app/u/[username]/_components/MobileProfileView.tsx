@@ -38,21 +38,25 @@ export function MobileProfileView({ user, presets }: MobileProfileViewProps) {
 						alt={user.displayName}
 						className="w-full h-full rounded-full border-4 border-surface shadow-2xl object-cover bg-base"
 					/>
-					{user.isVerified && (
-						<div className="absolute bottom-0 right-0 w-7 h-7 bg-interactive-primary rounded-full flex items-center justify-center border-2 border-surface">
-							<ShieldCheck className="w-4 h-4 text-white" />
-						</div>
-					)}
 				</div>
 
 				{/* USER INFO */}
-				<div className="text-center mt-3">
-					<h1 className="text-2xl font-black text-primary flex items-center justify-center gap-1">
-						{user.displayName}
-					</h1>
+				<div className="text-center mt-3 space-y-1">
+					<div className="flex items-center justify-center gap-2 flex-wrap">
+						<h1 className="text-2xl font-black text-primary">
+							{user.displayName}
+						</h1>
+						{user.isVerified && (
+							<span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-interactive-primary/10 text-interactive-primary border border-interactive-primary/20">
+								<ShieldCheck className="w-3 h-3" />
+								<span>Verified Creator</span>
+							</span>
+						)}
+					</div>
 					<p className="text-[15px] text-tertiary font-medium">
 						@{user.username}
 					</p>
+
 					{user.bio && (
 						<p className="text-[15px] text-secondary max-w-sm mx-auto mt-2 text-center">
 							{user.bio}

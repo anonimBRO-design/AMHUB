@@ -201,13 +201,24 @@ export function Hero({ stats, featuredPreset }: HeroProps) {
 													</div>
 												)}
 												<div>
-													<span className="font-body text-xs font-bold text-white block">
-														{featuredPreset.creator.displayName}
-													</span>
+													<div className="flex items-center gap-1">
+														<span className="font-body text-xs font-bold text-white block truncate">
+															{featuredPreset.creator.displayName}
+														</span>
+														{featuredPreset.creator.isVerified && (
+															<span
+																className="inline-flex items-center justify-center h-3 w-3 rounded-full bg-[var(--color-interactive-primary)] text-white text-[7px] font-black shrink-0 shadow-sm"
+																title="Verified Creator"
+															>
+																✓
+															</span>
+														)}
+													</div>
 													<span className="font-body text-[10px] text-purple-300 font-semibold">
 														@{featuredPreset.creator.username}
 													</span>
 												</div>
+
 											</div>
 
 											<div className="flex items-center gap-3 text-xs font-semibold">

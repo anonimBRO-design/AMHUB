@@ -144,17 +144,8 @@ const Avatar = React.forwardRef<HTMLDivElement, AvatarProps>(
 					</div>
 				)}
 
-				{isVerified && (
-					<div
-						className="absolute bottom-0 right-0 h-[30%] w-[30%] rounded-full bg-[var(--color-interactive-primary)] border-2 border-[var(--color-bg-base)] flex items-center justify-center text-[var(--color-text-inverse)]"
-						aria-label="Verified creator"
-						aria-hidden="false"
-					>
-						<Check className="h-[70%] w-[70%]" />
-					</div>
-				)}
-
 				{status && (
+
 					<div
 						className={cn(
 							"absolute bottom-0 right-0 h-[25%] w-[25%] rounded-full border border-[var(--color-bg-base)]",

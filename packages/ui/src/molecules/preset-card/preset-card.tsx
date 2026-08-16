@@ -271,14 +271,24 @@ export const PresetCard = React.forwardRef<HTMLDivElement, PresetCardProps>(
 										src={preset.creator.avatarUrl}
 										alt={`${preset.creator.displayName}'s profile photo`}
 										size="sm"
-										isVerified={preset.creator.isVerified}
 									/>
 								</div>
-								<span className="text-[var(--font-size-label-md)] font-medium text-[var(--color-text-primary)]">
-									@{preset.creator.username}
-								</span>
+								<div className="flex items-center gap-1.5 min-w-0">
+									<span className="text-[var(--font-size-label-md)] font-medium text-[var(--color-text-primary)] truncate">
+										@{preset.creator.username}
+									</span>
+									{preset.creator.isVerified && (
+										<span
+											className="inline-flex items-center justify-center h-3.5 w-3.5 rounded-full bg-[var(--color-interactive-primary)] text-white text-[8px] font-black shrink-0 shadow-sm"
+											title="Verified Creator"
+										>
+											✓
+										</span>
+									)}
+								</div>
 							</a>
 						</div>
+
 						{showFollow && (
 							<Button
 								variant="ghost"
