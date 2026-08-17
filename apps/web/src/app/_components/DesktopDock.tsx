@@ -70,17 +70,17 @@ export function DesktopDock({
 			icon: Users,
 		},
 		{
+			id: "bookmarks",
+			label: t.common.bookmarks,
+			href: "/bookmarks",
+			icon: Bookmark,
+		},
+		{
 			id: "upload",
 			label: t.common.upload,
 			href: "/upload",
 			icon: PlusCircle,
 			isSpecial: true,
-		},
-		{
-			id: "bookmarks",
-			label: t.common.bookmarks,
-			href: "/bookmarks",
-			icon: Bookmark,
 		},
 		{
 			id: "likes",
