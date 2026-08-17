@@ -97,10 +97,10 @@ export function CreatorCard({ creator }: CreatorCardProps) {
 
 				{isOwnProfile ? (
 					<Link
-						href="/settings"
+						href="/settings/profile"
 						className="inline-flex items-center justify-center gap-1.5 min-h-[44px] px-4 rounded-2xl text-xs font-bold bg-[var(--color-bg-elevated)] text-[var(--color-text-secondary)] border border-[var(--color-border-subtle)] hover:text-[var(--color-text-primary)] hover:border-[var(--color-border-strong)] transition-all active:scale-95 shrink-0"
 					>
-						<span>Your Profile</span>
+						<span>Edit Profile</span>
 					</Link>
 				) : (
 					<button

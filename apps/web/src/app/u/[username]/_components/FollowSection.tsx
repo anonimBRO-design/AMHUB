@@ -92,11 +92,11 @@ export function FollowSection({
 		<div className="flex items-center gap-2">
 			{isOwnProfileState ? (
 				<Link
-					href="/settings"
+					href="/settings/profile"
 					className="flex-1 inline-flex items-center justify-center gap-2 min-h-[44px] px-5 rounded-2xl bg-[var(--color-bg-surface)] text-[var(--color-text-primary)] font-bold text-xs border border-[var(--color-border-subtle)] hover:border-[var(--color-border-strong)] active:scale-95 transition-all"
 				>
-					<Settings className="w-4 h-4" />
-					<span>Edit Profile Settings</span>
+					<Settings className="w-4 h-4 text-[var(--color-interactive-primary)]" />
+					<span>Edit Profile</span>
 				</Link>
 			) : (
 				<button
