@@ -7,6 +7,8 @@ import {
 	Share2,
 	Trash2,
 	UserPlus,
+	Volume2,
+	VolumeX,
 } from "lucide-react";
 import * as React from "react";
 import { Avatar } from "../../atoms/avatar";
@@ -90,10 +92,24 @@ export const PresetCard = React.forwardRef<HTMLDivElement, PresetCardProps>(
 		const [isBookmarked, setIsBookmarked] = React.useState(
 			Boolean(preset.isBookmarked),
 		);
+		const [isMuted, setIsMuted] = React.useState(true);
 		const [showDeleteModal, setShowDeleteModal] = React.useState(false);
 		const [isDeleting, setIsDeleting] = React.useState(false);
 		const [deleteError, setDeleteError] = React.useState<string | null>(null);
 		const videoRef = React.useRef<HTMLVideoElement>(null);
+
+		const toggleAudio = (e: React.MouseEvent) => {
+			e.stopPropagation();
+			e.preventDefault();
+			if (videoRef.current) {
+				const nextMuted = !isMuted;
+				videoRef.current.muted = nextMuted;
+				setIsMuted(nextMuted);
+				if (videoRef.current.paused) {
+					videoRef.current.play().catch(() => {});
+				}
+			}
+		};
 
 		React.useEffect(() => {
 			setIsLiked(Boolean(preset.isLiked));
@@ -287,9 +303,27 @@ export const PresetCard = React.forwardRef<HTMLDivElement, PresetCardProps>(
 					</div>
 
 					{variant === "featured" && (
-						<div className="absolute bottom-3 right-3 pointer-events-none z-0 rounded-lg bg-purple-900/40 border border-purple-500/40 px-2.5 py-1 text-[var(--font-size-label-sm)] font-bold text-purple-300">
+						<div className="absolute bottom-3 left-3 pointer-events-none z-0 rounded-lg bg-purple-900/40 border border-purple-500/40 px-2.5 py-1 text-[var(--font-size-label-sm)] font-bold text-purple-300">
 							Featured
 						</div>
+					)}
+
+					{/* Audio Preview Sound Toggle */}
+					{hasVideo && (
+						<button
+							type="button"
+							onClick={toggleAudio}
+							aria-label={
+								isMuted ? "Unmute preview audio" : "Mute preview audio"
+							}
+							className="absolute bottom-2.5 right-2.5 z-20 p-2 rounded-xl bg-black/60 hover:bg-black/80 backdrop-blur-md text-white border border-white/10 transition-all opacity-80 group-hover:opacity-100 active:scale-90 shadow-md"
+						>
+							{isMuted ? (
+								<VolumeX className="w-3.5 h-3.5 text-white/80" />
+							) : (
+								<Volume2 className="w-3.5 h-3.5 text-emerald-400 animate-pulse" />
+							)}
+						</button>
 					)}
 				</div>
 

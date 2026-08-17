@@ -5,14 +5,18 @@ import {
 	Download,
 	Eye,
 	Heart,
+	Maximize2,
 	MoreHorizontal,
+	Pause,
 	Play,
 	Sparkles,
 	Trash2,
+	Volume2,
+	VolumeX,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import posthog from "posthog-js";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { BookmarkButton } from "./BookmarkButton";
 import { ShareButton } from "./ShareButton";
 
@@ -79,10 +83,15 @@ export function Hero({ preset, currentUserId }: HeroProps) {
 	const [likeCount, setLikeCount] = useState(preset.likeCount);
 	const [downloadCount, setDownloadCount] = useState(preset.downloadCount);
 	const [isPlayingVideo, setIsPlayingVideo] = useState(false);
+	const [isMuted, setIsMuted] = useState(false);
+	const [currentTime, setCurrentTime] = useState(0);
+	const [duration, setDuration] = useState(0);
+	const [showControls, setShowControls] = useState(true);
 	const [hasTrackedDownload, setHasTrackedDownload] = useState(false);
+	const videoRef = useRef<HTMLVideoElement>(null);
+	const containerRef = useRef<HTMLDivElement>(null);
+	const controlsTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 	const { requireAuth } = useAuth();
-
-	const ratioClass = "aspect-[9/16] max-w-sm mx-auto";
 
 	const handleLikeToggle = async () => {
 		if (!requireAuth(undefined, "Sign in to like presets")) return;
@@ -107,62 +116,119 @@ export function Hero({ preset, currentUserId }: HeroProps) {
 		}
 	};
 
-	const handleTrackDownload = async () => {
-		if (hasTrackedDownload) return;
-		setHasTrackedDownload(true);
-		setDownloadCount((prev) => prev + 1);
-
-		try {
-			await fetch(`/api/presets/${preset.id}/download`, { method: "POST" });
-		} catch (e) {
-			console.error("Failed to track download", e);
+	const handleTimeUpdate = () => {
+		if (videoRef.current) {
+			setCurrentTime(videoRef.current.currentTime);
+			setDuration(videoRef.current.duration || 0);
 		}
+	};
+
+	const handleSeek = (e: React.MouseEvent<HTMLDivElement>) => {
+		if (!videoRef.current || !duration) return;
+		const rect = e.currentTarget.getBoundingClientRect();
+		const clickPos = Math.max(
+			0,
+			Math.min(1, (e.clientX - rect.left) / rect.width),
+		);
+		videoRef.current.currentTime = clickPos * duration;
+		setCurrentTime(clickPos * duration);
+	};
+
+	const togglePlayPause = () => {
+		if (!videoRef.current) {
+			setIsPlayingVideo(true);
+			return;
+		}
+		if (videoRef.current.paused) {
+			videoRef.current.play().catch(() => {});
+			setIsPlayingVideo(true);
+		} else {
+			videoRef.current.pause();
+			setIsPlayingVideo(false);
+		}
+	};
+
+	const toggleMute = (e: React.MouseEvent) => {
+		e.stopPropagation();
+		if (!videoRef.current) return;
+		const nextMuted = !isMuted;
+		videoRef.current.muted = nextMuted;
+		setIsMuted(nextMuted);
+	};
+
+	const toggleFullscreen = (e: React.MouseEvent) => {
+		e.stopPropagation();
+		if (!containerRef.current) return;
+		if (document.fullscreenElement) {
+			document.exitFullscreen().catch(() => {});
+		} else {
+			containerRef.current.requestFullscreen().catch(() => {});
+		}
+	};
+
+	const triggerControlsVisibility = () => {
+		setShowControls(true);
+		if (controlsTimeoutRef.current) clearTimeout(controlsTimeoutRef.current);
+		controlsTimeoutRef.current = setTimeout(() => {
+			if (isPlayingVideo) {
+				setShowControls(false);
+			}
+		}, 3000);
+	};
+
+	const formatTime = (secs: number) => {
+		if (!secs || isNaN(secs)) return "0:00";
+		const m = Math.floor(secs / 60);
+		const s = Math.floor(secs % 60);
+		return `${m}:${s < 10 ? "0" : ""}${s}`;
 	};
 
 	return (
 		<section className="space-y-6">
-			{/* TikTok-style Desktop Video Viewer Container */}
+			{/* Custom Mobile & Desktop Unified Video Player Container */}
 			<div className="relative w-full flex justify-center items-start py-2">
-				<div className="relative w-full max-w-[420px] aspect-[9/16] overflow-hidden rounded-3xl bg-[var(--color-bg-elevated)] border border-[var(--color-border-subtle)] shadow-2xl group shrink-0">
-					{isPlayingVideo && preset.previewVideoUrl ? (
+				<div
+					ref={containerRef}
+					onMouseMove={triggerControlsVisibility}
+					onTouchStart={triggerControlsVisibility}
+					onClick={togglePlayPause}
+					className="relative w-full max-w-[400px] aspect-[9/16] overflow-hidden rounded-3xl bg-[var(--color-bg-base)] border border-[var(--color-border-subtle)] shadow-2xl group shrink-0 cursor-pointer select-none"
+				>
+					{preset.previewVideoUrl ? (
 						<video
-							autoPlay
-							muted
-							controls
+							ref={videoRef}
+							src={preset.previewVideoUrl}
+							poster={preset.thumbnailUrl}
 							playsInline
+							loop
+							onTimeUpdate={handleTimeUpdate}
+							onLoadedMetadata={handleTimeUpdate}
+							onPlay={() => setIsPlayingVideo(true)}
+							onPause={() => setIsPlayingVideo(false)}
+							className="absolute inset-0 w-full h-full object-contain bg-black"
+						/>
+					) : preset.thumbnailUrl ? (
+						<img
+							src={preset.thumbnailUrl}
+							alt={preset.title}
 							className="absolute inset-0 w-full h-full object-contain"
-						>
-							<source src={preset.previewVideoUrl} type="video/mp4" />
-						</video>
+						/>
 					) : (
-						<>
-							{preset.thumbnailUrl ? (
-								<img
-									src={preset.thumbnailUrl}
-									alt={preset.title}
-									className="absolute inset-0 w-full h-full object-contain"
-								/>
-							) : (
-								<div className="absolute inset-0 bg-gradient-to-br from-purple-950/80 via-indigo-950/60 to-black flex items-center justify-center">
-									<Sparkles className="w-16 h-16 text-purple-400 opacity-40 animate-pulse" />
-								</div>
-							)}
-							{/* Gradient Overlay */}
-							<div className="absolute inset-0 bg-gradient-to-t from-[var(--color-bg-surface)] via-black/20 to-transparent" />
+						<div className="absolute inset-0 bg-gradient-to-br from-purple-950/80 via-indigo-950/60 to-black flex items-center justify-center">
+							<Sparkles className="w-16 h-16 text-purple-400 opacity-40 animate-pulse" />
+						</div>
+					)}
 
-							{/* Play Video Trigger */}
-							{preset.previewVideoUrl && (
-								<button
-									type="button"
-									onClick={() => setIsPlayingVideo(true)}
-									className="absolute inset-0 flex items-center justify-center bg-black/30 backdrop-blur-[2px] opacity-90 group-hover:opacity-100 transition-opacity"
-								>
-									<div className="p-4 rounded-full bg-[var(--color-interactive-primary)] text-white shadow-xl shadow-[var(--color-interactive-primary)]/40 hover:scale-110 active:scale-95 transition-all">
-										<Play className="w-8 h-8 fill-current ml-1" />
-									</div>
-								</button>
-							)}
-						</>
+					{/* Subtle Gradient Overlays */}
+					<div className="absolute inset-0 bg-gradient-to-b from-black/50 via-transparent to-black/70 pointer-events-none" />
+
+					{/* Center Play/Pause Indicator (Shown when paused or hovered) */}
+					{!isPlayingVideo && preset.previewVideoUrl && (
+						<div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+							<div className="p-5 rounded-full bg-[var(--color-interactive-primary)]/90 text-white shadow-2xl backdrop-blur-md scale-100 group-hover:scale-110 transition-transform">
+								<Play className="w-10 h-10 fill-current ml-1" />
+							</div>
+						</div>
 					)}
 
 					{/* Top Badges */}
@@ -186,6 +252,87 @@ export function Hero({ preset, currentUserId }: HeroProps) {
 							</span>
 						)}
 					</div>
+
+					{/* Bottom Custom Video Controls Bar */}
+					{preset.previewVideoUrl && (
+						<div
+							className={`absolute bottom-0 inset-x-0 p-3 sm:p-4 z-20 transition-opacity duration-300 ${
+								showControls || !isPlayingVideo
+									? "opacity-100"
+									: "opacity-0 pointer-events-none"
+							}`}
+							onClick={(e) => e.stopPropagation()}
+						>
+							{/* Interactive Progress Bar */}
+							<div
+								onClick={handleSeek}
+								className="relative w-full h-1.5 hover:h-2.5 bg-white/20 rounded-full cursor-pointer mb-2.5 transition-all overflow-hidden"
+							>
+								<div
+									className="absolute top-0 left-0 bottom-0 bg-gradient-to-r from-purple-500 to-[var(--color-interactive-primary)] rounded-full transition-[width] duration-75"
+									style={{
+										width: `${duration ? (currentTime / duration) * 100 : 0}%`,
+									}}
+								/>
+							</div>
+
+							<div className="flex items-center justify-between text-white text-xs font-medium">
+								{/* Left: Play/Pause button + Timestamp */}
+								<div className="flex items-center gap-2">
+									<button
+										type="button"
+										onClick={togglePlayPause}
+										className="p-1.5 rounded-xl bg-black/40 hover:bg-black/60 backdrop-blur-md text-white transition-colors"
+										aria-label={isPlayingVideo ? "Pause" : "Play"}
+									>
+										{isPlayingVideo ? (
+											<Pause className="w-4 h-4 fill-current" />
+										) : (
+											<Play className="w-4 h-4 fill-current ml-0.5" />
+										)}
+									</button>
+									<span className="text-[11px] font-semibold text-white/80 font-mono">
+										{formatTime(currentTime)} / {formatTime(duration)}
+									</span>
+								</div>
+
+								{/* Right: Sound Toggle + Fullscreen */}
+								<div className="flex items-center gap-1.5">
+									<button
+										type="button"
+										onClick={toggleMute}
+										className="p-2 rounded-xl bg-black/40 hover:bg-black/60 backdrop-blur-md text-white transition-all flex items-center gap-1.5 active:scale-90"
+										aria-label={isMuted ? "Unmute audio" : "Mute audio"}
+									>
+										{isMuted ? (
+											<>
+												<VolumeX className="w-4 h-4 text-rose-400" />
+												<span className="text-[10px] font-bold text-rose-400 hidden sm:inline">
+													MUTED
+												</span>
+											</>
+										) : (
+											<>
+												<Volume2 className="w-4 h-4 text-emerald-400" />
+												<span className="text-[10px] font-bold text-emerald-400 hidden sm:inline">
+													SOUND ON
+												</span>
+											</>
+										)}
+									</button>
+
+									<button
+										type="button"
+										onClick={toggleFullscreen}
+										className="p-2 rounded-xl bg-black/40 hover:bg-black/60 backdrop-blur-md text-white transition-colors"
+										aria-label="Fullscreen"
+									>
+										<Maximize2 className="w-4 h-4" />
+									</button>
+								</div>
+							</div>
+						</div>
+					)}
 				</div>
 			</div>
 
