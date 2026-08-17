@@ -18,6 +18,7 @@ export default function RegisterPage() {
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
 	const [username, setUsername] = useState("");
+	const [agreedToTerms, setAgreedToTerms] = useState(false);
 	const [isLoading, setIsLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
 	const router = useRouter();
@@ -27,8 +28,14 @@ export default function RegisterPage() {
 
 	const handleRegister = async (e: FormEvent) => {
 		e.preventDefault();
-		setIsLoading(true);
 		setError(null);
+
+		if (!agreedToTerms) {
+			setError("You must agree to the Terms of Service to create an account.");
+			return;
+		}
+
+		setIsLoading(true);
 
 		const callbackUrl = new URL("/auth/callback", window.location.origin);
 		callbackUrl.searchParams.set("next", redirectTo);
@@ -95,6 +102,37 @@ export default function RegisterPage() {
 					onChange={setPassword}
 					isRequired
 				/>
+
+				{/* Checkbox Agreement */}
+				<div className="flex items-start gap-2.5 pt-1 text-left">
+					<input
+						id="terms-agreement"
+						type="checkbox"
+						checked={agreedToTerms}
+						onChange={(e) => {
+							setAgreedToTerms(e.target.checked);
+							if (error && error.includes("Terms")) {
+								setError(null);
+							}
+						}}
+						className="mt-0.5 h-4 w-4 rounded border-white/20 bg-[var(--color-bg-elevated)] text-[var(--color-interactive-primary)] focus:ring-[var(--color-interactive-primary)] cursor-pointer accent-[var(--color-interactive-primary)] shrink-0"
+					/>
+					<label
+						htmlFor="terms-agreement"
+						className="text-xs text-[var(--color-text-secondary)] leading-relaxed select-none cursor-pointer"
+					>
+						I agree to the{" "}
+						<a
+							href="/terms"
+							target="_blank"
+							rel="noopener noreferrer"
+							className="text-[var(--color-interactive-primary)] hover:underline font-semibold"
+						>
+							Terms of Service
+						</a>
+					</label>
+				</div>
+
 				<Button type="submit" isLoading={isLoading} className={cn("w-full")}>
 					Register
 				</Button>

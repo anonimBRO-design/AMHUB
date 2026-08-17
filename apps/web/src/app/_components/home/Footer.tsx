@@ -128,7 +128,7 @@ export function Footer() {
 
 						<div className="space-y-3">
 							<h4 className="font-display font-bold uppercase tracking-wider text-[var(--color-text-primary)]">
-								Account
+								Account & Legal
 							</h4>
 							<ul className="space-y-2">
 								<li>
@@ -147,6 +147,14 @@ export function Footer() {
 										Sign Up
 									</Link>
 								</li>
+								<li>
+									<Link
+										href="/terms"
+										className="hover:text-[var(--color-interactive-primary)] transition-colors"
+									>
+										Terms of Service
+									</Link>
+								</li>
 							</ul>
 						</div>
 					</div>
@@ -154,7 +162,15 @@ export function Footer() {
 
 				{/* Bottom Bar */}
 				<div className="pt-6 border-t border-[var(--color-border-subtle)] flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-[var(--color-text-tertiary)] font-body">
-					<p>© {new Date().getFullYear()} AMHUB. All rights reserved.</p>
+					<div className="flex items-center gap-4 flex-wrap">
+						<p>© {new Date().getFullYear()} AMHUB. All rights reserved.</p>
+						<Link
+							href="/terms"
+							className="hover:text-[var(--color-interactive-primary)] transition-colors underline-offset-4 hover:underline"
+						>
+							Terms of Service
+						</Link>
+					</div>
 					<div className="flex items-center gap-1">
 						<span>Crafted with</span>
 						<Heart className="w-3.5 h-3.5 text-rose-500 fill-rose-500" />

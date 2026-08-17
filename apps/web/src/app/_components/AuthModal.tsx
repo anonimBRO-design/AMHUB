@@ -160,6 +160,18 @@ export function AuthModal({
 								<UserPlus className="w-4.5 h-4.5" />
 								<span>Create Account</span>
 							</Link>
+
+							{/* Legal Terms Disclaimer */}
+							<p className="text-[11px] text-[var(--color-text-tertiary)] pt-1">
+								By continuing, you agree to our{" "}
+								<Link
+									href="/terms"
+									onClick={onClose}
+									className="text-[var(--color-text-secondary)] hover:text-white underline underline-offset-2 transition-colors"
+								>
+									Terms of Service
+								</Link>
+							</p>
 						</div>
 					</motion.div>
 				</div>
