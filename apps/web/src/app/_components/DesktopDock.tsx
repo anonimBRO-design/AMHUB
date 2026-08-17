@@ -121,12 +121,12 @@ export function DesktopDock({
 	});
 
 	return (
-		<div className="flex fixed bottom-3 sm:bottom-6 left-1/2 -translate-x-1/2 z-50 pointer-events-auto select-none w-[calc(100%-16px)] sm:w-auto max-w-2xl sm:max-w-none justify-center">
+		<div className="flex fixed bottom-4 sm:bottom-6 left-1/2 -translate-x-1/2 z-50 pointer-events-auto select-none w-[calc(100%-12px)] sm:w-auto max-w-3xl sm:max-w-none justify-center">
 			<motion.div
 				initial={{ y: 40, opacity: 0 }}
 				animate={{ y: 0, opacity: 1 }}
 				transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-				className="relative flex items-center justify-between sm:justify-center w-full sm:w-auto gap-0.5 sm:gap-1.5 p-1.5 sm:p-2 rounded-2xl bg-[var(--color-bg-surface)]/95 backdrop-blur-xl border border-[var(--color-border-strong)] shadow-[0_8px_32px_rgba(0,0,0,0.6)] overflow-x-auto no-scrollbar"
+				className="relative flex items-center justify-between sm:justify-center w-full sm:w-auto gap-1 sm:gap-2 p-2 sm:p-2.5 rounded-2xl bg-[var(--color-bg-surface)]/95 backdrop-blur-xl border border-[var(--color-border-strong)] shadow-[0_12px_40px_rgba(0,0,0,0.65)] overflow-x-auto no-scrollbar"
 			>
 				{dockItems.map((item) => {
 					const Icon = item.icon;
@@ -166,7 +166,7 @@ export function DesktopDock({
 							<Link
 								href={item.href}
 								aria-label={item.label}
-								className="relative flex flex-col items-center justify-center w-full min-w-[34px] sm:min-w-[48px] h-10 sm:h-12 p-0.5 sm:p-2 rounded-xl transition-all duration-200"
+								className="relative flex flex-col items-center justify-center w-full min-w-[38px] sm:min-w-[48px] h-12 sm:h-13 p-0.5 sm:p-2 rounded-xl transition-all duration-200"
 							>
 								<motion.div
 									animate={{
@@ -174,12 +174,12 @@ export function DesktopDock({
 										y: isHovered ? -2 : 0,
 									}}
 									transition={{ type: "spring", stiffness: 400, damping: 25 }}
-									className={`relative flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 rounded-xl transition-colors duration-200 overflow-hidden ${
+									className={`relative flex items-center justify-center rounded-xl transition-colors duration-200 overflow-hidden ${
 										item.isSpecial
-											? "bg-[var(--color-interactive-primary)] text-white shadow-[0_4px_14px_rgba(0,0,0,0.4)] border border-[var(--color-border-accent)]"
+											? "w-11 h-11 sm:w-11 sm:h-11 bg-[var(--color-interactive-primary)] text-white shadow-[0_4px_16px_rgba(0,0,0,0.5)] border border-[var(--color-border-accent)] scale-105"
 											: isActive
-												? "bg-[var(--color-bg-elevated)] text-white border border-[var(--color-border-strong)] shadow-sm"
-												: "bg-[var(--color-bg-input)] text-[var(--color-text-secondary)] border border-[var(--color-border-subtle)] hover:bg-[var(--color-bg-elevated)] hover:text-white"
+												? "w-10 h-10 sm:w-10 sm:h-10 bg-[var(--color-bg-elevated)] text-white border border-[var(--color-border-strong)] shadow-sm"
+												: "w-10 h-10 sm:w-10 sm:h-10 bg-[var(--color-bg-input)] text-[var(--color-text-secondary)] border border-[var(--color-border-subtle)] hover:bg-[var(--color-bg-elevated)] hover:text-white"
 									}`}
 								>
 									{item.id === "profile" && item.avatarUrl ? (
@@ -189,12 +189,18 @@ export function DesktopDock({
 											className="w-full h-full object-cover rounded-xl"
 										/>
 									) : (
-										<Icon className="w-4 h-4 sm:w-5 sm:h-5" />
+										<Icon
+											className={
+												item.isSpecial
+													? "w-5.5 h-5.5 sm:w-6 sm:h-6 stroke-[2.2]"
+													: "w-5 h-5 sm:w-5.5 sm:h-5.5"
+											}
+										/>
 									)}
 
 									{/* Badge Dot */}
 									{item.badge && item.badge > 0 ? (
-										<span className="absolute -top-1 -right-1 flex h-3.5 w-3.5 sm:h-4 sm:w-4 items-center justify-center rounded-full bg-rose-500 text-[8px] sm:text-[10px] font-black text-white shadow-sm border border-black">
+										<span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-rose-500 text-[9px] sm:text-[10px] font-black text-white shadow-sm border border-black">
 											{item.badge > 9 ? "9+" : item.badge}
 										</span>
 									) : null}
