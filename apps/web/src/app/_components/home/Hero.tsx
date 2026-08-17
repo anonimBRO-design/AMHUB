@@ -266,7 +266,7 @@ export function Hero({ stats, featuredPreset }: HeroProps) {
 									Format
 								</span>
 								<span className="text-xs font-black text-white">
-									XML + QR Code
+									XML + Drive Link
 								</span>
 							</div>
 						</div>

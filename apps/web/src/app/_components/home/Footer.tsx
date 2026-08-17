@@ -30,7 +30,7 @@ export function Footer() {
 						</Link>
 						<p className="font-body text-xs text-[var(--color-text-tertiary)] leading-relaxed">
 							The premier community platform for Alight Motion creators.
-							Discover, share, and import pro XML, QR, and link presets.
+							Discover, share, and import pro XML, Google Drive, and link presets.
 						</p>
 						<a
 							href="https://sociabuzz.com/anonimbro"

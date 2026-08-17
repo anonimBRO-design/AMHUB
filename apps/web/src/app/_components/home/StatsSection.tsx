@@ -1,4 +1,4 @@
-import { Download, FileCode, QrCode, ShieldCheck } from "lucide-react";
+import { Download, FileCode, HardDrive, ShieldCheck } from "lucide-react";
 
 export function StatsSection() {
 	const features = [
@@ -10,10 +10,10 @@ export function StatsSection() {
 			color: "text-blue-400 border-blue-500/20",
 		},
 		{
-			icon: QrCode,
-			title: "QR Code Scan",
+			icon: HardDrive,
+			title: "Google Drive Link (XML)",
 			description:
-				"Scan QR codes instantly using your mobile camera or Alight Motion app.",
+				"Direct Google Drive download links for fast, reliable XML preset access.",
 			color: "text-emerald-400 border-emerald-500/20",
 		},
 		{
