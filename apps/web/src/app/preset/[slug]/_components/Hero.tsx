@@ -120,6 +120,12 @@ export function Hero({ preset, currentUserId }: HeroProps) {
 			});
 	}, [preset.id]);
 
+	useEffect(() => {
+		if (videoRef.current) {
+			videoRef.current.muted = isMuted;
+		}
+	}, [isMuted]);
+
 	const handleLikeToggle = async () => {
 		if (!requireAuth(undefined, "Sign in to like presets")) return;
 		const nextState = !isLiked;
@@ -227,6 +233,7 @@ export function Hero({ preset, currentUserId }: HeroProps) {
 							src={preset.previewVideoUrl}
 							poster={preset.thumbnailUrl}
 							playsInline
+							muted={isMuted}
 							loop
 							onTimeUpdate={handleTimeUpdate}
 							onLoadedMetadata={handleTimeUpdate}

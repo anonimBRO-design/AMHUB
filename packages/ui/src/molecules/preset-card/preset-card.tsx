@@ -93,7 +93,7 @@ export const PresetCard = React.forwardRef<HTMLDivElement, PresetCardProps>(
 		const [isBookmarked, setIsBookmarked] = React.useState(
 			Boolean(preset.isBookmarked),
 		);
-		const [isMuted, setIsMuted] = React.useState(true);
+		const [isMuted, setIsMuted] = React.useState(false);
 		const [showDeleteModal, setShowDeleteModal] = React.useState(false);
 		const [isDeleting, setIsDeleting] = React.useState(false);
 		const [deleteError, setDeleteError] = React.useState<string | null>(null);
@@ -111,6 +111,12 @@ export const PresetCard = React.forwardRef<HTMLDivElement, PresetCardProps>(
 				}
 			}
 		};
+
+		React.useEffect(() => {
+			if (videoRef.current) {
+				videoRef.current.muted = isMuted;
+			}
+		}, [isMuted]);
 
 		React.useEffect(() => {
 			setIsLiked(Boolean(preset.isLiked));
@@ -133,7 +139,20 @@ export const PresetCard = React.forwardRef<HTMLDivElement, PresetCardProps>(
 		const hasThumbnail = Boolean(preset.thumbnailUrl?.trim());
 		const aspectRatioClass = getAspectRatioClass(preset);
 
-		const handleMouseEnter = () => setIsHovered(true);
+		const handleMouseEnter = () => {
+			setIsHovered(true);
+			if (videoRef.current) {
+				videoRef.current.muted = isMuted;
+				videoRef.current.play().catch(() => {
+					// Fallback if browser enforces interaction for unmuted play
+					if (videoRef.current && !videoRef.current.muted) {
+						videoRef.current.muted = true;
+						setIsMuted(true);
+						videoRef.current.play().catch(() => {});
+					}
+				});
+			}
+		};
 		const handleMouseLeave = () => {
 			setIsHovered(false);
 			if (videoRef.current) {
@@ -261,7 +280,7 @@ export const PresetCard = React.forwardRef<HTMLDivElement, PresetCardProps>(
 								hasThumbnail ? preset.thumbnailUrl : PRESET_PLACEHOLDER_SVG
 							}
 							autoPlay
-							muted
+							muted={isMuted}
 							loop
 							playsInline
 							className="absolute inset-0 h-full w-full object-contain transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-[1.02]"
