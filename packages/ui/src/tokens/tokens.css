@@ -106,7 +106,7 @@
 	--tracking-mono: 0;
 
 	/* ─── BORDER RADIUS ───────────────────────────────────────── */
-	/* Soft-squared corners: reduced from previous values */
+	/* Modern sleek soft-squared corners (Discord / Linear / Raycast aesthetic) */
 	--radius-none: 0px;
 	--radius-xs: 2px;
 	--radius-sm: 4px;
@@ -114,7 +114,8 @@
 	--radius-lg: 8px;
 	--radius-xl: 10px;
 	--radius-2xl: 12px;
-	--radius-full: 9999px; /* retained for pill-style exceptions */
+	--radius-3xl: 14px;
+	--radius-full: 9999px; /* retained for circular avatars/indicators */
 
 	/* ─── SHADOWS & ELEVATION ─────────────────────────────────── */
 
