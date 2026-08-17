@@ -98,7 +98,12 @@ export function WelcomeClient({ user: initialUser }: WelcomeClientProps) {
 									width={80}
 									height={80}
 									className="w-20 h-20 sm:w-24 sm:h-24 object-contain drop-shadow-2xl shrink-0"
-									style={{ width: "100%", height: "100%", maxWidth: 96, maxHeight: 96 }}
+									style={{
+										width: "100%",
+										height: "100%",
+										maxWidth: 96,
+										maxHeight: 96,
+									}}
 								/>
 							</div>
 						</div>
@@ -145,11 +150,15 @@ export function WelcomeClient({ user: initialUser }: WelcomeClientProps) {
 										width={64}
 										height={64}
 										className="w-16 h-16 sm:w-20 sm:h-20 object-contain drop-shadow-xl shrink-0"
-										style={{ width: "100%", height: "100%", maxWidth: 80, maxHeight: 80 }}
+										style={{
+											width: "100%",
+											height: "100%",
+											maxWidth: 80,
+											maxHeight: 80,
+										}}
 									/>
 								</div>
 							</div>
-
 
 							<div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-purple-500/10 border border-purple-500/20 text-purple-300 text-xs font-bold tracking-wider backdrop-blur-md shadow-[0_0_15px_rgba(124,58,237,0.15)]">
 								<Sparkles className="w-3.5 h-3.5 text-purple-400 animate-pulse" />

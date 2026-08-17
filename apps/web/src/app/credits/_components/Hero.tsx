@@ -16,7 +16,6 @@ export function Hero() {
 					style={{ width: "100%", height: "100%", maxWidth: 96, maxHeight: 96 }}
 				/>
 
-
 				<div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[var(--color-interactive-primary)]/10 text-[var(--color-interactive-primary)] border border-[var(--color-interactive-primary)]/20 text-xs font-bold uppercase tracking-wider">
 					<Sparkles className="w-3.5 h-3.5" />
 					<span>AMHUB v1.0 Release</span>

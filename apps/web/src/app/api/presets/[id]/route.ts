@@ -22,6 +22,9 @@ const updatePresetSchema = z.object({
 	tags: z.array(z.string()).max(10).optional(),
 	style: z.array(z.string()).max(10).optional(),
 	status: z.enum(["pending", "published", "rejected", "removed"]).optional(),
+	price: z.number().min(0).max(10000000).optional(),
+	is_paid: z.boolean().optional(),
+	currency: z.string().optional(),
 });
 
 export async function GET(

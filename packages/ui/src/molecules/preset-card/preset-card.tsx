@@ -42,6 +42,9 @@ export interface PresetCardPreset {
 	aspectRatio?: "16:9" | "9:16" | "1:1" | string;
 	aspectRatios?: string[];
 	fileType?: string;
+	price?: number;
+	isPaid?: boolean;
+	currency?: string;
 }
 
 const PRESET_PLACEHOLDER_SVG =
@@ -101,12 +104,8 @@ export const PresetCard = React.forwardRef<HTMLDivElement, PresetCardProps>(
 			return () => mediaQuery.removeEventListener("change", listener);
 		}, []);
 
-		const hasVideo = Boolean(
-			preset.previewVideoUrl && preset.previewVideoUrl.trim(),
-		);
-		const hasThumbnail = Boolean(
-			preset.thumbnailUrl && preset.thumbnailUrl.trim(),
-		);
+		const hasVideo = Boolean(preset.previewVideoUrl?.trim());
+		const hasThumbnail = Boolean(preset.thumbnailUrl?.trim());
 		const aspectRatioClass = getAspectRatioClass(preset);
 
 		const handleMouseEnter = () => setIsHovered(true);
@@ -188,7 +187,9 @@ export const PresetCard = React.forwardRef<HTMLDivElement, PresetCardProps>(
 					href={`/preset/${preset.slug}`}
 					aria-label={`Open ${preset.title}`}
 					className="absolute inset-0 z-10 block cursor-pointer"
-				/>
+				>
+					<span className="sr-only">Open {preset.title}</span>
+				</a>
 
 				{/* Media Preview Container */}
 				<div
@@ -236,6 +237,15 @@ export const PresetCard = React.forwardRef<HTMLDivElement, PresetCardProps>(
 						/>
 						<Badge variant="category" value={preset.category} size="sm" />
 						<Badge variant="difficulty" value={preset.difficulty} size="sm" />
+						{preset.isPaid && (preset.price ?? 0) > 0 ? (
+							<span className="px-2 py-0.5 rounded-full text-[10px] font-extrabold tracking-wider bg-amber-400 text-amber-950 border border-amber-300 shadow-sm">
+								Rp {(preset.price ?? 0).toLocaleString("id-ID")}
+							</span>
+						) : (
+							<span className="px-2 py-0.5 rounded-full text-[10px] font-extrabold tracking-wider bg-emerald-500/90 text-white border border-emerald-400/40 shadow-sm">
+								FREE
+							</span>
+						)}
 					</div>
 
 					{variant === "featured" && (
@@ -378,16 +388,28 @@ export const PresetCard = React.forwardRef<HTMLDivElement, PresetCardProps>(
 
 				{/* Delete Confirmation Dialog Modal */}
 				{showDeleteModal && (
+					// biome-ignore lint/a11y/useSemanticElements: modal backdrop overlay
 					<div
+						role="dialog"
+						aria-modal="true"
+						tabIndex={-1}
 						className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm"
 						onClick={(e) => {
 							e.stopPropagation();
 							if (!isDeleting) setShowDeleteModal(false);
 						}}
+						onKeyDown={(e) => {
+							if (e.key === "Escape" && !isDeleting) {
+								e.stopPropagation();
+								setShowDeleteModal(false);
+							}
+						}}
 					>
 						<div
+							role="document"
 							className="mx-4 w-full max-w-sm rounded-3xl bg-[var(--color-bg-surface)] border border-[var(--color-border-subtle)] p-6 shadow-2xl space-y-4 text-left"
 							onClick={(e) => e.stopPropagation()}
+							onKeyDown={(e) => e.stopPropagation()}
 						>
 							<div className="space-y-2">
 								<h3 className="text-lg font-bold text-[var(--color-text-primary)]">

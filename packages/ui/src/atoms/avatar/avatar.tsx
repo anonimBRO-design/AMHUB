@@ -145,7 +145,6 @@ const Avatar = React.forwardRef<HTMLDivElement, AvatarProps>(
 				)}
 
 				{status && (
-
 					<div
 						className={cn(
 							"absolute bottom-0 right-0 h-[25%] w-[25%] rounded-full border border-[var(--color-bg-base)]",

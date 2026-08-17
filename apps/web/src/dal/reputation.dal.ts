@@ -63,7 +63,6 @@ export async function getCreatorReputation(
 	}
 	const uniqueDownloads = totalDownloads;
 
-
 	// 3. Evaluate Quality Likes
 	let qualityLikes = 0;
 	if (presetIds.length > 0) {

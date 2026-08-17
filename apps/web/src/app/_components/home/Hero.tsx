@@ -218,7 +218,6 @@ export function Hero({ stats, featuredPreset }: HeroProps) {
 														@{featuredPreset.creator.username}
 													</span>
 												</div>
-
 											</div>
 
 											<div className="flex items-center gap-3 text-xs font-semibold">

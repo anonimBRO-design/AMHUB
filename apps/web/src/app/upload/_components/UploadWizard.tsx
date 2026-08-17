@@ -57,6 +57,8 @@ export function UploadWizard() {
 	const [difficulty, setDifficulty] = useState<
 		"beginner" | "intermediate" | "advanced"
 	>("intermediate");
+	const [isPaid, setIsPaid] = useState(false);
+	const [price, setPrice] = useState(0);
 
 	// Real-time Validation State
 	const [validation, setValidation] = useState<ValidationResult>({
@@ -78,7 +80,7 @@ export function UploadWizard() {
 			return !thumbnailFile;
 		}
 		if (currentStep === 4) {
-			return !title.trim();
+			return !title.trim() || (isPaid && (price < 1000 || Number.isNaN(price)));
 		}
 		return false;
 	};
@@ -109,6 +111,10 @@ export function UploadWizard() {
 		} else if (currentStep === 4) {
 			if (!title.trim()) {
 				setError("Title is required.");
+				return;
+			}
+			if (isPaid && (price < 1000 || Number.isNaN(price))) {
+				setError("Harga preset berbayar minimal Rp 1.000.");
 				return;
 			}
 			setCurrentStep(5);
@@ -317,7 +323,7 @@ export function UploadWizard() {
 			}
 
 			const getSafeVideoMimeType = (file: File): string => {
-				if (file.type && file.type.startsWith("video/")) {
+				if (file.type?.startsWith("video/")) {
 					return file.type;
 				}
 				const ext = file.name.split(".").pop()?.toLowerCase();
@@ -433,6 +439,9 @@ export function UploadWizard() {
 					am_link: combinedAmLink,
 					category,
 					difficulty,
+					is_paid: isPaid,
+					price: isPaid ? price : 0,
+					currency: "IDR",
 				}),
 			});
 
@@ -483,11 +492,12 @@ export function UploadWizard() {
 				file_types: fileTypesPayload,
 				category,
 				difficulty,
+				is_paid: isPaid,
+				price: isPaid ? price : 0,
 			});
 			const destinationSlug = createJson.data?.slug ?? createJson.slug ?? slug;
 			router.push(`/preset/${destinationSlug}`);
 		} catch (err: unknown) {
-
 			const apiError = err as {
 				code?: string;
 				message?: string;
@@ -569,6 +579,10 @@ export function UploadWizard() {
 						onCategoryChange={setCategory}
 						difficulty={difficulty}
 						onDifficultyChange={setDifficulty}
+						isPaid={isPaid}
+						onIsPaidChange={setIsPaid}
+						price={price}
+						onPriceChange={setPrice}
 					/>
 				)}
 
@@ -584,6 +598,8 @@ export function UploadWizard() {
 						amLink={amLink}
 						gdriveLink={gdriveLink}
 						previewVideoFile={previewVideoFile}
+						isPaid={isPaid}
+						price={isPaid ? price : 0}
 					/>
 				)}
 			</div>

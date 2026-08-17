@@ -26,6 +26,9 @@ const createPresetSchema = z.object({
 	status: z
 		.enum(["pending", "published", "rejected", "removed"])
 		.default("published"),
+	price: z.number().min(0).max(10000000).default(0),
+	is_paid: z.boolean().default(false),
+	currency: z.string().default("IDR"),
 	am_version_min: z.string().optional(),
 	am_version_max: z.string().optional(),
 	device_support: z.array(z.enum(["android", "ios", "both"])).default(["both"]),

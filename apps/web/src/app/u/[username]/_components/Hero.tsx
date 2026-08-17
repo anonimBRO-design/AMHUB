@@ -73,7 +73,6 @@ export function Hero({ user }: HeroProps) {
 					</div>
 				</div>
 
-
 				{/* Identity Info */}
 				<div className="space-y-2">
 					<div className="flex items-center gap-2 flex-wrap">

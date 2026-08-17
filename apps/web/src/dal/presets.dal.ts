@@ -37,7 +37,6 @@ export const PRESET_SELECT_WITH_CREATOR = `
 	)
 `;
 
-
 export interface ListPresetsFilter {
 	page: number;
 	limit: number;
@@ -157,7 +156,9 @@ export async function createPreset(
 			creator_id: creatorId,
 		};
 
-		console.log(`[FINAL RAW INSERT EXECUTING] ${tag} (attempt ${attempts}, slug: ${currentSlug})...`);
+		console.log(
+			`[FINAL RAW INSERT EXECUTING] ${tag} (attempt ${attempts}, slug: ${currentSlug})...`,
+		);
 		const rawInsertResult = await client
 			.from("presets")
 			.insert([insertPayload] as never);
@@ -165,8 +166,13 @@ export async function createPreset(
 		if (rawInsertResult.error) {
 			lastError = rawInsertResult.error;
 			// If unique violation on slug, retry with random suffix
-			if (rawInsertResult.error.code === "23505" && rawInsertResult.error.message?.includes("slug")) {
-				console.warn(`[SLUG COLLISION DETECTED] ${tag} slug ${currentSlug} already exists, retrying with unique suffix...`);
+			if (
+				rawInsertResult.error.code === "23505" &&
+				rawInsertResult.error.message?.includes("slug")
+			) {
+				console.warn(
+					`[SLUG COLLISION DETECTED] ${tag} slug ${currentSlug} already exists, retrying with unique suffix...`,
+				);
 				currentSlug = `${insertData.slug.slice(0, 80)}-${Math.random().toString(36).slice(2, 6)}`;
 				continue;
 			}
@@ -174,7 +180,9 @@ export async function createPreset(
 			throw rawInsertResult.error;
 		}
 
-		console.log(`[FINAL RAW INSERT SUCCESS, FETCHING CREATED RECORD] ${tag}...`);
+		console.log(
+			`[FINAL RAW INSERT SUCCESS, FETCHING CREATED RECORD] ${tag}...`,
+		);
 		const { data: preset, error: selectError } = await client
 			.from("presets")
 			.select("*")
@@ -189,9 +197,10 @@ export async function createPreset(
 		return preset;
 	}
 
-	throw lastError || new Error("Failed to create preset after multiple attempts.");
+	throw (
+		lastError || new Error("Failed to create preset after multiple attempts.")
+	);
 }
-
 
 export async function getPresetById(client: DalClient, id: string) {
 	const { data: preset, error } = await client
@@ -512,6 +521,9 @@ export interface UpdatePresetInput {
 	tags?: string[];
 	style?: string[];
 	status?: "pending" | "published" | "rejected" | "removed";
+	price?: number;
+	is_paid?: boolean;
+	currency?: string;
 }
 
 export async function updatePresetByOwner(

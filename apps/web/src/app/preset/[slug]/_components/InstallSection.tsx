@@ -19,6 +19,9 @@ interface InstallSectionProps {
 		fileType?: "xml" | "qr" | "link" | string;
 		fileUrl?: string | null;
 		amLink?: string | null;
+		price?: number;
+		isPaid?: boolean;
+		currency?: string;
 	};
 }
 
@@ -76,9 +79,20 @@ export function InstallSection({ preset }: InstallSectionProps) {
 						</p>
 					</div>
 				</div>
-				<span className="px-2.5 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-					{preset.fileType?.toUpperCase() || "XML"}
-				</span>
+				<div className="flex items-center gap-2">
+					<span className="px-2.5 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+						{preset.fileType?.toUpperCase() || "XML"}
+					</span>
+					{preset.isPaid && (preset.price ?? 0) > 0 ? (
+						<span className="px-2.5 py-1 rounded-full text-xs font-extrabold tracking-wider bg-amber-400 text-amber-950 shadow-md">
+							Rp {(preset.price ?? 0).toLocaleString("id-ID")}
+						</span>
+					) : (
+						<span className="px-2.5 py-1 rounded-full text-xs font-extrabold tracking-wider bg-emerald-500/90 text-white shadow-md">
+							GRATIS
+						</span>
+					)}
+				</div>
 			</div>
 
 			{/* Main CTAs */}

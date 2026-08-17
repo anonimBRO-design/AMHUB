@@ -170,8 +170,6 @@ export function UploadForm() {
 			const destinationSlug = createJson.data?.slug ?? createJson.slug ?? slug;
 			router.push(`/preset/${destinationSlug}`);
 		} catch (err: unknown) {
-
-
 			setError(
 				err instanceof Error ? err.message : "An unexpected error occurred.",
 			);

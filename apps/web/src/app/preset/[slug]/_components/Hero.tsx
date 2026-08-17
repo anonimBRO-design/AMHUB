@@ -33,6 +33,9 @@ interface HeroProps {
 		isBookmarked?: boolean;
 		aspectRatio?: "16:9" | "9:16" | "1:1" | string;
 		aspectRatios?: string[];
+		price?: number;
+		isPaid?: boolean;
+		currency?: string;
 		creator: {
 			id?: string;
 			username?: string;
@@ -173,6 +176,15 @@ export function Hero({ preset, currentUserId }: HeroProps) {
 						<span className="px-3 py-1 rounded-full text-xs font-semibold capitalize bg-white/10 backdrop-blur-md text-white border border-white/10">
 							{preset.difficulty}
 						</span>
+						{preset.isPaid && (preset.price ?? 0) > 0 ? (
+							<span className="px-3 py-1 rounded-full text-xs font-extrabold tracking-wider bg-amber-400 text-amber-950 shadow-md">
+								Rp {(preset.price ?? 0).toLocaleString("id-ID")}
+							</span>
+						) : (
+							<span className="px-3 py-1 rounded-full text-xs font-extrabold tracking-wider bg-emerald-500/90 text-white shadow-md">
+								GRATIS
+							</span>
+						)}
 					</div>
 
 					{/* Quick Actions (Top Right Overlay) */}

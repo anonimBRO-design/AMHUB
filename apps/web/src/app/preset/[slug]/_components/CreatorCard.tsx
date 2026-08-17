@@ -80,7 +80,6 @@ export function CreatorCard({ creator }: CreatorCardProps) {
 						)}
 					</div>
 
-
 					<div className="min-w-0">
 						<div className="flex items-center gap-1.5">
 							<h3 className="text-base font-bold text-[var(--color-text-primary)] group-hover:text-[var(--color-interactive-primary)] transition-colors truncate">

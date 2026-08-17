@@ -1,8 +1,10 @@
 import type { PresetSourceFormat } from "@/lib/validation/types";
 import {
+	Banknote,
 	ExternalLink,
 	FileCode,
 	Film,
+	Gift,
 	HardDrive,
 	Sparkles,
 } from "lucide-react";
@@ -19,6 +21,8 @@ interface ReviewStepProps {
 	amLink: string;
 	gdriveLink?: string;
 	previewVideoFile?: File | null;
+	isPaid?: boolean;
+	price?: number;
 }
 
 export function ReviewStep({
@@ -32,6 +36,8 @@ export function ReviewStep({
 	amLink,
 	gdriveLink,
 	previewVideoFile,
+	isPaid = false,
+	price = 0,
 }: ReviewStepProps) {
 	const thumbnailPreviewUrl = thumbnailFile
 		? URL.createObjectURL(thumbnailFile)
@@ -47,6 +53,10 @@ export function ReviewStep({
 			if (videoPreviewUrl) URL.revokeObjectURL(videoPreviewUrl);
 		};
 	}, [thumbnailPreviewUrl, videoPreviewUrl]);
+
+	const qrisFee = Math.max(0, Math.round(price * 0.007));
+	const netAmount = Math.max(0, price - qrisFee);
+	const creatorEarnings = Math.round(netAmount * 0.9);
 
 	return (
 		<div className="space-y-6">
@@ -96,6 +106,15 @@ export function ReviewStep({
 						<span className="px-2.5 py-1 rounded-full text-[10px] font-semibold tracking-wider bg-[var(--color-interactive-primary)] text-white">
 							{category}
 						</span>
+						{isPaid && price > 0 ? (
+							<span className="px-2.5 py-1 rounded-full text-[10px] font-extrabold tracking-wider bg-amber-500 text-amber-950 shadow-md">
+								Rp {price.toLocaleString("id-ID")}
+							</span>
+						) : (
+							<span className="px-2.5 py-1 rounded-full text-[10px] font-extrabold tracking-wider bg-emerald-500/90 text-white">
+								GRATIS
+							</span>
+						)}
 					</div>
 
 					{/* File Info Badges (Bottom Right) */}
@@ -119,7 +138,7 @@ export function ReviewStep({
 				</div>
 
 				{/* Spec Badges Grid */}
-				<div className="grid grid-cols-2 gap-3 text-xs pt-2 border-t border-[var(--color-border-subtle)]/60">
+				<div className="grid grid-cols-2 sm:grid-cols-3 gap-3 text-xs pt-2 border-t border-[var(--color-border-subtle)]/60">
 					<div className="p-3 rounded-2xl bg-[var(--color-bg-surface)] border border-[var(--color-border-subtle)] space-y-1">
 						<span className="text-[var(--color-text-tertiary)] block text-[10px] font-bold uppercase">
 							Category
@@ -138,8 +157,26 @@ export function ReviewStep({
 						</span>
 					</div>
 
+					<div className="p-3 rounded-2xl bg-[var(--color-bg-surface)] border border-[var(--color-border-subtle)] space-y-1 col-span-2 sm:col-span-1">
+						<span className="text-[var(--color-text-tertiary)] block text-[10px] font-bold uppercase">
+							Pricing
+						</span>
+						{isPaid && price > 0 ? (
+							<div>
+								<span className="font-extrabold text-amber-400">
+									Rp {price.toLocaleString("id-ID")}
+								</span>
+								<span className="block text-[10px] text-emerald-400 font-semibold">
+									Net: +Rp {creatorEarnings.toLocaleString("id-ID")}
+								</span>
+							</div>
+						) : (
+							<span className="font-bold text-emerald-400">Gratis (Free)</span>
+						)}
+					</div>
+
 					{/* Selected Sources List */}
-					<div className="col-span-2 space-y-2 p-3 rounded-2xl bg-[var(--color-bg-surface)] border border-[var(--color-border-subtle)]">
+					<div className="col-span-2 sm:col-span-3 space-y-2 p-3 rounded-2xl bg-[var(--color-bg-surface)] border border-[var(--color-border-subtle)]">
 						<span className="text-[var(--color-text-tertiary)] block text-[10px] font-bold uppercase">
 							Attached Preset Sources ({selectedFileTypes.length})
 						</span>

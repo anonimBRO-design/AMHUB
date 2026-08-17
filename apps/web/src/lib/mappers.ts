@@ -53,5 +53,8 @@ export function mapPresetToCardPreset(
 		isFeatured: preset.is_featured,
 		createdAt: preset.created_at,
 		aspectRatio: rawAspect ?? "16:9",
+		price: preset.price ?? 0,
+		isPaid: Boolean(preset.is_paid && (preset.price ?? 0) > 0),
+		currency: preset.currency || "IDR",
 	};
 }

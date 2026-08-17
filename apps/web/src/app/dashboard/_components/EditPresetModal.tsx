@@ -12,6 +12,9 @@ interface PresetItem {
 	difficulty: "beginner" | "intermediate" | "advanced";
 	tags: string[];
 	status: "pending" | "published" | "rejected" | "removed";
+	price?: number;
+	is_paid?: boolean;
+	currency?: string;
 }
 
 interface EditPresetModalProps {
@@ -48,17 +51,23 @@ export function EditPresetModal({
 		"pending" | "published" | "rejected" | "removed"
 	>(preset?.status || "published");
 	const [tags, setTags] = useState(preset?.tags?.join(", ") || "");
+	const [isPaid, setIsPaid] = useState(preset?.is_paid || false);
+	const [price, setPrice] = useState(preset?.price || 0);
 	const [isSubmitting, setIsSubmitting] = useState(false);
 	const [error, setError] = useState<string | null>(null);
 
 	// Sync fields when preset changes
-	if (preset && preset.title !== title && !isSubmitting) {
-		setTitle(preset.title);
-		setDescription(preset.description || "");
-		setCategory(preset.category);
-		setDifficulty(preset.difficulty);
-		setStatus(preset.status);
-		setTags(preset.tags?.join(", ") || "");
+	if (preset && preset.id && !isSubmitting) {
+		if (preset.title !== title && title === "") {
+			setTitle(preset.title);
+			setDescription(preset.description || "");
+			setCategory(preset.category);
+			setDifficulty(preset.difficulty);
+			setStatus(preset.status);
+			setTags(preset.tags?.join(", ") || "");
+			setIsPaid(preset.is_paid || false);
+			setPrice(preset.price || 0);
+		}
 	}
 
 	if (!isOpen || !preset) return null;
@@ -68,6 +77,12 @@ export function EditPresetModal({
 		if (!preset) return;
 		setIsSubmitting(true);
 		setError(null);
+
+		if (isPaid && (price < 1000 || Number.isNaN(price))) {
+			setError("Harga preset berbayar minimal Rp 1.000.");
+			setIsSubmitting(false);
+			return;
+		}
 
 		try {
 			const tagArray = tags
@@ -85,6 +100,9 @@ export function EditPresetModal({
 					difficulty,
 					status,
 					tags: tagArray,
+					is_paid: isPaid,
+					price: isPaid ? price : 0,
+					currency: "IDR",
 				}),
 			});
 
@@ -98,6 +116,8 @@ export function EditPresetModal({
 				category,
 				difficulty,
 				status,
+				is_paid: isPaid,
+				price: isPaid ? price : 0,
 			});
 			onSuccess();
 			onClose();
@@ -260,6 +280,71 @@ export function EditPresetModal({
 								className="w-full px-4 py-2.5 rounded-2xl bg-[var(--color-bg-base)] border border-[var(--color-border-subtle)] focus:border-[var(--color-interactive-primary)] outline-none transition-all text-[var(--color-text-primary)] font-medium"
 							/>
 						</div>
+					</div>
+
+					{/* Pricing Options */}
+					<div className="space-y-2 pt-1">
+						<label className="font-bold text-[var(--color-text-primary)] block">
+							Preset Pricing
+						</label>
+						<div className="grid grid-cols-2 gap-2">
+							<button
+								type="button"
+								onClick={() => {
+									setIsPaid(false);
+									setPrice(0);
+								}}
+								className={`py-2 px-3 rounded-2xl border text-xs font-bold transition-all ${
+									!isPaid
+										? "bg-[var(--color-interactive-primary)] text-white border-[var(--color-interactive-primary)] shadow-sm"
+										: "bg-[var(--color-bg-base)] text-[var(--color-text-secondary)] border-[var(--color-border-subtle)] hover:border-[var(--color-border-strong)]"
+								}`}
+							>
+								Gratis (Free)
+							</button>
+							<button
+								type="button"
+								onClick={() => {
+									setIsPaid(true);
+									if (price <= 0) setPrice(10000);
+								}}
+								className={`py-2 px-3 rounded-2xl border text-xs font-bold transition-all ${
+									isPaid
+										? "bg-amber-500 text-amber-950 border-amber-500 shadow-sm"
+										: "bg-[var(--color-bg-base)] text-[var(--color-text-secondary)] border-[var(--color-border-subtle)] hover:border-[var(--color-border-strong)]"
+								}`}
+							>
+								Berbayar (Paid)
+							</button>
+						</div>
+
+						{isPaid && (
+							<div className="p-3 rounded-2xl bg-[var(--color-bg-base)] border border-amber-500/30 space-y-2 mt-2">
+								<div className="flex items-center justify-between text-[11px]">
+									<span className="font-bold text-[var(--color-text-secondary)]">
+										Price (IDR)
+									</span>
+									<span className="text-amber-400 font-semibold">
+										Min Rp 1.000 (90% revenue to creator)
+									</span>
+								</div>
+								<div className="relative">
+									<span className="absolute left-3.5 top-1/2 -translate-y-1/2 font-bold text-xs text-[var(--color-text-secondary)]">
+										Rp
+									</span>
+									<input
+										type="number"
+										min={1000}
+										max={10000000}
+										step={1000}
+										value={price || ""}
+										onChange={(e) => setPrice(Number(e.target.value) || 0)}
+										placeholder="10000"
+										className="w-full pl-9 pr-3 py-2 rounded-xl bg-[var(--color-bg-surface)] border border-[var(--color-border-subtle)] text-xs font-bold text-[var(--color-text-primary)] focus:outline-none focus:border-amber-500"
+									/>
+								</div>
+							</div>
+						)}
 					</div>
 
 					<div className="flex items-center justify-end gap-3 pt-4 border-t border-[var(--color-border-subtle)]">

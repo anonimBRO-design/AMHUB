@@ -82,11 +82,15 @@ export function AuthModal({
 										width={40}
 										height={40}
 										className="w-10 h-10 object-contain drop-shadow-md shrink-0"
-										style={{ width: 40, height: 40, maxWidth: 40, maxHeight: 40 }}
+										style={{
+											width: 40,
+											height: 40,
+											maxWidth: 40,
+											maxHeight: 40,
+										}}
 									/>
 								</div>
 							</div>
-
 
 							<div className="space-y-1.5">
 								<h3 className="font-['Syne',sans-serif] font-display text-xl sm:text-2xl font-extrabold tracking-tight text-[var(--color-text-primary)]">
