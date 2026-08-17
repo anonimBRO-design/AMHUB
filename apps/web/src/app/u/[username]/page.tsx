@@ -110,11 +110,43 @@ export default async function ProfilePage({ params }: PageProps) {
 		notFound();
 	}
 
-	const [rawPresets, activities] = await Promise.all([
-		listCreatorPresets(supabase, user.id),
-		fetchUserActivities(supabase, user.id),
-	]);
-	const presets = rawPresets.map(mapPresetToCardPreset);
+	const [rawPresets, activities, userLikesRes, userBookmarksRes] =
+		await Promise.all([
+			listCreatorPresets(supabase, user.id),
+			fetchUserActivities(supabase, user.id),
+			currentUser
+				? supabase
+						.from("likes")
+						.select("preset_id")
+						.eq("user_id", currentUser.id)
+				: Promise.resolve({ data: null }),
+			currentUser
+				? supabase
+						.from("bookmarks")
+						.select("preset_id")
+						.eq("user_id", currentUser.id)
+				: Promise.resolve({ data: null }),
+		]);
+
+	const likedPresetIds = new Set(
+		((userLikesRes?.data as { preset_id: string }[] | null) ?? []).map(
+			(l) => l.preset_id,
+		),
+	);
+	const bookmarkedPresetIds = new Set(
+		((userBookmarksRes?.data as { preset_id: string }[] | null) ?? []).map(
+			(b) => b.preset_id,
+		),
+	);
+
+	const presets = rawPresets.map((p) => {
+		const mapped = mapPresetToCardPreset(p);
+		return {
+			...mapped,
+			isLiked: likedPresetIds.has(p.id),
+			isBookmarked: bookmarkedPresetIds.has(p.id),
+		};
+	});
 	const isOwnProfile = currentUser?.id === user.id;
 
 	const profileUserData = {

@@ -30,22 +30,59 @@ export default async function ExplorePage({ searchParams }: ExplorePageProps) {
 
 	let presets: ReturnType<typeof mapPresetToCardPreset>[] = [];
 	try {
-		const rawPresets = await listPublishedPresets(supabase, {
-			search: searchQuery,
-			category,
-			difficulty,
-			fileType: fileType as "xml" | "qr" | "link" | undefined,
-			sort: sort as
-				| "created_at"
-				| "oldest"
-				| "download_count"
-				| "like_count"
-				| "most_downloaded"
-				| "most_liked"
-				| "trending"
-				| undefined,
+		const {
+			data: { user: currentUser },
+		} = await supabase.auth.getUser();
+
+		const [rawPresets, userLikesRes, userBookmarksRes] = await Promise.all([
+			listPublishedPresets(supabase, {
+				search: searchQuery,
+				category,
+				difficulty,
+				fileType: fileType as "xml" | "qr" | "link" | undefined,
+				sort: sort as
+					| "created_at"
+					| "oldest"
+					| "download_count"
+					| "like_count"
+					| "most_downloaded"
+					| "most_liked"
+					| "trending"
+					| undefined,
+			}),
+			currentUser
+				? supabase
+						.from("likes")
+						.select("preset_id")
+						.eq("user_id", currentUser.id)
+				: Promise.resolve({ data: null }),
+			currentUser
+				? supabase
+						.from("bookmarks")
+						.select("preset_id")
+						.eq("user_id", currentUser.id)
+				: Promise.resolve({ data: null }),
+		]);
+
+		const likedPresetIds = new Set(
+			((userLikesRes?.data as { preset_id: string }[] | null) ?? []).map(
+				(l) => l.preset_id,
+			),
+		);
+		const bookmarkedPresetIds = new Set(
+			((userBookmarksRes?.data as { preset_id: string }[] | null) ?? []).map(
+				(b) => b.preset_id,
+			),
+		);
+
+		presets = rawPresets.map((p) => {
+			const mapped = mapPresetToCardPreset(p);
+			return {
+				...mapped,
+				isLiked: likedPresetIds.has(p.id),
+				isBookmarked: bookmarkedPresetIds.has(p.id),
+			};
 		});
-		presets = rawPresets.map(mapPresetToCardPreset);
 	} catch (error) {
 		console.error("Failed to load explore presets:", error);
 	}

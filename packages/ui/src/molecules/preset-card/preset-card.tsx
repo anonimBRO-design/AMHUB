@@ -86,14 +86,22 @@ export const PresetCard = React.forwardRef<HTMLDivElement, PresetCardProps>(
 		const [isHovered, setIsHovered] = React.useState(false);
 		const [prefersReducedMotion, setPrefersReducedMotion] =
 			React.useState(false);
-		const [isLiked, setIsLiked] = React.useState(!!preset.isLiked);
+		const [isLiked, setIsLiked] = React.useState(Boolean(preset.isLiked));
 		const [isBookmarked, setIsBookmarked] = React.useState(
-			!!preset.isBookmarked,
+			Boolean(preset.isBookmarked),
 		);
 		const [showDeleteModal, setShowDeleteModal] = React.useState(false);
 		const [isDeleting, setIsDeleting] = React.useState(false);
 		const [deleteError, setDeleteError] = React.useState<string | null>(null);
 		const videoRef = React.useRef<HTMLVideoElement>(null);
+
+		React.useEffect(() => {
+			setIsLiked(Boolean(preset.isLiked));
+		}, [preset.isLiked]);
+
+		React.useEffect(() => {
+			setIsBookmarked(Boolean(preset.isBookmarked));
+		}, [preset.isBookmarked]);
 
 		React.useEffect(() => {
 			const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -117,18 +125,48 @@ export const PresetCard = React.forwardRef<HTMLDivElement, PresetCardProps>(
 			}
 		};
 
-		const handleLike = (e: React.MouseEvent) => {
+		const handleLike = async (e: React.MouseEvent) => {
 			e.stopPropagation();
 			e.preventDefault();
-			setIsLiked(!isLiked);
-			onLike?.(preset.id);
+			const nextState = !isLiked;
+			setIsLiked(nextState);
+
+			if (onLike) {
+				onLike(preset.id);
+			} else {
+				try {
+					const res = await fetch(`/api/presets/${preset.id}/like`, {
+						method: nextState ? "POST" : "DELETE",
+					});
+					if (!res.ok) {
+						setIsLiked(!nextState);
+					}
+				} catch {
+					setIsLiked(!nextState);
+				}
+			}
 		};
 
-		const handleBookmark = (e: React.MouseEvent) => {
+		const handleBookmark = async (e: React.MouseEvent) => {
 			e.stopPropagation();
 			e.preventDefault();
-			setIsBookmarked(!isBookmarked);
-			onBookmark?.(preset.id);
+			const nextState = !isBookmarked;
+			setIsBookmarked(nextState);
+
+			if (onBookmark) {
+				onBookmark(preset.id);
+			} else {
+				try {
+					const res = await fetch(`/api/presets/${preset.id}/bookmark`, {
+						method: nextState ? "POST" : "DELETE",
+					});
+					if (!res.ok) {
+						setIsBookmarked(!nextState);
+					}
+				} catch {
+					setIsBookmarked(!nextState);
+				}
+			}
 		};
 
 		const handleShare = (e: React.MouseEvent) => {

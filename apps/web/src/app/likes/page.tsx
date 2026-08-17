@@ -15,7 +15,10 @@ export default async function LikesPage() {
 	const supabase = await createSupabaseServerClient();
 
 	const rawPresets = await listUserLikedPresets(supabase, user.id);
-	const presets = rawPresets.map(mapPresetToCardPreset);
+	const presets = rawPresets.map((p) => ({
+		...mapPresetToCardPreset(p),
+		isLiked: true,
+	}));
 
 	return <LikesClient initialPresets={presets} />;
 }

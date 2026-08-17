@@ -15,7 +15,10 @@ export default async function BookmarksPage() {
 	const supabase = await createSupabaseServerClient();
 
 	const rawPresets = await listUserBookmarkedPresets(supabase, user.id);
-	const presets = rawPresets.map(mapPresetToCardPreset);
+	const presets = rawPresets.map((p) => ({
+		...mapPresetToCardPreset(p),
+		isBookmarked: true,
+	}));
 
 	return <BookmarksClient initialPresets={presets} />;
 }

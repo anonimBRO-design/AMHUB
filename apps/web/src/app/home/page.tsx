@@ -38,12 +38,18 @@ export default async function HomePage({ searchParams }: HomePageProps) {
 	let totalDownloadsCount = 0;
 
 	try {
+		const {
+			data: { user: currentUser },
+		} = await supabase.auth.getUser();
+
 		const [
 			rawPresets,
 			rawCreators,
 			{ count: presetCount },
 			{ count: userCount },
 			{ data: downloadSumData },
+			userLikesRes,
+			userBookmarksRes,
 		] = await Promise.all([
 			listPublishedPresets(supabase, {
 				search: searchQuery,
@@ -59,9 +65,39 @@ export default async function HomePage({ searchParams }: HomePageProps) {
 				.from("presets")
 				.select("download_count")
 				.eq("status", "published"),
+			currentUser
+				? supabase
+						.from("likes")
+						.select("preset_id")
+						.eq("user_id", currentUser.id)
+				: Promise.resolve({ data: null }),
+			currentUser
+				? supabase
+						.from("bookmarks")
+						.select("preset_id")
+						.eq("user_id", currentUser.id)
+				: Promise.resolve({ data: null }),
 		]);
 
-		presets = rawPresets.map(mapPresetToCardPreset);
+		const likedPresetIds = new Set(
+			((userLikesRes?.data as { preset_id: string }[] | null) ?? []).map(
+				(l) => l.preset_id,
+			),
+		);
+		const bookmarkedPresetIds = new Set(
+			((userBookmarksRes?.data as { preset_id: string }[] | null) ?? []).map(
+				(b) => b.preset_id,
+			),
+		);
+
+		presets = rawPresets.map((p) => {
+			const mapped = mapPresetToCardPreset(p);
+			return {
+				...mapped,
+				isLiked: likedPresetIds.has(p.id),
+				isBookmarked: bookmarkedPresetIds.has(p.id),
+			};
+		});
 		creators = rawCreators.map((c) => ({
 			...c,
 			avatar_url: resolveStorageUrl(c.avatar_url),
