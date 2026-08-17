@@ -31,7 +31,7 @@ export const PresetGrid = ({
 	isLoading,
 	hasMore,
 	onLoadMore,
-	columns = { xs: 1, sm: 2, md: 2, lg: 3, xl: 3, "2xl": 4 },
+	columns = { xs: 2, sm: 2, md: 3, lg: 4, xl: 4, "2xl": 4 },
 	variant = "masonry",
 	emptyState,
 	isOwnProfile = false,
@@ -44,9 +44,9 @@ export const PresetGrid = ({
 			aria-label="Preset gallery"
 			aria-busy={isLoading}
 			className={cn(
-				"grid gap-4 w-full max-w-full overflow-hidden",
+				"grid gap-3 sm:gap-4 w-full max-w-full overflow-hidden",
 				variant === "masonry" ? "items-start" : "items-stretch",
-				"grid-cols-1 sm:grid-cols-2 lg:grid-cols-3",
+				"grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4",
 			)}
 		>
 			{presets.map((preset) => {

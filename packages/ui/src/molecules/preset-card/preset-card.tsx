@@ -256,22 +256,22 @@ export const PresetCard = React.forwardRef<HTMLDivElement, PresetCardProps>(
 				</div>
 
 				{/* Content Section */}
-				<div className="flex flex-1 flex-col p-4 relative">
+				<div className="flex flex-1 flex-col p-3 sm:p-4 relative">
 					{/* Creator Header */}
-					<div className="mb-3 flex items-center justify-between">
-						<div className="flex items-center gap-2 relative z-20">
+					<div className="mb-2 sm:mb-3 flex items-center justify-between">
+						<div className="flex items-center gap-1.5 sm:gap-2 relative z-20 min-w-0">
 							<a
 								href={`/u/${preset.creator.username}`}
 								onClick={(e) => e.stopPropagation()}
-								className="flex items-center gap-2 hover:opacity-80 transition-opacity"
+								className="flex items-center gap-1.5 sm:gap-2 hover:opacity-80 transition-opacity min-w-0"
 							>
 								<div
-									className="w-7 h-7 min-w-7 min-h-7 max-w-7 max-h-7 shrink-0 overflow-hidden rounded-full aspect-square flex items-center justify-center"
+									className="w-6 h-6 sm:w-7 sm:h-7 shrink-0 overflow-hidden rounded-full aspect-square flex items-center justify-center"
 									style={{
-										width: 28,
-										height: 28,
-										minWidth: 28,
-										minHeight: 28,
+										width: 24,
+										height: 24,
+										minWidth: 24,
+										minHeight: 24,
 										maxWidth: 28,
 										maxHeight: 28,
 									}}
@@ -283,8 +283,8 @@ export const PresetCard = React.forwardRef<HTMLDivElement, PresetCardProps>(
 										size="sm"
 									/>
 								</div>
-								<div className="flex items-center gap-1.5 min-w-0">
-									<span className="text-[var(--font-size-label-md)] font-medium text-[var(--color-text-primary)] truncate">
+								<div className="flex items-center gap-1 min-w-0">
+									<span className="text-xs sm:text-sm font-medium text-[var(--color-text-primary)] truncate">
 										@{preset.creator.username}
 									</span>
 									{preset.creator.isVerified && (
@@ -313,26 +313,27 @@ export const PresetCard = React.forwardRef<HTMLDivElement, PresetCardProps>(
 					</div>
 
 					{/* Title & Description */}
-					<h3 className="mb-1 text-[var(--font-size-heading-md)] font-semibold text-[var(--color-text-primary)] group-hover:text-purple-300 transition-colors">
+					<h3 className="mb-1 text-sm sm:text-base font-semibold text-[var(--color-text-primary)] group-hover:text-purple-300 transition-colors line-clamp-1">
 						{preset.title}
 					</h3>
-					<p className="mb-4 text-[var(--font-size-body-sm)] text-[var(--color-text-secondary)] line-clamp-2">
+					<p className="mb-3 text-xs sm:text-sm text-[var(--color-text-secondary)] line-clamp-2">
 						{preset.description}
 					</p>
 
 					{/* Actions Footer Row */}
 					<div className="mt-auto flex items-center justify-between relative z-20">
-						<div className="flex items-center gap-2">
+						<div className="flex items-center gap-1 sm:gap-2">
 							<Button
 								variant="ghost"
 								size="sm"
 								onClick={handleLike}
 								aria-label={isLiked ? "Unlike preset" : "Like preset"}
 								aria-pressed={isLiked}
+								className="px-2 sm:px-3 h-8 sm:h-9"
 							>
 								<Heart
 									className={cn(
-										"h-4 w-4 transition-colors",
+										"h-3.5 w-3.5 sm:h-4 sm:w-4 transition-colors",
 										isLiked && "fill-rose-500 text-rose-500",
 									)}
 								/>
@@ -346,10 +347,11 @@ export const PresetCard = React.forwardRef<HTMLDivElement, PresetCardProps>(
 									isBookmarked ? "Remove bookmark" : "Bookmark preset"
 								}
 								aria-pressed={isBookmarked}
+								className="px-2 sm:px-3 h-8 sm:h-9"
 							>
 								<Bookmark
 									className={cn(
-										"h-4 w-4 transition-colors",
+										"h-3.5 w-3.5 sm:h-4 sm:w-4 transition-colors",
 										isBookmarked && "fill-purple-400 text-purple-400",
 									)}
 								/>
@@ -360,8 +362,9 @@ export const PresetCard = React.forwardRef<HTMLDivElement, PresetCardProps>(
 								size="sm"
 								onClick={handleShare}
 								aria-label="Share preset"
+								className="px-2 sm:px-3 h-8 sm:h-9"
 							>
-								<Share2 className="h-4 w-4" />
+								<Share2 className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
 							</Button>
 
 							{/* Owner Trash Icon Button */}

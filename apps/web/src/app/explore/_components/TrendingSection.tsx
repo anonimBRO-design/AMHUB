@@ -1,5 +1,5 @@
-import type { PresetCardPreset } from "@presethub/ui";
-import { ArrowUpRight, Download, Flame, Heart, TrendingUp } from "lucide-react";
+import { type PresetCardPreset, PresetCard } from "@presethub/ui";
+import { Flame, TrendingUp } from "lucide-react";
 import Link from "next/link";
 
 interface TrendingSectionProps {
@@ -50,76 +50,9 @@ export function TrendingSection({ presets }: TrendingSectionProps) {
 				</span>
 			</div>
 
-			<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+			<div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-3 sm:gap-4">
 				{trendingItems.map((preset) => (
-					<Link
-						key={preset.id}
-						href={`/preset/${preset.slug}`}
-						className="group relative overflow-hidden rounded-3xl bg-[var(--color-bg-surface)] border border-[var(--color-border-subtle)] hover:border-[var(--color-interactive-primary)]/50 transition-all duration-300 hover:shadow-2xl hover:shadow-[var(--color-interactive-primary)]/10 active:scale-[0.99]"
-					>
-						<div className="relative aspect-[9/16] w-full overflow-hidden bg-[var(--color-bg-elevated)]">
-							{preset.thumbnailUrl ? (
-								<img
-									src={preset.thumbnailUrl}
-									alt={preset.title}
-									className="h-full w-full object-contain transition-transform duration-500 group-hover:scale-105"
-									loading="lazy"
-								/>
-							) : (
-								<div className="h-full w-full bg-purple-950/40" />
-							)}
-							<div className="absolute inset-0 bg-gradient-to-t from-[var(--color-bg-surface)] via-transparent to-transparent" />
-
-							<div className="absolute top-3 left-3 flex items-center gap-2">
-								<span className="px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-rose-500 text-white shadow-md">
-									🔥 Trending
-								</span>
-								<span className="px-2.5 py-1 rounded-full text-[10px] font-semibold tracking-wider bg-[var(--color-interactive-primary)] text-white">
-									{preset.category}
-								</span>
-							</div>
-
-							<div className="absolute top-3 right-3 p-2 rounded-full bg-black/40 backdrop-blur-md text-white/80 opacity-0 group-hover:opacity-100 transition-opacity">
-								<ArrowUpRight className="w-4 h-4" />
-							</div>
-						</div>
-
-						<div className="p-4 space-y-2.5">
-							<h3 className="text-sm font-bold text-[var(--color-text-primary)] line-clamp-1 group-hover:text-[var(--color-interactive-primary)] transition-colors">
-								{preset.title}
-							</h3>
-
-							<div className="flex items-center justify-between text-xs text-[var(--color-text-secondary)] pt-1 border-t border-[var(--color-border-subtle)]/60">
-								<div className="flex items-center gap-2">
-									{preset.creator.avatarUrl ? (
-										<img
-											src={preset.creator.avatarUrl}
-											alt={preset.creator.displayName}
-											className="w-5 h-5 rounded-full object-cover"
-										/>
-									) : (
-										<div className="w-5 h-5 rounded-full bg-purple-600/30 text-purple-300 font-bold text-[10px] flex items-center justify-center">
-											{preset.creator.displayName.slice(0, 2).toUpperCase()}
-										</div>
-									)}
-									<span className="font-medium text-[var(--color-text-primary)] truncate max-w-[100px]">
-										{preset.creator.displayName}
-									</span>
-								</div>
-
-								<div className="flex items-center gap-3 text-xs font-semibold">
-									<span className="flex items-center gap-1 text-rose-400">
-										<Heart className="w-3.5 h-3.5 fill-rose-400/20" />
-										{preset.likeCount}
-									</span>
-									<span className="flex items-center gap-1 text-emerald-400">
-										<Download className="w-3.5 h-3.5" />
-										{preset.downloadCount}
-									</span>
-								</div>
-							</div>
-						</div>
-					</Link>
+					<PresetCard key={preset.id} preset={preset} variant="trending" />
 				))}
 			</div>
 		</section>

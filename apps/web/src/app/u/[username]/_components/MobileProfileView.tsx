@@ -147,7 +147,7 @@ export function MobileProfileView({ user, presets }: MobileProfileViewProps) {
 			{/* TAB CONTENT */}
 			<div className="mt-4 px-4">
 				{activeTab === "presets" ? (
-					<div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+					<div className="grid grid-cols-2 gap-3">
 						{presets.map((preset) => {
 							const hasVideo = Boolean(
 								preset.previewVideoUrl && preset.previewVideoUrl.trim(),
