@@ -9,6 +9,9 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { PresetDetailClient } from "./_components/preset-detail-client";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 interface PageProps {
 	params: Promise<{ slug: string }>;
 }

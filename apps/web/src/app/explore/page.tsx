@@ -10,6 +10,9 @@ export const metadata: Metadata = {
 		"Discover and explore Alight Motion presets. Browse by category, search by name, or sort by popularity.",
 };
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 interface ExplorePageProps {
 	searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }
@@ -52,13 +55,13 @@ export default async function ExplorePage({ searchParams }: ExplorePageProps) {
 			}),
 			currentUser
 				? supabase
-						.from("likes")
+						.from("preset_likes")
 						.select("preset_id")
 						.eq("user_id", currentUser.id)
 				: Promise.resolve({ data: null }),
 			currentUser
 				? supabase
-						.from("bookmarks")
+						.from("preset_bookmarks")
 						.select("preset_id")
 						.eq("user_id", currentUser.id)
 				: Promise.resolve({ data: null }),

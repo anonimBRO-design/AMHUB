@@ -10,6 +10,9 @@ import { Hero } from "../_components/home/Hero";
 import { PresetCarousel } from "../_components/home/PresetCarousel";
 import { StatsSection } from "../_components/home/StatsSection";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 interface HomePageProps {
 	searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }
@@ -67,13 +70,13 @@ export default async function HomePage({ searchParams }: HomePageProps) {
 				.eq("status", "published"),
 			currentUser
 				? supabase
-						.from("likes")
+						.from("preset_likes")
 						.select("preset_id")
 						.eq("user_id", currentUser.id)
 				: Promise.resolve({ data: null }),
 			currentUser
 				? supabase
-						.from("bookmarks")
+						.from("preset_bookmarks")
 						.select("preset_id")
 						.eq("user_id", currentUser.id)
 				: Promise.resolve({ data: null }),

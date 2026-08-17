@@ -13,6 +13,9 @@ import { notFound } from "next/navigation";
 import type { ActivityItem } from "./_components/ActivitySection";
 import { ProfileClient } from "./_components/ProfileClient";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 interface PageProps {
 	params: Promise<{ username: string }>;
 }
@@ -116,13 +119,13 @@ export default async function ProfilePage({ params }: PageProps) {
 			fetchUserActivities(supabase, user.id),
 			currentUser
 				? supabase
-						.from("likes")
+						.from("preset_likes")
 						.select("preset_id")
 						.eq("user_id", currentUser.id)
 				: Promise.resolve({ data: null }),
 			currentUser
 				? supabase
-						.from("bookmarks")
+						.from("preset_bookmarks")
 						.select("preset_id")
 						.eq("user_id", currentUser.id)
 				: Promise.resolve({ data: null }),
