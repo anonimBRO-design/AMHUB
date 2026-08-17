@@ -1,17 +1,28 @@
 "use client";
 
-import { LogOut, Trash2 } from "lucide-react";
+import { createSupabaseBrowserClient } from "@/lib/supabase/client";
+import { Loader2, LogOut, Trash2 } from "lucide-react";
 import posthog from "posthog-js";
+import { useState } from "react";
 
 export function DangerZone() {
+	const [isLoggingOut, setIsLoggingOut] = useState(false);
+
 	const handleSignOut = async () => {
+		setIsLoggingOut(true);
 		try {
-			const response = await fetch("/auth/logout", { method: "POST" });
-			if (!response.ok) throw new Error("Failed to sign out");
+			const supabase = createSupabaseBrowserClient();
+			await supabase.auth.signOut();
+			await fetch("/auth/logout", { method: "POST" }).catch(() => {});
 			posthog.reset();
-			window.location.href = "/auth/login";
 		} catch (e) {
 			console.error("Sign out failed", e);
+		} finally {
+			if (typeof window !== "undefined") {
+				window.localStorage.clear();
+				window.sessionStorage.clear();
+				window.location.href = "/auth/login";
+			}
 		}
 	};
 
@@ -26,19 +37,24 @@ export function DangerZone() {
 				<button
 					type="button"
 					onClick={handleSignOut}
-					className="w-full flex items-center justify-between p-4 text-xs font-bold text-rose-400 hover:bg-rose-500/10 transition-colors"
+					disabled={isLoggingOut}
+					className="w-full flex items-center justify-between p-4 text-xs font-bold text-rose-400 hover:bg-rose-500/10 transition-colors disabled:opacity-50 cursor-pointer"
 				>
 					<div className="flex items-center gap-3">
-						<LogOut className="w-4 h-4" />
-						<span>Sign Out of Account</span>
+						{isLoggingOut ? (
+							<Loader2 className="w-4 h-4 animate-spin text-rose-400" />
+						) : (
+							<LogOut className="w-4 h-4" />
+						)}
+						<span>{isLoggingOut ? "Signing Out..." : "Sign Out of Account"}</span>
 					</div>
 				</button>
 
 				{/* Delete Account Button */}
 				<button
 					type="button"
-					onClick={() => alert("Contact support to delete your account.")}
-					className="w-full flex items-center justify-between p-4 text-xs font-semibold text-[var(--color-text-tertiary)] hover:text-rose-400 hover:bg-rose-500/5 transition-colors"
+					onClick={() => alert("To delete your account and all associated presets/data, please contact support at support@amhub.com")}
+					className="w-full flex items-center justify-between p-4 text-xs font-semibold text-[var(--color-text-tertiary)] hover:text-rose-400 hover:bg-rose-500/5 transition-colors cursor-pointer"
 				>
 					<div className="flex items-center gap-3">
 						<Trash2 className="w-4 h-4" />
