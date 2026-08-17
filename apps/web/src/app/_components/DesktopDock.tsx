@@ -121,12 +121,12 @@ export function DesktopDock({
 	});
 
 	return (
-		<div className="flex fixed bottom-3 sm:bottom-6 left-1/2 -translate-x-1/2 z-50 pointer-events-auto select-none max-w-[98vw] sm:max-w-none">
+		<div className="flex fixed bottom-3 sm:bottom-6 left-1/2 -translate-x-1/2 z-50 pointer-events-auto select-none w-[calc(100%-16px)] sm:w-auto max-w-2xl sm:max-w-none justify-center">
 			<motion.div
 				initial={{ y: 40, opacity: 0 }}
 				animate={{ y: 0, opacity: 1 }}
 				transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-				className="relative flex items-center gap-0.5 sm:gap-1.5 p-1 sm:p-2 rounded-3xl bg-[var(--color-bg-surface)] border border-[var(--color-border-strong)] shadow-[0_8px_32px_rgba(0,0,0,0.5)]"
+				className="relative flex items-center justify-between sm:justify-center w-full sm:w-auto gap-0.5 sm:gap-1.5 p-1.5 sm:p-2 rounded-2xl bg-[var(--color-bg-surface)]/95 backdrop-blur-xl border border-[var(--color-border-strong)] shadow-[0_8px_32px_rgba(0,0,0,0.6)] overflow-x-auto no-scrollbar"
 			>
 				{dockItems.map((item) => {
 					const Icon = item.icon;
@@ -138,11 +138,11 @@ export function DesktopDock({
 					return (
 						<div
 							key={item.id}
-							className="relative group"
+							className="relative group flex-1 sm:flex-none flex items-center justify-center"
 							onMouseEnter={() => setHoveredId(item.id)}
 							onMouseLeave={() => setHoveredId(null)}
 						>
-							{/* Tooltip Bubble */}
+							{/* Tooltip Bubble (Desktop only) */}
 							<AnimatePresence>
 								{isHovered && (
 									<motion.div
@@ -162,20 +162,21 @@ export function DesktopDock({
 								)}
 							</AnimatePresence>
 
-							{/* macOS Dock Magnification Link Item */}
+							{/* Dock Item Button */}
 							<Link
 								href={item.href}
-								className="relative flex flex-col items-center justify-center min-w-[34px] min-h-[34px] sm:min-w-[48px] sm:min-h-[48px] p-0.5 sm:p-2.5 rounded-2xl transition-all duration-200"
+								aria-label={item.label}
+								className="relative flex flex-col items-center justify-center w-full min-w-[34px] sm:min-w-[48px] h-10 sm:h-12 p-0.5 sm:p-2 rounded-xl transition-all duration-200"
 							>
 								<motion.div
 									animate={{
-										scale: isHovered ? 1.2 : 1,
-										y: isHovered ? -3 : 0,
+										scale: isHovered ? 1.18 : 1,
+										y: isHovered ? -2 : 0,
 									}}
 									transition={{ type: "spring", stiffness: 400, damping: 25 }}
-									className={`relative flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 rounded-2xl transition-colors duration-200 overflow-hidden ${
+									className={`relative flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 rounded-xl transition-colors duration-200 overflow-hidden ${
 										item.isSpecial
-											? "bg-[var(--color-interactive-primary)] text-white shadow-[0_4px_12px_rgba(0,0,0,0.3)] border border-[var(--color-border-accent)]"
+											? "bg-[var(--color-interactive-primary)] text-white shadow-[0_4px_14px_rgba(0,0,0,0.4)] border border-[var(--color-border-accent)]"
 											: isActive
 												? "bg-[var(--color-bg-elevated)] text-white border border-[var(--color-border-strong)] shadow-sm"
 												: "bg-[var(--color-bg-input)] text-[var(--color-text-secondary)] border border-[var(--color-border-subtle)] hover:bg-[var(--color-bg-elevated)] hover:text-white"
@@ -185,7 +186,7 @@ export function DesktopDock({
 										<img
 											src={item.avatarUrl}
 											alt={item.label}
-											className="w-full h-full object-cover rounded-2xl"
+											className="w-full h-full object-cover rounded-xl"
 										/>
 									) : (
 										<Icon className="w-4 h-4 sm:w-5 sm:h-5" />
@@ -193,7 +194,7 @@ export function DesktopDock({
 
 									{/* Badge Dot */}
 									{item.badge && item.badge > 0 ? (
-										<span className="absolute -top-1 -right-1 flex h-3.5 w-3.5 sm:h-4 sm:w-4 items-center justify-center rounded-full bg-purple-500 text-[9px] sm:text-[10px] font-black text-white shadow-sm border border-black">
+										<span className="absolute -top-1 -right-1 flex h-3.5 w-3.5 sm:h-4 sm:w-4 items-center justify-center rounded-full bg-rose-500 text-[8px] sm:text-[10px] font-black text-white shadow-sm border border-black">
 											{item.badge > 9 ? "9+" : item.badge}
 										</span>
 									) : null}
@@ -203,7 +204,7 @@ export function DesktopDock({
 								{isActive && (
 									<motion.div
 										layoutId="activeDockDot"
-										className="absolute bottom-0.5 sm:bottom-1 w-1.5 h-1.5 rounded-full bg-purple-400"
+										className="absolute bottom-0 sm:bottom-0.5 w-1.5 h-1.5 rounded-full bg-[var(--color-interactive-primary)]"
 										transition={{ type: "spring", stiffness: 500, damping: 30 }}
 									/>
 								)}
