@@ -1,5 +1,6 @@
 "use client";
 
+import { ArrowLeft } from "lucide-react";
 import type * as React from "react";
 import type { ReactNode } from "react";
 import { cn } from "../../lib/utils";
@@ -14,6 +15,8 @@ export interface TopBarProps {
 	pageTitle?: string;
 	unreadNotificationCount?: number;
 	isScrolled?: boolean;
+	showBackButton?: boolean;
+	onBackClick?: () => void;
 	onSearchSubmit?: (query: string) => void;
 	rightContent?: React.ReactNode;
 }
@@ -21,6 +24,8 @@ export interface TopBarProps {
 export const TopBar = ({
 	pageTitle,
 	isScrolled,
+	showBackButton = false,
+	onBackClick,
 	rightContent,
 }: TopBarProps) => {
 	return (
@@ -32,7 +37,18 @@ export const TopBar = ({
 			)}
 		>
 			{/* Brand Area — AMHUB Logo & AMHUB Text */}
-			<div className="flex items-center gap-3">
+			<div className="flex items-center gap-2.5">
+				{showBackButton && (
+					<button
+						type="button"
+						onClick={onBackClick}
+						aria-label="Kembali ke halaman sebelumnya"
+						className="inline-flex items-center justify-center w-9 h-9 rounded-xl bg-[var(--color-bg-surface)] hover:bg-[var(--color-bg-elevated)] border border-[var(--color-border-subtle)] hover:border-[var(--color-border-strong)] text-[var(--color-text-secondary)] hover:text-white transition-all active:scale-90 shrink-0 shadow-sm"
+					>
+						<ArrowLeft className="w-4 h-4" />
+					</button>
+				)}
+
 				<a
 					href="/home"
 					aria-label="AMHUB — Home"
@@ -63,3 +79,4 @@ export const TopBar = ({
 		</header>
 	);
 };
+

@@ -28,6 +28,16 @@ export const LayoutShell: React.FC<LayoutShellProps> = ({
 	const [unreadCount, setUnreadCount] = useState(initialUnreadCount);
 
 	const isWelcomePage = pathname === "/";
+	const isHomePage = pathname === "/home";
+	const showBackButton = !isWelcomePage && !isHomePage;
+
+	const handleBackClick = () => {
+		if (typeof window !== "undefined" && window.history.length > 1) {
+			router.back();
+		} else {
+			router.push("/home");
+		}
+	};
 
 	// Realtime subscription for unread notifications count
 	useEffect(() => {
@@ -93,6 +103,8 @@ export const LayoutShell: React.FC<LayoutShellProps> = ({
 									currentUser={navUser}
 									unreadNotificationCount={unreadCount}
 									isScrolled={false}
+									showBackButton={showBackButton}
+									onBackClick={handleBackClick}
 									onSearchSubmit={handleSearchSubmit}
 									rightContent={<LanguageSwitcher variant="compact" />}
 								/>
