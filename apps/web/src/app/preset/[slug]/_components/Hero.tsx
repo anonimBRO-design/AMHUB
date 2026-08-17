@@ -2,6 +2,7 @@
 
 import { useAuth } from "@/context/AuthContext";
 import {
+	Bookmark,
 	Download,
 	Eye,
 	Heart,
@@ -16,7 +17,7 @@ import {
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import posthog from "posthog-js";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { BookmarkButton } from "./BookmarkButton";
 import { ShareButton } from "./ShareButton";
 
@@ -33,6 +34,7 @@ interface HeroProps {
 		downloadCount: number;
 		likeCount: number;
 		viewCount: number;
+		bookmarkCount?: number;
 		isLiked?: boolean;
 		isBookmarked?: boolean;
 		aspectRatio?: "16:9" | "9:16" | "1:1" | string;
@@ -82,6 +84,10 @@ export function Hero({ preset, currentUserId }: HeroProps) {
 	const [isLiked, setIsLiked] = useState(preset.isLiked ?? false);
 	const [likeCount, setLikeCount] = useState(preset.likeCount);
 	const [downloadCount, setDownloadCount] = useState(preset.downloadCount);
+	const [bookmarkCount, setBookmarkCount] = useState(
+		preset.bookmarkCount ?? 0,
+	);
+	const [viewCount, setViewCount] = useState(preset.viewCount ?? 0);
 	const [isPlayingVideo, setIsPlayingVideo] = useState(false);
 	const [isMuted, setIsMuted] = useState(false);
 	const [currentTime, setCurrentTime] = useState(0);
@@ -92,6 +98,27 @@ export function Hero({ preset, currentUserId }: HeroProps) {
 	const containerRef = useRef<HTMLDivElement>(null);
 	const controlsTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 	const { requireAuth } = useAuth();
+
+	// Auto-track and record preset view on mount
+	useEffect(() => {
+		if (!preset.id) return;
+		const key = `am_view_${preset.id}`;
+		if (sessionStorage.getItem(key)) return;
+		sessionStorage.setItem(key, "1");
+
+		fetch(`/api/presets/${preset.id}/view`, { method: "POST" })
+			.then((res) => res.json())
+			.then((resData) => {
+				if (resData?.data?.view_count !== undefined) {
+					setViewCount(resData.data.view_count);
+				} else {
+					setViewCount((prev) => prev + 1);
+				}
+			})
+			.catch(() => {
+				setViewCount((prev) => prev + 1);
+			});
+	}, [preset.id]);
 
 	const handleLikeToggle = async () => {
 		if (!requireAuth(undefined, "Sign in to like presets")) return;
@@ -377,6 +404,12 @@ export function Hero({ preset, currentUserId }: HeroProps) {
 						<BookmarkButton
 							presetId={preset.id}
 							initialBookmarked={preset.isBookmarked}
+							count={bookmarkCount}
+							onBookmarkChange={(isBookmarked) => {
+								setBookmarkCount((prev) =>
+									isBookmarked ? prev + 1 : Math.max(0, prev - 1),
+								);
+							}}
 						/>
 						<ShareButton title={preset.title} />
 					</div>
@@ -404,6 +437,13 @@ export function Hero({ preset, currentUserId }: HeroProps) {
 						</span>{" "}
 						Likes
 					</div>
+					<div className="flex items-center gap-1.5 text-amber-400">
+						<Bookmark className="w-4 h-4 fill-amber-400/20" />
+						<span className="font-bold text-[var(--color-text-primary)]">
+							{bookmarkCount}
+						</span>{" "}
+						Bookmarks
+					</div>
 					<div className="flex items-center gap-1.5 text-emerald-400">
 						<Download className="w-4 h-4" />
 						<span className="font-bold text-[var(--color-text-primary)]">
@@ -414,7 +454,7 @@ export function Hero({ preset, currentUserId }: HeroProps) {
 					<div className="flex items-center gap-1.5 text-blue-400">
 						<Eye className="w-4 h-4" />
 						<span className="font-bold text-[var(--color-text-primary)]">
-							{preset.viewCount}
+							{viewCount}
 						</span>{" "}
 						Views
 					</div>

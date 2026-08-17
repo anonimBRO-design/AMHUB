@@ -43,6 +43,8 @@ export function mapPresetToCardPreset(
 		likeCount: preset.like_count,
 		commentCount: preset.comment_count,
 		viewCount: preset.view_count,
+		bookmarkCount:
+			(preset as { bookmark_count?: number }).bookmark_count ?? 0,
 		creator: {
 			id: preset.creator.id,
 			username: preset.creator.username,

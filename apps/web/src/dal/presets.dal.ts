@@ -753,3 +753,31 @@ export async function getCreatorAnalytics(
 		},
 	};
 }
+
+export async function incrementPresetView(
+	client: DalClient,
+	presetId: string,
+): Promise<number> {
+	try {
+		const { data: current } = await client
+			.from("presets")
+			.select("view_count")
+			.eq("id", presetId)
+			.maybeSingle();
+
+		if (current) {
+			const newCount =
+				((current as { view_count?: number }).view_count || 0) + 1;
+			await client
+				.from("presets")
+				.update({ view_count: newCount } as never)
+				.eq("id", presetId);
+			return newCount;
+		}
+		return 0;
+	} catch (e) {
+		console.error("Failed to increment preset view count:", e);
+		return 0;
+	}
+}
+

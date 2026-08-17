@@ -29,6 +29,7 @@ export interface PresetCardPreset {
 	likeCount: number;
 	commentCount: number;
 	viewCount: number;
+	bookmarkCount?: number;
 	creator: {
 		id?: string;
 		username: string;
