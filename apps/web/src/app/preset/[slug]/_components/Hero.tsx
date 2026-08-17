@@ -166,40 +166,64 @@ export function Hero({ preset, currentUserId }: HeroProps) {
 					)}
 
 					{/* Top Badges */}
-					<div className="absolute top-4 left-4 flex flex-wrap gap-2 z-10 pointer-events-none">
-						<span className="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-black/60 backdrop-blur-md text-white border border-white/10 shadow-md">
+					<div className="absolute top-3 sm:top-4 left-3 sm:left-4 right-3 sm:right-4 flex flex-wrap items-center gap-1.5 sm:gap-2 z-10 pointer-events-none">
+						<span className="px-2.5 sm:px-3 py-1 rounded-full text-[10px] sm:text-xs font-bold uppercase tracking-wider bg-black/70 backdrop-blur-md text-white border border-white/10 shadow-md">
 							{preset.fileType || "XML"}
 						</span>
-						<span className="px-3 py-1 rounded-full text-xs font-semibold tracking-wider bg-[var(--color-interactive-primary)] text-white shadow-md">
+						<span className="px-2.5 sm:px-3 py-1 rounded-full text-[10px] sm:text-xs font-semibold tracking-wider bg-[var(--color-interactive-primary)] text-white shadow-md">
 							{preset.category}
 						</span>
-						<span className="px-3 py-1 rounded-full text-xs font-semibold capitalize bg-white/10 backdrop-blur-md text-white border border-white/10">
+						<span className="px-2.5 sm:px-3 py-1 rounded-full text-[10px] sm:text-xs font-semibold capitalize bg-white/10 backdrop-blur-md text-white border border-white/10">
 							{preset.difficulty}
 						</span>
 						{preset.isPaid && (preset.price ?? 0) > 0 ? (
-							<span className="px-3 py-1 rounded-full text-xs font-extrabold tracking-wider bg-amber-400 text-amber-950 shadow-md">
+							<span className="px-2.5 sm:px-3 py-1 rounded-full text-[10px] sm:text-xs font-extrabold tracking-wider bg-amber-400 text-amber-950 shadow-md">
 								Rp {(preset.price ?? 0).toLocaleString("id-ID")}
 							</span>
 						) : (
-							<span className="px-3 py-1 rounded-full text-xs font-extrabold tracking-wider bg-emerald-500/90 text-white shadow-md">
+							<span className="px-2.5 sm:px-3 py-1 rounded-full text-[10px] sm:text-xs font-extrabold tracking-wider bg-emerald-500/90 text-white shadow-md">
 								GRATIS
 							</span>
 						)}
 					</div>
+				</div>
+			</div>
 
-					{/* Quick Actions (Top Right Overlay) */}
-					<div className="absolute top-4 right-4 flex items-center gap-2 z-10">
+			{/* Title, Actions & Stats (Outside Video Box) */}
+			<div className="space-y-4 px-1">
+				<div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
+					<div className="space-y-2 flex-1 min-w-0">
+						<div className="flex items-center gap-2 text-xs font-bold text-[var(--color-interactive-primary)] uppercase tracking-wider">
+							<Sparkles className="w-4 h-4" />
+							<span>Alight Motion Preset</span>
+						</div>
+						<h1 className="text-2xl sm:text-4xl font-extrabold tracking-tight text-[var(--color-text-primary)] leading-tight">
+							{preset.title}
+						</h1>
+						{preset.description && (
+							<p className="text-sm sm:text-base text-[var(--color-text-secondary)] leading-relaxed max-w-3xl">
+								{preset.description}
+							</p>
+						)}
+					</div>
+
+					{/* Primary Preset Actions (Like, Bookmark, Share) */}
+					<div className="flex items-center gap-2 shrink-0 pt-1">
 						<button
 							type="button"
 							onClick={handleLikeToggle}
 							aria-label={isLiked ? "Unlike preset" : "Like preset"}
-							className={`inline-flex items-center gap-1.5 min-h-[40px] px-3.5 rounded-2xl backdrop-blur-md border transition-all active:scale-95 ${
+							className={`inline-flex items-center gap-2 min-h-[44px] px-4 rounded-2xl border transition-all active:scale-95 shadow-sm font-body ${
 								isLiked
-									? "bg-rose-500/20 text-rose-400 border-rose-500/30"
-									: "bg-black/50 text-white border-white/10 hover:bg-black/70"
+									? "bg-rose-500/15 text-rose-400 border-rose-500/30"
+									: "bg-[var(--color-bg-surface)] text-[var(--color-text-primary)] border-[var(--color-border-subtle)] hover:bg-[var(--color-bg-elevated)] hover:border-[var(--color-border-strong)]"
 							}`}
 						>
-							<Heart className={`w-4 h-4 ${isLiked ? "fill-rose-400" : ""}`} />
+							<Heart
+								className={`w-4 h-4 transition-colors ${
+									isLiked ? "fill-rose-500 text-rose-500" : ""
+								}`}
+							/>
 							<span className="text-xs font-bold">{likeCount}</span>
 						</button>
 
@@ -210,29 +234,13 @@ export function Hero({ preset, currentUserId }: HeroProps) {
 						<ShareButton title={preset.title} />
 					</div>
 				</div>
-			</div>
-
-			{/* Title & Stats (Outside Video Box) */}
-			<div className="space-y-2 px-1">
-				<div className="flex items-center gap-2 text-xs font-bold text-[var(--color-interactive-primary)] uppercase tracking-wider">
-					<Sparkles className="w-4 h-4" />
-					<span>Alight Motion Preset</span>
-				</div>
-				<h1 className="text-2xl sm:text-4xl font-extrabold tracking-tight text-[var(--color-text-primary)] leading-tight">
-					{preset.title}
-				</h1>
-				{preset.description && (
-					<p className="text-sm sm:text-base text-[var(--color-text-secondary)] leading-relaxed max-w-3xl">
-						{preset.description}
-					</p>
-				)}
 
 				{isOwner && (
 					<div className="flex items-center gap-2 pt-1">
 						<button
 							type="button"
 							onClick={() => setShowDeleteDialog(true)}
-							className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-rose-500/10 text-rose-400 border border-rose-500/20 hover:bg-rose-500/20 transition-all text-xs font-semibold"
+							className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-rose-500/10 text-rose-400 border border-rose-500/20 hover:bg-rose-500/20 transition-all text-xs font-semibold"
 						>
 							<Trash2 className="w-3.5 h-3.5" />
 							<span>Delete Preset</span>
@@ -241,7 +249,7 @@ export function Hero({ preset, currentUserId }: HeroProps) {
 				)}
 
 				{/* Mobile & Desktop Stats Pills */}
-				<div className="flex flex-wrap items-center gap-4 pt-2 text-xs font-medium text-[var(--color-text-secondary)]">
+				<div className="flex flex-wrap items-center gap-4 pt-1 text-xs font-medium text-[var(--color-text-secondary)]">
 					<div className="flex items-center gap-1.5 text-rose-400">
 						<Heart className="w-4 h-4 fill-rose-400/20" />
 						<span className="font-bold text-[var(--color-text-primary)]">
