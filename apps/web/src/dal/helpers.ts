@@ -1,4 +1,5 @@
 import { ApiError } from "@/lib/api/errors";
+import { createSupabaseServiceClient } from "@/lib/supabase/server";
 import type { Database } from "@presethub/types";
 import type { DalClient } from "./types";
 
@@ -33,7 +34,16 @@ export async function syncPresetCounter(
 	table: CounterTable,
 	counterColumn: CounterColumn,
 ): Promise<void> {
-	let query = client
+	// Use service client to bypass RLS when counting rows across all users (e.g. private bookmarks) and updating preset counter
+	let countingClient: DalClient = client;
+	try {
+		countingClient = createSupabaseServiceClient();
+	} catch {
+		// Fallback to caller client if service client cannot be created in environment
+		countingClient = client;
+	}
+
+	let query = countingClient
 		.from(table)
 		.select("*", { count: "exact", head: true })
 		.eq("preset_id", presetId);
@@ -46,7 +56,7 @@ export async function syncPresetCounter(
 	const { count, error: countError } = await query;
 
 	if (!countError && count !== null) {
-		await client
+		await countingClient
 			.from("presets")
 			.update({ [counterColumn]: count } as never)
 			.eq("id", presetId);
