@@ -10,13 +10,13 @@ interface BookmarksClientProps {
 }
 
 const CATEGORIES = [
-	"All",
-	"Velocity",
-	"Transition",
-	"Color",
-	"Anime",
-	"Gaming",
-	"Lyric",
+	{ id: "All", label: "All" },
+	{ id: "jj-tipis", label: "JJ Tipis" },
+	{ id: "jj-melar", label: "JJ Kenyat-Kenyot" },
+	{ id: "jj-belah", label: "JJ Belah" },
+	{ id: "anime", label: "Anime" },
+	{ id: "gaming", label: "Gaming" },
+	{ id: "lyric", label: "Lyric" },
 ];
 
 export function BookmarksClient({ initialPresets }: BookmarksClientProps) {
@@ -80,19 +80,19 @@ export function BookmarksClient({ initialPresets }: BookmarksClientProps) {
 
 				<div className="flex items-center gap-2 overflow-x-auto scrollbar-none text-xs select-none">
 					{CATEGORIES.map((cat) => {
-						const isActive = selectedCategory === cat;
+						const isActive = selectedCategory === cat.id;
 						return (
 							<button
-								key={cat}
+								key={cat.id}
 								type="button"
-								onClick={() => setSelectedCategory(cat)}
+								onClick={() => setSelectedCategory(cat.id)}
 								className={`shrink-0 min-h-[38px] px-4 rounded-xl border font-semibold transition-all active:scale-95 ${
 									isActive
 										? "bg-[var(--color-interactive-primary)] text-white border-[var(--color-interactive-primary)] shadow-md"
 										: "bg-[var(--color-bg-surface)] text-[var(--color-text-secondary)] border-[var(--color-border-subtle)] hover:text-[var(--color-text-primary)]"
 								}`}
 							>
-								{cat}
+								{cat.label}
 							</button>
 						);
 					})}

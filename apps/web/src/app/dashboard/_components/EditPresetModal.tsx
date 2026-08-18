@@ -25,14 +25,14 @@ interface EditPresetModalProps {
 }
 
 const CATEGORIES = [
-	{ label: "Transitions", value: "transitions" },
-	{ label: "Effects", value: "effects" },
-	{ label: "Text Animations", value: "text-animations" },
-	{ label: "Color Grading", value: "color-grading" },
-	{ label: "Overlays", value: "overlays" },
-	{ label: "Velocity & Shake", value: "velocity-shake" },
-	{ label: "3D Motion", value: "3d-motion" },
-	{ label: "Audio Sync", value: "audio-sync" },
+	{ label: "JJ Tipis", value: "jj-tipis" },
+	{ label: "JJ Kenyat-Kenyot", value: "jj-melar" },
+	{ label: "JJ Belah", value: "jj-belah" },
+	{ label: "Anime", value: "anime" },
+	{ label: "Gaming", value: "gaming" },
+	{ label: "Lyric", value: "lyric" },
+	{ label: "3D Motion", value: "3d" },
+	{ label: "Slow Motion", value: "slowmo" },
 ];
 
 export function EditPresetModal({

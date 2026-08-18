@@ -47,6 +47,13 @@ export interface BadgeProps {
 
 const styleMap: Record<string, Record<string, string>> = {
 	category: {
+		"jj-tipis": "bg-rose-500 text-white shadow-sm",
+		"jj tipis": "bg-rose-500 text-white shadow-sm",
+		"jj-melar": "bg-amber-500 text-white shadow-sm",
+		"jj melar": "bg-amber-500 text-white shadow-sm",
+		"jj-belah": "bg-purple-500 text-white shadow-sm",
+		"jj belah": "bg-purple-500 text-white shadow-sm",
+		jj: "bg-rose-500 text-white shadow-sm",
 		velocity: "bg-[var(--color-category-velocity)] text-white shadow-sm",
 		transition: "bg-[var(--color-category-transition)] text-white shadow-sm",
 		color: "bg-[var(--color-category-color)] text-white shadow-sm",
@@ -54,6 +61,7 @@ const styleMap: Record<string, Record<string, string>> = {
 		gaming: "bg-[var(--color-category-gaming)] text-white shadow-sm",
 		lyric: "bg-[var(--color-category-lyric)] text-white shadow-sm",
 		"3d": "bg-[var(--color-category-3d)] text-white shadow-sm",
+		slowmo: "bg-emerald-500 text-white shadow-sm",
 		other: "bg-[var(--color-category-other)] text-white shadow-sm",
 	},
 	rarity: {

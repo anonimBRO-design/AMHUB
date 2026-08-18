@@ -10,14 +10,14 @@ interface FilterSheetProps {
 }
 
 const CATEGORIES = [
-	"velocity",
-	"transition",
-	"color",
-	"anime",
-	"gaming",
-	"lyric",
-	"3d",
-	"slowmo",
+	{ id: "jj-tipis", label: "JJ Tipis" },
+	{ id: "jj-melar", label: "JJ Kenyat-Kenyot" },
+	{ id: "jj-belah", label: "JJ Belah" },
+	{ id: "anime", label: "Anime" },
+	{ id: "gaming", label: "Gaming" },
+	{ id: "lyric", label: "Lyric" },
+	{ id: "3d", label: "3D Motion" },
+	{ id: "slowmo", label: "Slow Motion" },
 ];
 
 const DIFFICULTIES = ["beginner", "intermediate", "advanced"];
@@ -111,19 +111,21 @@ export function FilterSheet({ isOpen, onClose }: FilterSheetProps) {
 					</h3>
 					<div className="flex flex-wrap gap-2">
 						{CATEGORIES.map((cat) => {
-							const isSelected = selectedCategory === cat;
+							const isSelected = selectedCategory === cat.id;
 							return (
 								<button
-									key={cat}
+									key={cat.id}
 									type="button"
-									onClick={() => setSelectedCategory(isSelected ? null : cat)}
+									onClick={() =>
+										setSelectedCategory(isSelected ? null : cat.id)
+									}
 									className={`min-h-[40px] px-4 rounded-xl text-xs font-semibold border transition-all ${
 										isSelected
 											? "bg-[var(--color-interactive-primary)] text-white border-[var(--color-interactive-primary)] shadow-md"
 											: "bg-[var(--color-bg-base)] text-[var(--color-text-secondary)] border-[var(--color-border-subtle)] hover:border-[var(--color-border-strong)]"
 									}`}
 								>
-									{cat.charAt(0).toUpperCase() + cat.slice(1)}
+									{cat.label}
 								</button>
 							);
 						})}

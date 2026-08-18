@@ -5,12 +5,12 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
 
 const CATEGORIES = [
-	"velocity",
-	"transition",
-	"color",
-	"anime",
-	"gaming",
-	"lyric",
+	{ id: "jj-tipis", label: "JJ Tipis" },
+	{ id: "jj-melar", label: "JJ Kenyat-Kenyot" },
+	{ id: "jj-belah", label: "JJ Belah" },
+	{ id: "anime", label: "Anime" },
+	{ id: "gaming", label: "Gaming" },
+	{ id: "lyric", label: "Lyric" },
 ];
 
 const SORT_OPTIONS = [
@@ -70,10 +70,10 @@ export const ExploreControls = () => {
 				/>
 				{CATEGORIES.map((category) => (
 					<FilterChip
-						key={category}
-						label={category.charAt(0).toUpperCase() + category.slice(1)}
-						isActive={activeCategory === category}
-						onClick={() => handleFilterClick(category)}
+						key={category.id}
+						label={category.label}
+						isActive={activeCategory === category.id}
+						onClick={() => handleFilterClick(category.id)}
 					/>
 				))}
 			</div>

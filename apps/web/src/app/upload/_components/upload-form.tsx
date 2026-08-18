@@ -5,9 +5,9 @@ import { useRouter } from "next/navigation";
 import { type ChangeEvent, type FormEvent, useState } from "react";
 
 const CATEGORIES = [
-	"velocity",
-	"transition",
-	"color",
+	"jj-tipis",
+	"jj-melar",
+	"jj-belah",
 	"anime",
 	"gaming",
 	"lyric",
@@ -22,7 +22,7 @@ export function UploadForm() {
 	// Form state
 	const [title, setTitle] = useState("");
 	const [description, setDescription] = useState("");
-	const [category, setCategory] = useState("velocity");
+	const [category, setCategory] = useState("jj-tipis");
 	const [fileType, setFileType] = useState<"xml" | "gdrive" | "link">("xml");
 	const [difficulty, setDifficulty] = useState<
 		"beginner" | "intermediate" | "advanced"

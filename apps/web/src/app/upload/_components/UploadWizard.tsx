@@ -112,7 +112,7 @@ export function UploadWizard() {
 	const [gdriveLink, setGdriveLink] = useState("");
 	const [title, setTitle] = useState("");
 	const [description, setDescription] = useState("");
-	const [category, setCategory] = useState("velocity");
+	const [category, setCategory] = useState("jj-tipis");
 	const [difficulty, setDifficulty] = useState<
 		"beginner" | "intermediate" | "advanced"
 	>("intermediate");
