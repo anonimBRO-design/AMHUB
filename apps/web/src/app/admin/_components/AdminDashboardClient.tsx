@@ -1,3 +1,5 @@
+"use client";
+
 import { resolveStorageUrl } from "@/lib/supabase/storage-url";
 import type { User as Profile } from "@presethub/types";
 import {

@@ -10,7 +10,7 @@ import type {
 } from "@presethub/types";
 import type { NextRequest } from "next/server";
 
-export function generatePersonalizedPermissionMessage(
+function generatePersonalizedPermissionMessage(
 	creatorName: string,
 	targetPresetName?: string | null,
 ): string {
