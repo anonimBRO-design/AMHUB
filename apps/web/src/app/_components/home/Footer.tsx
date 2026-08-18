@@ -77,10 +77,18 @@ export function Footer() {
 								</li>
 								<li>
 									<Link
-										href="/explore?category=anime"
+										href="/explore?category=jj-abstract"
 										className="hover:text-[var(--color-interactive-primary)] transition-colors"
 									>
-										Anime Edits
+										JJ Abstract
+									</Link>
+								</li>
+								<li>
+									<Link
+										href="/explore?category=jj-db"
+										className="hover:text-[var(--color-interactive-primary)] transition-colors"
+									>
+										JJ DB
 									</Link>
 								</li>
 							</ul>

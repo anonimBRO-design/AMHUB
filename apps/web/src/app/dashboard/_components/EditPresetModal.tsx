@@ -29,11 +29,11 @@ const CATEGORIES = [
 	{ label: "JJ Tipis", value: "jj-tipis" },
 	{ label: "JJ Kenyat-Kenyot", value: "jj-melar" },
 	{ label: "JJ Belah", value: "jj-belah" },
-	{ label: "Anime", value: "anime" },
+	{ label: "JJ Abstract", value: "jj-abstract" },
+	{ label: "JJ DB", value: "jj-db" },
+	{ label: "JJ Mekdi", value: "jj-mekdi" },
+	{ label: "JJ Kenyal", value: "jj-kenyal" },
 	{ label: "Gaming", value: "gaming" },
-	{ label: "Lyric", value: "lyric" },
-	{ label: "3D Motion", value: "3d" },
-	{ label: "Slow Motion", value: "slowmo" },
 ];
 
 export function EditPresetModal({

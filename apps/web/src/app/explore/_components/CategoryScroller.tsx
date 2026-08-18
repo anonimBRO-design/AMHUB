@@ -5,10 +5,9 @@ import {
 	Gamepad2,
 	Layers,
 	Layers3,
-	Music,
-	Palette,
 	Sparkles,
-	Tv,
+	Volume2,
+	Waves,
 	Zap,
 } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -20,11 +19,11 @@ const CATEGORIES = [
 	{ id: "jj-tipis", label: "JJ Tipis", icon: Sparkles },
 	{ id: "jj-melar", label: "JJ Kenyat-Kenyot", icon: Flame },
 	{ id: "jj-belah", label: "JJ Belah", icon: Layers },
-	{ id: "anime", label: "Anime", icon: Tv },
+	{ id: "jj-abstract", label: "JJ Abstract", icon: Layers3 },
+	{ id: "jj-db", label: "JJ DB", icon: Volume2 },
+	{ id: "jj-mekdi", label: "JJ Mekdi", icon: Flame },
+	{ id: "jj-kenyal", label: "JJ Kenyal", icon: Waves },
 	{ id: "gaming", label: "Gaming", icon: Gamepad2 },
-	{ id: "lyric", label: "Lyric", icon: Music },
-	{ id: "3d", label: "3D Motion", icon: Layers3 },
-	{ id: "slowmo", label: "Slow Motion", icon: Flame },
 ];
 
 export function CategoryScroller() {

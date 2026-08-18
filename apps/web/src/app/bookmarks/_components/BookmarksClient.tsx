@@ -15,9 +15,11 @@ const CATEGORIES = [
 	{ id: "jj-tipis", label: "JJ Tipis" },
 	{ id: "jj-melar", label: "JJ Kenyat-Kenyot" },
 	{ id: "jj-belah", label: "JJ Belah" },
-	{ id: "anime", label: "Anime" },
+	{ id: "jj-abstract", label: "JJ Abstract" },
+	{ id: "jj-db", label: "JJ DB" },
+	{ id: "jj-mekdi", label: "JJ Mekdi" },
+	{ id: "jj-kenyal", label: "JJ Kenyal" },
 	{ id: "gaming", label: "Gaming" },
-	{ id: "lyric", label: "Lyric" },
 ];
 
 export function BookmarksClient({ initialPresets }: BookmarksClientProps) {
