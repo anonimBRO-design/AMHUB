@@ -6,32 +6,18 @@ import { type ChangeEvent, useEffect, useRef, useState } from "react";
 interface PreviewVideoStepProps {
 	previewVideoFile: File | null;
 	onPreviewVideoFileChange: (file: File | null) => void;
-	thumbnailFile: File | null;
 }
 
 export function PreviewVideoStep({
 	previewVideoFile,
 	onPreviewVideoFileChange,
-	thumbnailFile,
 }: PreviewVideoStepProps) {
 	const [videoPreviewUrl, setVideoVideoPreviewUrl] = useState<string | null>(
 		previewVideoFile ? URL.createObjectURL(previewVideoFile) : null,
 	);
-	const [thumbnailUrl, setThumbnailUrl] = useState<string | null>(
-		thumbnailFile ? URL.createObjectURL(thumbnailFile) : null,
-	);
 	const [isDragging, setIsDragging] = useState(false);
 	const [isPlaying, setIsPlaying] = useState(false);
 	const videoRef = useRef<HTMLVideoElement>(null);
-
-	useEffect(() => {
-		if (thumbnailFile) {
-			const url = URL.createObjectURL(thumbnailFile);
-			setThumbnailUrl(url);
-			return () => URL.revokeObjectURL(url);
-		}
-		setThumbnailUrl(null);
-	}, [thumbnailFile]);
 
 	const handleFileSelect = (e: ChangeEvent<HTMLInputElement>) => {
 		if (e.target.files?.[0]) {
@@ -87,7 +73,6 @@ export function PreviewVideoStep({
 					<video
 						ref={videoRef}
 						src={videoPreviewUrl}
-						poster={thumbnailUrl ?? undefined}
 						className="w-full h-full object-contain"
 						onPlay={() => setIsPlaying(true)}
 						onPause={() => setIsPlaying(false)}

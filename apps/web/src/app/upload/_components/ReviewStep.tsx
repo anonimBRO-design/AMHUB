@@ -17,7 +17,7 @@ interface ReviewStepProps {
 	difficulty: string;
 	selectedFileTypes: PresetSourceFormat[];
 	presetFile: File | null;
-	thumbnailFile: File | null;
+	thumbnailFile?: File | null;
 	amLink: string;
 	gdriveLink?: string;
 	previewVideoFile?: File | null;
@@ -32,7 +32,7 @@ export function ReviewStep({
 	difficulty,
 	selectedFileTypes,
 	presetFile,
-	thumbnailFile,
+	thumbnailFile = null,
 	amLink,
 	gdriveLink,
 	previewVideoFile,
@@ -70,11 +70,10 @@ export function ReviewStep({
 			{/* Review Card */}
 			<div className="p-5 rounded-3xl bg-[var(--color-bg-base)] border border-[var(--color-border-subtle)] space-y-4 shadow-xl">
 				{/* Thumbnail or Video Preview */}
-				<div className="relative aspect-[9/16] w-full overflow-hidden rounded-2xl border border-[var(--color-border-subtle)] bg-[var(--color-bg-elevated)] group">
+				<div className="relative aspect-[9/16] w-full overflow-hidden rounded-2xl border border-[var(--color-border-subtle)] bg-[var(--color-bg-elevated)] group flex items-center justify-center">
 					{videoPreviewUrl ? (
 						<video
 							src={videoPreviewUrl}
-							poster={thumbnailPreviewUrl ?? undefined}
 							className="absolute inset-0 w-full h-full object-contain"
 							controls
 						/>
@@ -84,7 +83,14 @@ export function ReviewStep({
 							alt={title}
 							className="absolute inset-0 w-full h-full object-contain"
 						/>
-					) : null}
+					) : (
+						<div className="flex flex-col items-center justify-center gap-2 p-6 text-center text-[var(--color-text-secondary)]">
+							<Film className="w-10 h-10 stroke-[1.5] text-purple-400/60" />
+							<span className="text-xs font-semibold">
+								No video preview (Default cover will be used)
+							</span>
+						</div>
+					)}
 
 					{/* Top Left Badges */}
 					<div className="absolute top-3 left-3 flex flex-wrap gap-1.5 pointer-events-none">

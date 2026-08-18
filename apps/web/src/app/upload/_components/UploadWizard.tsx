@@ -22,16 +22,76 @@ import { DetailsStep } from "./DetailsStep";
 import { FilePicker } from "./FilePicker";
 import { PreviewVideoStep } from "./PreviewVideoStep";
 import { ReviewStep } from "./ReviewStep";
-import { ThumbnailStep } from "./ThumbnailStep";
 import { WizardProgress } from "./WizardProgress";
 
 const WIZARD_STEPS = [
 	{ num: 1, label: "Format & File" },
-	{ num: 2, label: "Thumbnail" },
-	{ num: 3, label: "Preview Video" },
-	{ num: 4, label: "Preset Details" },
-	{ num: 5, label: "Review & Publish" },
+	{ num: 2, label: "Preview Video" },
+	{ num: 3, label: "Preset Details" },
+	{ num: 4, label: "Review & Publish" },
 ];
+
+async function extractThumbnailFromVideo(videoFile: File): Promise<File | null> {
+	return new Promise((resolve) => {
+		try {
+			const video = document.createElement("video");
+			video.preload = "metadata";
+			video.muted = true;
+			video.playsInline = true;
+			const objectUrl = URL.createObjectURL(videoFile);
+			video.src = objectUrl;
+
+			const cleanUp = () => {
+				URL.revokeObjectURL(objectUrl);
+				video.remove();
+			};
+
+			video.onloadeddata = () => {
+				video.currentTime = Math.min(0.5, Math.max(0.1, (video.duration || 1) * 0.1));
+			};
+
+			video.onseeked = () => {
+				try {
+					const canvas = document.createElement("canvas");
+					canvas.width = video.videoWidth || 720;
+					canvas.height = video.videoHeight || 1280;
+					const ctx = canvas.getContext("2d");
+					if (ctx) {
+						ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+						canvas.toBlob(
+							(blob) => {
+								cleanUp();
+								if (blob) {
+									const thumbFile = new File([blob], "thumbnail.jpg", {
+										type: "image/jpeg",
+									});
+									resolve(thumbFile);
+								} else {
+									resolve(null);
+								}
+							},
+							"image/jpeg",
+							0.85,
+						);
+					} else {
+						cleanUp();
+						resolve(null);
+					}
+				} catch {
+					cleanUp();
+					resolve(null);
+				}
+			};
+
+			video.onerror = () => {
+				cleanUp();
+				resolve(null);
+			};
+		} catch {
+			resolve(null);
+		}
+	});
+}
 
 export function UploadWizard() {
 	const router = useRouter();
@@ -47,7 +107,6 @@ export function UploadWizard() {
 
 	// Form State
 	const [presetFile, setPresetFile] = useState<File | null>(null);
-	const [thumbnailFile, setThumbnailFile] = useState<File | null>(null);
 	const [previewVideoFile, setPreviewVideoFile] = useState<File | null>(null);
 	const [amLink, setAmLink] = useState("");
 	const [gdriveLink, setGdriveLink] = useState("");
@@ -76,10 +135,7 @@ export function UploadWizard() {
 				selectedFileTypes.length === 0
 			);
 		}
-		if (currentStep === 2) {
-			return !thumbnailFile;
-		}
-		if (currentStep === 4) {
+		if (currentStep === 3) {
 			return !title.trim() || (isPaid && (price < 1000 || Number.isNaN(price)));
 		}
 		return false;
@@ -101,14 +157,8 @@ export function UploadWizard() {
 			}
 			setCurrentStep(2);
 		} else if (currentStep === 2) {
-			if (!thumbnailFile) {
-				setError("Please upload a thumbnail preview image.");
-				return;
-			}
 			setCurrentStep(3);
 		} else if (currentStep === 3) {
-			setCurrentStep(4);
-		} else if (currentStep === 4) {
 			if (!title.trim()) {
 				setError("Title is required.");
 				return;
@@ -117,7 +167,7 @@ export function UploadWizard() {
 				setError("Harga preset berbayar minimal Rp 1.000.");
 				return;
 			}
-			setCurrentStep(5);
+			setCurrentStep(4);
 		}
 	};
 
@@ -306,20 +356,27 @@ export function UploadWizard() {
 			if (selectedFileTypes.length === 0) {
 				throw new Error("Please select at least one preset source.");
 			}
-
 			let uploadedThumbnailUrl: string | undefined = undefined;
 			let uploadedPreviewVideoUrl: string | undefined = undefined;
 			let finalFileUrl: string | undefined = undefined;
 			let amLinkValue: string | undefined = undefined;
 			let gdriveLinkValue: string | undefined = undefined;
 
-			// 1. Upload thumbnail
-			if (thumbnailFile) {
-				uploadedThumbnailUrl = await uploadFile(
-					thumbnailFile,
-					"thumbnail",
-					thumbnailFile.type || "image/jpeg",
-				);
+			// 1. Auto-extract and upload thumbnail from preview video if provided
+			if (previewVideoFile) {
+				try {
+					const generatedThumb =
+						await extractThumbnailFromVideo(previewVideoFile);
+					if (generatedThumb) {
+						uploadedThumbnailUrl = await uploadFile(
+							generatedThumb,
+							"thumbnail",
+							"image/jpeg",
+						);
+					}
+				} catch (e) {
+					console.warn("Could not auto-generate thumbnail from video:", e);
+				}
 			}
 
 			const getSafeVideoMimeType = (file: File): string => {
@@ -470,33 +527,29 @@ export function UploadWizard() {
 							body: JSON.stringify(item),
 						});
 					} catch (cleanupErr) {
-						console.error("Cleanup failed:", cleanupErr);
+						console.error("Cleanup error for", item, cleanupErr);
 					}
 				}
 
-				if (
-					createJson.error?.code === "unprocessable_entity" &&
-					createJson.error.details
-				) {
-					const details = createJson.error.details as any[];
-					const msg = details.map((d) => `${d.path}: ${d.message}`).join(", ");
-					throw new Error(`Validation Error: ${msg}`);
-				}
-
-				throw new Error(createJson.error?.message || "Failed to create preset");
+				throw new Error(
+					createJson.error?.message ||
+						createJson.message ||
+						"Failed to save preset to database.",
+				);
 			}
 
-			posthog.capture("preset_published", {
-				preset_id: createJson.data?.id ?? createJson.id,
+			// Analytics
+			posthog.capture("preset_uploaded", {
 				file_type: primaryFileType,
-				file_types: fileTypesPayload,
 				category,
 				difficulty,
 				is_paid: isPaid,
 				price: isPaid ? price : 0,
+				has_preview_video: Boolean(previewVideoFile),
 			});
-			const destinationSlug = createJson.data?.slug ?? createJson.slug ?? slug;
-			router.push(`/preset/${destinationSlug}`);
+
+			// Navigate to preset detail page
+			router.push(`/preset/${createJson.data.slug}`);
 		} catch (err: unknown) {
 			const apiError = err as {
 				code?: string;
@@ -555,21 +608,13 @@ export function UploadWizard() {
 				)}
 
 				{currentStep === 2 && (
-					<ThumbnailStep
-						thumbnailFile={thumbnailFile}
-						onThumbnailFileChange={setThumbnailFile}
+					<PreviewVideoStep
+						previewVideoFile={previewVideoFile}
+						onPreviewVideoFileChange={setPreviewVideoFile}
 					/>
 				)}
 
 				{currentStep === 3 && (
-					<PreviewVideoStep
-						previewVideoFile={previewVideoFile}
-						onPreviewVideoFileChange={setPreviewVideoFile}
-						thumbnailFile={thumbnailFile}
-					/>
-				)}
-
-				{currentStep === 4 && (
 					<DetailsStep
 						title={title}
 						onTitleChange={setTitle}
@@ -586,7 +631,7 @@ export function UploadWizard() {
 					/>
 				)}
 
-				{currentStep === 5 && (
+				{currentStep === 4 && (
 					<ReviewStep
 						title={title}
 						description={description}
@@ -594,7 +639,6 @@ export function UploadWizard() {
 						difficulty={difficulty}
 						selectedFileTypes={selectedFileTypes}
 						presetFile={presetFile}
-						thumbnailFile={thumbnailFile}
 						amLink={amLink}
 						gdriveLink={gdriveLink}
 						previewVideoFile={previewVideoFile}
@@ -621,7 +665,7 @@ export function UploadWizard() {
 						<div />
 					)}
 
-					{currentStep < 5 ? (
+					{currentStep < 4 ? (
 						<button
 							type="button"
 							onClick={handleNextStep}

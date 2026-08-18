@@ -53,6 +53,10 @@ export function mapPresetToCardPreset(
 			isVerified: preset.creator.is_verified,
 		},
 		isFeatured: preset.is_featured,
+		isLiked: Boolean((preset as any).isLiked ?? (preset as any).is_liked),
+		isBookmarked: Boolean(
+			(preset as any).isBookmarked ?? (preset as any).is_bookmarked,
+		),
 		createdAt: preset.created_at,
 		aspectRatio: rawAspect ?? "16:9",
 		price: preset.price ?? 0,

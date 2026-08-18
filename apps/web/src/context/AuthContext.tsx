@@ -2,8 +2,7 @@
 
 import { AuthModal } from "@/app/_components/AuthModal";
 import type { User } from "@presethub/types";
-import type React from "react";
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 
 interface AuthContextType {
 	currentUser: User | null;
@@ -48,6 +47,17 @@ export function AuthProvider({
 		setIsOpen(false);
 		setModalTitle(undefined);
 	};
+
+	useEffect(() => {
+		const handleAuthRequired = (e: Event) => {
+			const customEvent = e as CustomEvent<{ title?: string }>;
+			openAuthModal(customEvent.detail?.title);
+		};
+		window.addEventListener("auth:required", handleAuthRequired);
+		return () => {
+			window.removeEventListener("auth:required", handleAuthRequired);
+		};
+	}, []);
 
 	return (
 		<AuthContext.Provider

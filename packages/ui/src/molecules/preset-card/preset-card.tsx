@@ -90,8 +90,12 @@ export const PresetCard = React.forwardRef<HTMLDivElement, PresetCardProps>(
 		const [prefersReducedMotion, setPrefersReducedMotion] =
 			React.useState(false);
 		const [isLiked, setIsLiked] = React.useState(Boolean(preset.isLiked));
+		const [likeCount, setLikeCount] = React.useState(preset.likeCount ?? 0);
 		const [isBookmarked, setIsBookmarked] = React.useState(
 			Boolean(preset.isBookmarked),
+		);
+		const [bookmarkCount, setBookmarkCount] = React.useState(
+			preset.bookmarkCount ?? 0,
 		);
 		const [isMuted, setIsMuted] = React.useState(true);
 		const [showDeleteModal, setShowDeleteModal] = React.useState(false);
@@ -123,8 +127,16 @@ export const PresetCard = React.forwardRef<HTMLDivElement, PresetCardProps>(
 		}, [preset.isLiked]);
 
 		React.useEffect(() => {
+			setLikeCount(preset.likeCount ?? 0);
+		}, [preset.likeCount]);
+
+		React.useEffect(() => {
 			setIsBookmarked(Boolean(preset.isBookmarked));
 		}, [preset.isBookmarked]);
+
+		React.useEffect(() => {
+			setBookmarkCount(preset.bookmarkCount ?? 0);
+		}, [preset.bookmarkCount]);
 
 		React.useEffect(() => {
 			const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -166,6 +178,7 @@ export const PresetCard = React.forwardRef<HTMLDivElement, PresetCardProps>(
 			e.preventDefault();
 			const nextState = !isLiked;
 			setIsLiked(nextState);
+			setLikeCount((prev) => (nextState ? prev + 1 : Math.max(0, prev - 1)));
 
 			if (onLike) {
 				onLike(preset.id);
@@ -175,10 +188,19 @@ export const PresetCard = React.forwardRef<HTMLDivElement, PresetCardProps>(
 						method: nextState ? "POST" : "DELETE",
 					});
 					if (!res.ok) {
+						if (res.status === 401 && typeof window !== "undefined") {
+							window.dispatchEvent(
+								new CustomEvent("auth:required", {
+									detail: { title: "Sign in to like presets" },
+								}),
+							);
+						}
 						setIsLiked(!nextState);
+						setLikeCount((prev) => (!nextState ? prev + 1 : Math.max(0, prev - 1)));
 					}
 				} catch {
 					setIsLiked(!nextState);
+					setLikeCount((prev) => (!nextState ? prev + 1 : Math.max(0, prev - 1)));
 				}
 			}
 		};
@@ -188,6 +210,7 @@ export const PresetCard = React.forwardRef<HTMLDivElement, PresetCardProps>(
 			e.preventDefault();
 			const nextState = !isBookmarked;
 			setIsBookmarked(nextState);
+			setBookmarkCount((prev) => (nextState ? prev + 1 : Math.max(0, prev - 1)));
 
 			if (onBookmark) {
 				onBookmark(preset.id);
@@ -197,10 +220,19 @@ export const PresetCard = React.forwardRef<HTMLDivElement, PresetCardProps>(
 						method: nextState ? "POST" : "DELETE",
 					});
 					if (!res.ok) {
+						if (res.status === 401 && typeof window !== "undefined") {
+							window.dispatchEvent(
+								new CustomEvent("auth:required", {
+									detail: { title: "Sign in to bookmark presets" },
+								}),
+							);
+						}
 						setIsBookmarked(!nextState);
+						setBookmarkCount((prev) => (!nextState ? prev + 1 : Math.max(0, prev - 1)));
 					}
 				} catch {
 					setIsBookmarked(!nextState);
+					setBookmarkCount((prev) => (!nextState ? prev + 1 : Math.max(0, prev - 1)));
 				}
 			}
 		};
@@ -415,56 +447,64 @@ export const PresetCard = React.forwardRef<HTMLDivElement, PresetCardProps>(
 
 					{/* Actions Footer Row */}
 					<div className="mt-auto flex items-center justify-between relative z-20">
-						<div className="flex items-center gap-1 sm:gap-2">
-							<Button
-								variant="ghost"
-								size="sm"
+						<div className="flex items-center gap-1.5 sm:gap-2">
+							<button
+								type="button"
 								onClick={handleLike}
 								aria-label={isLiked ? "Unlike preset" : "Like preset"}
 								aria-pressed={isLiked}
-								className="px-2 sm:px-3 h-8 sm:h-9"
+								className={cn(
+									"inline-flex items-center gap-1.5 h-8 sm:h-8.5 px-2.5 sm:px-3 rounded-xl border text-xs font-bold transition-all active:scale-95 shadow-sm",
+									isLiked
+										? "bg-rose-500/15 text-rose-400 border-rose-500/30"
+										: "bg-[var(--color-bg-surface)] text-[var(--color-text-secondary)] border-[var(--color-border-subtle)] hover:text-rose-400 hover:border-rose-500/20 hover:bg-rose-500/5",
+								)}
 							>
 								<Heart
 									className={cn(
 										"h-3.5 w-3.5 sm:h-4 sm:w-4 transition-colors",
-										isLiked && "fill-rose-500 text-rose-500",
+										isLiked ? "fill-rose-500 text-rose-500" : "",
 									)}
 								/>
-							</Button>
+								<span>{likeCount}</span>
+							</button>
 
-							<Button
-								variant="ghost"
-								size="sm"
+							<button
+								type="button"
 								onClick={handleBookmark}
 								aria-label={
 									isBookmarked ? "Remove bookmark" : "Bookmark preset"
 								}
 								aria-pressed={isBookmarked}
-								className="px-2 sm:px-3 h-8 sm:h-9"
+								className={cn(
+									"inline-flex items-center gap-1.5 h-8 sm:h-8.5 px-2.5 sm:px-3 rounded-xl border text-xs font-bold transition-all active:scale-95 shadow-sm",
+									isBookmarked
+										? "bg-amber-500/15 text-amber-400 border-amber-500/30"
+										: "bg-[var(--color-bg-surface)] text-[var(--color-text-secondary)] border-[var(--color-border-subtle)] hover:text-amber-400 hover:border-amber-500/20 hover:bg-amber-500/5",
+								)}
 							>
 								<Bookmark
 									className={cn(
 										"h-3.5 w-3.5 sm:h-4 sm:w-4 transition-colors",
-										isBookmarked && "fill-purple-400 text-purple-400",
+										isBookmarked ? "fill-amber-400 text-amber-400" : "",
 									)}
 								/>
-							</Button>
+								<span>{bookmarkCount}</span>
+							</button>
 
-							<Button
-								variant="ghost"
-								size="sm"
+							<button
+								type="button"
 								onClick={handleShare}
 								aria-label="Share preset"
-								className="px-2 sm:px-3 h-8 sm:h-9"
+								className="inline-flex items-center justify-center h-8 sm:h-8.5 w-8 sm:w-8.5 rounded-xl border border-[var(--color-border-subtle)] bg-[var(--color-bg-surface)] text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:border-[var(--color-border-strong)] hover:bg-[var(--color-bg-elevated)] transition-all active:scale-95 shadow-sm"
 							>
 								<Share2 className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
-							</Button>
+							</button>
 
 							{/* Owner Trash Icon Button */}
 							{isOwner && (
-								<Button
-									variant="ghost"
-									size="sm"
+								<button
+									type="button"
 									onClick={(e) => {
 										e.stopPropagation();
 										e.preventDefault();
@@ -473,10 +513,10 @@ export const PresetCard = React.forwardRef<HTMLDivElement, PresetCardProps>(
 									}}
 									aria-label="Delete preset"
 									title="Delete preset"
-									className="text-[var(--color-text-secondary)] hover:text-rose-400 hover:bg-rose-500/10 transition-colors"
+									className="inline-flex items-center justify-center h-8 sm:h-8.5 w-8 sm:w-8.5 rounded-xl border border-rose-500/20 bg-rose-500/10 text-rose-400 hover:bg-rose-500/20 hover:border-rose-500/40 transition-all active:scale-95 text-xs font-semibold"
 								>
-									<Trash2 className="h-4 w-4" />
-								</Button>
+									<Trash2 className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+								</button>
 							)}
 						</div>
 					</div>
