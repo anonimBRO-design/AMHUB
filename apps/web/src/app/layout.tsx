@@ -2,10 +2,19 @@ import { getUnreadNotificationCount } from "@/data/notifications";
 import { getCurrentProfile } from "@/lib/supabase/auth";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { resolveStorageUrl } from "@/lib/supabase/storage";
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { PostHogProvider } from "./PostHogProvider";
+import { PwaManager } from "./_components/PwaManager";
 import { LayoutShell } from "./_components/layout-shell";
 import "../styles/globals.css";
+
+export const viewport: Viewport = {
+	themeColor: "#7C3AED",
+	width: "device-width",
+	initialScale: 1,
+	maximumScale: 1,
+	userScalable: false,
+};
 
 export const metadata: Metadata = {
 	title: {
@@ -14,10 +23,16 @@ export const metadata: Metadata = {
 	},
 	description:
 		"Discover, share, and download pro Alight Motion XML, QR code, and link presets.",
+	manifest: "/manifest.json",
+	appleWebApp: {
+		capable: true,
+		statusBarStyle: "black-translucent",
+		title: "AMHUB",
+	},
 	icons: {
 		icon: "/favicon.png",
 		shortcut: "/favicon.png",
-		apple: "/favicon.png",
+		apple: "/apple-touch-icon.png",
 	},
 };
 
@@ -50,6 +65,7 @@ export default async function RootLayout({
 					>
 						{children}
 					</LayoutShell>
+					<PwaManager />
 				</PostHogProvider>
 			</body>
 		</html>

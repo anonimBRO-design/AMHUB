@@ -53,26 +53,26 @@ export function Footer() {
 							<ul className="space-y-2">
 								<li>
 									<Link
-										href="/explore?category=velocity"
+										href="/explore?category=jj-tipis"
 										className="hover:text-[var(--color-interactive-primary)] transition-colors"
 									>
-										Velocity Edits
+										JJ Tipis
 									</Link>
 								</li>
 								<li>
 									<Link
-										href="/explore?category=transition"
+										href="/explore?category=jj-melar"
 										className="hover:text-[var(--color-interactive-primary)] transition-colors"
 									>
-										Transitions
+										JJ Kenyat-Kenyot
 									</Link>
 								</li>
 								<li>
 									<Link
-										href="/explore?category=color"
+										href="/explore?category=jj-belah"
 										className="hover:text-[var(--color-interactive-primary)] transition-colors"
 									>
-										Color Grading
+										JJ Belah
 									</Link>
 								</li>
 								<li>
@@ -122,6 +122,19 @@ export function Footer() {
 									>
 										Credits & About
 									</Link>
+								</li>
+								<li>
+									<button
+										type="button"
+										onClick={() => {
+											if (typeof window !== "undefined") {
+												window.dispatchEvent(new CustomEvent("pwa:open-install"));
+											}
+										}}
+										className="hover:text-[var(--color-interactive-primary)] text-purple-400 font-medium transition-colors text-left inline-flex items-center gap-1"
+									>
+										<span>📲 Install App (PWA)</span>
+									</button>
 								</li>
 							</ul>
 						</div>
