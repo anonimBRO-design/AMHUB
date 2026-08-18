@@ -11,6 +11,7 @@ interface BookmarksClientProps {
 
 const CATEGORIES = [
 	{ id: "All", label: "All" },
+	{ id: "jj", label: "JJ" },
 	{ id: "jj-tipis", label: "JJ Tipis" },
 	{ id: "jj-melar", label: "JJ Kenyat-Kenyot" },
 	{ id: "jj-belah", label: "JJ Belah" },

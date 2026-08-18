@@ -25,6 +25,7 @@ interface EditPresetModalProps {
 }
 
 const CATEGORIES = [
+	{ label: "JJ", value: "jj" },
 	{ label: "JJ Tipis", value: "jj-tipis" },
 	{ label: "JJ Kenyat-Kenyot", value: "jj-melar" },
 	{ label: "JJ Belah", value: "jj-belah" },

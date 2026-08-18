@@ -22,8 +22,9 @@ interface CategoryDef {
 
 const CATEGORIES: CategoryDef[] = [
 	{ id: "all", label: "All Presets", icon: Sparkles },
+	{ id: "jj", label: "JJ", icon: Zap },
 	{ id: "jj-tipis", label: "JJ Tipis", icon: Sparkles },
-	{ id: "jj-melar", label: "JJ Kenyat-Kenyot", icon: Zap },
+	{ id: "jj-melar", label: "JJ Kenyat-Kenyot", icon: Flame },
 	{ id: "jj-belah", label: "JJ Belah", icon: Layers },
 	{ id: "anime", label: "Anime", icon: Tv },
 	{ id: "gaming", label: "Gaming", icon: Gamepad2 },
