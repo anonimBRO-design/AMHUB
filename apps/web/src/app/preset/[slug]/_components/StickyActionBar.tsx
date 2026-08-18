@@ -7,6 +7,7 @@ import {
 	Download,
 	ExternalLink,
 	Heart,
+	MessageSquare,
 	Share2,
 } from "lucide-react";
 import { useState } from "react";
@@ -135,6 +136,23 @@ export function StickyActionBar({ preset }: StickyActionBarProps) {
 					<Bookmark
 						className={`w-5 h-5 ${isBookmarked ? "fill-amber-400 text-amber-400" : ""}`}
 					/>
+				</button>
+
+				{/* Comment Button */}
+				<button
+					type="button"
+					onClick={() => {
+						const commentElem = document.getElementById("comments-section");
+						if (commentElem) {
+							commentElem.scrollIntoView({ behavior: "smooth" });
+							const inputElem = commentElem.querySelector("input");
+							if (inputElem) inputElem.focus();
+						}
+					}}
+					aria-label="View comments"
+					className="inline-flex items-center justify-center min-h-[48px] min-w-[48px] rounded-2xl bg-[var(--color-bg-elevated)] text-[var(--color-text-secondary)] border border-[var(--color-border-subtle)] hover:text-blue-400 active:scale-95 transition-all"
+				>
+					<MessageSquare className="w-5 h-5" />
 				</button>
 			</div>
 		</div>

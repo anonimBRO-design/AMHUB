@@ -84,17 +84,20 @@ export function CommentSection({
 	};
 
 	return (
-		<section className="p-5 sm:p-6 rounded-3xl bg-[var(--color-bg-surface)] border border-[var(--color-border-subtle)] space-y-5 shadow-lg">
-			<div className="flex items-center gap-2">
-				<div className="p-2 rounded-xl bg-blue-500/10 text-blue-400 border border-blue-500/20">
+		<section
+			id="comments-section"
+			className="p-5 sm:p-6 rounded-3xl bg-[var(--color-bg-surface)] border border-[var(--color-border-subtle)] space-y-5 shadow-lg"
+		>
+			<div className="flex items-center gap-2.5">
+				<div className="p-2.5 rounded-2xl bg-blue-500/10 text-blue-400 border border-blue-500/20">
 					<MessageSquare className="w-5 h-5" />
 				</div>
 				<div>
 					<h2 className="text-base sm:text-lg font-bold text-[var(--color-text-primary)]">
-						Community Discussion
+						Komentar
 					</h2>
 					<p className="text-xs text-[var(--color-text-secondary)]">
-						{comments.length || commentCount} Comments
+						{comments.length || commentCount} Komentar
 					</p>
 				</div>
 			</div>
@@ -105,7 +108,7 @@ export function CommentSection({
 					type="text"
 					value={newComment}
 					onChange={(e) => setNewComment(e.target.value)}
-					placeholder="Leave a comment or ask a question..."
+					placeholder="Tulis komentar atau tanya preset ini..."
 					aria-label="Add a comment"
 					className="flex-1 min-h-[44px] px-4 rounded-2xl bg-[var(--color-bg-base)] border border-[var(--color-border-subtle)] text-xs sm:text-sm text-[var(--color-text-primary)] placeholder:text-[var(--color-text-tertiary)] focus:outline-none focus:border-[var(--color-interactive-primary)]"
 				/>

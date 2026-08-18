@@ -4,6 +4,7 @@ import {
 	Bookmark,
 	Heart,
 	Loader2,
+	MessageSquare,
 	Share2,
 	Trash2,
 	UserPlus,
@@ -495,6 +496,19 @@ export const PresetCard = React.forwardRef<HTMLDivElement, PresetCardProps>(
 								/>
 								<span className="text-xs font-bold">{bookmarkCount}</span>
 							</button>
+
+							<a
+								href={`/preset/${preset.slug}#comments-section`}
+								onClick={(e) => e.stopPropagation()}
+								aria-label="Lihat Komentar"
+								className={cn(
+									"inline-flex items-center gap-1.5 h-8 sm:h-8.5 px-2.5 sm:px-3 rounded-xl border text-xs font-bold transition-all active:scale-95 shadow-sm",
+									"bg-blue-500/[0.08] text-blue-300/90 border-blue-500/25 hover:bg-blue-500/15 hover:border-blue-500/40 hover:text-blue-200",
+								)}
+							>
+								<MessageSquare className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-blue-400 fill-blue-400/15" />
+								<span className="text-xs font-bold">{preset.commentCount ?? 0}</span>
+							</a>
 
 							<button
 								type="button"

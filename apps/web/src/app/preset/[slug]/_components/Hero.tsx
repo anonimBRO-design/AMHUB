@@ -7,6 +7,7 @@ import {
 	Eye,
 	Heart,
 	Maximize2,
+	MessageSquare,
 	MoreHorizontal,
 	Pause,
 	Play,
@@ -35,6 +36,7 @@ interface HeroProps {
 		likeCount: number;
 		viewCount: number;
 		bookmarkCount?: number;
+		commentCount?: number;
 		isLiked?: boolean;
 		isBookmarked?: boolean;
 		aspectRatio?: "16:9" | "9:16" | "1:1" | string;
@@ -418,6 +420,25 @@ export function Hero({ preset, currentUserId }: HeroProps) {
 								);
 							}}
 						/>
+
+						{/* Comment Button (Smooth Scroll to Comments) */}
+						<button
+							type="button"
+							onClick={() => {
+								const commentElem = document.getElementById("comments-section");
+								if (commentElem) {
+									commentElem.scrollIntoView({ behavior: "smooth" });
+									const inputElem = commentElem.querySelector("input");
+									if (inputElem) inputElem.focus();
+								}
+							}}
+							aria-label="Lihat Komentar"
+							className="inline-flex items-center gap-2 min-h-[44px] px-4 rounded-2xl border transition-all active:scale-95 shadow-sm font-body bg-blue-500/10 text-blue-400 border-blue-500/25 hover:bg-blue-500/20 hover:border-blue-500/40"
+						>
+							<MessageSquare className="w-4 h-4 fill-blue-400/20 text-blue-400" />
+							<span className="text-xs font-bold">{preset.commentCount ?? 0}</span>
+						</button>
+
 						<ShareButton title={preset.title} />
 					</div>
 				</div>
@@ -450,6 +471,13 @@ export function Hero({ preset, currentUserId }: HeroProps) {
 							{bookmarkCount}
 						</span>{" "}
 						Bookmarks
+					</div>
+					<div className="flex items-center gap-1.5 text-blue-400">
+						<MessageSquare className="w-4 h-4 fill-blue-400/20" />
+						<span className="font-bold text-[var(--color-text-primary)]">
+							{preset.commentCount ?? 0}
+						</span>{" "}
+						Comments
 					</div>
 					<div className="flex items-center gap-1.5 text-emerald-400">
 						<Download className="w-4 h-4" />
