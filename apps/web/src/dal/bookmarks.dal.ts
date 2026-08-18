@@ -1,5 +1,6 @@
 import type { PresetWithCreator } from "@/data/presets";
 import { syncPresetCounter } from "./helpers";
+import { createNotification } from "./notifications.dal";
 import { PRESET_SELECT_WITH_CREATOR, assertPresetExists } from "./presets.dal";
 import type { DalClient } from "./types";
 
@@ -48,6 +49,31 @@ export async function bookmarkPreset(
 		"preset_bookmarks",
 		"bookmark_count",
 	);
+
+	// Trigger Notification for creator
+	try {
+		const { data: preset } = await client
+			.from("presets")
+			.select("creator_id, title")
+			.eq("id", presetId)
+			.maybeSingle();
+
+		if (
+			preset &&
+			(preset as { creator_id: string }).creator_id &&
+			(preset as { creator_id: string }).creator_id !== userId
+		) {
+			await createNotification(client, {
+				userId: (preset as { creator_id: string }).creator_id,
+				actorId: userId,
+				type: "bookmark",
+				presetId,
+				message: `saved your preset "${(preset as { title?: string }).title || "Preset"}" to bookmarks`,
+			});
+		}
+	} catch (e) {
+		console.error("Failed to trigger bookmark notification", e);
+	}
 
 	return {
 		preset_id: presetId,
