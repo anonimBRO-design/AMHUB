@@ -83,4 +83,16 @@ export async function unlikePreset(
 	if (deleteError) throw deleteError;
 
 	await syncPresetCounter(client, presetId, "preset_likes", "like_count");
+
+	// Clean up previous like notification silently
+	try {
+		await client
+			.from("notifications")
+			.delete()
+			.eq("preset_id", presetId)
+			.eq("actor_id", userId)
+			.eq("type", "like");
+	} catch (e) {
+		console.error("Failed to clean up like notification", e);
+	}
 }

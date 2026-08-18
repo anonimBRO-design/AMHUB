@@ -101,4 +101,16 @@ export async function unbookmarkPreset(
 		"preset_bookmarks",
 		"bookmark_count",
 	);
+
+	// Clean up previous bookmark notification silently
+	try {
+		await client
+			.from("notifications")
+			.delete()
+			.eq("preset_id", presetId)
+			.eq("actor_id", userId)
+			.eq("type", "bookmark");
+	} catch (e) {
+		console.error("Failed to clean up bookmark notification", e);
+	}
 }
