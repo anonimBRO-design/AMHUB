@@ -1,5 +1,3 @@
-"use client";
-
 import { resolveStorageUrl } from "@/lib/supabase/storage-url";
 import type { User as Profile } from "@presethub/types";
 import {
@@ -8,10 +6,12 @@ import {
 	Clock,
 	Loader2,
 	Mail,
+	MessageSquare,
 	RefreshCw,
 	Search,
 	ShieldAlert,
 	ShieldCheck,
+	Sparkles,
 	Trash2,
 	UserCheck,
 	UserX,
@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import React, { useCallback, useEffect, useState } from "react";
+import { CreatorPermissionsTab } from "./CreatorPermissionsTab";
 
 interface AdminUserRecord {
 	id: string;
@@ -41,6 +42,9 @@ interface AdminDashboardClientProps {
 export function AdminDashboardClient({
 	currentAdmin,
 }: AdminDashboardClientProps) {
+	const [activeTab, setActiveTab] = useState<"users" | "creator_permissions">(
+		"users",
+	);
 	const [users, setUsers] = useState<AdminUserRecord[]>([]);
 	const [totalCount, setTotalCount] = useState<number>(0);
 	const [searchQuery, setSearchQuery] = useState<string>("");
@@ -234,295 +238,336 @@ export function AdminDashboardClient({
 
 				<button
 					type="button"
-					onClick={() => fetchUsers(searchQuery)}
-					disabled={isLoading}
+					onClick={() => {
+						if (activeTab === "users") {
+							fetchUsers(searchQuery);
+						}
+					}}
+					disabled={isLoading && activeTab === "users"}
 					className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-2xl bg-[var(--color-bg-elevated)] border border-[var(--color-border-subtle)] hover:bg-[var(--color-bg-base)] text-xs font-semibold text-[var(--color-text-primary)] transition-all active:scale-95 disabled:opacity-50"
 				>
-					<RefreshCw className={`w-4 h-4 ${isLoading ? "animate-spin" : ""}`} />
-					<span>Refresh List</span>
+					<RefreshCw
+						className={`w-4 h-4 ${isLoading && activeTab === "users" ? "animate-spin" : ""}`}
+					/>
+					<span>Refresh</span>
 				</button>
 			</div>
 
-			{/* Summary Stats Grid */}
-			<div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-				<div className="p-5 rounded-3xl bg-[var(--color-bg-surface)] border border-[var(--color-border-subtle)] shadow-md space-y-1">
-					<div className="flex items-center justify-between text-xs font-medium text-[var(--color-text-secondary)]">
-						<span>Total Users</span>
-						<Users className="w-4 h-4 text-purple-400" />
-					</div>
-					<div className="text-2xl sm:text-3xl font-black text-[var(--color-text-primary)]">
-						{totalCount}
-					</div>
-				</div>
+			{/* Main Module Tabs Navigation */}
+			<div className="flex items-center gap-2 p-1.5 rounded-2xl bg-[var(--color-bg-surface)] border border-[var(--color-border-subtle)] w-fit shadow-sm">
+				<button
+					type="button"
+					onClick={() => setActiveTab("users")}
+					className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all ${
+						activeTab === "users"
+							? "bg-[var(--color-interactive-primary)] text-white shadow-md shadow-purple-950/30"
+							: "text-[var(--color-text-secondary)] hover:text-white hover:bg-white/[0.04]"
+					}`}
+				>
+					<Users className="w-4 h-4" />
+					<span>User Management</span>
+				</button>
 
-				<div className="p-5 rounded-3xl bg-[var(--color-bg-surface)] border border-[var(--color-border-subtle)] shadow-md space-y-1">
-					<div className="flex items-center justify-between text-xs font-medium text-[var(--color-text-secondary)]">
-						<span>Admin Accounts</span>
-						<ShieldCheck className="w-4 h-4 text-amber-400" />
-					</div>
-					<div className="text-2xl sm:text-3xl font-black text-amber-400">
-						{adminCount}
-					</div>
-				</div>
-
-				<div className="p-5 rounded-3xl bg-[var(--color-bg-surface)] border border-[var(--color-border-subtle)] shadow-md space-y-1">
-					<div className="flex items-center justify-between text-xs font-medium text-[var(--color-text-secondary)]">
-						<span>Verified Accounts</span>
-						<UserCheck className="w-4 h-4 text-emerald-400" />
-					</div>
-					<div className="text-2xl sm:text-3xl font-black text-emerald-400">
-						{verifiedCount}
-					</div>
-				</div>
+				<button
+					type="button"
+					onClick={() => setActiveTab("creator_permissions")}
+					className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all ${
+						activeTab === "creator_permissions"
+							? "bg-[var(--color-interactive-primary)] text-white shadow-md shadow-purple-950/30"
+							: "text-[var(--color-text-secondary)] hover:text-white hover:bg-white/[0.04]"
+					}`}
+				>
+					<Sparkles className="w-4 h-4 text-purple-300" />
+					<span>Creator Permissions & Outreach</span>
+				</button>
 			</div>
 
-			{/* Search & Filter Bar */}
-			<div className="relative">
-				<Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--color-text-tertiary)]" />
-				<input
-					type="text"
-					value={searchQuery}
-					onChange={(e) => setSearchQuery(e.target.value)}
-					placeholder="Search users by username, email, or display name..."
-					className="w-full pl-11 pr-4 py-3 rounded-2xl bg-[var(--color-bg-surface)] border border-[var(--color-border-subtle)] text-sm text-[var(--color-text-primary)] placeholder-[var(--color-text-tertiary)] focus:outline-none focus:border-[var(--color-interactive-primary)] transition-all shadow-inner"
-				/>
-				{searchQuery && (
-					<button
-						type="button"
-						onClick={() => setSearchQuery("")}
-						className="absolute right-4 top-1/2 -translate-y-1/2 text-xs font-bold text-[var(--color-text-secondary)] hover:text-white"
-					>
-						Clear
-					</button>
-				)}
-			</div>
+			{/* Tab 1: User Management */}
+			{activeTab === "users" && (
+				<div className="space-y-6 animate-in fade-in duration-200">
+					{/* Summary Stats Grid */}
+					<div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+						<div className="p-5 rounded-3xl bg-[var(--color-bg-surface)] border border-[var(--color-border-subtle)] shadow-md space-y-1">
+							<div className="flex items-center justify-between text-xs font-medium text-[var(--color-text-secondary)]">
+								<span>Total Users</span>
+								<Users className="w-4 h-4 text-purple-400" />
+							</div>
+							<div className="text-2xl sm:text-3xl font-black text-[var(--color-text-primary)]">
+								{totalCount}
+							</div>
+						</div>
 
-			{/* User Table Card */}
-			<div className="rounded-3xl bg-[var(--color-bg-surface)] border border-[var(--color-border-subtle)] shadow-xl overflow-hidden">
-				{error ? (
-					<div className="p-12 text-center space-y-3">
-						<AlertTriangle className="w-8 h-8 text-rose-400 mx-auto" />
-						<p className="text-sm font-semibold text-rose-400">{error}</p>
-						<button
-							type="button"
-							onClick={() => fetchUsers(searchQuery)}
-							className="px-4 py-2 rounded-xl bg-[var(--color-bg-elevated)] text-xs font-bold"
-						>
-							Try Again
-						</button>
-					</div>
-				) : isLoading ? (
-					<div className="p-16 flex flex-col items-center justify-center space-y-3">
-						<Loader2 className="w-8 h-8 animate-spin text-[var(--color-interactive-primary)]" />
-						<p className="text-xs font-semibold text-[var(--color-text-secondary)]">
-							Loading user database...
-						</p>
-					</div>
-				) : users.length === 0 ? (
-					<div className="p-16 text-center space-y-2">
-						<Users className="w-8 h-8 text-[var(--color-text-tertiary)] mx-auto opacity-50" />
-						<p className="text-sm font-bold text-[var(--color-text-primary)]">
-							No users found
-						</p>
-						<p className="text-xs text-[var(--color-text-secondary)]">
-							No accounts match &ldquo;{searchQuery}&rdquo;.
-						</p>
-					</div>
-				) : (
-					<div className="overflow-x-auto">
-						<table className="w-full text-left text-xs">
-							<thead className="bg-[var(--color-bg-elevated)] text-[var(--color-text-secondary)] uppercase tracking-wider font-bold border-b border-[var(--color-border-subtle)]">
-								<tr>
-									<th className="px-6 py-4">User</th>
-									<th className="px-6 py-4">Email</th>
-									<th className="px-6 py-4">Role / Staff</th>
-									<th className="px-6 py-4">Verification</th>
-									<th className="px-6 py-4">Joined Date</th>
-									<th className="px-6 py-4 text-right">Actions</th>
-								</tr>
-							</thead>
-							<tbody className="divide-y divide-[var(--color-border-subtle)]">
-								{users.map((u) => {
-									const isUserAdmin =
-										u.username.toLowerCase() === "afgan" ||
-										u.role === "admin" ||
-										u.is_staff;
-									const isSelf = u.id === currentAdmin.id;
-									const avatarUrl = resolveStorageUrl(u.avatar_url);
+						<div className="p-5 rounded-3xl bg-[var(--color-bg-surface)] border border-[var(--color-border-subtle)] shadow-md space-y-1">
+							<div className="flex items-center justify-between text-xs font-medium text-[var(--color-text-secondary)]">
+								<span>Admin Accounts</span>
+								<ShieldCheck className="w-4 h-4 text-amber-400" />
+							</div>
+							<div className="text-2xl sm:text-3xl font-black text-amber-400">
+								{adminCount}
+							</div>
+						</div>
 
-									return (
-										<tr
-											key={u.id}
-											className="hover:bg-[var(--color-bg-elevated)]/50 transition-colors"
-										>
-											{/* User info */}
-											<td className="px-6 py-4">
-												<div className="flex items-center gap-3">
-													<Link
-														href={`/u/${u.username}`}
-														className="w-9 h-9 rounded-full overflow-hidden bg-[var(--color-bg-elevated)] shrink-0 border border-white/10 hover:opacity-80 transition-opacity"
-													>
-														{avatarUrl ? (
-															<img
-																src={avatarUrl}
-																alt={u.display_name}
-																className="w-full h-full object-cover"
-															/>
-														) : (
-															<div className="w-full h-full flex items-center justify-center font-bold text-white bg-purple-900/60">
-																{u.display_name[0]?.toUpperCase() || "U"}
-															</div>
-														)}
-													</Link>
-													<div>
-														<div className="font-bold text-[var(--color-text-primary)] text-sm flex items-center gap-1.5">
+						<div className="p-5 rounded-3xl bg-[var(--color-bg-surface)] border border-[var(--color-border-subtle)] shadow-md space-y-1">
+							<div className="flex items-center justify-between text-xs font-medium text-[var(--color-text-secondary)]">
+								<span>Verified Accounts</span>
+								<UserCheck className="w-4 h-4 text-emerald-400" />
+							</div>
+							<div className="text-2xl sm:text-3xl font-black text-emerald-400">
+								{verifiedCount}
+							</div>
+						</div>
+					</div>
+
+					{/* Search & Filter Bar */}
+					<div className="relative">
+						<Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--color-text-tertiary)]" />
+						<input
+							type="text"
+							value={searchQuery}
+							onChange={(e) => setSearchQuery(e.target.value)}
+							placeholder="Search users by username, email, or display name..."
+							className="w-full pl-11 pr-4 py-3 rounded-2xl bg-[var(--color-bg-surface)] border border-[var(--color-border-subtle)] text-sm text-[var(--color-text-primary)] placeholder-[var(--color-text-tertiary)] focus:outline-none focus:border-[var(--color-interactive-primary)] transition-all shadow-inner"
+						/>
+						{searchQuery && (
+							<button
+								type="button"
+								onClick={() => setSearchQuery("")}
+								className="absolute right-4 top-1/2 -translate-y-1/2 text-xs font-bold text-[var(--color-text-secondary)] hover:text-white"
+							>
+								Clear
+							</button>
+						)}
+					</div>
+
+					{/* User Table Card */}
+					<div className="rounded-3xl bg-[var(--color-bg-surface)] border border-[var(--color-border-subtle)] shadow-xl overflow-hidden">
+						{error ? (
+							<div className="p-12 text-center space-y-3">
+								<AlertTriangle className="w-8 h-8 text-rose-400 mx-auto" />
+								<p className="text-sm font-semibold text-rose-400">{error}</p>
+								<button
+									type="button"
+									onClick={() => fetchUsers(searchQuery)}
+									className="px-4 py-2 rounded-xl bg-[var(--color-bg-elevated)] text-xs font-bold"
+								>
+									Try Again
+								</button>
+							</div>
+						) : isLoading ? (
+							<div className="p-16 flex flex-col items-center justify-center space-y-3">
+								<Loader2 className="w-8 h-8 animate-spin text-[var(--color-interactive-primary)]" />
+								<p className="text-xs font-semibold text-[var(--color-text-secondary)]">
+									Loading user database...
+								</p>
+							</div>
+						) : users.length === 0 ? (
+							<div className="p-16 text-center space-y-2">
+								<Users className="w-8 h-8 text-[var(--color-text-tertiary)] mx-auto opacity-50" />
+								<p className="text-sm font-bold text-[var(--color-text-primary)]">
+									No users found
+								</p>
+								<p className="text-xs text-[var(--color-text-secondary)]">
+									No accounts match &ldquo;{searchQuery}&rdquo;.
+								</p>
+							</div>
+						) : (
+							<div className="overflow-x-auto">
+								<table className="w-full text-left text-xs">
+									<thead className="bg-[var(--color-bg-elevated)] text-[var(--color-text-secondary)] uppercase tracking-wider font-bold border-b border-[var(--color-border-subtle)]">
+										<tr>
+											<th className="px-6 py-4">User</th>
+											<th className="px-6 py-4">Email</th>
+											<th className="px-6 py-4">Role / Staff</th>
+											<th className="px-6 py-4">Verification</th>
+											<th className="px-6 py-4">Joined Date</th>
+											<th className="px-6 py-4 text-right">Actions</th>
+										</tr>
+									</thead>
+									<tbody className="divide-y divide-[var(--color-border-subtle)]">
+										{users.map((u) => {
+											const isUserAdmin =
+												u.username.toLowerCase() === "afgan" ||
+												u.role === "admin" ||
+												u.is_staff;
+											const isSelf = u.id === currentAdmin.id;
+											const avatarUrl = resolveStorageUrl(u.avatar_url);
+
+											return (
+												<tr
+													key={u.id}
+													className="hover:bg-[var(--color-bg-elevated)]/50 transition-colors"
+												>
+													{/* User info */}
+													<td className="px-6 py-4">
+														<div className="flex items-center gap-3">
 															<Link
 																href={`/u/${u.username}`}
-																className="hover:underline hover:text-[var(--color-interactive-primary)]"
+																className="w-9 h-9 rounded-full overflow-hidden bg-[var(--color-bg-elevated)] shrink-0 border border-white/10 hover:opacity-80 transition-opacity"
 															>
-																{u.display_name}
+																{avatarUrl ? (
+																	<img
+																		src={avatarUrl}
+																		alt={u.display_name}
+																		className="w-full h-full object-cover"
+																	/>
+																) : (
+																	<div className="w-full h-full flex items-center justify-center font-bold text-white bg-purple-900/60">
+																		{u.display_name[0]?.toUpperCase() || "U"}
+																	</div>
+																)}
 															</Link>
-															{u.is_verified && (
-																<span className="w-3.5 h-3.5 rounded-full bg-emerald-500 text-black flex items-center justify-center text-[8px] font-black shrink-0">
-																	✓
+															<div>
+																<div className="font-bold text-[var(--color-text-primary)] text-sm flex items-center gap-1.5">
+																	<Link
+																		href={`/u/${u.username}`}
+																		className="hover:underline hover:text-[var(--color-interactive-primary)]"
+																	>
+																		{u.display_name}
+																	</Link>
+																	{u.is_verified && (
+																		<span className="w-3.5 h-3.5 rounded-full bg-emerald-500 text-black flex items-center justify-center text-[8px] font-black shrink-0">
+																			✓
+																		</span>
+																	)}
+																</div>
+																<Link
+																	href={`/u/${u.username}`}
+																	className="text-[var(--color-text-secondary)] font-mono text-[11px] hover:underline"
+																>
+																	@{u.username}
+																</Link>
+															</div>
+														</div>
+													</td>
+
+													{/* Email */}
+													<td className="px-6 py-4 text-[var(--color-text-secondary)]">
+														<div className="flex items-center gap-1.5 font-mono">
+															<Mail className="w-3.5 h-3.5 text-[var(--color-text-tertiary)] shrink-0" />
+															<span>{u.email || "No email"}</span>
+														</div>
+													</td>
+
+													{/* Role */}
+													<td className="px-6 py-4">
+														{isUserAdmin ? (
+															<span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-amber-500/10 text-amber-400 border border-amber-500/20">
+																<ShieldCheck className="w-3 h-3" /> Admin
+															</span>
+														) : (
+															<span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-semibold tracking-wider bg-white/5 text-[var(--color-text-secondary)] border border-white/10">
+																User
+															</span>
+														)}
+													</td>
+
+													{/* Verification Status */}
+													<td className="px-6 py-4">
+														{u.is_verified ? (
+															<span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+																<UserCheck className="w-3 h-3" /> Verified ✓
+															</span>
+														) : (
+															<span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-semibold tracking-wider bg-white/5 text-[var(--color-text-tertiary)] border border-white/5">
+																Unverified
+															</span>
+														)}
+													</td>
+
+													{/* Joined Date */}
+													<td className="px-6 py-4 text-[var(--color-text-secondary)]">
+														<div className="flex items-center gap-1.5">
+															<Clock className="w-3.5 h-3.5 text-[var(--color-text-tertiary)] shrink-0" />
+															<span>
+																{new Date(u.created_at).toLocaleDateString(
+																	undefined,
+																	{
+																		year: "numeric",
+																		month: "short",
+																		day: "numeric",
+																	},
+																)}
+															</span>
+														</div>
+													</td>
+
+													{/* Actions */}
+													<td className="px-6 py-4 text-right">
+														<div className="flex items-center justify-end gap-2">
+															{/* Verification Action */}
+															{u.is_verified ? (
+																<button
+																	type="button"
+																	onClick={() =>
+																		setVerifyTarget({
+																			user: u,
+																			targetStatus: false,
+																		})
+																	}
+																	className="inline-flex items-center gap-1 px-2.5 py-1 rounded-xl bg-amber-500/10 text-amber-400 border border-amber-500/20 hover:bg-amber-500/20 text-[11px] font-semibold transition-all active:scale-95"
+																>
+																	<UserX className="w-3 h-3" />
+																	<span>Remove</span>
+																</button>
+															) : (
+																<button
+																	type="button"
+																	onClick={() =>
+																		setVerifyTarget({
+																			user: u,
+																			targetStatus: true,
+																		})
+																	}
+																	className="inline-flex items-center gap-1 px-2.5 py-1 rounded-xl bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 hover:bg-emerald-500/20 text-[11px] font-semibold transition-all active:scale-95"
+																>
+																	<UserCheck className="w-3 h-3" />
+																	<span>Verify</span>
+																</button>
+															)}
+
+															{/* Delete Action */}
+															{isSelf ? (
+																<span className="text-[10px] font-semibold text-[var(--color-text-tertiary)] italic px-1">
+																	Self
 																</span>
+															) : isUserAdmin ? (
+																<span className="text-[10px] font-semibold text-amber-500/60 italic px-1">
+																	Protected
+																</span>
+															) : (
+																<button
+																	type="button"
+																	onClick={() => setTargetUser(u)}
+																	className="inline-flex items-center gap-1 px-2.5 py-1 rounded-xl bg-rose-500/10 text-rose-400 border border-rose-500/20 hover:bg-rose-500/20 transition-all text-[11px] font-semibold active:scale-95"
+																>
+																	<Trash2 className="w-3 h-3" />
+																	<span>Delete</span>
+																</button>
 															)}
 														</div>
-														<Link
-															href={`/u/${u.username}`}
-															className="text-[var(--color-text-secondary)] font-mono text-[11px] hover:underline"
-														>
-															@{u.username}
-														</Link>
-													</div>
-												</div>
-											</td>
-
-											{/* Email */}
-											<td className="px-6 py-4 text-[var(--color-text-secondary)]">
-												<div className="flex items-center gap-1.5 font-mono">
-													<Mail className="w-3.5 h-3.5 text-[var(--color-text-tertiary)] shrink-0" />
-													<span>{u.email || "No email"}</span>
-												</div>
-											</td>
-
-											{/* Role */}
-											<td className="px-6 py-4">
-												{isUserAdmin ? (
-													<span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-amber-500/10 text-amber-400 border border-amber-500/20">
-														<ShieldCheck className="w-3 h-3" /> Admin
-													</span>
-												) : (
-													<span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-semibold tracking-wider bg-white/5 text-[var(--color-text-secondary)] border border-white/10">
-														User
-													</span>
-												)}
-											</td>
-
-											{/* Verification Status */}
-											<td className="px-6 py-4">
-												{u.is_verified ? (
-													<span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-														<UserCheck className="w-3 h-3" /> Verified ✓
-													</span>
-												) : (
-													<span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-semibold tracking-wider bg-white/5 text-[var(--color-text-tertiary)] border border-white/5">
-														Unverified
-													</span>
-												)}
-											</td>
-
-											{/* Joined Date */}
-											<td className="px-6 py-4 text-[var(--color-text-secondary)]">
-												<div className="flex items-center gap-1.5">
-													<Clock className="w-3.5 h-3.5 text-[var(--color-text-tertiary)] shrink-0" />
-													<span>
-														{new Date(u.created_at).toLocaleDateString(
-															undefined,
-															{
-																year: "numeric",
-																month: "short",
-																day: "numeric",
-															},
-														)}
-													</span>
-												</div>
-											</td>
-
-											{/* Actions */}
-											<td className="px-6 py-4 text-right">
-												<div className="flex items-center justify-end gap-2">
-													{/* Verification Action */}
-													{u.is_verified ? (
-														<button
-															type="button"
-															onClick={() =>
-																setVerifyTarget({
-																	user: u,
-																	targetStatus: false,
-																})
-															}
-															className="inline-flex items-center gap-1 px-2.5 py-1 rounded-xl bg-amber-500/10 text-amber-400 border border-amber-500/20 hover:bg-amber-500/20 text-[11px] font-semibold transition-all active:scale-95"
-														>
-															<UserX className="w-3 h-3" />
-															<span>Remove</span>
-														</button>
-													) : (
-														<button
-															type="button"
-															onClick={() =>
-																setVerifyTarget({
-																	user: u,
-																	targetStatus: true,
-																})
-															}
-															className="inline-flex items-center gap-1 px-2.5 py-1 rounded-xl bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 hover:bg-emerald-500/20 text-[11px] font-semibold transition-all active:scale-95"
-														>
-															<UserCheck className="w-3 h-3" />
-															<span>Verify</span>
-														</button>
-													)}
-
-													{/* Delete Action */}
-													{isSelf ? (
-														<span className="text-[10px] font-semibold text-[var(--color-text-tertiary)] italic px-1">
-															Self
-														</span>
-													) : isUserAdmin ? (
-														<span className="text-[10px] font-semibold text-amber-500/60 italic px-1">
-															Protected
-														</span>
-													) : (
-														<button
-															type="button"
-															onClick={() => setTargetUser(u)}
-															className="inline-flex items-center gap-1 px-2.5 py-1 rounded-xl bg-rose-500/10 text-rose-400 border border-rose-500/20 hover:bg-rose-500/20 transition-all text-[11px] font-semibold active:scale-95"
-														>
-															<Trash2 className="w-3 h-3" />
-															<span>Delete</span>
-														</button>
-													)}
-												</div>
-											</td>
-										</tr>
-									);
-								})}
-							</tbody>
-						</table>
+													</td>
+												</tr>
+											);
+										})}
+									</tbody>
+								</table>
+							</div>
+						)}
 					</div>
-				)}
-			</div>
+				</div>
+			)}
+
+			{/* Tab 2: Creator Permissions & Outreach Pipeline */}
+			{activeTab === "creator_permissions" && (
+				<div className="animate-in fade-in duration-200">
+					<CreatorPermissionsTab />
+				</div>
+			)}
 
 			{/* Verification Confirmation Modal */}
 			{verifyTarget && (
-				<div
-					className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4 animate-in fade-in"
-					onClick={() => !isVerifying && setVerifyTarget(null)}
-				>
-					<div
-						className="w-full max-w-md rounded-3xl bg-[var(--color-bg-surface)] border border-[var(--color-border-subtle)] p-6 shadow-2xl space-y-4 text-left"
-						onClick={(e) => e.stopPropagation()}
-					>
+				<div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4 animate-in fade-in">
+					<div className="w-full max-w-md rounded-3xl bg-[var(--color-bg-surface)] border border-[var(--color-border-subtle)] p-6 shadow-2xl space-y-4 text-left">
 						<div className="flex items-center gap-3 text-emerald-400">
 							<div className="p-3 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 shrink-0">
 								{verifyTarget.targetStatus ? (
@@ -594,14 +639,8 @@ export function AdminDashboardClient({
 
 			{/* Delete Permanent Confirmation Modal */}
 			{targetUser && (
-				<div
-					className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4 animate-in fade-in"
-					onClick={() => !isDeleting && setTargetUser(null)}
-				>
-					<div
-						className="w-full max-w-md rounded-3xl bg-[var(--color-bg-surface)] border border-rose-500/30 p-6 shadow-2xl space-y-4 text-left"
-						onClick={(e) => e.stopPropagation()}
-					>
+				<div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4 animate-in fade-in">
+					<div className="w-full max-w-md rounded-3xl bg-[var(--color-bg-surface)] border border-rose-500/30 p-6 shadow-2xl space-y-4 text-left">
 						<div className="flex items-center gap-3 text-rose-400">
 							<div className="p-3 rounded-2xl bg-rose-500/10 border border-rose-500/20 shrink-0">
 								<AlertTriangle className="w-6 h-6" />

@@ -240,3 +240,31 @@ export interface CreatePresetOrderInput {
 	preset_id: string;
 	payment_provider?: string;
 }
+
+export interface CreateCreatorPermissionInput {
+	platform?: "tiktok" | "instagram" | "youtube" | "other";
+	creator_username: string;
+	creator_display_name?: string | null;
+	profile_url?: string;
+	avatar_url?: string | null;
+	target_preset_name?: string | null;
+	drafted_message?: string | null;
+}
+
+export interface UpdateCreatorPermissionInput {
+	status?: "pending" | "contacted" | "approved" | "rejected";
+	credit_display_name?: string | null;
+	max_allowed_presets?: number;
+	notes_conditions?: string | null;
+	proof_image_url?: string | null;
+	responded_at?: string | null;
+	drafted_message?: string | null;
+}
+
+export interface CreatorPermissionStats {
+	total: number;
+	pending: number;
+	contacted: number;
+	approved: number;
+	rejected: number;
+}

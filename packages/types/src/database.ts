@@ -36,6 +36,16 @@ export type NotificationType =
 	| "follow"
 	| "download"
 	| "system";
+export type CreatorPermissionPlatform =
+	| "tiktok"
+	| "instagram"
+	| "youtube"
+	| "other";
+export type CreatorPermissionStatus =
+	| "pending"
+	| "contacted"
+	| "approved"
+	| "rejected";
 
 type Nullable<T> = T | null;
 
@@ -622,6 +632,19 @@ export interface Database {
 					},
 				];
 			};
+			creator_permissions: {
+				Row: CreatorPermissionRow;
+				Insert: CreatorPermissionInsert;
+				Update: CreatorPermissionUpdate;
+				Relationships: [
+					{
+						foreignKeyName: "creator_permissions_created_by_fkey";
+						columns: ["created_by"];
+						referencedRelation: "users";
+						referencedColumns: ["id"];
+					},
+				];
+			};
 		};
 		Views: Record<string, never>;
 		Functions: {
@@ -640,6 +663,50 @@ export interface Database {
 		CompositeTypes: Record<string, never>;
 	};
 }
+
+export interface CreatorPermissionRow {
+	id: string;
+	platform: CreatorPermissionPlatform;
+	creator_username: string;
+	creator_display_name: Nullable<string>;
+	profile_url: string;
+	avatar_url: Nullable<string>;
+	status: CreatorPermissionStatus;
+	drafted_message: Nullable<string>;
+	contacted_at: Nullable<string>;
+	responded_at: Nullable<string>;
+	credit_display_name: Nullable<string>;
+	max_allowed_presets: number;
+	used_presets_count: number;
+	notes_conditions: Nullable<string>;
+	proof_image_url: Nullable<string>;
+	created_by: Nullable<string>;
+	created_at: string;
+	updated_at: string;
+}
+
+export interface CreatorPermissionInsert {
+	id?: string;
+	platform?: CreatorPermissionPlatform;
+	creator_username: string;
+	creator_display_name?: Nullable<string>;
+	profile_url: string;
+	avatar_url?: Nullable<string>;
+	status?: CreatorPermissionStatus;
+	drafted_message?: Nullable<string>;
+	contacted_at?: Nullable<string>;
+	responded_at?: Nullable<string>;
+	credit_display_name?: Nullable<string>;
+	max_allowed_presets?: number;
+	used_presets_count?: number;
+	notes_conditions?: Nullable<string>;
+	proof_image_url?: Nullable<string>;
+	created_by?: Nullable<string>;
+	created_at?: string;
+	updated_at?: string;
+}
+
+export type CreatorPermissionUpdate = Partial<CreatorPermissionInsert>;
 
 export type Tables<T extends keyof Database["public"]["Tables"]> =
 	Database["public"]["Tables"][T]["Row"];
@@ -666,3 +733,4 @@ export type CollectionItem = Tables<"collection_items">;
 export type Comment = Tables<"comments">;
 export type Notification = Tables<"notifications">;
 export type Follower = Tables<"follows">;
+export type CreatorPermission = Tables<"creator_permissions">;
