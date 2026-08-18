@@ -332,10 +332,12 @@ export const PresetCard = React.forwardRef<HTMLDivElement, PresetCardProps>(
 						<button
 							type="button"
 							onClick={toggleAudio}
+							onMouseDown={(e) => e.stopPropagation()}
+							onTouchStart={(e) => e.stopPropagation()}
 							aria-label={
 								isMuted ? "Unmute preview audio" : "Mute preview audio"
 							}
-							className="absolute bottom-2.5 right-2.5 z-20 p-2 rounded-xl bg-black/60 hover:bg-black/80 backdrop-blur-md text-white border border-white/10 transition-all opacity-80 group-hover:opacity-100 active:scale-90 shadow-md"
+							className="absolute bottom-2.5 right-2.5 z-30 p-2 rounded-xl bg-black/60 hover:bg-black/80 backdrop-blur-md text-white border border-white/10 transition-all opacity-80 group-hover:opacity-100 active:scale-90 shadow-md cursor-pointer pointer-events-auto"
 						>
 							{isMuted ? (
 								<VolumeX className="w-3.5 h-3.5 text-white/80" />
