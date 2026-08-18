@@ -7,11 +7,11 @@ import {
 	CheckCircle2,
 	ChevronRight,
 	FileCode2,
+	HardDrive,
 	LogIn,
-	QrCode,
 	Sparkles,
 	UserPlus,
-	Users,
+	Zap,
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -175,8 +175,8 @@ export function WelcomeClient({ user: initialUser }: WelcomeClientProps) {
 								</span>
 							</h1>
 							<p className="text-xs sm:text-sm text-[var(--color-text-secondary)] max-w-xs mx-auto leading-relaxed">
-								Join 50,000+ editors. Access production-ready XML presets, 3D
-								camera shakes, velocity ramps & custom LUTs.
+								Access production-ready XML presets, 3D camera shakes, velocity
+								ramps & custom LUTs.
 							</p>
 						</div>
 
@@ -196,25 +196,25 @@ export function WelcomeClient({ user: initialUser }: WelcomeClientProps) {
 
 							<div className="p-4 rounded-2xl backdrop-blur-xl bg-white/[0.03] border border-white/[0.08] hover:border-white/[0.16] hover:bg-white/[0.06] transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-0.5 shadow-lg hover:shadow-[0_8px_24px_rgba(0,0,0,0.4)] space-y-2 group cursor-default">
 								<div className="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-500/20 to-indigo-600/10 border border-indigo-500/30 text-indigo-300 flex items-center justify-center shadow-[0_0_12px_rgba(99,102,241,0.2)]">
-									<QrCode className="w-4.5 h-4.5" />
+									<HardDrive className="w-4.5 h-4.5" />
 								</div>
 								<h3 className="font-['Syne',sans-serif] font-display text-xs font-bold text-white">
-									QR Import
+									Google Drive (XML)
 								</h3>
 								<p className="text-[11px] text-[var(--color-text-tertiary)] leading-tight">
-									Scan & import directly into AM
+									Direct cloud XML download
 								</p>
 							</div>
 
 							<div className="p-4 rounded-2xl backdrop-blur-xl bg-white/[0.03] border border-white/[0.08] hover:border-white/[0.16] hover:bg-white/[0.06] transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-0.5 shadow-lg hover:shadow-[0_8px_24px_rgba(0,0,0,0.4)] space-y-2 group cursor-default">
 								<div className="w-9 h-9 rounded-xl bg-gradient-to-br from-emerald-500/20 to-emerald-600/10 border border-emerald-500/30 text-emerald-300 flex items-center justify-center shadow-[0_0_12px_rgba(16,185,129,0.2)]">
-									<Users className="w-4.5 h-4.5" />
+									<Zap className="w-4.5 h-4.5" />
 								</div>
 								<h3 className="font-['Syne',sans-serif] font-display text-xs font-bold text-white">
-									Top Creators
+									1-Tap Link
 								</h3>
 								<p className="text-[11px] text-[var(--color-text-tertiary)] leading-tight">
-									30+ popular AMV & velocity editors
+									Instant import directly into AM
 								</p>
 							</div>
 

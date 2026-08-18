@@ -93,7 +93,7 @@ export const PresetCard = React.forwardRef<HTMLDivElement, PresetCardProps>(
 		const [isBookmarked, setIsBookmarked] = React.useState(
 			Boolean(preset.isBookmarked),
 		);
-		const [isMuted, setIsMuted] = React.useState(false);
+		const [isMuted, setIsMuted] = React.useState(true);
 		const [showDeleteModal, setShowDeleteModal] = React.useState(false);
 		const [isDeleting, setIsDeleting] = React.useState(false);
 		const [deleteError, setDeleteError] = React.useState<string | null>(null);
@@ -279,7 +279,6 @@ export const PresetCard = React.forwardRef<HTMLDivElement, PresetCardProps>(
 							poster={
 								hasThumbnail ? preset.thumbnailUrl : PRESET_PLACEHOLDER_SVG
 							}
-							autoPlay
 							muted={isMuted}
 							loop
 							playsInline

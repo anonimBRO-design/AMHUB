@@ -50,7 +50,7 @@ export default function LoginPage() {
 		}
 	};
 
-	const handleOAuthLogin = async (provider: "google" | "discord") => {
+	const handleOAuthLogin = async (provider: "google") => {
 		setIsLoading(true);
 		setError(null);
 
@@ -115,22 +115,15 @@ export default function LoginPage() {
 					</p>
 				)}
 			</form>
-			<div className={cn("mt-[var(--space-4)] grid grid-cols-2 gap-2")}>
+			<div className={cn("mt-[var(--space-4)]")}>
 				<Button
 					type="button"
 					variant="secondary"
 					onClick={() => handleOAuthLogin("google")}
 					isDisabled={isLoading}
+					className={cn("w-full")}
 				>
 					Google
-				</Button>
-				<Button
-					type="button"
-					variant="secondary"
-					onClick={() => handleOAuthLogin("discord")}
-					isDisabled={isLoading}
-				>
-					Discord
 				</Button>
 			</div>
 			<p

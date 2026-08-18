@@ -149,12 +149,8 @@ export function MobileProfileView({ user, presets }: MobileProfileViewProps) {
 				{activeTab === "presets" ? (
 					<div className="grid grid-cols-2 gap-3">
 						{presets.map((preset) => {
-							const hasVideo = Boolean(
-								preset.previewVideoUrl && preset.previewVideoUrl.trim(),
-							);
-							const hasThumb = Boolean(
-								preset.thumbnailUrl && preset.thumbnailUrl.trim(),
-							);
+							const hasVideo = Boolean(preset.previewVideoUrl?.trim());
+							const hasThumb = Boolean(preset.thumbnailUrl?.trim());
 							const PRESET_PLACEHOLDER_SVG =
 								"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='600' height='338' viewBox='0 0 600 338'><rect width='100%' height='100%' fill='%2318181b'/><path d='M270 140l80 45-80 45v-90z' fill='%23a855f7'/><text x='50%' y='78%' text-anchor='middle' fill='%23a1a1aa' font-family='sans-serif' font-size='14' font-weight='600'>ALIGHT MOTION PRESET</text></svg>";
 							const ratioClass = "aspect-[9/16]";
@@ -176,7 +172,6 @@ export function MobileProfileView({ user, presets }: MobileProfileViewProps) {
 														? preset.thumbnailUrl
 														: PRESET_PLACEHOLDER_SVG
 												}
-												autoPlay
 												muted
 												loop
 												playsInline
