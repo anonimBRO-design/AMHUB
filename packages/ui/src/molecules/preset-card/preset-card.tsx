@@ -456,17 +456,19 @@ export const PresetCard = React.forwardRef<HTMLDivElement, PresetCardProps>(
 								className={cn(
 									"inline-flex items-center gap-1.5 h-8 sm:h-8.5 px-2.5 sm:px-3 rounded-xl border text-xs font-bold transition-all active:scale-95 shadow-sm",
 									isLiked
-										? "bg-rose-500/15 text-rose-400 border-rose-500/30"
-										: "bg-[var(--color-bg-surface)] text-[var(--color-text-secondary)] border-[var(--color-border-subtle)] hover:text-rose-400 hover:border-rose-500/20 hover:bg-rose-500/5",
+										? "bg-rose-500/25 text-rose-300 border-rose-500/50 shadow-rose-500/10"
+										: "bg-rose-500/[0.08] text-rose-300/90 border-rose-500/25 hover:bg-rose-500/15 hover:border-rose-500/40 hover:text-rose-200",
 								)}
 							>
 								<Heart
 									className={cn(
 										"h-3.5 w-3.5 sm:h-4 sm:w-4 transition-colors",
-										isLiked ? "fill-rose-500 text-rose-500" : "",
+										isLiked
+											? "fill-rose-500 text-rose-500"
+											: "text-rose-400 fill-rose-400/15",
 									)}
 								/>
-								<span>{likeCount}</span>
+								<span className="text-xs font-bold">{likeCount}</span>
 							</button>
 
 							<button
@@ -479,17 +481,19 @@ export const PresetCard = React.forwardRef<HTMLDivElement, PresetCardProps>(
 								className={cn(
 									"inline-flex items-center gap-1.5 h-8 sm:h-8.5 px-2.5 sm:px-3 rounded-xl border text-xs font-bold transition-all active:scale-95 shadow-sm",
 									isBookmarked
-										? "bg-amber-500/15 text-amber-400 border-amber-500/30"
-										: "bg-[var(--color-bg-surface)] text-[var(--color-text-secondary)] border-[var(--color-border-subtle)] hover:text-amber-400 hover:border-amber-500/20 hover:bg-amber-500/5",
+										? "bg-amber-500/25 text-amber-300 border-amber-500/50 shadow-amber-500/10"
+										: "bg-amber-500/[0.08] text-amber-300/90 border-amber-500/25 hover:bg-amber-500/15 hover:border-amber-500/40 hover:text-amber-200",
 								)}
 							>
 								<Bookmark
 									className={cn(
 										"h-3.5 w-3.5 sm:h-4 sm:w-4 transition-colors",
-										isBookmarked ? "fill-amber-400 text-amber-400" : "",
+										isBookmarked
+											? "fill-amber-400 text-amber-400"
+											: "text-amber-400 fill-amber-400/15",
 									)}
 								/>
-								<span>{bookmarkCount}</span>
+								<span className="text-xs font-bold">{bookmarkCount}</span>
 							</button>
 
 							<button
