@@ -1,4 +1,6 @@
 import { recordPresetDownload } from "@/dal/downloads.dal";
+import { createSignedDownloadUrl } from "@/lib/supabase/storage";
+import { parseStoragePath } from "@/dal/presets.dal";
 import { checkUserPresetAccess } from "@/dal/orders.dal";
 import { getClientIp, hashIp, hashUserAgent } from "@/lib/anti-abuse/ip-hash";
 import { getApiUser } from "@/lib/api/auth";
@@ -75,6 +77,28 @@ export async function POST(
 		const userAgentHash = hashUserAgent(request.headers.get("user-agent"));
 
 		// 5. Atomic multi-layer unique download recording
+		const { data: presetData } = await supabase
+			.from("presets")
+			.select("file_url, am_link")
+			.eq("id", presetId)
+			.maybeSingle();
+
+		let downloadUrl: string | undefined = undefined;
+		if (presetData?.file_url) {
+			const parsed = parseStoragePath(presetData.file_url);
+			if (parsed) {
+				try {
+					downloadUrl = await createSignedDownloadUrl(parsed.path);
+				} catch (e) {
+					console.error("Failed to generate signed download URL", e);
+				}
+			} else {
+				downloadUrl = presetData.file_url;
+			}
+		} else if (presetData?.am_link) {
+			downloadUrl = presetData.am_link;
+		}
+
 		const downloadResult = await recordPresetDownload(supabase, {
 			presetId,
 			userId: currentUserId,
@@ -90,6 +114,7 @@ export async function POST(
 			is_unique: downloadResult.isUnique,
 			total_downloads: downloadResult.totalDownloads,
 			unique_downloads: downloadResult.uniqueDownloads,
+			download_url: downloadUrl,
 			anonymous_token: anonymousToken || undefined,
 		};
 

@@ -1,4 +1,5 @@
 import { syncPresetCounter } from "./helpers";
+import { createNotification } from "./notifications.dal";
 import { assertPresetExists } from "./presets.dal";
 import type { DalClient } from "./types";
 
@@ -100,6 +101,29 @@ export async function recordPresetDownload(
 				ip_hash: ipHash,
 				user_agent_hash: userAgentHash || null,
 			} as never);
+
+			try {
+				const { data: presetObj } = await client
+					.from("presets")
+					.select("creator_id, title")
+					.eq("id", presetId)
+					.maybeSingle();
+
+				const creatorId = (presetObj as { creator_id?: string } | null)?.creator_id;
+				const title = (presetObj as { title?: string } | null)?.title;
+
+				if (creatorId && creatorId !== userId) {
+					await createNotification(client, {
+						userId: creatorId,
+						actorId: userId || undefined,
+						type: "download",
+						presetId: presetId,
+						message: `downloaded your preset "${title || "Preset"}"`,
+					});
+				}
+			} catch (e) {
+				console.error("Failed to send download notification", e);
+			}
 		} catch (insertErr) {
 			// Table may not yet be migrated
 			console.warn("Failed to insert into preset_downloads:", insertErr);

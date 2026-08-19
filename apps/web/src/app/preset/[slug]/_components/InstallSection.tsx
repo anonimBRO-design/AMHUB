@@ -34,21 +34,57 @@ export function InstallSection({ preset }: InstallSectionProps) {
 		preset.fileUrl ||
 		(typeof window !== "undefined" ? window.location.href : "");
 
-	const trackDownload = async () => {
-		if (downloadTracked) return;
-		setDownloadTracked(true);
+	const handleDownload = async (
+		e: React.MouseEvent<HTMLAnchorElement>,
+		type: "amLink" | "fileUrl",
+		fallbackUrl: string
+	) => {
+		e.preventDefault();
 		try {
 			const response = await fetch(`/api/presets/${preset.id}/download`, {
 				method: "POST",
 			});
 			if (!response.ok) throw new Error("Failed to track download");
+			const data = await response.json();
+			const finalUrl = data?.download_url || fallbackUrl;
+
+			if (type === "amLink") {
+				window.open(finalUrl, "_blank", "noopener,noreferrer");
+			} else {
+				const a = document.createElement("a");
+				a.href = finalUrl;
+				a.download = "";
+				document.body.appendChild(a);
+				a.click();
+				document.body.removeChild(a);
+			}
+
+			setDownloadTracked(true);
 			posthog.capture("preset_downloaded", {
 				preset_id: preset.id,
 				file_type: preset.fileType ?? "xml",
 			});
-		} catch (e) {
-			console.error("Failed to track download", e);
+		} catch (err) {
+			console.error("Failed to track download", err);
+			if (type === "amLink") {
+				window.open(fallbackUrl, "_blank", "noopener,noreferrer");
+			} else {
+				const a = document.createElement("a");
+				a.href = fallbackUrl;
+				a.download = "";
+				document.body.appendChild(a);
+				a.click();
+				document.body.removeChild(a);
+			}
 		}
+	};
+
+	const trackDownloadHelper = async () => {
+		try {
+			await fetch(`/api/presets/${preset.id}/download`, {
+				method: "POST",
+			});
+		} catch (e) {}
 	};
 
 	const handleCopy = async () => {
@@ -57,7 +93,7 @@ export function InstallSection({ preset }: InstallSectionProps) {
 			await navigator.clipboard.writeText(linkToCopy);
 			setCopied(true);
 			setTimeout(() => setCopied(false), 2000);
-			trackDownload();
+			trackDownloadHelper(); // fallback check
 		} catch (e) {
 			console.error("Failed to copy link", e);
 		}
@@ -102,7 +138,7 @@ export function InstallSection({ preset }: InstallSectionProps) {
 						href={preset.amLink}
 						target="_blank"
 						rel="noopener noreferrer"
-						onClick={trackDownload}
+						onClick={(e) => handleDownload(e, "amLink", preset.amLink || "")}
 						className="inline-flex items-center justify-center gap-2 min-h-[52px] px-6 rounded-2xl bg-[var(--color-interactive-primary)] text-white font-bold text-sm shadow-xl shadow-[var(--color-interactive-primary)]/25 hover:bg-[var(--color-interactive-primary-hover)] active:scale-[0.98] transition-all"
 					>
 						<ExternalLink className="w-5 h-5" />
@@ -114,7 +150,7 @@ export function InstallSection({ preset }: InstallSectionProps) {
 					<a
 						href={preset.fileUrl}
 						download
-						onClick={trackDownload}
+						onClick={(e) => handleDownload(e, "fileUrl", preset.fileUrl || "")}
 						className="inline-flex items-center justify-center gap-2 min-h-[52px] px-6 rounded-2xl bg-[var(--color-bg-elevated)] text-[var(--color-text-primary)] font-bold text-sm border border-[var(--color-border-subtle)] hover:border-[var(--color-border-strong)] active:scale-[0.98] transition-all"
 					>
 						{preset.fileType === "qr" ? (

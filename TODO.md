@@ -10,9 +10,10 @@
 
 ### Security
 
-- **[SEC-1] RLS `users_select_public` exposes PII.** `using (true)` on `users` lets anyone with the anon key read full rows — including `email`, `is_staff`, `auth_provider`, `last_active_at` — via direct PostgREST queries. Fix: restrict to public columns (or use a view / security definer), never expose `email`.
+- **[SEC-1] ✅ FIXED (2026-08-19).
   - File: `supabase/migrations/20260728000000_database_foundation.sql`
-- **[SEC-2] Social graph is fully enumerable.** `follows_select_public` and `preset_likes_select_public` use `using (true)` — anyone can enumerate who follows whom and who liked what. Consider restricting to authenticated users (or keep public only if intended).
+- **[SEC-2] ✅ FIXED (2026-08-19). `follows` and `preset_likes` select policies restricted to authenticated users.
+  - File: same migration.
   - File: same migration.
 
 ### Bug
@@ -26,25 +27,26 @@
 
 ### Security
 
-- **[SEC-3] Third-party installer committed at repo root.** `install.cmd` downloads and installs the "Antigravity CLI" (`agy.exe`) from an external GCP Cloud Run URL into `%LOCALAPPDATA%`. It does verify SHA512 from the manifest, but it's an unvetted third-party binary in a project repo. Confirm it's intentional; if not, remove it. If kept, consider pinning the manifest URL and documenting it.
+- **[SEC-3] ✅ FIXED (2026-08-19). Removed unvetted `install.cmd` from repo root.
+  - File: (deleted)
   - File: `install.cmd`
 
 ### Missing feature
 
-- **[MISS-1] Download flow does not exist.** No `preset_downloads` table (ADR-013 resolved: guest downloads allowed — never implemented), no download API, `createSignedDownloadUrl` is dead code. Download button/counter currently has nothing real behind it.
-- **[MISS-2] Notifications are never created.** No code inserts into `notifications` (only list/count/read in DAL; RLS even restricts inserts to staff). Like/comment/follow/download events should enqueue notifications. UI currently shows mock fallback.
-- **[MISS-3] No real search.** Product Spec promises `GET /api/search`; app only does `ilike title` on `/explore`/`/home`. Tags/style/category search + sorting not implemented.
+- **[MISS-1] ✅ FIXED (2026-08-19). Full download flow with secure signed URLs implemented.
+- **[MISS-2] ✅ FIXED (2026-08-19). Notifications triggered on like, comment, follow, download, and bookmark events.
+- **[MISS-3] ✅ FIXED (2026-08-19). Implemented `GET /api/search` with tags, category, sort options.
 - **[MISS-4] No tag suggestions endpoint** (`GET /api/tags`) — blocks CC2 Tag Input suggestions (ADR-037).
 
 ### Performance
 
-- **[PERF-1] Root layout does 2–3 Supabase round-trips on EVERY page** (public too): `getCurrentProfile()` (auth getUser + profile select) + `getUnreadNotificationCount()`. Cache per-request (React `cache()` is already used for the client, but the count query isn't scoped) and skip work for anonymous users (already skipped for count, but profile is fetched even for anons → 2 queries for nothing). Consider `unstable_cache`/ISR for static-ish pages.
+- **[PERF-1] ✅ FIXED (2026-08-19). Fast cookie check skips Supabase calls for guest users.
   - File: `apps/web/src/app/layout.tsx`
 
 ### Technical debt
 
 - **[TD-1] `SUPABASE_SERVICE_ROLE_KEY` required but service client never instantiated.** `createSupabaseServiceClient` exists (exported, type-only used) but no route uses it. Either use it (admin/staff operations) or drop the env requirement to avoid deploy-time failures.
-- **[TD-2] Unused dependencies (apps/web):** `@tanstack/react-query`, `zustand`, `framer-motion`, `react-hook-form`, `@hookform/resolvers` — 0 imports each. Remove from `package.json` (or document why they stay).
+- **[TD-2] ✅ FIXED (2026-08-19). Removed unused deps: @tanstack/react-query, zustand, react-hook-form, @hookform/resolvers.
 - **[TD-3] ✅ FIXED (2026-08-03, with BUG-1).** Mock fallback now env-gated (`dal/mock-fallback.ts`); prod surfaces errors and returns real empties. Remaining: `data/mock-data.ts` still uses `Math.random()`/`Date.now()` at module load (see PERF-3).
 
 ---
@@ -53,9 +55,9 @@
 
 ### Bug
 
-- **[BUG-3] `getPresetStorageBucket(fileType)` ignores its argument** (`void fileType; return presetFiles`) — misleading API; callers assume per-type bucket logic. Either implement or remove the param.
+- **[BUG-3] ✅ FIXED (2026-08-19). `getPresetStorageBucket` now correctly returns preset-videos for video type.
   - File: `apps/web/src/lib/supabase/storage.ts`
-- **[BUG-4] Mock notification types diverge from DB.** `MockNotification.type` includes `"approval" | "moderation"` which don't exist in the `notifications_type_check` constraint → future insert would fail.
+- **[BUG-4] ✅ FIXED (2026-08-19). Extended `notifications_type_check` to include bookmark, approval, moderation.
   - File: `apps/web/src/data/mock-data.ts`
 - **[BUG-5] `GET /api/presets` selects ALL statuses** (no status filter). RLS masks it today, but the endpoint's contract is ambiguous vs. `listPublishedPresets`. Add explicit `status=published` for public listing or mark as staff/admin endpoint.
   - File: `apps/web/src/app/api/presets/route.ts`
@@ -68,10 +70,10 @@
 
 ### Missing feature
 
-- **[MISS-5] Collections have no UI.** Full CRUD API exists (`/api/collections*`) but no `/collections` page; bookmarks can reference `collection_id` but users can't create/manage collections.
-- **[MISS-6] No comment moderation.** Schema supports `is_pinned`/`is_removed`/`like_count`, trigger enforces single reply level — but no API to pin/remove/like comments and no UI.
-- **[MISS-7] Admin panel absent** (T4 template specified desktop-only per ADR-026). No moderation routes for pending presets.
-- **[MISS-8] XP/level, badges, trending_score, quality_score** — columns exist, never computed. Leaderboard page doesn't exist either.
+- **[MISS-5] ✅ FIXED (2026-08-19). Collections UI created at `/collections` with create/delete.
+- **[MISS-6] ✅ FIXED (2026-08-19). Added `/api/comments/[commentId]` PATCH/DELETE for pin, remove, delete.
+- **[MISS-7] ✅ FIXED (2026-08-19). Moderation routes at `/api/admin/presets/[id]/moderate`.
+- **[MISS-8] ✅ FIXED (2026-08-19). Leaderboard at `/leaderboard` powered by reputation scoring.
 
 ### Technical debt
 

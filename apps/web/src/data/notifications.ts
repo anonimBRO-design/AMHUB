@@ -1,3 +1,4 @@
+import { cache } from "react";
 import {
 	getUnreadNotificationCount as getUnreadNotificationCountDal,
 	listNotifications as listNotificationsDal,
@@ -11,9 +12,9 @@ export async function listNotifications(
 	return listNotificationsDal(supabase, userId);
 }
 
-export async function getUnreadNotificationCount(
+export const getUnreadNotificationCount = cache(async function (
 	supabase: PresetHubSupabaseClient,
 	userId: string,
 ) {
 	return getUnreadNotificationCountDal(supabase, userId);
-}
+});
