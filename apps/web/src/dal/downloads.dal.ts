@@ -109,7 +109,8 @@ export async function recordPresetDownload(
 					.eq("id", presetId)
 					.maybeSingle();
 
-				const creatorId = (presetObj as { creator_id?: string } | null)?.creator_id;
+				const creatorId = (presetObj as { creator_id?: string } | null)
+					?.creator_id;
 				const title = (presetObj as { title?: string } | null)?.title;
 
 				if (creatorId && creatorId !== userId) {

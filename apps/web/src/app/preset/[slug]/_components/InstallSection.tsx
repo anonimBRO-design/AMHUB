@@ -37,7 +37,7 @@ export function InstallSection({ preset }: InstallSectionProps) {
 	const handleDownload = async (
 		e: React.MouseEvent<HTMLAnchorElement>,
 		type: "amLink" | "fileUrl",
-		fallbackUrl: string
+		fallbackUrl: string,
 	) => {
 		e.preventDefault();
 		try {

@@ -1,6 +1,6 @@
-import { cookies } from "next/headers";
 import type { Database, User as Profile } from "@presethub/types";
 import type { User as SupabaseUser } from "@supabase/supabase-js";
+import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { cache } from "react";
 import { createSupabaseServerClient } from "./server";
@@ -132,7 +132,8 @@ export async function ensureUserProfile(
 			id: user.id,
 			username,
 			display_name: displayName,
-			avatar_url: avatarUrl, email: email,
+			avatar_url: avatarUrl,
+			email: email,
 			auth_provider: authProvider,
 			last_active_at: new Date().toISOString(),
 		};

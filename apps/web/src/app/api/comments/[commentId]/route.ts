@@ -18,7 +18,7 @@ const updateCommentSchema = z.object({
 
 export async function PATCH(
 	request: NextRequest,
-	{ params }: { params: Promise<{ commentId: string }> }
+	{ params }: { params: Promise<{ commentId: string }> },
 ) {
 	try {
 		const { commentId } = validateRouteParams(await params, routeParamsSchema);
@@ -27,29 +27,36 @@ export async function PATCH(
 		const bodyInput = await validateJson(request, updateCommentSchema);
 
 		// Fetch existing comment to check ownership / permissions
-		const { data: existing, error: getError } = await supabase
+		const { data: existingRaw, error: getError } = await supabase
 			.from("comments")
 			.select("user_id, preset_id")
 			.eq("id", commentId)
 			.maybeSingle();
+		const existing = existingRaw as unknown as {
+			user_id: string;
+			preset_id: string;
+		} | null;
 
 		if (getError || !existing) {
-			return apiResponse({ error: "Comment not found" }, 404);
+			return apiResponse({ error: "Comment not found" }, { status: 404 });
 		}
 
 		// Authorization:
 		// Regular users can only update the "body" of their own comments.
 		// Staff/Admins or preset creators can moderate (pin, remove) comments.
 		const isOwner = existing.user_id === profile.id;
-		
+
 		// Let us check if current user is the preset creator of the parent preset
 		let isPresetCreator = false;
 		if (existing.preset_id) {
-			const { data: presetObj } = await supabase
+			const { data: presetObjRaw } = await supabase
 				.from("presets")
 				.select("creator_id")
 				.eq("id", existing.preset_id)
 				.maybeSingle();
+			const presetObj = presetObjRaw as unknown as {
+				creator_id: string;
+			} | null;
 			if (presetObj && presetObj.creator_id === profile.id) {
 				isPresetCreator = true;
 			}
@@ -60,21 +67,30 @@ export async function PATCH(
 		const updates: any = {};
 		if (bodyInput.body !== undefined) {
 			if (!isOwner && !isStaff) {
-				return apiResponse({ error: "Unauthorized to update comment body" }, 403);
+				return apiResponse(
+					{ error: "Unauthorized to update comment body" },
+					{ status: 403 },
+				);
 			}
 			updates.body = bodyInput.body;
 		}
 
 		if (bodyInput.is_pinned !== undefined) {
 			if (!isStaff) {
-				return apiResponse({ error: "Unauthorized to pin comment" }, 403);
+				return apiResponse(
+					{ error: "Unauthorized to pin comment" },
+					{ status: 403 },
+				);
 			}
 			updates.is_pinned = bodyInput.is_pinned;
 		}
 
 		if (bodyInput.is_removed !== undefined) {
 			if (!isOwner && !isStaff) {
-				return apiResponse({ error: "Unauthorized to remove comment" }, 403);
+				return apiResponse(
+					{ error: "Unauthorized to remove comment" },
+					{ status: 403 },
+				);
 			}
 			updates.is_removed = bodyInput.is_removed;
 		}
@@ -88,31 +104,38 @@ export async function PATCH(
 
 export async function DELETE(
 	request: NextRequest,
-	{ params }: { params: Promise<{ commentId: string }> }
+	{ params }: { params: Promise<{ commentId: string }> },
 ) {
 	try {
 		const { commentId } = validateRouteParams(await params, routeParamsSchema);
 		const { supabase, profile } = await requireApiProfile();
 
 		// Fetch existing comment to check ownership and preset_id
-		const { data: existing, error: getError } = await supabase
+		const { data: existingRaw, error: getError } = await supabase
 			.from("comments")
 			.select("user_id, preset_id")
 			.eq("id", commentId)
 			.maybeSingle();
+		const existing = existingRaw as unknown as {
+			user_id: string;
+			preset_id: string;
+		} | null;
 
 		if (getError || !existing) {
-			return apiResponse({ error: "Comment not found" }, 404);
+			return apiResponse({ error: "Comment not found" }, { status: 404 });
 		}
 
 		// Authorization
 		let isPresetCreator = false;
 		if (existing.preset_id) {
-			const { data: presetObj } = await supabase
+			const { data: presetObjRaw } = await supabase
 				.from("presets")
 				.select("creator_id")
 				.eq("id", existing.preset_id)
 				.maybeSingle();
+			const presetObj = presetObjRaw as unknown as {
+				creator_id: string;
+			} | null;
 			if (presetObj && presetObj.creator_id === profile.id) {
 				isPresetCreator = true;
 			}
@@ -122,7 +145,10 @@ export async function DELETE(
 		const canDelete = isOwner || profile.is_staff || isPresetCreator;
 
 		if (!canDelete) {
-			return apiResponse({ error: "Unauthorized to delete comment" }, 403);
+			return apiResponse(
+				{ error: "Unauthorized to delete comment" },
+				{ status: 403 },
+			);
 		}
 
 		await deleteComment(supabase, commentId, existing.preset_id);

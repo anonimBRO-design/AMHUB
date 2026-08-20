@@ -194,6 +194,7 @@ export interface PresetDownloadResponse {
 	total_downloads: number;
 	unique_downloads: number;
 	anonymous_token?: string;
+	download_url?: string;
 }
 
 export interface CreatorReputationScoreBreakdown {

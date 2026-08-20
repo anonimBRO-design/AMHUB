@@ -1,7 +1,6 @@
 import { recordPresetDownload } from "@/dal/downloads.dal";
-import { createSignedDownloadUrl } from "@/lib/supabase/storage";
-import { parseStoragePath } from "@/dal/presets.dal";
 import { checkUserPresetAccess } from "@/dal/orders.dal";
+import { parseStoragePath } from "@/dal/presets.dal";
 import { getClientIp, hashIp, hashUserAgent } from "@/lib/anti-abuse/ip-hash";
 import { getApiUser } from "@/lib/api/auth";
 import { ApiError } from "@/lib/api/errors";
@@ -9,6 +8,7 @@ import { enforceRateLimit } from "@/lib/api/rate-limit";
 import { apiErrorResponse, apiResponse } from "@/lib/api/responses";
 import { validateRouteParams } from "@/lib/api/validation";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { createSignedDownloadUrl } from "@/lib/supabase/storage";
 import type { PresetDownloadResponse } from "@presethub/types";
 import type { NextRequest } from "next/server";
 import { z } from "zod";
@@ -77,11 +77,15 @@ export async function POST(
 		const userAgentHash = hashUserAgent(request.headers.get("user-agent"));
 
 		// 5. Atomic multi-layer unique download recording
-		const { data: presetData } = await supabase
+		const { data: presetDataRaw } = await supabase
 			.from("presets")
 			.select("file_url, am_link")
 			.eq("id", presetId)
 			.maybeSingle();
+		const presetData = presetDataRaw as unknown as {
+			file_url: string | null;
+			am_link: string | null;
+		} | null;
 
 		let downloadUrl: string | undefined = undefined;
 		if (presetData?.file_url) {

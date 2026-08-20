@@ -27,7 +27,15 @@ export const NOTIFICATION_SELECT_WITH_RELATIONS = `
 export interface CreateNotificationInput {
 	userId: string;
 	actorId?: string;
-	type: "like" | "comment" | "follow" | "download" | "bookmark" | "approval" | "moderation" | "system";
+	type:
+		| "like"
+		| "comment"
+		| "follow"
+		| "download"
+		| "bookmark"
+		| "approval"
+		| "moderation"
+		| "system";
 	presetId?: string;
 	message?: string;
 }

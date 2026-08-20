@@ -1,7 +1,15 @@
 "use client";
 
+import {
+	ArrowUpRight,
+	Award,
+	Download,
+	ShieldCheck,
+	Star,
+	Trophy,
+	Users,
+} from "lucide-react";
 import { useEffect, useState } from "react";
-import { Trophy, Award, Download, Users, Star, ArrowUpRight, ShieldCheck } from "lucide-react";
 
 interface Creator {
 	id: string;
@@ -18,7 +26,9 @@ interface Creator {
 
 export function LeaderboardClient() {
 	const [creators, setCreators] = useState<Creator[]>([]);
-	const [sort, setSort] = useState<"score" | "downloads" | "followers">("score");
+	const [sort, setSort] = useState<"score" | "downloads" | "followers">(
+		"score",
+	);
 	const [isLoading, setIsLoading] = useState(true);
 
 	useEffect(() => {
@@ -53,7 +63,8 @@ export function LeaderboardClient() {
 						Creator Leaderboard
 					</h1>
 					<p className="text-sm text-[var(--color-text-secondary)] max-w-md mx-auto">
-						Top Alight Motion creators ranked by community trust, quality presets, and engagement.
+						Top Alight Motion creators ranked by community trust, quality
+						presets, and engagement.
 					</p>
 				</div>
 
@@ -112,10 +123,16 @@ export function LeaderboardClient() {
 					<div className="space-y-3">
 						{creators.map((c, index) => {
 							const rank = index + 1;
-							let badgeStyle = "bg-[var(--color-bg-elevated)] text-[var(--color-text-secondary)]";
-							if (rank === 1) badgeStyle = "bg-amber-400 text-amber-950 font-black shadow-lg ring-2 ring-amber-400/50";
-							if (rank === 2) badgeStyle = "bg-slate-300 text-slate-900 font-black shadow-md";
-							if (rank === 3) badgeStyle = "bg-amber-700/80 text-amber-100 font-black shadow-md";
+							let badgeStyle =
+								"bg-[var(--color-bg-elevated)] text-[var(--color-text-secondary)]";
+							if (rank === 1)
+								badgeStyle =
+									"bg-amber-400 text-amber-950 font-black shadow-lg ring-2 ring-amber-400/50";
+							if (rank === 2)
+								badgeStyle = "bg-slate-300 text-slate-900 font-black shadow-md";
+							if (rank === 3)
+								badgeStyle =
+									"bg-amber-700/80 text-amber-100 font-black shadow-md";
 
 							return (
 								<div
@@ -123,7 +140,9 @@ export function LeaderboardClient() {
 									className="flex items-center justify-between p-4 sm:p-5 rounded-3xl bg-[var(--color-bg-surface)] border border-[var(--color-border-subtle)] hover:border-[var(--color-border-strong)] transition-all shadow-sm"
 								>
 									<div className="flex items-center gap-4">
-										<div className={`w-9 h-9 rounded-2xl flex items-center justify-center text-sm font-bold shrink-0 ${badgeStyle}`}>
+										<div
+											className={`w-9 h-9 rounded-2xl flex items-center justify-center text-sm font-bold shrink-0 ${badgeStyle}`}
+										>
 											{rank === 1 ? <Award className="w-5 h-5" /> : `#${rank}`}
 										</div>
 
@@ -150,14 +169,18 @@ export function LeaderboardClient() {
 
 									<div className="flex items-center gap-6 text-right">
 										<div className="hidden sm:block">
-											<span className="block text-xs text-[var(--color-text-secondary)]">Downloads</span>
+											<span className="block text-xs text-[var(--color-text-secondary)]">
+												Downloads
+											</span>
 											<span className="font-bold text-sm text-[var(--color-text-primary)]">
 												{c.unique_download_count.toLocaleString()}
 											</span>
 										</div>
 
 										<div className="hidden sm:block">
-											<span className="block text-xs text-[var(--color-text-secondary)]">Followers</span>
+											<span className="block text-xs text-[var(--color-text-secondary)]">
+												Followers
+											</span>
 											<span className="font-bold text-sm text-[var(--color-text-primary)]">
 												{c.follower_count.toLocaleString()}
 											</span>

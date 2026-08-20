@@ -132,11 +132,12 @@ export async function createComment(
 	return comment;
 }
 
-export async function deleteComment(client: DalClient, commentId: string, presetId: string) {
-	const { error } = await client
-		.from("comments")
-		.delete()
-		.eq("id", commentId);
+export async function deleteComment(
+	client: DalClient,
+	commentId: string,
+	presetId: string,
+) {
+	const { error } = await client.from("comments").delete().eq("id", commentId);
 	if (error) throw error;
 	await syncPresetCounter(client, presetId, "comments", "comment_count");
 }
@@ -144,7 +145,7 @@ export async function deleteComment(client: DalClient, commentId: string, preset
 export async function moderateComment(
 	client: DalClient,
 	commentId: string,
-	updates: { is_pinned?: boolean; is_removed?: boolean }
+	updates: { is_pinned?: boolean; is_removed?: boolean },
 ) {
 	const { data, error } = await client
 		.from("comments")

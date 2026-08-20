@@ -7,7 +7,8 @@ import { CollectionsClient } from "./_components/CollectionsClient";
 
 export const metadata: Metadata = {
 	title: "Collections | AMHUB",
-	description: "Curate, organize, and explore collections of Alight Motion presets.",
+	description:
+		"Curate, organize, and explore collections of Alight Motion presets.",
 };
 
 export default async function CollectionsPage() {
@@ -24,5 +25,10 @@ export default async function CollectionsPage() {
 		currentUserId: profile.id,
 	});
 
-	return <CollectionsClient initialCollections={items as any} currentUserId={profile.id} />;
+	return (
+		<CollectionsClient
+			initialCollections={items as any}
+			currentUserId={profile.id}
+		/>
+	);
 }

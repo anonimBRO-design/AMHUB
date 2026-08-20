@@ -9,7 +9,15 @@ const searchSchema = z.object({
 	category: z.string().trim().optional(),
 	difficulty: z.string().trim().optional(),
 	fileType: z.string().trim().optional(),
-	tags: z.string().transform((val) => val.split(",").map(t => t.trim()).filter(Boolean)).optional(),
+	tags: z
+		.string()
+		.transform((val) =>
+			val
+				.split(",")
+				.map((t) => t.trim())
+				.filter(Boolean),
+		)
+		.optional(),
 	sort: z.string().trim().optional(),
 	limit: z.coerce.number().int().min(1).max(100).default(24),
 	page: z.coerce.number().int().min(1).default(1),
@@ -22,9 +30,12 @@ const searchSchema = z.object({
 export async function GET(request: NextRequest) {
 	try {
 		const qParam = request.nextUrl.searchParams.get("q") || undefined;
-		const categoryParam = request.nextUrl.searchParams.get("category") || undefined;
-		const difficultyParam = request.nextUrl.searchParams.get("difficulty") || undefined;
-		const fileTypeParam = request.nextUrl.searchParams.get("fileType") || undefined;
+		const categoryParam =
+			request.nextUrl.searchParams.get("category") || undefined;
+		const difficultyParam =
+			request.nextUrl.searchParams.get("difficulty") || undefined;
+		const fileTypeParam =
+			request.nextUrl.searchParams.get("fileType") || undefined;
 		const tagsParam = request.nextUrl.searchParams.get("tags") || undefined;
 		const sortParam = request.nextUrl.searchParams.get("sort") || undefined;
 		const limitParam = request.nextUrl.searchParams.get("limit") || undefined;
@@ -42,7 +53,10 @@ export async function GET(request: NextRequest) {
 		});
 
 		if (!parsed.success) {
-			return apiResponse({ error: "Invalid search query parameters" }, 400);
+			return apiResponse(
+				{ error: "Invalid search query parameters" },
+				{ status: 400 },
+			);
 		}
 
 		const params = parsed.data;

@@ -16,9 +16,7 @@ export type StorageBucket =
 export function getPresetStorageBucket(
 	fileType: PresetFileType,
 ): StorageBucket {
-	if (fileType === "video") {
-		return storageBuckets.presetVideos;
-	}
+	void fileType;
 	return storageBuckets.presetFiles;
 }
 

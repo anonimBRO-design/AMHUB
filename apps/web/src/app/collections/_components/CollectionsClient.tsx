@@ -1,7 +1,16 @@
 "use client";
 
+import {
+	Edit3,
+	FolderPlus,
+	Globe,
+	Layers,
+	Lock,
+	Plus,
+	Trash2,
+	X,
+} from "lucide-react";
 import { useState } from "react";
-import { FolderPlus, Layers, Lock, Globe, Trash2, Edit3, Plus, X } from "lucide-react";
 
 interface CollectionItem {
 	id: string;
@@ -19,8 +28,11 @@ interface CollectionsClientProps {
 	currentUserId: string;
 }
 
-export function CollectionsClient({ initialCollections }: CollectionsClientProps) {
-	const [collections, setCollections] = useState<CollectionItem[]>(initialCollections);
+export function CollectionsClient({
+	initialCollections,
+}: CollectionsClientProps) {
+	const [collections, setCollections] =
+		useState<CollectionItem[]>(initialCollections);
 	const [isCreateOpen, setIsCreateOpen] = useState(false);
 	const [title, setTitle] = useState("");
 	const [description, setDescription] = useState("");
@@ -89,7 +101,8 @@ export function CollectionsClient({ initialCollections }: CollectionsClientProps
 							My Collections
 						</h1>
 						<p className="text-sm text-[var(--color-text-secondary)] mt-1">
-							Organize your favorite Alight Motion presets into custom themes and folders.
+							Organize your favorite Alight Motion presets into custom themes
+							and folders.
 						</p>
 					</div>
 					<button
@@ -168,7 +181,9 @@ export function CollectionsClient({ initialCollections }: CollectionsClientProps
 								</div>
 
 								{error && (
-									<p className="text-xs text-[var(--color-text-error)]">{error}</p>
+									<p className="text-xs text-[var(--color-text-error)]">
+										{error}
+									</p>
 								)}
 
 								<div className="flex items-center justify-end gap-3 pt-2">
@@ -202,7 +217,8 @@ export function CollectionsClient({ initialCollections }: CollectionsClientProps
 							No collections yet
 						</h3>
 						<p className="text-xs text-[var(--color-text-secondary)] max-w-sm mx-auto">
-							Create your first collection to group and share your favorite Alight Motion presets.
+							Create your first collection to group and share your favorite
+							Alight Motion presets.
 						</p>
 						<button
 							type="button"
@@ -270,7 +286,12 @@ export function CollectionsClient({ initialCollections }: CollectionsClientProps
 
 								<div className="pt-2 border-t border-[var(--color-border-subtle)] flex items-center justify-between text-[11px] text-[var(--color-text-secondary)]">
 									<span>
-										Created {new Date(col.created_at).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
+										Created{" "}
+										{new Date(col.created_at).toLocaleDateString("en-US", {
+											month: "short",
+											day: "numeric",
+											year: "numeric",
+										})}
 									</span>
 									<a
 										href={`/collections/${col.id}`}
