@@ -84,16 +84,16 @@ export default async function HomePage({ searchParams }: HomePageProps) {
 
 		const likedPresetIds = new Set(
 			((userLikesRes?.data as { preset_id: string }[] | null) ?? []).map(
-				(l) => l.preset_id,
+				(l: any) => l.preset_id,
 			),
 		);
 		const bookmarkedPresetIds = new Set(
 			((userBookmarksRes?.data as { preset_id: string }[] | null) ?? []).map(
-				(b) => b.preset_id,
+				(b: any) => b.preset_id,
 			),
 		);
 
-		presets = rawPresets.map((p) => {
+		presets = rawPresets.map((p: any) => {
 			const mapped = mapPresetToCardPreset(p);
 			return {
 				...mapped,
@@ -101,7 +101,7 @@ export default async function HomePage({ searchParams }: HomePageProps) {
 				isBookmarked: bookmarkedPresetIds.has(p.id),
 			};
 		});
-		creators = rawCreators.map((c) => ({
+		creators = rawCreators.map((c: any) => ({
 			...c,
 			avatar_url: resolveStorageUrl(c.avatar_url),
 		}));

@@ -121,11 +121,11 @@ export default async function PresetDetailPage({ params }: PageProps) {
 	};
 
 	const relatedPresets = rawRelated
-		.filter((p) => p.id !== rawPreset.id)
+		.filter((p: any) => p.id !== rawPreset.id)
 		.slice(0, 8)
 		.map(mapPresetToCardPreset);
 
-	const initialComments = (commentsRes.items ?? []).map((c) => {
+	const initialComments = (commentsRes.items ?? []).map((c: any) => {
 		const item = c as unknown as {
 			id: string;
 			body?: string;

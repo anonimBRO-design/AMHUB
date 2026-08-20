@@ -45,7 +45,7 @@ export function NotificationClient({
 					table: "notifications",
 					filter: `user_id=eq.${currentUser.id}`,
 				},
-				(payload) => {
+				(payload: any) => {
 					const newRow = payload.new as {
 						id: string;
 						type: string;

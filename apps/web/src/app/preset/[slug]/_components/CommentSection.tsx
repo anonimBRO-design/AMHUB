@@ -46,8 +46,9 @@ export function CommentSection({
 			createdAt: new Date().toISOString(),
 			user: {
 				username: currentUser?.username || "me",
-				displayName: currentUser?.displayName || "You",
-				avatarUrl: currentUser?.avatarUrl,
+				displayName:
+					currentUser?.display_name || currentUser?.username || "You",
+				avatarUrl: currentUser?.avatar_url,
 			},
 		};
 

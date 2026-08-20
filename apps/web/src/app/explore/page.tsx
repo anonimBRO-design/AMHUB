@@ -69,16 +69,16 @@ export default async function ExplorePage({ searchParams }: ExplorePageProps) {
 
 		const likedPresetIds = new Set(
 			((userLikesRes?.data as { preset_id: string }[] | null) ?? []).map(
-				(l) => l.preset_id,
+				(l: any) => l.preset_id,
 			),
 		);
 		const bookmarkedPresetIds = new Set(
 			((userBookmarksRes?.data as { preset_id: string }[] | null) ?? []).map(
-				(b) => b.preset_id,
+				(b: any) => b.preset_id,
 			),
 		);
 
-		presets = rawPresets.map((p) => {
+		presets = rawPresets.map((p: any) => {
 			const mapped = mapPresetToCardPreset(p);
 			return {
 				...mapped,

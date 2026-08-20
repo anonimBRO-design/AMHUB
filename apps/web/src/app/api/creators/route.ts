@@ -88,7 +88,7 @@ export async function GET(request: NextRequest) {
 			const creatorIds = Array.from(
 				new Set(
 					(creatorRows || []).map(
-						(r) => (r as unknown as { creator_id: string }).creator_id,
+						(r: any) => (r as unknown as { creator_id: string }).creator_id,
 					),
 				),
 			);

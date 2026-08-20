@@ -30,7 +30,7 @@ export function WelcomeClient({ user: initialUser }: WelcomeClientProps) {
 
 	// Check client-side auth state
 	useEffect(() => {
-		supabase.auth.getUser().then(({ data }) => {
+		supabase.auth.getUser().then(({ data }: { data: { user: User | null } }) => {
 			if (data?.user) {
 				setAuthUser(data.user);
 			}

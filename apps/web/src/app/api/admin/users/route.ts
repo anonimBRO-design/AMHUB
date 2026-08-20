@@ -108,7 +108,7 @@ export async function GET(request: NextRequest) {
 			);
 		}
 
-		const mappedUsers = (users || []).map((u) => {
+		const mappedUsers = (users || []).map((u: any) => {
 			const raw = u as unknown as Record<string, unknown>;
 			const id = String(raw.id || "");
 			const username = String(raw.username || "");
@@ -257,7 +257,7 @@ export async function DELETE(request: NextRequest) {
 						.from(bucket)
 						.list(targetUserId);
 					if (files && files.length > 0) {
-						const paths = files.map((f) => `${targetUserId}/${f.name}`);
+						const paths = files.map((f: any) => `${targetUserId}/${f.name}`);
 						await serviceSupabase.storage.from(bucket).remove(paths);
 					}
 				} catch (e) {
