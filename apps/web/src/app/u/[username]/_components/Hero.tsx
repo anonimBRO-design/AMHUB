@@ -1,10 +1,12 @@
 import {
 	Calendar,
 	CheckCircle2,
+	Crown,
 	Globe,
 	Instagram,
 	Share2,
 	ShieldCheck,
+	Trophy,
 	Youtube,
 } from "lucide-react";
 
@@ -21,19 +23,21 @@ interface HeroProps {
 		instagramHandle?: string | null;
 		youtubeUrl?: string | null;
 		createdAt?: string;
+		followerCount?: number;
+		presetCount?: number;
 	};
 }
 
 export function Hero({ user }: HeroProps) {
 	const joinDateFormatted = user.createdAt
-		? new Date(user.createdAt).toLocaleDateString("en-US", {
+		? new Date(user.createdAt).toLocaleDateString("id-ID", {
 				month: "short",
 				year: "numeric",
 			})
 		: "Member";
 
 	return (
-		<div className="relative overflow-hidden rounded-3xl bg-[var(--color-bg-surface)] border border-[var(--color-border-subtle)] shadow-2xl min-h-[220px]">
+		<div className="relative overflow-hidden rounded-xl bg-[var(--color-bg-surface)] border border-[var(--color-border-subtle)] shadow-2xl min-h-[220px]">
 			{/* Full Hero Cover Background Layer */}
 			{user.bannerUrl ? (
 				<>
@@ -56,14 +60,14 @@ export function Hero({ user }: HeroProps) {
 			<div className="relative z-10 p-5 sm:p-6 space-y-4">
 				{/* Avatar & Header Row */}
 				<div className="flex items-end justify-between gap-4">
-					<div className="relative shrink-0 w-24 h-24 sm:w-28 sm:h-28 overflow-hidden rounded-full aspect-square">
+					<div className="relative shrink-0 w-24 h-24 sm:w-28 sm:h-28 overflow-hidden rounded-xl aspect-square">
 						<img
 							src={
 								user.avatarUrl ||
 								`https://api.dicebear.com/7.x/identicon/svg?seed=${user.username}`
 							}
 							alt={user.displayName}
-							className="w-24 h-24 sm:w-28 sm:h-28 rounded-full object-cover border-4 border-[var(--color-bg-surface)] bg-[var(--color-bg-elevated)] shadow-2xl block shrink-0"
+							className="w-24 h-24 sm:w-28 sm:h-28 rounded-xl object-cover border-4 border-[var(--color-bg-surface)] bg-[var(--color-bg-elevated)] shadow-2xl block shrink-0"
 							style={{
 								objectFit: "cover",
 								maxWidth: "100%",
@@ -80,13 +84,20 @@ export function Hero({ user }: HeroProps) {
 							{user.displayName}
 						</h1>
 						{user.isVerified && (
-							<span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-[var(--color-interactive-primary)]/10 text-[var(--color-interactive-primary)] border border-[var(--color-interactive-primary)]/20">
+							<span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md text-[10px] font-bold bg-[var(--color-interactive-primary)]/10 text-[var(--color-interactive-primary)] border border-[var(--color-interactive-primary)]/20">
 								<ShieldCheck className="w-3 h-3" />
 								<span>Verified Creator</span>
 							</span>
 						)}
+
+						{(user.presetCount ?? 0) >= 3 && (
+							<span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md text-[10px] font-extrabold bg-amber-400/10 text-amber-300 border border-amber-400/30">
+								<Crown className="w-3 h-3 text-amber-400" />
+								<span>Pro Creator</span>
+							</span>
+						)}
 					</div>
-					<p className="text-xs sm:text-sm font-semibold text-[var(--color-text-tertiary)]">
+					<p className="text-xs sm:text-sm font-semibold text-[var(--color-text-tertiary)] font-mono">
 						@{user.username}
 					</p>
 				</div>
@@ -102,7 +113,7 @@ export function Hero({ user }: HeroProps) {
 				<div className="flex flex-wrap items-center gap-4 text-xs text-[var(--color-text-tertiary)] pt-2 border-t border-[var(--color-border-subtle)]/60">
 					<div className="flex items-center gap-1.5">
 						<Calendar className="w-3.5 h-3.5" />
-						<span>Joined {joinDateFormatted}</span>
+						<span>Bergabung {joinDateFormatted}</span>
 					</div>
 
 					{user.websiteUrl && (
@@ -113,7 +124,7 @@ export function Hero({ user }: HeroProps) {
 							className={`flex items-center gap-1.5 ${
 								user.websiteUrl.includes("saweria.co") ||
 								user.websiteUrl.includes("trakteer.id")
-									? "text-amber-400 font-bold bg-amber-400/10 px-2.5 py-1 rounded-xl border border-amber-400/30"
+									? "text-amber-400 font-bold bg-amber-400/10 px-2.5 py-1 rounded-lg border border-amber-400/30 shadow-sm"
 									: "text-[var(--color-interactive-primary)] hover:underline"
 							}`}
 						>

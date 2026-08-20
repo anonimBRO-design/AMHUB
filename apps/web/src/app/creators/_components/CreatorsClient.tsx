@@ -219,14 +219,21 @@ export function CreatorsClient({
 					{/* Navigation Tabs */}
 					<div className="flex items-center gap-2 pt-2">
 						<Link
+							href="/leaderboard"
+							className="px-4 py-1.5 rounded-lg bg-amber-400/10 border border-amber-400/30 text-amber-300 hover:bg-amber-400/20 text-xs font-bold transition-all flex items-center gap-1.5 shadow-sm"
+						>
+							<Sparkles className="w-3.5 h-3.5 text-amber-400" />
+							<span>Leaderboard</span>
+						</Link>
+						<span className="px-4 py-1.5 rounded-lg bg-purple-600 text-white text-xs font-bold shadow-md shadow-purple-600/30">
+							Jelajahi Kreator
+						</span>
+						<Link
 							href="/explore"
-							className="px-4 py-1.5 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 text-white/70 hover:text-white text-xs font-semibold transition-all"
+							className="px-4 py-1.5 rounded-lg bg-white/5 border border-white/10 hover:bg-white/10 text-white/70 hover:text-white text-xs font-semibold transition-all"
 						>
 							Presets
 						</Link>
-						<span className="px-4 py-1.5 rounded-xl bg-purple-600 text-white text-xs font-bold shadow-md shadow-purple-600/30">
-							Jelajahi Kreator
-						</span>
 					</div>
 				</div>
 
