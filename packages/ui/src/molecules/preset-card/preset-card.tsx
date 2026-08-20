@@ -447,15 +447,16 @@ export const PresetCard = React.forwardRef<HTMLDivElement, PresetCardProps>(
 					</p>
 
 					{/* Actions Footer Row */}
-					<div className="mt-auto flex items-center justify-between relative z-20">
-						<div className="flex items-center gap-1.5 sm:gap-2">
+					<div className="mt-auto flex items-center justify-between gap-1 pt-1 relative z-20 w-full flex-wrap sm:flex-nowrap">
+						{/* Left: Engagement Pills (Like, Bookmark, Comments) */}
+						<div className="flex items-center gap-1 sm:gap-1.5 flex-wrap min-w-0">
 							<button
 								type="button"
 								onClick={handleLike}
 								aria-label={isLiked ? "Unlike preset" : "Like preset"}
 								aria-pressed={isLiked}
 								className={cn(
-									"inline-flex items-center gap-1.5 h-8 sm:h-8.5 px-2.5 sm:px-3 rounded-lg border text-xs font-bold transition-all active:scale-95 shadow-sm",
+									"inline-flex items-center gap-1 h-7.5 sm:h-8 px-2 sm:px-2.5 rounded-lg border text-[11px] font-bold transition-all active:scale-95 shadow-sm shrink-0",
 									isLiked
 										? "bg-rose-500/25 text-rose-300 border-rose-500/50 shadow-rose-500/10"
 										: "bg-rose-500/[0.08] text-rose-300/90 border-rose-500/25 hover:bg-rose-500/15 hover:border-rose-500/40 hover:text-rose-200",
@@ -463,13 +464,13 @@ export const PresetCard = React.forwardRef<HTMLDivElement, PresetCardProps>(
 							>
 								<Heart
 									className={cn(
-										"h-3.5 w-3.5 sm:h-4 sm:w-4 transition-colors",
+										"h-3.5 w-3.5 transition-colors",
 										isLiked
 											? "fill-rose-500 text-rose-500"
 											: "text-rose-400 fill-rose-400/15",
 									)}
 								/>
-								<span className="text-xs font-bold">{likeCount}</span>
+								<span className="text-[11px] font-bold">{likeCount}</span>
 							</button>
 
 							<button
@@ -480,7 +481,7 @@ export const PresetCard = React.forwardRef<HTMLDivElement, PresetCardProps>(
 								}
 								aria-pressed={isBookmarked}
 								className={cn(
-									"inline-flex items-center gap-1.5 h-8 sm:h-8.5 px-2.5 sm:px-3 rounded-lg border text-xs font-bold transition-all active:scale-95 shadow-sm",
+									"inline-flex items-center gap-1 h-7.5 sm:h-8 px-2 sm:px-2.5 rounded-lg border text-[11px] font-bold transition-all active:scale-95 shadow-sm shrink-0",
 									isBookmarked
 										? "bg-amber-500/25 text-amber-300 border-amber-500/50 shadow-amber-500/10"
 										: "bg-amber-500/[0.08] text-amber-300/90 border-amber-500/25 hover:bg-amber-500/15 hover:border-amber-500/40 hover:text-amber-200",
@@ -488,13 +489,13 @@ export const PresetCard = React.forwardRef<HTMLDivElement, PresetCardProps>(
 							>
 								<Bookmark
 									className={cn(
-										"h-3.5 w-3.5 sm:h-4 sm:w-4 transition-colors",
+										"h-3.5 w-3.5 transition-colors",
 										isBookmarked
 											? "fill-amber-400 text-amber-400"
 											: "text-amber-400 fill-amber-400/15",
 									)}
 								/>
-								<span className="text-xs font-bold">{bookmarkCount}</span>
+								<span className="text-[11px] font-bold">{bookmarkCount}</span>
 							</button>
 
 							<a
@@ -502,21 +503,24 @@ export const PresetCard = React.forwardRef<HTMLDivElement, PresetCardProps>(
 								onClick={(e) => e.stopPropagation()}
 								aria-label="Lihat Komentar"
 								className={cn(
-									"inline-flex items-center gap-1.5 h-8 sm:h-8.5 px-2.5 sm:px-3 rounded-lg border text-xs font-bold transition-all active:scale-95 shadow-sm",
+									"inline-flex items-center gap-1 h-7.5 sm:h-8 px-2 sm:px-2.5 rounded-lg border text-[11px] font-bold transition-all active:scale-95 shadow-sm shrink-0",
 									"bg-blue-500/[0.08] text-blue-300/90 border-blue-500/25 hover:bg-blue-500/15 hover:border-blue-500/40 hover:text-blue-200",
 								)}
 							>
-								<MessageSquare className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-blue-400 fill-blue-400/15" />
-								<span className="text-xs font-bold">{preset.commentCount ?? 0}</span>
+								<MessageSquare className="h-3.5 w-3.5 text-blue-400 fill-blue-400/15" />
+								<span className="text-[11px] font-bold">{preset.commentCount ?? 0}</span>
 							</a>
+						</div>
 
+						{/* Right: Actions (Share + Owner Delete) */}
+						<div className="flex items-center gap-1 shrink-0 ml-auto">
 							<button
 								type="button"
 								onClick={handleShare}
 								aria-label="Share preset"
-								className="inline-flex items-center justify-center h-8 sm:h-8.5 w-8 sm:w-8.5 rounded-lg border border-[var(--color-border-subtle)] bg-[var(--color-bg-surface)] text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:border-[var(--color-border-strong)] hover:bg-[var(--color-bg-elevated)] transition-all active:scale-95 shadow-sm"
+								className="inline-flex items-center justify-center h-7.5 sm:h-8 w-7.5 sm:w-8 rounded-lg border border-[var(--color-border-subtle)] bg-[var(--color-bg-surface)] text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)] hover:border-[var(--color-border-strong)] hover:bg-[var(--color-bg-elevated)] transition-all active:scale-95 shadow-sm"
 							>
-								<Share2 className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+								<Share2 className="h-3.5 w-3.5" />
 							</button>
 
 							{/* Owner Trash Icon Button */}
@@ -531,9 +535,9 @@ export const PresetCard = React.forwardRef<HTMLDivElement, PresetCardProps>(
 									}}
 									aria-label="Delete preset"
 									title="Delete preset"
-									className="inline-flex items-center justify-center h-8 sm:h-8.5 w-8 sm:w-8.5 rounded-lg border border-rose-500/20 bg-rose-500/10 text-rose-400 hover:bg-rose-500/20 hover:border-rose-500/40 transition-all active:scale-95 text-xs font-semibold"
+									className="inline-flex items-center justify-center h-7.5 sm:h-8 w-7.5 sm:w-8 rounded-lg border border-rose-500/30 bg-rose-500/10 text-rose-400 hover:bg-rose-500/20 hover:border-rose-500/50 transition-all active:scale-95 text-xs font-semibold shrink-0"
 								>
-									<Trash2 className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+									<Trash2 className="h-3.5 w-3.5" />
 								</button>
 							)}
 						</div>
