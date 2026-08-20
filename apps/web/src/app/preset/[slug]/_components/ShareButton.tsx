@@ -44,7 +44,7 @@ export function ShareButton({ title, url }: ShareButtonProps) {
 			type="button"
 			onClick={handleShare}
 			aria-label="Share preset"
-			className="inline-flex items-center justify-center min-h-[44px] min-w-[44px] px-3.5 rounded-2xl bg-[var(--color-bg-surface)] text-[var(--color-text-secondary)] border border-[var(--color-border-subtle)] hover:text-[var(--color-text-primary)] hover:border-[var(--color-border-strong)] active:scale-95 transition-all duration-200"
+			className="inline-flex items-center justify-center min-h-[42px] min-w-[42px] px-3.5 rounded-lg bg-[var(--color-bg-surface)] text-[var(--color-text-secondary)] border border-[var(--color-border-subtle)] hover:text-[var(--color-text-primary)] hover:border-[var(--color-border-strong)] active:scale-95 transition-all duration-200"
 		>
 			{copied ? (
 				<Check className="w-5 h-5 text-emerald-400" />

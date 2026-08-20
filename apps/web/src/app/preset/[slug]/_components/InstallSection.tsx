@@ -29,7 +29,6 @@ interface InstallSectionProps {
 
 export function InstallSection({ preset }: InstallSectionProps) {
 	const [copied, setCopied] = useState(false);
-	const [showQrModal, setShowQrModal] = useState(false);
 	const [shared, setShared] = useState(false);
 
 	const linkToCopy =
@@ -52,13 +51,11 @@ export function InstallSection({ preset }: InstallSectionProps) {
 			const finalUrl = data?.download_url || fallbackUrl;
 
 			if (type === "amLink") {
-				// Try mobile deep link if on mobile browser
 				const isMobile =
 					typeof navigator !== "undefined" &&
 					/Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
 
 				if (isMobile && finalUrl.includes("alight")) {
-					// Open deep link / web link
 					window.location.href = finalUrl;
 				} else {
 					window.open(finalUrl, "_blank", "noopener,noreferrer");
@@ -131,16 +128,16 @@ export function InstallSection({ preset }: InstallSectionProps) {
 	};
 
 	return (
-		<section className="p-5 sm:p-6 rounded-3xl bg-[var(--color-bg-surface)] border border-[var(--color-border-subtle)] space-y-5 shadow-lg relative overflow-hidden">
+		<section className="p-5 sm:p-6 rounded-xl bg-[var(--color-bg-surface)] border border-[var(--color-border-subtle)] space-y-5 shadow-lg relative overflow-hidden">
 			<div className="flex items-center justify-between">
 				<div className="flex items-center gap-2.5">
-					<div className="p-2.5 rounded-2xl bg-gradient-to-br from-emerald-500/20 to-teal-500/20 text-emerald-400 border border-emerald-500/30 shadow-inner">
+					<div className="p-2 rounded-lg bg-gradient-to-br from-emerald-500/20 to-teal-500/20 text-emerald-400 border border-emerald-500/30 shadow-inner">
 						<Download className="w-5 h-5" />
 					</div>
 					<div>
 						<h2 className="text-base sm:text-lg font-bold text-[var(--color-text-primary)] flex items-center gap-1.5">
 							<span>Download & Import</span>
-							<span className="inline-flex items-center px-1.5 py-0.5 rounded-md text-[10px] font-extrabold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+							<span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-extrabold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
 								1-TAP
 							</span>
 						</h2>
@@ -150,15 +147,15 @@ export function InstallSection({ preset }: InstallSectionProps) {
 					</div>
 				</div>
 				<div className="flex items-center gap-2">
-					<span className="px-2.5 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+					<span className="px-2.5 py-1 rounded-md text-xs font-bold uppercase tracking-wider bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
 						{preset.fileType?.toUpperCase() || "XML"}
 					</span>
 					{preset.isPaid && (preset.price ?? 0) > 0 ? (
-						<span className="px-2.5 py-1 rounded-full text-xs font-extrabold tracking-wider bg-amber-400 text-amber-950 shadow-md">
+						<span className="px-2.5 py-1 rounded-md text-xs font-extrabold tracking-wider bg-amber-400 text-amber-950 shadow-md">
 							Rp {(preset.price ?? 0).toLocaleString("id-ID")}
 						</span>
 					) : (
-						<span className="px-2.5 py-1 rounded-full text-xs font-extrabold tracking-wider bg-emerald-500/90 text-white shadow-md">
+						<span className="px-2.5 py-1 rounded-md text-xs font-extrabold tracking-wider bg-emerald-500/90 text-white shadow-md">
 							GRATIS
 						</span>
 					)}
@@ -173,9 +170,9 @@ export function InstallSection({ preset }: InstallSectionProps) {
 						target="_blank"
 						rel="noopener noreferrer"
 						onClick={(e) => handleDownload(e, "amLink", preset.amLink || "")}
-						className="inline-flex items-center justify-center gap-2 min-h-[52px] px-6 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-bold text-sm shadow-xl shadow-emerald-500/25 hover:from-emerald-600 hover:to-teal-600 active:scale-[0.98] transition-all group"
+						className="inline-flex items-center justify-center gap-2 min-h-[48px] px-5 rounded-lg bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-bold text-sm shadow-lg shadow-emerald-500/25 hover:from-emerald-600 hover:to-teal-600 active:scale-[0.98] transition-all group"
 					>
-						<Zap className="w-5 h-5 fill-current text-white animate-pulse" />
+						<Zap className="w-4.5 h-4.5 fill-current text-white animate-pulse" />
 						<span>Open in Alight Motion</span>
 						<ExternalLink className="w-4 h-4 opacity-75 group-hover:translate-x-0.5 transition-transform" />
 					</a>
@@ -186,12 +183,12 @@ export function InstallSection({ preset }: InstallSectionProps) {
 						href={preset.fileUrl}
 						download
 						onClick={(e) => handleDownload(e, "fileUrl", preset.fileUrl || "")}
-						className="inline-flex items-center justify-center gap-2 min-h-[52px] px-6 rounded-2xl bg-[var(--color-bg-elevated)] text-[var(--color-text-primary)] font-bold text-sm border border-[var(--color-border-subtle)] hover:border-emerald-500/40 hover:bg-emerald-500/5 active:scale-[0.98] transition-all"
+						className="inline-flex items-center justify-center gap-2 min-h-[48px] px-5 rounded-lg bg-[var(--color-bg-elevated)] text-[var(--color-text-primary)] font-bold text-sm border border-[var(--color-border-subtle)] hover:border-emerald-500/40 hover:bg-emerald-500/5 active:scale-[0.98] transition-all"
 					>
 						{preset.fileType === "qr" ? (
-							<QrCode className="w-5 h-5 text-purple-400" />
+							<QrCode className="w-4.5 h-4.5 text-purple-400" />
 						) : (
-							<FileCode className="w-5 h-5 text-emerald-400" />
+							<FileCode className="w-4.5 h-4.5 text-emerald-400" />
 						)}
 						<span>Download {preset.fileType?.toUpperCase() || "File"}</span>
 					</a>
@@ -212,23 +209,23 @@ export function InstallSection({ preset }: InstallSectionProps) {
 							<span>{shared ? "Shared!" : "Share"}</span>
 						</button>
 					</div>
-					<div className="flex items-center gap-2 p-2 rounded-2xl bg-[var(--color-bg-base)] border border-[var(--color-border-subtle)]">
+					<div className="flex items-center gap-2 p-2 rounded-lg bg-[var(--color-bg-base)] border border-[var(--color-border-subtle)]">
 						<code className="flex-1 text-xs text-[var(--color-text-secondary)] truncate px-2 font-mono">
 							{linkToCopy}
 						</code>
 						<button
 							type="button"
 							onClick={handleCopy}
-							className="inline-flex items-center gap-1.5 min-h-[38px] px-4 rounded-xl bg-[var(--color-bg-elevated)] text-xs font-bold text-[var(--color-text-primary)] hover:bg-[var(--color-border-subtle)] active:scale-95 transition-all shrink-0"
+							className="inline-flex items-center gap-1.5 min-h-[36px] px-3.5 rounded-md bg-[var(--color-bg-elevated)] text-xs font-bold text-[var(--color-text-primary)] hover:bg-[var(--color-border-subtle)] active:scale-95 transition-all shrink-0"
 						>
 							{copied ? (
 								<>
-									<Check className="w-4 h-4 text-emerald-400" />
+									<Check className="w-3.5 h-3.5 text-emerald-400" />
 									<span className="text-emerald-400">Copied!</span>
 								</>
 							) : (
 								<>
-									<Copy className="w-4 h-4" />
+									<Copy className="w-3.5 h-3.5" />
 									<span>Copy</span>
 								</>
 							)}
@@ -238,7 +235,7 @@ export function InstallSection({ preset }: InstallSectionProps) {
 			)}
 
 			{/* Mobile Quick Guide */}
-			<div className="p-4 rounded-2xl bg-[var(--color-bg-base)]/60 border border-[var(--color-border-subtle)]/60 space-y-2">
+			<div className="p-4 rounded-lg bg-[var(--color-bg-base)]/60 border border-[var(--color-border-subtle)]/60 space-y-2">
 				<div className="flex items-center gap-2 text-xs font-bold text-[var(--color-text-primary)]">
 					<Smartphone className="w-4 h-4 text-indigo-400" />
 					<span>Cara Pasang Preset di Alight Motion:</span>

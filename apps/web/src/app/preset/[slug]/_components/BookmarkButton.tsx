@@ -60,7 +60,7 @@ export function BookmarkButton({
 			onClick={handleToggle}
 			disabled={isLoading}
 			aria-label={isBookmarked ? "Remove bookmark" : "Bookmark preset"}
-			className={`inline-flex items-center justify-center gap-1.5 min-h-[44px] px-3.5 rounded-2xl border transition-all duration-200 active:scale-95 shadow-sm font-body ${
+			className={`inline-flex items-center justify-center gap-1.5 min-h-[42px] px-3.5 rounded-lg border transition-all duration-200 active:scale-95 shadow-sm font-body ${
 				isBookmarked
 					? "bg-amber-500/15 text-amber-400 border-amber-500/30"
 					: "bg-[var(--color-bg-surface)] text-[var(--color-text-secondary)] border-[var(--color-border-subtle)] hover:text-[var(--color-text-primary)] hover:border-[var(--color-border-strong)]"

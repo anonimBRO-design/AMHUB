@@ -112,7 +112,7 @@ function renderFormattedDescription(text: string) {
 		if (isBullet) {
 			return (
 				<div key={lineIdx} className="flex items-start gap-2 pl-1 py-0.5">
-					<span className="w-1.5 h-1.5 rounded-full bg-[var(--color-interactive-primary)] mt-2 shrink-0" />
+					<span className="w-1.5 h-1.5 rounded-sm bg-[var(--color-interactive-primary)] mt-2 shrink-0" />
 					<div className="flex-1 leading-relaxed">{renderedParts}</div>
 				</div>
 			);
@@ -184,11 +184,11 @@ export function DescriptionSection({
 		: null;
 
 	return (
-		<section className="p-5 sm:p-6 rounded-3xl bg-[var(--color-bg-surface)] border border-[var(--color-border-subtle)] space-y-5 shadow-lg relative">
+		<section className="p-5 sm:p-6 rounded-xl bg-[var(--color-bg-surface)] border border-[var(--color-border-subtle)] space-y-5 shadow-lg relative">
 			{/* Header with Title & Edit Action */}
 			<div className="flex items-center justify-between gap-3">
 				<div className="flex items-center gap-2.5">
-					<div className="p-2.5 rounded-2xl bg-purple-500/10 text-purple-400 border border-purple-500/20">
+					<div className="p-2 rounded-lg bg-purple-500/10 text-purple-400 border border-purple-500/20">
 						<AlignLeft className="w-5 h-5" />
 					</div>
 					<div>
@@ -203,7 +203,7 @@ export function DescriptionSection({
 
 				<div className="flex items-center gap-2">
 					{saveSuccess && (
-						<span className="inline-flex items-center gap-1 text-xs font-bold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-1 rounded-xl animate-fade-in">
+						<span className="inline-flex items-center gap-1 text-xs font-bold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-1 rounded-md animate-fade-in">
 							<Check className="w-3.5 h-3.5" />
 							<span>Tersimpan!</span>
 						</span>
@@ -216,7 +216,7 @@ export function DescriptionSection({
 								setEditValue(description);
 								setIsEditing(true);
 							}}
-							className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-[var(--color-bg-elevated)] hover:bg-[var(--color-border-subtle)] text-[var(--color-text-primary)] hover:text-white border border-[var(--color-border-subtle)] text-xs font-bold transition-all active:scale-95 shadow-sm"
+							className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-[var(--color-bg-elevated)] hover:bg-[var(--color-border-subtle)] text-[var(--color-text-primary)] hover:text-white border border-[var(--color-border-subtle)] text-xs font-bold transition-all active:scale-95 shadow-sm"
 						>
 							<Edit3 className="w-3.5 h-3.5 text-purple-400" />
 							<span>Edit Deskripsi</span>
@@ -226,7 +226,7 @@ export function DescriptionSection({
 			</div>
 
 			{/* Quick Specification Metadata Badges */}
-			<div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 p-3 rounded-2xl bg-[var(--color-bg-base)]/70 border border-[var(--color-border-subtle)]/60 text-xs">
+			<div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 p-3 rounded-lg bg-[var(--color-bg-base)]/70 border border-[var(--color-border-subtle)]/60 text-xs">
 				<div className="flex items-center gap-2 px-2 py-1">
 					<Ratio className="w-4 h-4 text-purple-400 shrink-0" />
 					<div>
@@ -280,7 +280,7 @@ export function DescriptionSection({
 
 			{/* Main Description Body / Edit Mode */}
 			{isEditing ? (
-				<div className="space-y-3 p-4 rounded-2xl bg-[var(--color-bg-base)] border border-purple-500/30 shadow-inner">
+				<div className="space-y-3 p-4 rounded-lg bg-[var(--color-bg-base)] border border-purple-500/30 shadow-inner">
 					<div className="flex items-center justify-between text-xs text-[var(--color-text-tertiary)]">
 						<span className="font-semibold text-[var(--color-text-primary)]">
 							Ubah Deskripsi Preset
@@ -296,7 +296,7 @@ export function DescriptionSection({
 						placeholder="Tulis deskripsi preset, credit lagu/sound, font yang dipakai, atau tips impor ke Alight Motion... (Gunakan **tebal**, - bullet, atau @username)"
 						rows={6}
 						maxLength={2000}
-						className="w-full p-3.5 rounded-xl bg-[var(--color-bg-surface)] border border-[var(--color-border-subtle)] text-xs sm:text-sm text-[var(--color-text-primary)] placeholder-[var(--color-text-tertiary)] focus:outline-none focus:border-[var(--color-interactive-primary)] resize-y leading-relaxed font-sans"
+						className="w-full p-3.5 rounded-lg bg-[var(--color-bg-surface)] border border-[var(--color-border-subtle)] text-xs sm:text-sm text-[var(--color-text-primary)] placeholder-[var(--color-text-tertiary)] focus:outline-none focus:border-[var(--color-interactive-primary)] resize-y leading-relaxed font-sans"
 					/>
 
 					{error && (
@@ -312,7 +312,7 @@ export function DescriptionSection({
 								setError(null);
 							}}
 							disabled={isSaving}
-							className="px-4 py-2 rounded-xl bg-[var(--color-bg-elevated)] text-xs font-semibold text-[var(--color-text-secondary)] hover:text-white transition-colors"
+							className="px-4 py-2 rounded-lg bg-[var(--color-bg-elevated)] text-xs font-semibold text-[var(--color-text-secondary)] hover:text-white transition-colors"
 						>
 							Batal
 						</button>
@@ -320,7 +320,7 @@ export function DescriptionSection({
 							type="button"
 							onClick={handleSaveDescription}
 							disabled={isSaving}
-							className="px-5 py-2 rounded-xl bg-[var(--color-interactive-primary)] hover:bg-[var(--color-interactive-primary-hover)] text-white text-xs font-bold transition-all active:scale-95 shadow-md shadow-[var(--color-interactive-primary)]/25 flex items-center gap-1.5"
+							className="px-5 py-2 rounded-lg bg-[var(--color-interactive-primary)] hover:bg-[var(--color-interactive-primary-hover)] text-white text-xs font-bold transition-all active:scale-95 shadow-md shadow-[var(--color-interactive-primary)]/25 flex items-center gap-1.5"
 						>
 							{isSaving ? (
 								<>
@@ -348,18 +348,16 @@ export function DescriptionSection({
 								{renderFormattedDescription(description)}
 							</div>
 						) : (
-							<div className="p-4 rounded-2xl bg-[var(--color-bg-base)] text-center text-xs text-[var(--color-text-tertiary)] italic">
+							<div className="p-4 rounded-lg bg-[var(--color-bg-base)] text-center text-xs text-[var(--color-text-tertiary)] italic">
 								Creator belum menambahkan deskripsi untuk preset ini.
 							</div>
 						)}
 
-						{/* Subtle gradient overlay when collapsed */}
 						{!isExpanded && isLong && (
 							<div className="absolute bottom-0 inset-x-0 h-16 bg-gradient-to-t from-[var(--color-bg-surface)] to-transparent pointer-events-none" />
 						)}
 					</div>
 
-					{/* Expand / Collapse Toggle Button */}
 					{isLong && (
 						<div className="pt-1">
 							<button

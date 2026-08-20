@@ -93,13 +93,13 @@ export function ReportPresetModal({
 			onClick={() => !isLoading && onClose()}
 		>
 			<div
-				className="relative w-full max-w-md rounded-3xl bg-[var(--color-bg-surface)] border border-[var(--color-border-subtle)] p-6 shadow-2xl space-y-5"
+				className="relative w-full max-w-md rounded-xl bg-[var(--color-bg-surface)] border border-[var(--color-border-subtle)] p-6 shadow-2xl space-y-5"
 				onClick={(e) => e.stopPropagation()}
 			>
 				{/* Modal Header */}
 				<div className="flex items-center justify-between">
 					<div className="flex items-center gap-2.5">
-						<div className="p-2 rounded-xl bg-rose-500/10 text-rose-400 border border-rose-500/20">
+						<div className="p-2 rounded-lg bg-rose-500/10 text-rose-400 border border-rose-500/20">
 							<Flag className="w-5 h-5" />
 						</div>
 						<div>
@@ -116,7 +116,7 @@ export function ReportPresetModal({
 						type="button"
 						onClick={onClose}
 						disabled={isLoading}
-						className="p-2 rounded-xl text-[var(--color-text-tertiary)] hover:text-white hover:bg-[var(--color-bg-elevated)] transition-colors"
+						className="p-1.5 rounded-lg text-[var(--color-text-tertiary)] hover:text-white hover:bg-[var(--color-bg-elevated)] transition-colors"
 					>
 						<X className="w-5 h-5" />
 					</button>
@@ -124,7 +124,7 @@ export function ReportPresetModal({
 
 				{isSuccess ? (
 					<div className="py-6 text-center space-y-3">
-						<div className="w-12 h-12 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 flex items-center justify-center mx-auto">
+						<div className="w-12 h-12 rounded-xl bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 flex items-center justify-center mx-auto">
 							<CheckCircle2 className="w-6 h-6" />
 						</div>
 						<h4 className="text-base font-bold text-[var(--color-text-primary)]">
@@ -144,7 +144,7 @@ export function ReportPresetModal({
 								{REPORT_REASONS.map((r) => (
 									<label
 										key={r.id}
-										className={`flex items-start gap-3 p-2.5 rounded-2xl border cursor-pointer transition-all ${
+										className={`flex items-start gap-3 p-2.5 rounded-lg border cursor-pointer transition-all ${
 											reason === r.id
 												? "bg-rose-500/10 border-rose-500/40 text-[var(--color-text-primary)]"
 												: "bg-[var(--color-bg-base)] border-[var(--color-border-subtle)] text-[var(--color-text-secondary)] hover:border-[var(--color-border-strong)]"
@@ -181,12 +181,12 @@ export function ReportPresetModal({
 								placeholder="Sebutkan link asli atau keterangan pendukung..."
 								rows={3}
 								maxLength={500}
-								className="w-full px-3.5 py-2.5 rounded-2xl bg-[var(--color-bg-base)] border border-[var(--color-border-subtle)] text-xs text-[var(--color-text-primary)] placeholder-[var(--color-text-tertiary)] focus:outline-none focus:border-rose-500/50 resize-none font-sans"
+								className="w-full px-3.5 py-2.5 rounded-lg bg-[var(--color-bg-base)] border border-[var(--color-border-subtle)] text-xs text-[var(--color-text-primary)] placeholder-[var(--color-text-tertiary)] focus:outline-none focus:border-rose-500/50 resize-none font-sans"
 							/>
 						</div>
 
 						{error && (
-							<div className="flex items-center gap-2 p-3 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-400 text-xs">
+							<div className="flex items-center gap-2 p-3 rounded-lg bg-rose-500/10 border border-rose-500/30 text-rose-400 text-xs">
 								<AlertTriangle className="w-4 h-4 shrink-0" />
 								<span>{error}</span>
 							</div>
@@ -197,14 +197,14 @@ export function ReportPresetModal({
 								type="button"
 								onClick={onClose}
 								disabled={isLoading}
-								className="flex-1 min-h-[44px] rounded-2xl bg-[var(--color-bg-elevated)] border border-[var(--color-border-subtle)] text-xs font-bold text-[var(--color-text-primary)] hover:bg-[var(--color-bg-base)] transition-colors"
+								className="flex-1 min-h-[42px] rounded-lg bg-[var(--color-bg-elevated)] border border-[var(--color-border-subtle)] text-xs font-bold text-[var(--color-text-primary)] hover:bg-[var(--color-bg-base)] transition-colors"
 							>
 								Batal
 							</button>
 							<button
 								type="submit"
 								disabled={isLoading}
-								className="flex-1 min-h-[44px] rounded-2xl bg-rose-500 hover:bg-rose-600 text-white text-xs font-bold transition-all active:scale-95 shadow-md shadow-rose-500/25 flex items-center justify-center gap-2"
+								className="flex-1 min-h-[42px] rounded-lg bg-rose-500 hover:bg-rose-600 text-white text-xs font-bold transition-all active:scale-95 shadow-md shadow-rose-500/25 flex items-center justify-center gap-2"
 							>
 								{isLoading ? "Mengirim..." : "Kirim Laporan"}
 							</button>

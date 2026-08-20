@@ -84,7 +84,7 @@ export function CreatorCard({ creator }: CreatorCardProps) {
 			: null;
 
 	return (
-		<div className="p-5 rounded-3xl bg-[var(--color-bg-surface)] border border-[var(--color-border-subtle)] space-y-4 shadow-lg">
+		<div className="p-5 rounded-xl bg-[var(--color-bg-surface)] border border-[var(--color-border-subtle)] space-y-4 shadow-lg">
 			<div className="flex items-center justify-between gap-4">
 				<Link
 					href={`/u/${creator.username}`}
@@ -95,10 +95,10 @@ export function CreatorCard({ creator }: CreatorCardProps) {
 							<img
 								src={creator.avatarUrl}
 								alt={creator.displayName}
-								className="w-12 h-12 sm:w-14 sm:h-14 rounded-full object-cover border-2 border-[var(--color-interactive-primary)]/40 group-hover:scale-105 transition-transform"
+								className="w-12 h-12 sm:w-13 sm:h-13 rounded-xl object-cover border-2 border-[var(--color-interactive-primary)]/40 group-hover:scale-105 transition-transform"
 							/>
 						) : (
-							<div className="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-purple-600/30 border-2 border-purple-500/40 text-white font-bold text-base flex items-center justify-center">
+							<div className="w-12 h-12 sm:w-13 sm:h-13 rounded-xl bg-purple-600/30 border-2 border-purple-500/40 text-white font-bold text-base flex items-center justify-center">
 								{creator.displayName.slice(0, 2).toUpperCase()}
 							</div>
 						)}
@@ -122,7 +122,7 @@ export function CreatorCard({ creator }: CreatorCardProps) {
 				{isOwnProfile ? (
 					<Link
 						href="/settings/profile"
-						className="inline-flex items-center justify-center gap-1.5 min-h-[44px] px-4 rounded-2xl text-xs font-bold bg-[var(--color-bg-elevated)] text-[var(--color-text-secondary)] border border-[var(--color-border-subtle)] hover:text-[var(--color-text-primary)] hover:border-[var(--color-border-strong)] transition-all active:scale-95 shrink-0"
+						className="inline-flex items-center justify-center gap-1.5 min-h-[40px] px-3.5 rounded-lg text-xs font-bold bg-[var(--color-bg-elevated)] text-[var(--color-text-secondary)] border border-[var(--color-border-subtle)] hover:text-[var(--color-text-primary)] hover:border-[var(--color-border-strong)] transition-all active:scale-95 shrink-0"
 					>
 						<span>Edit Profile</span>
 					</Link>
@@ -131,7 +131,7 @@ export function CreatorCard({ creator }: CreatorCardProps) {
 						type="button"
 						onClick={handleFollowToggle}
 						disabled={isLoading}
-						className={`inline-flex items-center justify-center gap-1.5 min-h-[44px] px-4 rounded-2xl text-xs font-bold transition-all active:scale-95 shrink-0 ${
+						className={`inline-flex items-center justify-center gap-1.5 min-h-[40px] px-3.5 rounded-lg text-xs font-bold transition-all active:scale-95 shrink-0 ${
 							isFollowing
 								? "bg-[var(--color-bg-elevated)] text-[var(--color-text-secondary)] border border-[var(--color-border-subtle)]"
 								: "bg-[var(--color-interactive-primary)] text-white hover:bg-[var(--color-interactive-primary-hover)] shadow-md shadow-[var(--color-interactive-primary)]/20"
@@ -176,7 +176,7 @@ export function CreatorCard({ creator }: CreatorCardProps) {
 						href={donationUrl}
 						target="_blank"
 						rel="noopener noreferrer"
-						className="flex items-center justify-center gap-2 w-full py-2.5 px-4 rounded-2xl bg-amber-400/10 hover:bg-amber-400/20 text-amber-400 border border-amber-400/30 text-xs font-bold transition-all active:scale-95"
+						className="flex items-center justify-center gap-2 w-full py-2.5 px-4 rounded-lg bg-amber-400/10 hover:bg-amber-400/20 text-amber-400 border border-amber-400/30 text-xs font-bold transition-all active:scale-95"
 					>
 						<Coffee className="w-4 h-4 text-amber-400" />
 						<span>Dukung Creator (Saweria / Trakteer)</span>

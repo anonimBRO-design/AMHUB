@@ -126,7 +126,7 @@ export function DesktopDock({
 				initial={{ y: 40, opacity: 0 }}
 				animate={{ y: 0, opacity: 1 }}
 				transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-				className="relative flex items-center justify-between sm:justify-center w-full sm:w-auto gap-1 sm:gap-2 p-2 sm:p-2.5 rounded-2xl bg-[var(--color-bg-surface)]/95 backdrop-blur-xl border border-[var(--color-border-strong)] shadow-[0_12px_40px_rgba(0,0,0,0.65)] overflow-x-auto no-scrollbar"
+				className="relative flex items-center justify-between sm:justify-center w-full sm:w-auto gap-1 sm:gap-2 p-2 sm:p-2.5 rounded-xl bg-[var(--color-bg-surface)]/95 backdrop-blur-xl border border-[var(--color-border-strong)] shadow-[0_12px_40px_rgba(0,0,0,0.65)] overflow-x-auto no-scrollbar"
 			>
 				{dockItems.map((item) => {
 					const Icon = item.icon;
@@ -152,7 +152,7 @@ export function DesktopDock({
 										transition={{ duration: 0.15, ease: [0.16, 1, 0.3, 1] }}
 										className="absolute -top-12 left-1/2 -translate-x-1/2 z-50 pointer-events-none hidden sm:block"
 									>
-										<div className="px-3 py-1.5 rounded-xl bg-[var(--color-bg-surface)] border border-[var(--color-border-default)] shadow-xl flex items-center gap-1.5 whitespace-nowrap">
+										<div className="px-3 py-1.5 rounded-lg bg-[var(--color-bg-surface)] border border-[var(--color-border-default)] shadow-xl flex items-center gap-1.5 whitespace-nowrap">
 											<span className="text-xs font-bold text-[var(--color-text-primary)] font-body tracking-wide">
 												{item.label}
 											</span>
@@ -166,7 +166,7 @@ export function DesktopDock({
 							<Link
 								href={item.href}
 								aria-label={item.label}
-								className="relative flex flex-col items-center justify-center w-full min-w-[38px] sm:min-w-[48px] h-12 sm:h-13 p-0.5 sm:p-2 rounded-xl transition-all duration-200"
+								className="relative flex flex-col items-center justify-center w-full min-w-[38px] sm:min-w-[48px] h-12 sm:h-13 p-0.5 sm:p-2 rounded-lg transition-all duration-200"
 							>
 								<motion.div
 									animate={{
@@ -174,7 +174,7 @@ export function DesktopDock({
 										y: isHovered ? -2 : 0,
 									}}
 									transition={{ type: "spring", stiffness: 400, damping: 25 }}
-									className={`relative flex items-center justify-center rounded-xl transition-colors duration-200 overflow-hidden ${
+									className={`relative flex items-center justify-center rounded-lg transition-colors duration-200 overflow-hidden ${
 										item.isSpecial
 											? "w-11 h-11 sm:w-11 sm:h-11 bg-[var(--color-interactive-primary)] text-white shadow-[0_4px_16px_rgba(0,0,0,0.5)] border border-[var(--color-border-accent)] scale-105"
 											: isActive
@@ -186,7 +186,7 @@ export function DesktopDock({
 										<img
 											src={item.avatarUrl}
 											alt={item.label}
-											className="w-full h-full object-cover rounded-xl"
+											className="w-full h-full object-cover rounded-lg"
 										/>
 									) : (
 										<Icon

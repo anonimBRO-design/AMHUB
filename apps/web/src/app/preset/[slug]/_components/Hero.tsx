@@ -230,7 +230,7 @@ export function Hero({ preset, currentUserId }: HeroProps) {
 					onMouseMove={triggerControlsVisibility}
 					onTouchStart={triggerControlsVisibility}
 					onClick={togglePlayPause}
-					className="relative w-full max-w-[400px] aspect-[9/16] overflow-hidden rounded-3xl bg-[var(--color-bg-base)] border border-[var(--color-border-subtle)] shadow-2xl group shrink-0 cursor-pointer select-none"
+					className="relative w-full max-w-[400px] aspect-[9/16] overflow-hidden rounded-xl bg-[var(--color-bg-base)] border border-[var(--color-border-subtle)] shadow-2xl group shrink-0 cursor-pointer select-none"
 				>
 					{preset.previewVideoUrl ? (
 						<video
@@ -264,29 +264,29 @@ export function Hero({ preset, currentUserId }: HeroProps) {
 					{/* Center Play/Pause Indicator (Shown when paused or hovered) */}
 					{!isPlayingVideo && preset.previewVideoUrl && (
 						<div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-							<div className="p-5 rounded-full bg-[var(--color-interactive-primary)]/90 text-white shadow-2xl backdrop-blur-md scale-100 group-hover:scale-110 transition-transform">
-								<Play className="w-10 h-10 fill-current ml-1" />
+							<div className="p-4 rounded-xl bg-[var(--color-interactive-primary)]/90 text-white shadow-2xl backdrop-blur-md scale-100 group-hover:scale-110 transition-transform">
+								<Play className="w-9 h-9 fill-current ml-0.5" />
 							</div>
 						</div>
 					)}
 
 					{/* Top Badges */}
 					<div className="absolute top-3 sm:top-4 left-3 sm:left-4 right-3 sm:right-4 flex flex-wrap items-center gap-1.5 sm:gap-2 z-10 pointer-events-none">
-						<span className="px-2.5 sm:px-3 py-1 rounded-full text-[10px] sm:text-xs font-bold uppercase tracking-wider bg-black/70 backdrop-blur-md text-white border border-white/10 shadow-md">
+						<span className="px-2.5 py-1 rounded-md text-[10px] sm:text-xs font-bold uppercase tracking-wider bg-black/70 backdrop-blur-md text-white border border-white/10 shadow-md">
 							{preset.fileType || "XML"}
 						</span>
-						<span className="px-2.5 sm:px-3 py-1 rounded-full text-[10px] sm:text-xs font-semibold tracking-wider bg-[var(--color-interactive-primary)] text-white shadow-md">
+						<span className="px-2.5 py-1 rounded-md text-[10px] sm:text-xs font-semibold tracking-wider bg-[var(--color-interactive-primary)] text-white shadow-md">
 							{preset.category}
 						</span>
-						<span className="px-2.5 sm:px-3 py-1 rounded-full text-[10px] sm:text-xs font-semibold capitalize bg-white/10 backdrop-blur-md text-white border border-white/10">
+						<span className="px-2.5 py-1 rounded-md text-[10px] sm:text-xs font-semibold capitalize bg-white/10 backdrop-blur-md text-white border border-white/10">
 							{preset.difficulty}
 						</span>
 						{preset.isPaid && (preset.price ?? 0) > 0 ? (
-							<span className="px-2.5 sm:px-3 py-1 rounded-full text-[10px] sm:text-xs font-extrabold tracking-wider bg-amber-400 text-amber-950 shadow-md">
+							<span className="px-2.5 py-1 rounded-md text-[10px] sm:text-xs font-extrabold tracking-wider bg-amber-400 text-amber-950 shadow-md">
 								Rp {(preset.price ?? 0).toLocaleString("id-ID")}
 							</span>
 						) : (
-							<span className="px-2.5 sm:px-3 py-1 rounded-full text-[10px] sm:text-xs font-extrabold tracking-wider bg-emerald-500/90 text-white shadow-md">
+							<span className="px-2.5 py-1 rounded-md text-[10px] sm:text-xs font-extrabold tracking-wider bg-emerald-500/90 text-white shadow-md">
 								GRATIS
 							</span>
 						)}
@@ -394,7 +394,7 @@ export function Hero({ preset, currentUserId }: HeroProps) {
 							type="button"
 							onClick={handleLikeToggle}
 							aria-label={isLiked ? "Unlike preset" : "Like preset"}
-							className={`inline-flex items-center gap-2 min-h-[44px] px-4 rounded-2xl border transition-all active:scale-95 shadow-sm font-body ${
+							className={`inline-flex items-center gap-2 min-h-[42px] px-3.5 rounded-lg border transition-all active:scale-95 shadow-sm font-body ${
 								isLiked
 									? "bg-rose-500/15 text-rose-400 border-rose-500/30"
 									: "bg-[var(--color-bg-surface)] text-[var(--color-text-primary)] border-[var(--color-border-subtle)] hover:bg-[var(--color-bg-elevated)] hover:border-[var(--color-border-strong)]"
@@ -431,7 +431,7 @@ export function Hero({ preset, currentUserId }: HeroProps) {
 								}
 							}}
 							aria-label="Lihat Komentar"
-							className="inline-flex items-center gap-2 min-h-[44px] px-4 rounded-2xl border transition-all active:scale-95 shadow-sm font-body bg-blue-500/10 text-blue-400 border-blue-500/25 hover:bg-blue-500/20 hover:border-blue-500/40"
+							className="inline-flex items-center gap-2 min-h-[42px] px-3.5 rounded-lg border transition-all active:scale-95 shadow-sm font-body bg-blue-500/10 text-blue-400 border-blue-500/25 hover:bg-blue-500/20 hover:border-blue-500/40"
 						>
 							<MessageSquare className="w-4 h-4 fill-blue-400/20 text-blue-400" />
 							<span className="text-xs font-bold">{preset.commentCount ?? 0}</span>
@@ -445,7 +445,7 @@ export function Hero({ preset, currentUserId }: HeroProps) {
 							onClick={() => setShowReportModal(true)}
 							aria-label="Laporkan Preset"
 							title="Laporkan Preset"
-							className="inline-flex items-center justify-center min-h-[44px] min-w-[44px] px-3 rounded-2xl border transition-all active:scale-95 shadow-sm bg-[var(--color-bg-surface)] text-[var(--color-text-tertiary)] border-[var(--color-border-subtle)] hover:text-rose-400 hover:border-rose-500/30 hover:bg-rose-500/10"
+							className="inline-flex items-center justify-center min-h-[42px] min-w-[42px] px-3 rounded-lg border transition-all active:scale-95 shadow-sm bg-[var(--color-bg-surface)] text-[var(--color-text-tertiary)] border-[var(--color-border-subtle)] hover:text-rose-400 hover:border-rose-500/30 hover:bg-rose-500/10"
 						>
 							<Flag className="w-4 h-4" />
 						</button>
@@ -457,7 +457,7 @@ export function Hero({ preset, currentUserId }: HeroProps) {
 						<button
 							type="button"
 							onClick={() => setShowDeleteDialog(true)}
-							className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-rose-500/10 text-rose-400 border border-rose-500/20 hover:bg-rose-500/20 transition-all text-xs font-semibold"
+							className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-rose-500/10 text-rose-400 border border-rose-500/20 hover:bg-rose-500/20 transition-all text-xs font-semibold"
 						>
 							<Trash2 className="w-3.5 h-3.5" />
 							<span>Delete Preset</span>
@@ -511,7 +511,7 @@ export function Hero({ preset, currentUserId }: HeroProps) {
 					onClick={() => !isDeleting && setShowDeleteDialog(false)}
 				>
 					<div
-						className="mx-4 w-full max-w-sm rounded-3xl bg-[var(--color-bg-surface)] border border-[var(--color-border-subtle)] p-6 shadow-2xl space-y-4"
+						className="mx-4 w-full max-w-sm rounded-xl bg-[var(--color-bg-surface)] border border-[var(--color-border-subtle)] p-6 shadow-2xl space-y-4"
 						onClick={(e) => e.stopPropagation()}
 					>
 						<div className="space-y-2">
@@ -528,7 +528,7 @@ export function Hero({ preset, currentUserId }: HeroProps) {
 								type="button"
 								onClick={() => setShowDeleteDialog(false)}
 								disabled={isDeleting}
-								className="flex-1 min-h-[44px] rounded-2xl bg-[var(--color-bg-elevated)] border border-[var(--color-border-subtle)] text-sm font-semibold text-[var(--color-text-primary)] hover:bg-[var(--color-bg-base)] transition-colors disabled:opacity-50"
+								className="flex-1 min-h-[42px] rounded-lg bg-[var(--color-bg-elevated)] border border-[var(--color-border-subtle)] text-sm font-semibold text-[var(--color-text-primary)] hover:bg-[var(--color-bg-base)] transition-colors disabled:opacity-50"
 							>
 								Cancel
 							</button>
@@ -536,7 +536,7 @@ export function Hero({ preset, currentUserId }: HeroProps) {
 								type="button"
 								onClick={handleDeletePreset}
 								disabled={isDeleting}
-								className="flex-1 min-h-[44px] rounded-2xl bg-rose-500 text-white text-sm font-bold hover:bg-rose-600 active:scale-95 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+								className="flex-1 min-h-[42px] rounded-lg bg-rose-500 text-white text-sm font-bold hover:bg-rose-600 active:scale-95 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
 							>
 								{isDeleting ? (
 									<>
