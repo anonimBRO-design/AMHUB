@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { CommentSection } from "./CommentSection";
 import { CreatorCard } from "./CreatorCard";
+import { DescriptionSection } from "./DescriptionSection";
 import { Hero } from "./Hero";
 import { InstallSection } from "./InstallSection";
 import { RelatedPresets } from "./RelatedPresets";
@@ -86,6 +87,10 @@ export function PresetDetailClient({
 			<div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
 				<div className="lg:col-span-2 space-y-6">
 					<InstallSection preset={preset} />
+					<DescriptionSection
+						preset={preset}
+						currentUserId={currentUserId}
+					/>
 					<TagList preset={preset} />
 					<CommentSection
 						presetId={preset.id}
