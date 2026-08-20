@@ -3,7 +3,7 @@ import {
 	type LeaderboardPeriod,
 	getLeaderboardData,
 } from "@/dal/leaderboard.dal";
-import { apiErrorResponse, apiResponse } from "@/lib/api/response";
+import { apiErrorResponse, apiResponse } from "@/lib/api/responses";
 import { getCurrentProfile } from "@/lib/supabase/auth";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import type { NextRequest } from "next/server";
