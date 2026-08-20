@@ -386,11 +386,6 @@ export function Hero({ preset, currentUserId }: HeroProps) {
 						<h1 className="text-2xl sm:text-4xl font-extrabold tracking-tight text-[var(--color-text-primary)] leading-tight">
 							{preset.title}
 						</h1>
-						{preset.description && (
-							<p className="text-sm sm:text-base text-[var(--color-text-secondary)] leading-relaxed max-w-3xl">
-								{preset.description}
-							</p>
-						)}
 					</div>
 
 					{/* Primary Preset Actions (Like, Bookmark, Share) */}
