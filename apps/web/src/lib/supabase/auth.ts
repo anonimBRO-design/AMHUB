@@ -1,9 +1,14 @@
 import type { Database, User as Profile } from "@presethub/types";
-import type { User as SupabaseUser } from "@supabase/supabase-js";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { cache } from "react";
 import { createSupabaseServerClient } from "./server";
+
+export type SupabaseUser = NonNullable<
+	Awaited<
+		ReturnType<Awaited<ReturnType<typeof createSupabaseServerClient>>["auth"]["getUser"]>
+	>["data"]["user"]
+>;
 
 type ProfileBootstrapInput = {
 	username?: string;

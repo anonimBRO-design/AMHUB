@@ -36,7 +36,7 @@
 - **[MISS-1] ✅ FIXED (2026-08-19). Full download flow with secure signed URLs implemented.
 - **[MISS-2] ✅ FIXED (2026-08-19). Notifications triggered on like, comment, follow, download, and bookmark events.
 - **[MISS-3] ✅ FIXED (2026-08-19). Implemented `GET /api/search` with tags, category, sort options.
-- **[MISS-4] No tag suggestions endpoint** (`GET /api/tags`) — blocks CC2 Tag Input suggestions (ADR-037).
+- **[MISS-4] ✅ FIXED (2026-08-20). Tag suggestions endpoint `GET /api/tags` active with search query & limit.
 
 ### Performance
 
@@ -94,8 +94,7 @@
 
 ### Missing feature
 
-- **[MISS-9] Preview video upload** — only `preview_video_url` (external URL) supported; no video bucket/upload. ADR-012: previews are silent-only by policy (not enforced at upload).
-- **[MISS-10] Email confirmation flow** exists (`status=check_email`) but register → confirm → login UX is basic; no resend/forgot-password.
+- **[MISS-10] ✅ FIXED (2026-08-20). Forgot password & reset password flow implemented at `/auth/forgot-password` and `/auth/reset-password`.
 - **[MISS-11] Search page/route** — `/explore?q=` doubles as search (ADR-039 OPEN: CC7 vs Explore merge unresolved).
 - **[MISS-12] Realtime features** — channel definitions exist (`realtime.ts`), unused. Notifications/presence/analytics could use them.
 

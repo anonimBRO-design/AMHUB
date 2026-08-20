@@ -1,7 +1,7 @@
 "use client";
 
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
-import type { User } from "@supabase/supabase-js";
+import type { SupabaseUser as User } from "@/lib/supabase/auth";
 import { AnimatePresence, motion } from "framer-motion";
 import {
 	CheckCircle2,

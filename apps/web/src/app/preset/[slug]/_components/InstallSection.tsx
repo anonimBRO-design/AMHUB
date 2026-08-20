@@ -7,7 +7,9 @@ import {
 	ExternalLink,
 	FileCode,
 	QrCode,
+	Share2,
 	Smartphone,
+	Zap,
 } from "lucide-react";
 import posthog from "posthog-js";
 import { useState } from "react";
@@ -27,7 +29,8 @@ interface InstallSectionProps {
 
 export function InstallSection({ preset }: InstallSectionProps) {
 	const [copied, setCopied] = useState(false);
-	const [downloadTracked, setDownloadTracked] = useState(false);
+	const [showQrModal, setShowQrModal] = useState(false);
+	const [shared, setShared] = useState(false);
 
 	const linkToCopy =
 		preset.amLink ||
@@ -49,7 +52,17 @@ export function InstallSection({ preset }: InstallSectionProps) {
 			const finalUrl = data?.download_url || fallbackUrl;
 
 			if (type === "amLink") {
-				window.open(finalUrl, "_blank", "noopener,noreferrer");
+				// Try mobile deep link if on mobile browser
+				const isMobile =
+					typeof navigator !== "undefined" &&
+					/Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+
+				if (isMobile && finalUrl.includes("alight")) {
+					// Open deep link / web link
+					window.location.href = finalUrl;
+				} else {
+					window.open(finalUrl, "_blank", "noopener,noreferrer");
+				}
 			} else {
 				const a = document.createElement("a");
 				a.href = finalUrl;
@@ -59,7 +72,6 @@ export function InstallSection({ preset }: InstallSectionProps) {
 				document.body.removeChild(a);
 			}
 
-			setDownloadTracked(true);
 			posthog.capture("preset_downloaded", {
 				preset_id: preset.id,
 				file_type: preset.fileType ?? "xml",
@@ -93,25 +105,47 @@ export function InstallSection({ preset }: InstallSectionProps) {
 			await navigator.clipboard.writeText(linkToCopy);
 			setCopied(true);
 			setTimeout(() => setCopied(false), 2000);
-			trackDownloadHelper(); // fallback check
+			trackDownloadHelper();
 		} catch (e) {
 			console.error("Failed to copy link", e);
 		}
 	};
 
+	const handleShare = async () => {
+		const currentUrl = typeof window !== "undefined" ? window.location.href : "";
+		if (typeof navigator !== "undefined" && navigator.share) {
+			try {
+				await navigator.share({
+					title: `${preset.title} | AMHUB Alight Motion Preset`,
+					text: `Download preset Alight Motion: ${preset.title}`,
+					url: currentUrl,
+				});
+				setShared(true);
+				setTimeout(() => setShared(false), 2000);
+			} catch (err) {
+				handleCopy();
+			}
+		} else {
+			handleCopy();
+		}
+	};
+
 	return (
-		<section className="p-5 sm:p-6 rounded-3xl bg-[var(--color-bg-surface)] border border-[var(--color-border-subtle)] space-y-5 shadow-lg">
+		<section className="p-5 sm:p-6 rounded-3xl bg-[var(--color-bg-surface)] border border-[var(--color-border-subtle)] space-y-5 shadow-lg relative overflow-hidden">
 			<div className="flex items-center justify-between">
-				<div className="flex items-center gap-2">
-					<div className="p-2 rounded-xl bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+				<div className="flex items-center gap-2.5">
+					<div className="p-2.5 rounded-2xl bg-gradient-to-br from-emerald-500/20 to-teal-500/20 text-emerald-400 border border-emerald-500/30 shadow-inner">
 						<Download className="w-5 h-5" />
 					</div>
 					<div>
-						<h2 className="text-base sm:text-lg font-bold text-[var(--color-text-primary)]">
-							Download & Import
+						<h2 className="text-base sm:text-lg font-bold text-[var(--color-text-primary)] flex items-center gap-1.5">
+							<span>Download & Import</span>
+							<span className="inline-flex items-center px-1.5 py-0.5 rounded-md text-[10px] font-extrabold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+								1-TAP
+							</span>
 						</h2>
 						<p className="text-xs text-[var(--color-text-secondary)]">
-							1-Tap Alight Motion Project Import
+							Instant Project Import to Alight Motion
 						</p>
 					</div>
 				</div>
@@ -131,7 +165,7 @@ export function InstallSection({ preset }: InstallSectionProps) {
 				</div>
 			</div>
 
-			{/* Main CTAs */}
+			{/* Main Action Buttons */}
 			<div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
 				{preset.amLink && (
 					<a
@@ -139,10 +173,11 @@ export function InstallSection({ preset }: InstallSectionProps) {
 						target="_blank"
 						rel="noopener noreferrer"
 						onClick={(e) => handleDownload(e, "amLink", preset.amLink || "")}
-						className="inline-flex items-center justify-center gap-2 min-h-[52px] px-6 rounded-2xl bg-[var(--color-interactive-primary)] text-white font-bold text-sm shadow-xl shadow-[var(--color-interactive-primary)]/25 hover:bg-[var(--color-interactive-primary-hover)] active:scale-[0.98] transition-all"
+						className="inline-flex items-center justify-center gap-2 min-h-[52px] px-6 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-bold text-sm shadow-xl shadow-emerald-500/25 hover:from-emerald-600 hover:to-teal-600 active:scale-[0.98] transition-all group"
 					>
-						<ExternalLink className="w-5 h-5" />
-						<span>Open Alight Motion Link</span>
+						<Zap className="w-5 h-5 fill-current text-white animate-pulse" />
+						<span>Open in Alight Motion</span>
+						<ExternalLink className="w-4 h-4 opacity-75 group-hover:translate-x-0.5 transition-transform" />
 					</a>
 				)}
 
@@ -151,24 +186,32 @@ export function InstallSection({ preset }: InstallSectionProps) {
 						href={preset.fileUrl}
 						download
 						onClick={(e) => handleDownload(e, "fileUrl", preset.fileUrl || "")}
-						className="inline-flex items-center justify-center gap-2 min-h-[52px] px-6 rounded-2xl bg-[var(--color-bg-elevated)] text-[var(--color-text-primary)] font-bold text-sm border border-[var(--color-border-subtle)] hover:border-[var(--color-border-strong)] active:scale-[0.98] transition-all"
+						className="inline-flex items-center justify-center gap-2 min-h-[52px] px-6 rounded-2xl bg-[var(--color-bg-elevated)] text-[var(--color-text-primary)] font-bold text-sm border border-[var(--color-border-subtle)] hover:border-emerald-500/40 hover:bg-emerald-500/5 active:scale-[0.98] transition-all"
 					>
 						{preset.fileType === "qr" ? (
 							<QrCode className="w-5 h-5 text-purple-400" />
 						) : (
-							<FileCode className="w-5 h-5 text-blue-400" />
+							<FileCode className="w-5 h-5 text-emerald-400" />
 						)}
 						<span>Download {preset.fileType?.toUpperCase() || "File"}</span>
 					</a>
 				)}
 			</div>
 
-			{/* 1-Click Copy Box */}
+			{/* Direct Link / Copy / Share Bar */}
 			{linkToCopy && (
-				<div className="space-y-2 pt-2">
-					<span className="block text-xs font-semibold text-[var(--color-text-secondary)]">
-						Direct Link / Import URL
-					</span>
+				<div className="space-y-2 pt-1">
+					<div className="flex items-center justify-between text-xs font-semibold text-[var(--color-text-secondary)]">
+						<span>Direct Import Link / URL</span>
+						<button
+							type="button"
+							onClick={handleShare}
+							className="inline-flex items-center gap-1 text-[var(--color-interactive-primary)] hover:underline"
+						>
+							<Share2 className="w-3.5 h-3.5" />
+							<span>{shared ? "Shared!" : "Share"}</span>
+						</button>
+					</div>
 					<div className="flex items-center gap-2 p-2 rounded-2xl bg-[var(--color-bg-base)] border border-[var(--color-border-subtle)]">
 						<code className="flex-1 text-xs text-[var(--color-text-secondary)] truncate px-2 font-mono">
 							{linkToCopy}
@@ -194,22 +237,21 @@ export function InstallSection({ preset }: InstallSectionProps) {
 				</div>
 			)}
 
-			{/* Quick How-to Steps */}
+			{/* Mobile Quick Guide */}
 			<div className="p-4 rounded-2xl bg-[var(--color-bg-base)]/60 border border-[var(--color-border-subtle)]/60 space-y-2">
 				<div className="flex items-center gap-2 text-xs font-bold text-[var(--color-text-primary)]">
 					<Smartphone className="w-4 h-4 text-indigo-400" />
-					<span>How to Import into Alight Motion</span>
+					<span>Cara Pasang Preset di Alight Motion:</span>
 				</div>
 				<ol className="list-decimal list-inside text-xs text-[var(--color-text-secondary)] space-y-1.5 leading-relaxed pl-1">
 					<li>
-						Tap <strong>Open Alight Motion Link</strong> or download the XML/QR
-						file.
+						Tekan tombol <strong>Open in Alight Motion</strong> di HP kamu.
 					</li>
 					<li>
-						If using XML, open Alight Motion &gt; Project &gt; Import XML file.
+						Jika download file <strong>XML</strong>: Buka Alight Motion &gt; Project &gt; Import XML.
 					</li>
 					<li>
-						If using QR Code, scan the image using the Alight Motion QR scanner.
+						Jika pakai <strong>Preset Link 5MB</strong>: Klik link di atas, Alight Motion akan otomatis mendownload aset project.
 					</li>
 				</ol>
 			</div>

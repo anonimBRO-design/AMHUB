@@ -5,6 +5,7 @@ import {
 	Bookmark,
 	Download,
 	Eye,
+	Flag,
 	Heart,
 	Maximize2,
 	MessageSquare,
@@ -20,6 +21,7 @@ import { useRouter } from "next/navigation";
 import posthog from "posthog-js";
 import { useEffect, useRef, useState } from "react";
 import { BookmarkButton } from "./BookmarkButton";
+import { ReportPresetModal } from "./ReportPresetModal";
 import { ShareButton } from "./ShareButton";
 
 interface HeroProps {
@@ -56,6 +58,7 @@ interface HeroProps {
 export function Hero({ preset, currentUserId }: HeroProps) {
 	const router = useRouter();
 	const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+	const [showReportModal, setShowReportModal] = useState(false);
 	const [isDeleting, setIsDeleting] = useState(false);
 
 	const isOwner = Boolean(
@@ -440,6 +443,17 @@ export function Hero({ preset, currentUserId }: HeroProps) {
 						</button>
 
 						<ShareButton title={preset.title} />
+
+						{/* Report Preset Button */}
+						<button
+							type="button"
+							onClick={() => setShowReportModal(true)}
+							aria-label="Laporkan Preset"
+							title="Laporkan Preset"
+							className="inline-flex items-center justify-center min-h-[44px] min-w-[44px] px-3 rounded-2xl border transition-all active:scale-95 shadow-sm bg-[var(--color-bg-surface)] text-[var(--color-text-tertiary)] border-[var(--color-border-subtle)] hover:text-rose-400 hover:border-rose-500/30 hover:bg-rose-500/10"
+						>
+							<Flag className="w-4 h-4" />
+						</button>
 					</div>
 				</div>
 
@@ -559,6 +573,15 @@ export function Hero({ preset, currentUserId }: HeroProps) {
 						</div>
 					</div>
 				</div>
+			)}
+
+			{showReportModal && (
+				<ReportPresetModal
+					presetId={preset.id}
+					presetTitle={preset.title}
+					isOpen={showReportModal}
+					onClose={() => setShowReportModal(false)}
+				/>
 			)}
 		</section>
 	);

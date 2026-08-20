@@ -1,7 +1,17 @@
 "use client";
 
 import { useAuth } from "@/context/AuthContext";
-import { CheckCircle2, ShieldCheck, UserCheck, UserPlus } from "lucide-react";
+import {
+	CheckCircle2,
+	Coffee,
+	ExternalLink,
+	Globe,
+	Instagram,
+	ShieldCheck,
+	UserCheck,
+	UserPlus,
+	Youtube,
+} from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 
@@ -16,6 +26,10 @@ interface CreatorCardProps {
 		followerCount?: number;
 		presetCount?: number;
 		isFollowing?: boolean;
+		websiteUrl?: string | null;
+		tiktokHandle?: string | null;
+		instagramHandle?: string | null;
+		youtubeUrl?: string | null;
 	};
 }
 
@@ -58,6 +72,16 @@ export function CreatorCard({ creator }: CreatorCardProps) {
 			setIsLoading(false);
 		}
 	};
+
+	// Determine donation link if available (Saweria/Trakteer/website)
+	const donationUrl =
+		creator.websiteUrl &&
+		(creator.websiteUrl.includes("saweria.co") ||
+			creator.websiteUrl.includes("trakteer.id") ||
+			creator.websiteUrl.includes("sociabuzz.com") ||
+			creator.websiteUrl.includes("ko-fi.com"))
+			? creator.websiteUrl
+			: null;
 
 	return (
 		<div className="p-5 rounded-3xl bg-[var(--color-bg-surface)] border border-[var(--color-border-subtle)] space-y-4 shadow-lg">
@@ -143,6 +167,22 @@ export function CreatorCard({ creator }: CreatorCardProps) {
 				<p className="text-xs text-[var(--color-text-secondary)] leading-relaxed pt-2 border-t border-[var(--color-border-subtle)]/60 line-clamp-2">
 					{creator.bio}
 				</p>
+			)}
+
+			{/* Tipping / Saweria Action */}
+			{donationUrl && (
+				<div className="pt-2">
+					<a
+						href={donationUrl}
+						target="_blank"
+						rel="noopener noreferrer"
+						className="flex items-center justify-center gap-2 w-full py-2.5 px-4 rounded-2xl bg-amber-400/10 hover:bg-amber-400/20 text-amber-400 border border-amber-400/30 text-xs font-bold transition-all active:scale-95"
+					>
+						<Coffee className="w-4 h-4 text-amber-400" />
+						<span>Dukung Creator (Saweria / Trakteer)</span>
+						<ExternalLink className="w-3.5 h-3.5 opacity-70" />
+					</a>
+				</div>
 			)}
 		</div>
 	);

@@ -110,10 +110,32 @@ export function Hero({ user }: HeroProps) {
 							href={user.websiteUrl}
 							target="_blank"
 							rel="noopener noreferrer"
-							className="flex items-center gap-1.5 text-[var(--color-interactive-primary)] hover:underline"
+							className={`flex items-center gap-1.5 ${
+								user.websiteUrl.includes("saweria.co") ||
+								user.websiteUrl.includes("trakteer.id")
+									? "text-amber-400 font-bold bg-amber-400/10 px-2.5 py-1 rounded-xl border border-amber-400/30"
+									: "text-[var(--color-interactive-primary)] hover:underline"
+							}`}
 						>
 							<Globe className="w-3.5 h-3.5" />
-							<span className="truncate max-w-[150px]">Website</span>
+							<span className="truncate max-w-[150px]">
+								{user.websiteUrl.includes("saweria.co")
+									? "Saweria"
+									: user.websiteUrl.includes("trakteer.id")
+										? "Trakteer"
+										: "Website"}
+							</span>
+						</a>
+					)}
+
+					{user.tiktokHandle && (
+						<a
+							href={`https://tiktok.com/@${user.tiktokHandle.replace("@", "")}`}
+							target="_blank"
+							rel="noopener noreferrer"
+							className="flex items-center gap-1.5 text-cyan-400 hover:underline"
+						>
+							<span>TikTok: @{user.tiktokHandle.replace("@", "")}</span>
 						</a>
 					)}
 
