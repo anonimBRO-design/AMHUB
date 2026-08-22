@@ -68,7 +68,7 @@ export const TopBar = ({
 						/>
 					</div>
 
-					<span className="font-display text-xl font-extrabold tracking-tight text-white">
+					<span className="font-display text-xl font-extrabold tracking-tight text-[var(--color-text-primary)]">
 						{pageTitle || "AMHUB"}
 					</span>
 				</a>

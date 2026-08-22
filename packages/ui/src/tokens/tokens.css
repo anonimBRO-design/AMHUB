@@ -352,17 +352,17 @@
 	--color-bg-error: rgba(239, 68, 68, 0.12);
 	--color-bg-info: rgba(59, 130, 246, 0.12);
 
-	/* Text Colors */
-	--color-text-primary: #17082e;
-	--color-text-secondary: #4c1d95;
-	--color-text-tertiary: #6b21a8;
-	--color-text-disabled: #c4b5fd;
+	/* Text Colors — High Contrast */
+	--color-text-primary: #090214;
+	--color-text-secondary: #3b1464;
+	--color-text-tertiary: #581c87;
+	--color-text-disabled: #8b5cf6;
 	--color-text-inverse: #ffffff;
-	--color-text-accent: #7c3aed;
-	--color-text-success: #16a34a;
-	--color-text-warning: #d97706;
-	--color-text-error: #dc2626;
-	--color-text-info: #2563eb;
+	--color-text-accent: #6d28d9;
+	--color-text-success: #15803d;
+	--color-text-warning: #b45309;
+	--color-text-error: #b91c1c;
+	--color-text-info: #1d4ed8;
 
 	/* Border Colors */
 	--color-border-subtle: rgba(124, 58, 237, 0.14);

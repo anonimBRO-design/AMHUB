@@ -49,7 +49,7 @@ export function Hero({ stats, featuredPreset }: HeroProps) {
 					</div>
 
 					{/* Title */}
-					<h1 className="font-display text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight text-white leading-[1.1]">
+					<h1 className="font-display text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight text-[var(--color-text-primary)] leading-[1.1]">
 						{t.home.heroTitle}
 					</h1>
 
@@ -175,7 +175,7 @@ export function Hero({ stats, featuredPreset }: HeroProps) {
 									{/* Card Details */}
 									<div className="space-y-3">
 										<div>
-											<h3 className="font-display text-base font-bold text-white group-hover:text-purple-300 transition-colors line-clamp-1">
+											<h3 className="font-display text-base font-bold text-[var(--color-text-primary)] group-hover:text-[var(--color-interactive-primary)] transition-colors line-clamp-1">
 												{featuredPreset.title}
 											</h3>
 											<p className="font-body text-xs text-[var(--color-text-secondary)] line-clamp-1">
@@ -202,7 +202,7 @@ export function Hero({ stats, featuredPreset }: HeroProps) {
 												)}
 												<div>
 													<div className="flex items-center gap-1">
-														<span className="font-body text-xs font-bold text-white block truncate">
+														<span className="font-body text-xs font-bold text-[var(--color-text-primary)] block truncate">
 															{featuredPreset.creator.displayName}
 														</span>
 														{featuredPreset.creator.isVerified && (
@@ -214,7 +214,7 @@ export function Hero({ stats, featuredPreset }: HeroProps) {
 															</span>
 														)}
 													</div>
-													<span className="font-body text-[10px] text-purple-300 font-semibold">
+													<span className="font-body text-[10px] text-[var(--color-text-tertiary)] font-semibold">
 														@{featuredPreset.creator.username}
 													</span>
 												</div>
@@ -234,11 +234,11 @@ export function Hero({ stats, featuredPreset }: HeroProps) {
 									</div>
 								</Link>
 							) : (
-								<div className="p-8 text-center space-y-3 text-white my-auto">
+								<div className="p-8 text-center space-y-3 text-[var(--color-text-primary)] my-auto">
 									<div className="w-12 h-12 rounded-2xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center mx-auto text-purple-400">
-										<span className="w-6 h-6 animate-pulse">âœ¨</span>
+										<span className="w-6 h-6 animate-pulse">✨</span>
 									</div>
-									<h4 className="font-display font-bold text-base text-white">
+									<h4 className="font-display font-bold text-base text-[var(--color-text-primary)]">
 										No published presets yet
 									</h4>
 									<p className="font-body text-xs text-[var(--color-text-secondary)] max-w-xs mx-auto">
