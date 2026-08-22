@@ -73,23 +73,23 @@ const styleMap: Record<string, Record<string, string>> = {
 		other: "bg-[var(--color-category-other)] text-white shadow-sm",
 	},
 	rarity: {
-		common: "bg-slate-500/20 text-slate-300 border border-slate-500/30",
-		rare: "bg-blue-500/20 text-blue-300 border border-blue-500/30",
-		epic: "bg-purple-500/20 text-purple-300 border border-purple-500/30",
+		common: "bg-slate-500/20 text-slate-800 dark:text-slate-300 border border-slate-500/30",
+		rare: "bg-blue-500/20 text-blue-800 dark:text-blue-300 border border-blue-500/30",
+		epic: "bg-purple-500/20 text-purple-900 dark:text-purple-300 border border-purple-500/30",
 		legendary:
-			"bg-amber-500/20 text-amber-300 border border-amber-500/30 font-extrabold",
+			"bg-amber-500/20 text-amber-950 dark:text-amber-300 border border-amber-500/30 font-extrabold",
 	},
 	difficulty: {
-		beginner: "bg-emerald-500/20 text-emerald-300 border border-emerald-500/30",
-		intermediate: "bg-amber-500/20 text-amber-300 border border-amber-500/30",
-		advanced: "bg-rose-500/20 text-rose-300 border border-rose-500/30",
+		beginner: "bg-emerald-500/20 text-emerald-900 dark:text-emerald-300 border border-emerald-500/30",
+		intermediate: "bg-amber-500/20 text-amber-950 dark:text-amber-300 border border-amber-500/30",
+		advanced: "bg-rose-500/20 text-rose-900 dark:text-rose-300 border border-rose-500/30",
 	},
 	status: {
 		published:
-			"bg-emerald-500/20 text-emerald-300 border border-emerald-500/30",
-		pending: "bg-amber-500/20 text-amber-300 border border-amber-500/30",
-		rejected: "bg-rose-500/20 text-rose-300 border border-rose-500/30",
-		removed: "bg-rose-500/20 text-rose-300 border border-rose-500/30",
+			"bg-emerald-500/20 text-emerald-900 dark:text-emerald-300 border border-emerald-500/30",
+		pending: "bg-amber-500/20 text-amber-950 dark:text-amber-300 border border-amber-500/30",
+		rejected: "bg-rose-500/20 text-rose-900 dark:text-rose-300 border border-rose-500/30",
+		removed: "bg-rose-500/20 text-rose-900 dark:text-rose-300 border border-rose-500/30",
 	},
 };
 
