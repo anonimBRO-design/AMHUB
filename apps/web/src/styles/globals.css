@@ -556,3 +556,30 @@ h6,
 	color: #3730a3 !important;
 }
 
+/* Universal Form Controls High Contrast for Light Mode */
+[data-theme='light-liquid'] input:not([type="checkbox"]):not([type="radio"]),
+[data-theme='light-liquid'] textarea,
+[data-theme='light-liquid'] select,
+[data-theme='light'] input:not([type="checkbox"]):not([type="radio"]),
+[data-theme='light'] textarea,
+[data-theme='light'] select {
+	background-color: rgba(255, 255, 255, 0.95) !important;
+	color: #070110 !important;
+	border-color: rgba(124, 58, 237, 0.28) !important;
+}
+
+[data-theme='light-liquid'] input::placeholder,
+[data-theme='light-liquid'] textarea::placeholder,
+[data-theme='light'] input::placeholder,
+[data-theme='light'] textarea::placeholder {
+	color: #6b21a8 !important;
+	opacity: 0.65;
+}
+
+[data-theme='light-liquid'] label,
+[data-theme='light'] label {
+	color: #070110 !important;
+	font-weight: 700 !important;
+}
+
+

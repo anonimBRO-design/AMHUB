@@ -770,7 +770,7 @@ export function CreatorPermissionsTab() {
 							<div>
 								<label
 									htmlFor="add-username"
-									className="block text-xs font-bold text-white mb-1.5"
+									className="block text-xs font-bold text-[var(--color-text-primary)] mb-1.5"
 								>
 									Username TikTok *
 								</label>
@@ -790,7 +790,7 @@ export function CreatorPermissionsTab() {
 										}
 										placeholder="contoh: colzpreset"
 										required
-										className="w-full pl-8 pr-4 py-2.5 rounded-xl bg-[var(--color-bg-elevated)] border border-[var(--color-border-subtle)] text-sm text-white focus:outline-none focus:border-purple-500/50"
+										className="w-full pl-8 pr-4 py-2.5 rounded-xl bg-[var(--color-bg-input)] border border-[var(--color-border-subtle)] text-sm text-[var(--color-text-primary)] placeholder:text-[var(--color-text-tertiary)] focus:outline-none focus:border-purple-500/50"
 									/>
 								</div>
 							</div>
@@ -798,7 +798,7 @@ export function CreatorPermissionsTab() {
 							<div>
 								<label
 									htmlFor="add-display-name"
-									className="block text-xs font-bold text-white mb-1.5"
+									className="block text-xs font-bold text-[var(--color-text-primary)] mb-1.5"
 								>
 									Display Name Kreator (Opsional)
 								</label>
@@ -813,14 +813,14 @@ export function CreatorPermissionsTab() {
 										}))
 									}
 									placeholder="contoh: Colz | Preset AM"
-									className="w-full px-3.5 py-2.5 rounded-xl bg-[var(--color-bg-elevated)] border border-[var(--color-border-subtle)] text-sm text-white focus:outline-none focus:border-purple-500/50"
+									className="w-full px-3.5 py-2.5 rounded-xl bg-[var(--color-bg-input)] border border-[var(--color-border-subtle)] text-sm text-[var(--color-text-primary)] placeholder:text-[var(--color-text-tertiary)] focus:outline-none focus:border-purple-500/50"
 								/>
 							</div>
 
 							<div>
 								<label
 									htmlFor="add-target-preset"
-									className="block text-xs font-bold text-white mb-1.5"
+									className="block text-xs font-bold text-[var(--color-text-primary)] mb-1.5"
 								>
 									Nama / Judul Preset Target (Opsional)
 								</label>
@@ -835,14 +835,14 @@ export function CreatorPermissionsTab() {
 										}))
 									}
 									placeholder="contoh: Malam Pagi Velocity / 3D Shake"
-									className="w-full px-3.5 py-2.5 rounded-xl bg-[var(--color-bg-elevated)] border border-[var(--color-border-subtle)] text-sm text-white focus:outline-none focus:border-purple-500/50"
+									className="w-full px-3.5 py-2.5 rounded-xl bg-[var(--color-bg-input)] border border-[var(--color-border-subtle)] text-sm text-[var(--color-text-primary)] placeholder:text-[var(--color-text-tertiary)] focus:outline-none focus:border-purple-500/50"
 								/>
 							</div>
 
 							{/* Live AI Message Preview */}
 							<div className="space-y-1.5">
 								<div className="flex items-center justify-between text-xs">
-									<span className="font-bold text-purple-300 flex items-center gap-1.5">
+									<span className="font-bold text-purple-600 dark:text-purple-300 flex items-center gap-1.5">
 										<Sparkles className="w-3.5 h-3.5" />
 										Preview Pesan Izin (Dibuat Otomatis)
 									</span>
@@ -859,7 +859,7 @@ export function CreatorPermissionsTab() {
 								<button
 									type="button"
 									onClick={() => setIsAddModalOpen(false)}
-									className="px-4 py-2.5 rounded-xl text-xs font-bold text-[var(--color-text-secondary)] hover:text-white"
+									className="px-4 py-2.5 rounded-xl text-xs font-bold text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]"
 								>
 									Batal
 								</button>
@@ -886,16 +886,16 @@ export function CreatorPermissionsTab() {
 						<div className="flex items-center justify-between">
 							<div className="flex items-center gap-2">
 								{statusModalType === "approve" ? (
-									<div className="p-2 rounded-xl bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+									<div className="p-2 rounded-xl bg-emerald-500/20 text-emerald-800 dark:text-emerald-300 border border-emerald-500/30">
 										<CheckCircle2 className="w-5 h-5" />
 									</div>
 								) : (
-									<div className="p-2 rounded-xl bg-rose-500/20 text-rose-300 border border-rose-500/30">
+									<div className="p-2 rounded-xl bg-rose-500/20 text-rose-800 dark:text-rose-300 border border-rose-500/30">
 										<XCircle className="w-5 h-5" />
 									</div>
 								)}
 								<div>
-									<h3 className="font-bold text-base text-white">
+									<h3 className="font-bold text-base text-[var(--color-text-primary)]">
 										{statusModalType === "approve"
 											? "Catat Persetujuan (Approved)"
 											: "Catat Penolakan (Rejected)"}
@@ -908,7 +908,7 @@ export function CreatorPermissionsTab() {
 							<button
 								type="button"
 								onClick={() => setStatusModalType(null)}
-								className="p-2 rounded-xl text-[var(--color-text-tertiary)] hover:text-white"
+								className="p-2 rounded-xl text-[var(--color-text-tertiary)] hover:text-[var(--color-text-primary)]"
 							>
 								<X className="w-5 h-5" />
 							</button>
@@ -920,7 +920,7 @@ export function CreatorPermissionsTab() {
 									<div>
 										<label
 											htmlFor="status-credit-name"
-											className="block text-xs font-bold text-white mb-1.5"
+											className="block text-xs font-bold text-[var(--color-text-primary)] mb-1.5"
 										>
 											Nama Credit yang Wajib Dicantumkan
 										</label>
@@ -935,14 +935,14 @@ export function CreatorPermissionsTab() {
 												}))
 											}
 											placeholder="contoh: @colzpreset"
-											className="w-full px-3.5 py-2.5 rounded-xl bg-[var(--color-bg-elevated)] border border-[var(--color-border-subtle)] text-sm text-white focus:outline-none focus:border-emerald-500/50"
+											className="w-full px-3.5 py-2.5 rounded-xl bg-[var(--color-bg-input)] border border-[var(--color-border-subtle)] text-sm text-[var(--color-text-primary)] placeholder:text-[var(--color-text-tertiary)] focus:outline-none focus:border-emerald-500/50"
 										/>
 									</div>
 
 									<div>
 										<label
 											htmlFor="status-max-presets"
-											className="block text-xs font-bold text-white mb-1.5"
+											className="block text-xs font-bold text-[var(--color-text-primary)] mb-1.5"
 										>
 											Maksimal Preset yang Diizinkan (Kuota)
 										</label>
@@ -958,7 +958,7 @@ export function CreatorPermissionsTab() {
 													maxAllowedPresets: Number(e.target.value) || 1,
 												}))
 											}
-											className="w-full px-3.5 py-2.5 rounded-xl bg-[var(--color-bg-elevated)] border border-[var(--color-border-subtle)] text-sm text-white focus:outline-none focus:border-emerald-500/50"
+											className="w-full px-3.5 py-2.5 rounded-xl bg-[var(--color-bg-input)] border border-[var(--color-border-subtle)] text-sm text-[var(--color-text-primary)] placeholder:text-[var(--color-text-tertiary)] focus:outline-none focus:border-emerald-500/50"
 										/>
 									</div>
 								</>
@@ -967,7 +967,7 @@ export function CreatorPermissionsTab() {
 							<div>
 								<label
 									htmlFor="status-notes"
-									className="block text-xs font-bold text-white mb-1.5"
+									className="block text-xs font-bold text-[var(--color-text-primary)] mb-1.5"
 								>
 									Catatan / Syarat Khusus Kreator
 								</label>
@@ -986,7 +986,7 @@ export function CreatorPermissionsTab() {
 											? "contoh: 'Boleh ambil 2 preset video terbaru aja ya kak'"
 											: "contoh: 'Kreator tidak bersedia presetnya dipasang di luar TikTok'"
 									}
-									className="w-full px-3.5 py-2.5 rounded-xl bg-[var(--color-bg-elevated)] border border-[var(--color-border-subtle)] text-sm text-white focus:outline-none focus:border-purple-500/50"
+									className="w-full px-3.5 py-2.5 rounded-xl bg-[var(--color-bg-input)] border border-[var(--color-border-subtle)] text-sm text-[var(--color-text-primary)] placeholder:text-[var(--color-text-tertiary)] focus:outline-none focus:border-purple-500/50"
 								/>
 							</div>
 
@@ -994,7 +994,7 @@ export function CreatorPermissionsTab() {
 								<button
 									type="button"
 									onClick={() => setStatusModalType(null)}
-									className="px-4 py-2.5 rounded-xl text-xs font-bold text-[var(--color-text-secondary)] hover:text-white"
+									className="px-4 py-2.5 rounded-xl text-xs font-bold text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]"
 								>
 									Batal
 								</button>
@@ -1026,7 +1026,7 @@ export function CreatorPermissionsTab() {
 							<Trash2 className="w-6 h-6" />
 						</div>
 						<div className="text-center space-y-1">
-							<h3 className="font-bold text-base text-white">
+							<h3 className="font-bold text-base text-[var(--color-text-primary)]">
 								Hapus Record Kreator?
 							</h3>
 							<p className="text-xs text-[var(--color-text-secondary)]">
@@ -1039,7 +1039,7 @@ export function CreatorPermissionsTab() {
 								type="button"
 								onClick={() => setDeleteTarget(null)}
 								disabled={isDeleting}
-								className="px-4 py-2.5 rounded-xl text-xs font-bold text-[var(--color-text-secondary)] hover:text-white"
+								className="px-4 py-2.5 rounded-xl text-xs font-bold text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]"
 							>
 								Batal
 							</button>
