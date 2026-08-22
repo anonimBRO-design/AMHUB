@@ -174,12 +174,12 @@ export function DesktopDock({
 										y: isHovered ? -2 : 0,
 									}}
 									transition={{ type: "spring", stiffness: 400, damping: 25 }}
-									className={`relative flex items-center justify-center rounded-lg transition-colors duration-200 overflow-hidden ${
+									className={`relative flex items-center justify-center rounded-xl transition-all duration-200 overflow-hidden ${
 										item.isSpecial
-											? "w-11 h-11 sm:w-11 sm:h-11 bg-[var(--color-interactive-primary)] text-white shadow-[0_4px_16px_rgba(0,0,0,0.5)] border border-[var(--color-border-accent)] scale-105"
+											? "w-11 h-11 sm:w-11 sm:h-11 bg-gradient-to-tr from-purple-600 to-indigo-600 text-white shadow-[0_4px_16px_rgba(124,58,237,0.4)] border border-purple-400/40 scale-105"
 											: isActive
-												? "w-10 h-10 sm:w-10 sm:h-10 bg-[var(--color-bg-elevated)] text-white border border-[var(--color-border-strong)] shadow-sm"
-												: "w-10 h-10 sm:w-10 sm:h-10 bg-[var(--color-bg-input)] text-[var(--color-text-secondary)] border border-[var(--color-border-subtle)] hover:bg-[var(--color-bg-elevated)] hover:text-white"
+												? "w-10 h-10 sm:w-10 sm:h-10 bg-[var(--color-interactive-primary)]/15 text-[var(--color-interactive-primary)] border border-[var(--color-interactive-primary)]/40 shadow-sm"
+												: "w-10 h-10 sm:w-10 sm:h-10 bg-[var(--color-bg-input)] text-[var(--color-text-secondary)] border border-[var(--color-border-subtle)] hover:bg-[var(--color-bg-elevated)] hover:text-[var(--color-text-primary)]"
 									}`}
 								>
 									{item.id === "profile" && item.avatarUrl ? (
