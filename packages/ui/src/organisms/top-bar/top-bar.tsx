@@ -31,9 +31,9 @@ export const TopBar = ({
 	return (
 		<header
 			className={cn(
-				"sticky top-0 z-[100] flex h-16 w-full items-center justify-between px-4 sm:px-8 transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] bg-[var(--color-bg-base)] border-b border-[var(--color-border-subtle)]",
+				"sticky top-0 z-[100] flex h-16 w-full items-center justify-between px-4 sm:px-8 transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] ios-glass-panel border-b border-[var(--color-border-subtle)]",
 				isScrolled &&
-					"shadow-[var(--shadow-sm)] bg-[var(--color-bg-elevated)] border-[var(--color-border-default)]",
+					"shadow-[var(--shadow-sm)] border-[var(--color-border-default)]",
 			)}
 		>
 			{/* Brand Area — AMHUB Logo & AMHUB Text */}

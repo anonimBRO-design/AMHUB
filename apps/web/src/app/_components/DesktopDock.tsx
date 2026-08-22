@@ -126,7 +126,7 @@ export function DesktopDock({
 				initial={{ y: 40, opacity: 0 }}
 				animate={{ y: 0, opacity: 1 }}
 				transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-				className="relative flex items-center justify-between sm:justify-center w-full sm:w-auto gap-1 sm:gap-2 p-2 sm:p-2.5 rounded-xl bg-[var(--color-bg-surface)]/95 backdrop-blur-xl border border-[var(--color-border-strong)] shadow-[0_12px_40px_rgba(0,0,0,0.65)] overflow-x-auto no-scrollbar"
+				className="relative flex items-center justify-between sm:justify-center w-full sm:w-auto gap-1 sm:gap-2 p-2 sm:p-2.5 rounded-2xl ios-glass-dock shadow-[0_16px_48px_rgba(0,0,0,0.55)] overflow-x-auto no-scrollbar"
 			>
 				{dockItems.map((item) => {
 					const Icon = item.icon;

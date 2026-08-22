@@ -1,6 +1,7 @@
 "use client";
 
 import { AuthProvider } from "@/context/AuthContext";
+import { ThemeProvider, useTheme } from "@/context/ThemeContext";
 import { LanguageProvider } from "@/i18n";
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 import type { User } from "@presethub/types";
@@ -11,6 +12,7 @@ import { useEffect, useState } from "react";
 import { DesktopDock } from "./DesktopDock";
 import { LanguageSwitcher } from "./LanguageSwitcher";
 import { PointerCaptureGuard } from "./PointerCaptureGuard";
+import { ThemeToggle } from "./ThemeToggle";
 
 interface LayoutShellProps {
 	children: React.ReactNode;
@@ -18,18 +20,23 @@ interface LayoutShellProps {
 	unreadNotificationCount: number;
 }
 
-export const LayoutShell: React.FC<LayoutShellProps> = ({
+function LayoutShellInner({
 	children,
 	currentUser,
 	unreadNotificationCount: initialUnreadCount,
-}) => {
+}: LayoutShellProps) {
 	const router = useRouter();
 	const pathname = usePathname();
 	const [unreadCount, setUnreadCount] = useState(initialUnreadCount);
+	const { theme } = useTheme();
 
 	const isWelcomePage = pathname === "/";
 	const isHomePage = pathname === "/home";
 	const showBackButton = !isWelcomePage && !isHomePage;
+
+	const isDarkLiquid = theme === "dark-liquid";
+	const isLightLiquid = theme === "light-liquid";
+	const isNormal = theme === "normal";
 
 	const handleBackClick = () => {
 		if (typeof window !== "undefined" && window.history.length > 1) {
@@ -89,9 +96,60 @@ export const LayoutShell: React.FC<LayoutShellProps> = ({
 	};
 
 	return (
-		<LanguageProvider>
-			<AuthProvider currentUser={currentUser}>
-				<PointerCaptureGuard />
+		<div className="relative min-h-screen max-w-full overflow-hidden transition-colors duration-500">
+			{/* Dynamic Theme Wallpaper Background (Desktop Landscape) */}
+			{!isNormal && (
+				<>
+					<div
+						className="fixed inset-0 pointer-events-none z-0 bg-cover bg-center bg-no-repeat transition-all duration-700 opacity-90 hidden sm:block"
+						style={{
+							backgroundImage: isDarkLiquid
+								? "url('/wallpapers/liquid-dark.png')"
+								: "url('/wallpapers/liquid-light.png')",
+						}}
+					/>
+					{/* Dynamic Theme Wallpaper Background (Mobile Portrait) */}
+					<div
+						className="fixed inset-0 pointer-events-none z-0 bg-cover bg-center bg-no-repeat transition-all duration-700 opacity-95 sm:hidden"
+						style={{
+							backgroundImage: isDarkLiquid
+								? "url('/wallpapers/liquid-dark-mobile.png')"
+								: "url('/wallpapers/liquid-light-mobile.png')",
+						}}
+					/>
+					{/* Subtle Spatial Tint Overlay */}
+					<div
+						className={`fixed inset-0 pointer-events-none z-0 transition-opacity duration-700 ${
+							isLightLiquid ? "bg-white/15" : "bg-black/35"
+						}`}
+					/>
+				</>
+			)}
+
+			{/* iOS 27 Spatial Ambient Lighting Orbs */}
+			<div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
+				<div
+					className={`absolute -top-40 -left-40 w-[500px] h-[500px] rounded-full blur-[120px] animate-float-ambient ${
+						isDarkLiquid
+							? "bg-gradient-to-tr from-purple-600/25 to-indigo-600/20"
+							: isLightLiquid
+							? "bg-gradient-to-tr from-purple-400/20 to-indigo-300/15"
+							: "bg-gradient-to-tr from-purple-600/10 to-transparent"
+					}`}
+				/>
+				<div
+					className={`absolute top-1/3 -right-40 w-[600px] h-[600px] rounded-full blur-[140px] animate-float-ambient ${
+						isDarkLiquid
+							? "bg-gradient-to-bl from-fuchsia-600/20 to-purple-800/25"
+							: isLightLiquid
+							? "bg-gradient-to-bl from-purple-400/15 to-pink-300/15"
+							: "bg-gradient-to-bl from-indigo-600/10 to-transparent"
+					}`}
+					style={{ animationDelay: "4s" }}
+				/>
+			</div>
+
+			<div className="relative z-10">
 				{isWelcomePage ? (
 					<main>{children}</main>
 				) : (
@@ -106,7 +164,12 @@ export const LayoutShell: React.FC<LayoutShellProps> = ({
 									showBackButton={showBackButton}
 									onBackClick={handleBackClick}
 									onSearchSubmit={handleSearchSubmit}
-									rightContent={<LanguageSwitcher variant="compact" />}
+									rightContent={
+										<div className="flex items-center gap-2">
+											<ThemeToggle />
+											<LanguageSwitcher variant="compact" />
+										</div>
+									}
 								/>
 							}
 							bottomNav={null}
@@ -121,6 +184,19 @@ export const LayoutShell: React.FC<LayoutShellProps> = ({
 						/>
 					</>
 				)}
+			</div>
+		</div>
+	);
+}
+
+export const LayoutShell: React.FC<LayoutShellProps> = (props) => {
+	return (
+		<LanguageProvider>
+			<AuthProvider currentUser={props.currentUser}>
+				<ThemeProvider>
+					<PointerCaptureGuard />
+					<LayoutShellInner {...props} />
+				</ThemeProvider>
 			</AuthProvider>
 		</LanguageProvider>
 	);
