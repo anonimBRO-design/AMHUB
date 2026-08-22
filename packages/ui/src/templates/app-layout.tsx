@@ -19,7 +19,7 @@ export const AppLayoutTemplate: React.FC<AppLayoutTemplateProps> = ({
 	children,
 }) => {
 	return (
-		<div className="flex min-h-screen max-w-full bg-[var(--color-bg-base)]">
+		<div className="flex min-h-screen max-w-full bg-transparent">
 			{/* Sidebar - Desktop (If provided) */}
 			{sidebar ? (
 				<div className="hidden lg:block fixed inset-y-0 left-0 w-[220px]">

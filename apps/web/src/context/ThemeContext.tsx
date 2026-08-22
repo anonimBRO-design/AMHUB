@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import React, { createContext, useContext, useEffect, useState } from "react";
 
@@ -15,7 +15,7 @@ const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 const THEME_STORAGE_KEY = "amhub_theme_mode_v2";
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-	const [theme, setThemeState] = useState<ThemeMode>("normal");
+	const [theme, setThemeState] = useState<ThemeMode>("dark-liquid");
 	const [mounted, setMounted] = useState(false);
 
 	useEffect(() => {
@@ -25,10 +25,10 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 				setThemeState(saved);
 				applyThemeToDOM(saved);
 			} else {
-				applyThemeToDOM("normal");
+				applyThemeToDOM("dark-liquid");
 			}
 		} catch {
-			applyThemeToDOM("normal");
+			applyThemeToDOM("dark-liquid");
 		}
 		setMounted(true);
 	}, []);

@@ -471,6 +471,15 @@ h6,
 	}
 }
 
+/* Global Frosted Glass for Liquid Themes */
+[data-theme='dark-liquid'] [class*="bg-[var(--color-bg-surface)"],
+[data-theme='dark-liquid'] [class*="bg-[var(--color-bg-elevated)"],
+[data-theme='light-liquid'] [class*="bg-[var(--color-bg-surface)"],
+[data-theme='light-liquid'] [class*="bg-[var(--color-bg-elevated)"] {
+	backdrop-filter: blur(var(--glass-blur, 20px)) saturate(170%);
+	-webkit-backdrop-filter: blur(var(--glass-blur, 20px)) saturate(170%);
+}
+
 .animate-float-ambient {
 	animation: float-ambient 9s ease-in-out infinite;
 }

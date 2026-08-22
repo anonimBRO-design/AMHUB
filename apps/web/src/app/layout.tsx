@@ -56,8 +56,8 @@ export default async function RootLayout({
 		: 0;
 
 	return (
-		<html lang="en" data-theme="dark">
-			<body className="bg-[var(--color-bg-base)] text-[var(--color-text-primary)] antialiased selection:bg-purple-500/30 selection:text-white">
+		<html lang="en" data-theme="dark-liquid">
+			<body className="bg-[#08070c] text-[var(--color-text-primary)] antialiased transition-colors duration-500 selection:bg-purple-500/30 selection:text-white">
 				<PostHogProvider currentUser={currentUser}>
 					<LayoutShell
 						currentUser={resolvedUser}
