@@ -2,6 +2,7 @@
 
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 import type { SupabaseUser as User } from "@/lib/supabase/auth";
+import { getSiteUrl } from "@presethub/config";
 import { AnimatePresence, motion } from "framer-motion";
 import {
 	CheckCircle2,
@@ -58,7 +59,7 @@ export function WelcomeClient({ user: initialUser }: WelcomeClientProps) {
 
 	const handleGoogleLogin = async () => {
 		setIsOAuthLoading(true);
-		const callbackUrl = new URL("/auth/callback", window.location.origin);
+		const callbackUrl = new URL("/auth/callback", getSiteUrl());
 		callbackUrl.searchParams.set("next", "/home");
 
 		await supabase.auth.signInWithOAuth({

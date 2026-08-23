@@ -3,6 +3,7 @@
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 import { AuthLayout, Button, Input } from "@presethub/ui";
 import { cn } from "@presethub/ui/lib/utils";
+import { getSiteUrl } from "@presethub/config";
 import { useRouter, useSearchParams } from "next/navigation";
 import { type FormEvent, useMemo, useState } from "react";
 
@@ -37,7 +38,7 @@ export default function RegisterPage() {
 
 		setIsLoading(true);
 
-		const callbackUrl = new URL("/auth/callback", window.location.origin);
+		const callbackUrl = new URL("/auth/callback", getSiteUrl());
 		callbackUrl.searchParams.set("next", redirectTo);
 		const trimmedUsername = username.trim();
 

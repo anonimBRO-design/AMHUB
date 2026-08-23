@@ -1,9 +1,28 @@
 // Site configuration from Product Specification §3 Site Map
 
+/**
+ * Canonical site origin — single source of truth for absolute URLs
+ * (OAuth/email redirects must always land on the production domain).
+ *
+ * Priority:
+ * 1. `NEXT_PUBLIC_APP_URL` (set per-environment in Vercel/CI).
+ * 2. Current browser origin (local dev & preview deployments without the var).
+ * 3. localhost fallback for SSR/dev.
+ */
+export function getSiteUrl(): string {
+	const configured = process.env.NEXT_PUBLIC_APP_URL?.trim().replace(
+		/\/+$/,
+		"",
+	);
+	if (configured) return configured;
+	if (typeof window !== "undefined") return window.location.origin;
+	return "http://localhost:3000";
+}
+
 export const siteConfig = {
 	name: "PresetHub",
 	description: "Discover, share, and track FL Studio presets",
-	url: process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000",
+	url: getSiteUrl(),
 	routes: [
 		{ path: "/", label: "Home" },
 		{ path: "/search", label: "Search" },

@@ -3,6 +3,7 @@
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 import { AuthLayout, Button, Input } from "@presethub/ui";
 import { cn } from "@presethub/ui/lib/utils";
+import { getSiteUrl } from "@presethub/config";
 import { ArrowLeft, CheckCircle2 } from "lucide-react";
 import Link from "next/link";
 import { type FormEvent, useMemo, useState } from "react";
@@ -19,7 +20,7 @@ export default function ForgotPasswordPage() {
 		setIsLoading(true);
 		setError(null);
 
-		const redirectTo = `${window.location.origin}/auth/callback?next=/auth/reset-password`;
+		const redirectTo = `${getSiteUrl()}/auth/callback?next=/auth/reset-password`;
 
 		const { error: resetError } = await supabase.auth.resetPasswordForEmail(
 			email.trim(),

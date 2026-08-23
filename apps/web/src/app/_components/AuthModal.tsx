@@ -1,6 +1,7 @@
 "use client";
 
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
+import { getSiteUrl } from "@presethub/config";
 import { AnimatePresence, motion } from "framer-motion";
 import { LogIn, UserPlus, X } from "lucide-react";
 import Link from "next/link";
@@ -24,7 +25,7 @@ export function AuthModal({
 	const handleGoogleLogin = async () => {
 		posthog.capture("auth_login_started", { method: "google" });
 		setIsLoading(true);
-		const callbackUrl = new URL("/auth/callback", window.location.origin);
+		const callbackUrl = new URL("/auth/callback", getSiteUrl());
 		callbackUrl.searchParams.set("next", "/home");
 
 		await supabase.auth.signInWithOAuth({
