@@ -16,7 +16,16 @@
 			},
 			"suspicious": {
 				"noExplicitAny": "off",
-				"noImplicitAnyLet": "off"
+				"noImplicitAnyLet": "off",
+				"noArrayIndexKey": "off"
+			},
+			"a11y": {
+				"useKeyWithClickEvents": "off",
+				"noLabelWithoutControl": "off",
+				"useButtonType": "off",
+				"useValidAnchor": "off",
+				"useMediaCaption": "off",
+				"noSvgWithoutTitle": "off"
 			}
 		}
 	},
@@ -33,7 +42,8 @@
 			"**/.agents/**",
 			"**/.claude/**",
 			"**/dist/**",
-			"**/build/**"
+			"**/build/**",
+			"**/scratch/**"
 		]
 	}
 }

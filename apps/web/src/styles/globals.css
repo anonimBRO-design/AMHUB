@@ -427,7 +427,8 @@ h6,
 	backdrop-filter: blur(var(--glass-blur, 24px)) saturate(190%);
 	-webkit-backdrop-filter: blur(var(--glass-blur, 24px)) saturate(190%);
 	border: 1px solid var(--glass-border);
-	box-shadow: 0 16px 40px rgba(0, 0, 0, 0.45), inset 0 1px 1px rgba(255, 255, 255, 0.15);
+	box-shadow: 0 16px 40px rgba(0, 0, 0, 0.45), inset 0 1px 1px
+		rgba(255, 255, 255, 0.15);
 	transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
@@ -451,11 +452,13 @@ h6,
 	background: var(--glass-bg-hover);
 	border-color: var(--glass-border-hover);
 	transform: translateY(-2px) scale(1.008);
-	box-shadow: 0 16px 36px rgba(124, 58, 237, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+	box-shadow: 0 16px 36px rgba(124, 58, 237, 0.18), inset 0 1px 0
+		rgba(255, 255, 255, 0.12);
 }
 
 .ios-btn-spring {
-	transition: transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.15s ease;
+	transition: transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.15s
+		ease;
 }
 .ios-btn-spring:active {
 	transform: scale(0.93);
@@ -463,7 +466,8 @@ h6,
 
 /* Ambient Floating Keyframes */
 @keyframes float-ambient {
-	0%, 100% {
+	0%,
+	100% {
 		transform: translateY(0px) scale(1);
 	}
 	50% {
@@ -472,10 +476,10 @@ h6,
 }
 
 /* Global Frosted Glass for Liquid Themes */
-[data-theme='dark-liquid'] [class*="bg-[var(--color-bg-surface)"],
-[data-theme='dark-liquid'] [class*="bg-[var(--color-bg-elevated)"],
-[data-theme='light-liquid'] [class*="bg-[var(--color-bg-surface)"],
-[data-theme='light-liquid'] [class*="bg-[var(--color-bg-elevated)"] {
+[data-theme="dark-liquid"] [class*="bg-[var(--color-bg-surface)"],
+[data-theme="dark-liquid"] [class*="bg-[var(--color-bg-elevated)"],
+[data-theme="light-liquid"] [class*="bg-[var(--color-bg-surface)"],
+[data-theme="light-liquid"] [class*="bg-[var(--color-bg-elevated)"] {
 	backdrop-filter: blur(var(--glass-blur, 20px)) saturate(170%);
 	-webkit-backdrop-filter: blur(var(--glass-blur, 20px)) saturate(170%);
 }
@@ -485,8 +489,8 @@ h6,
 }
 
 /* ─── Light Mode Global High Contrast Enforcement ───────────── */
-[data-theme='light-liquid'],
-[data-theme='light'],
+[data-theme="light-liquid"],
+[data-theme="light"],
 .light {
 	color-scheme: light;
 	--color-text-primary: #070110;
@@ -495,91 +499,89 @@ h6,
 	--color-text-disabled: #7c3aed;
 }
 
-[data-theme='light-liquid'] h1,
-[data-theme='light-liquid'] h2,
-[data-theme='light-liquid'] h3,
-[data-theme='light-liquid'] h4,
-[data-theme='light-liquid'] h5,
-[data-theme='light-liquid'] h6,
-[data-theme='light'] h1,
-[data-theme='light'] h2,
-[data-theme='light'] h3,
-[data-theme='light'] h4,
-[data-theme='light'] h5,
-[data-theme='light'] h6 {
+[data-theme="light-liquid"] h1,
+[data-theme="light-liquid"] h2,
+[data-theme="light-liquid"] h3,
+[data-theme="light-liquid"] h4,
+[data-theme="light-liquid"] h5,
+[data-theme="light-liquid"] h6,
+[data-theme="light"] h1,
+[data-theme="light"] h2,
+[data-theme="light"] h3,
+[data-theme="light"] h4,
+[data-theme="light"] h5,
+[data-theme="light"] h6 {
 	color: #070110;
 }
 
 /* Override washed-out texts in light mode */
-[data-theme='light-liquid'] p,
-[data-theme='light'] p {
+[data-theme="light-liquid"] p,
+[data-theme="light"] p {
 	color: var(--color-text-secondary);
 }
 
-[data-theme='light-liquid'] .text-zinc-400,
-[data-theme='light'] .text-zinc-400,
-[data-theme='light-liquid'] .text-zinc-500,
-[data-theme='light'] .text-zinc-500,
-[data-theme='light-liquid'] .text-gray-400,
-[data-theme='light'] .text-gray-400 {
+[data-theme="light-liquid"] .text-zinc-400,
+[data-theme="light"] .text-zinc-400,
+[data-theme="light-liquid"] .text-zinc-500,
+[data-theme="light"] .text-zinc-500,
+[data-theme="light-liquid"] .text-gray-400,
+[data-theme="light"] .text-gray-400 {
 	color: #3b1464 !important;
 }
 
-[data-theme='light-liquid'] .text-purple-300,
-[data-theme='light'] .text-purple-300 {
+[data-theme="light-liquid"] .text-purple-300,
+[data-theme="light"] .text-purple-300 {
 	color: #6d28d9 !important;
 }
 
-[data-theme='light-liquid'] .text-purple-400,
-[data-theme='light'] .text-purple-400 {
+[data-theme="light-liquid"] .text-purple-400,
+[data-theme="light"] .text-purple-400 {
 	color: #581c87 !important;
 }
 
-[data-theme='light-liquid'] .text-amber-400,
-[data-theme='light'] .text-amber-400,
-[data-theme='light-liquid'] .text-amber-300,
-[data-theme='light'] .text-amber-300 {
+[data-theme="light-liquid"] .text-amber-400,
+[data-theme="light"] .text-amber-400,
+[data-theme="light-liquid"] .text-amber-300,
+[data-theme="light"] .text-amber-300 {
 	color: #92400e !important;
 }
 
-[data-theme='light-liquid'] .text-emerald-400,
-[data-theme='light'] .text-emerald-400,
-[data-theme='light-liquid'] .text-emerald-300,
-[data-theme='light'] .text-emerald-300 {
+[data-theme="light-liquid"] .text-emerald-400,
+[data-theme="light"] .text-emerald-400,
+[data-theme="light-liquid"] .text-emerald-300,
+[data-theme="light"] .text-emerald-300 {
 	color: #166534 !important;
 }
 
-[data-theme='light-liquid'] .text-indigo-400,
-[data-theme='light'] .text-indigo-400,
-[data-theme='light-liquid'] .text-indigo-300,
-[data-theme='light'] .text-indigo-300 {
+[data-theme="light-liquid"] .text-indigo-400,
+[data-theme="light"] .text-indigo-400,
+[data-theme="light-liquid"] .text-indigo-300,
+[data-theme="light"] .text-indigo-300 {
 	color: #3730a3 !important;
 }
 
 /* Universal Form Controls High Contrast for Light Mode */
-[data-theme='light-liquid'] input:not([type="checkbox"]):not([type="radio"]),
-[data-theme='light-liquid'] textarea,
-[data-theme='light-liquid'] select,
-[data-theme='light'] input:not([type="checkbox"]):not([type="radio"]),
-[data-theme='light'] textarea,
-[data-theme='light'] select {
+[data-theme="light-liquid"] input:not([type="checkbox"]):not([type="radio"]),
+[data-theme="light-liquid"] textarea,
+[data-theme="light-liquid"] select,
+[data-theme="light"] input:not([type="checkbox"]):not([type="radio"]),
+[data-theme="light"] textarea,
+[data-theme="light"] select {
 	background-color: rgba(255, 255, 255, 0.95) !important;
 	color: #070110 !important;
 	border-color: rgba(124, 58, 237, 0.28) !important;
 }
 
-[data-theme='light-liquid'] input::placeholder,
-[data-theme='light-liquid'] textarea::placeholder,
-[data-theme='light'] input::placeholder,
-[data-theme='light'] textarea::placeholder {
+[data-theme="light-liquid"] input::placeholder,
+[data-theme="light-liquid"] textarea::placeholder,
+[data-theme="light"] input::placeholder,
+[data-theme="light"] textarea::placeholder {
 	color: #6b21a8 !important;
 	opacity: 0.65;
 }
 
-[data-theme='light-liquid'] label,
-[data-theme='light'] label {
+[data-theme="light-liquid"] label,
+[data-theme="light"] label {
 	color: #070110 !important;
 	font-weight: 700 !important;
 }
-
-

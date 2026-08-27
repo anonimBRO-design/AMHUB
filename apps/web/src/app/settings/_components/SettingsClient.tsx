@@ -137,7 +137,8 @@ export function SettingsClient({ profile }: SettingsClientProps) {
 									Push Notifications
 								</span>
 								<span className="text-[var(--color-text-tertiary)] block">
-									Get real-time alerts when creators like, comment, or download your presets.
+									Get real-time alerts when creators like, comment, or download
+									your presets.
 								</span>
 							</div>
 							<SettingsToggle
@@ -152,7 +153,8 @@ export function SettingsClient({ profile }: SettingsClientProps) {
 									Email Digest
 								</span>
 								<span className="text-[var(--color-text-tertiary)] block">
-									Weekly summary of creator preset trends and community activity.
+									Weekly summary of creator preset trends and community
+									activity.
 								</span>
 							</div>
 							<SettingsToggle
@@ -172,7 +174,8 @@ export function SettingsClient({ profile }: SettingsClientProps) {
 									Public Profile Visibility
 								</span>
 								<span className="text-[var(--color-text-tertiary)] block">
-									Allow other editors to find your profile in explore search and creator leaderboards.
+									Allow other editors to find your profile in explore search and
+									creator leaderboards.
 								</span>
 							</div>
 							<SettingsToggle
@@ -187,7 +190,8 @@ export function SettingsClient({ profile }: SettingsClientProps) {
 									Dark Mode Design System
 								</span>
 								<span className="text-[var(--color-text-tertiary)] block">
-									High-contrast obsidian theme for video editing workflow (Default active).
+									High-contrast obsidian theme for video editing workflow
+									(Default active).
 								</span>
 							</div>
 							<SettingsToggle checked={darkTheme} onChange={setDarkTheme} />

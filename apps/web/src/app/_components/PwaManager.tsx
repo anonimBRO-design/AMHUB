@@ -1,6 +1,6 @@
 "use client";
 
-import { Download, Share, Sparkles, Smartphone, X } from "lucide-react";
+import { Download, Share, Smartphone, Sparkles, X } from "lucide-react";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 
@@ -23,7 +23,10 @@ export function PwaManager() {
 			navigator.serviceWorker
 				.register("/sw.js")
 				.then((reg) => {
-					console.log("[PWA] Service Worker registered successfully:", reg.scope);
+					console.log(
+						"[PWA] Service Worker registered successfully:",
+						reg.scope,
+					);
 				})
 				.catch((err) => {
 					console.warn("[PWA] Service Worker registration failed:", err);

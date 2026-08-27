@@ -1,4 +1,4 @@
-import { type PresetCardPreset, PresetCard } from "@presethub/ui";
+import { PresetCard, type PresetCardPreset } from "@presethub/ui";
 import { Sparkles } from "lucide-react";
 
 interface FeaturedSectionProps {

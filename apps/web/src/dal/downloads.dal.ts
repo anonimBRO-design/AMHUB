@@ -1,7 +1,9 @@
+import { XP_REWARDS } from "@/lib/gamification/xp";
 import { syncPresetCounter } from "./helpers";
 import { createNotification } from "./notifications.dal";
 import { assertPresetExists } from "./presets.dal";
 import type { DalClient } from "./types";
+import { awardUserXp } from "./users.dal";
 
 export interface RecordDownloadParams {
 	presetId: string;
@@ -120,6 +122,16 @@ export async function recordPresetDownload(
 						type: "download",
 						presetId: presetId,
 						message: `downloaded your preset "${title || "Preset"}"`,
+					});
+
+					// Award creator XP for receiving a download
+					awardUserXp(
+						client,
+						creatorId,
+						XP_REWARDS.PRESET_DOWNLOADED,
+						"Preset downloaded",
+					).catch((err) => {
+						console.error("[XP_AWARD_ERROR] Failed to award download XP:", err);
 					});
 				}
 			} catch (e) {

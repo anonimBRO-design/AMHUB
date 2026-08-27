@@ -47,9 +47,7 @@ export function TagList({ preset }: TagListProps) {
 					<span className="text-[var(--color-text-tertiary)] flex items-center gap-1 text-[11px]">
 						<Shield className="w-3.5 h-3.5" /> Lisensi
 					</span>
-					<p className="font-bold text-emerald-400">
-						Free Use & Edit
-					</p>
+					<p className="font-bold text-emerald-400">Free Use & Edit</p>
 				</div>
 
 				<div className="p-3 rounded-lg bg-[var(--color-bg-base)] border border-[var(--color-border-subtle)] space-y-1">

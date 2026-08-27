@@ -31,6 +31,7 @@ interface PresetDetailClientProps {
 		amLink?: string | null;
 		isLiked?: boolean;
 		isBookmarked?: boolean;
+		hasAccess?: boolean;
 		creator: PresetCardPreset["creator"] & {
 			followerCount?: number;
 			presetCount?: number;
@@ -87,10 +88,7 @@ export function PresetDetailClient({
 			<div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
 				<div className="lg:col-span-2 space-y-6">
 					<InstallSection preset={preset} />
-					<DescriptionSection
-						preset={preset}
-						currentUserId={currentUserId}
-					/>
+					<DescriptionSection preset={preset} currentUserId={currentUserId} />
 					<TagList preset={preset} />
 					<CommentSection
 						presetId={preset.id}

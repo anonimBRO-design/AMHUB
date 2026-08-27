@@ -1,6 +1,7 @@
 "use client";
 
-import React, { createContext, useContext, useEffect, useState } from "react";
+import type React from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 
 export type ThemeMode = "normal" | "dark-liquid" | "light-liquid";
 
@@ -61,7 +62,9 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 	};
 
 	return (
-		<ThemeContext.Provider value={{ theme: mounted ? theme : "normal", setTheme, toggleTheme }}>
+		<ThemeContext.Provider
+			value={{ theme: mounted ? theme : "normal", setTheme, toggleTheme }}
+		>
 			{children}
 		</ThemeContext.Provider>
 	);

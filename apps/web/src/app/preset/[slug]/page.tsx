@@ -1,4 +1,5 @@
 import { listComments } from "@/dal/comments.dal";
+import { checkUserPresetAccess } from "@/dal/orders.dal";
 import { getFollowerCount } from "@/dal/users.dal";
 import { getPresetBySlug, listPublishedPresets } from "@/data/presets";
 import { mapPresetToCardPreset } from "@/lib/mappers";
@@ -55,6 +56,7 @@ export default async function PresetDetailPage({ params }: PageProps) {
 		{ data: likeRecord },
 		{ data: bookmarkRecord },
 		{ data: followRecord },
+		accessResult,
 	] = await Promise.all([
 		listPublishedPresets(supabase, {
 			category: rawPreset.category,
@@ -91,14 +93,24 @@ export default async function PresetDetailPage({ params }: PageProps) {
 					.eq("following_id", rawPreset.creator.id)
 					.maybeSingle()
 			: Promise.resolve({ data: null }),
+		checkUserPresetAccess(supabase, rawPreset.id, currentUser?.id),
 	]);
+
+	const isPaid = Boolean(
+		(rawPreset as { is_paid?: boolean }).is_paid &&
+			((rawPreset as { price?: number }).price ?? 0) > 0,
+	);
+	const hasAccess = accessResult.hasAccess;
 
 	const cardPreset = mapPresetToCardPreset(rawPreset);
 	const presetForDetail = {
 		...cardPreset,
 		fileType: rawPreset.file_type,
-		fileUrl: rawPreset.file_url,
-		amLink: rawPreset.am_link,
+		// SENSITIVE SECURITY FIX: Only expose fileUrl and amLink if user has access / free
+		fileUrl: hasAccess ? rawPreset.file_url : null,
+		amLink: hasAccess ? rawPreset.am_link : null,
+		isPaid,
+		hasAccess,
 		aspectRatio: cardPreset.aspectRatio,
 		aspectRatios:
 			(rawPreset as { aspect_ratios?: string[]; aspectRatios?: string[] })

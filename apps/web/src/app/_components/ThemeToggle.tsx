@@ -16,8 +16,8 @@ export function ThemeToggle() {
 				theme === "normal"
 					? "Theme: Normal (Klik untuk Dark Liquid)"
 					: theme === "dark-liquid"
-					? "Theme: Dark Liquid (Klik untuk Light Liquid)"
-					: "Theme: Light Liquid (Klik untuk Normal)"
+						? "Theme: Dark Liquid (Klik untuk Light Liquid)"
+						: "Theme: Light Liquid (Klik untuk Normal)"
 			}
 			aria-label="Toggle Theme Mode"
 		>

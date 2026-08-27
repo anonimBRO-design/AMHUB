@@ -1,7 +1,9 @@
+import { XP_REWARDS } from "@/lib/gamification/xp";
 import { syncPresetCounter } from "./helpers";
 import { createNotification } from "./notifications.dal";
 import { assertPresetExists } from "./presets.dal";
 import type { DalClient } from "./types";
+import { awardUserXp } from "./users.dal";
 
 export const COMMENT_SELECT_WITH_USER = `
 	id,
@@ -128,6 +130,16 @@ export async function createComment(
 	} catch (e) {
 		console.error("Failed to trigger comment notification", e);
 	}
+
+	// Award commenter XP for participating in community
+	awardUserXp(
+		client,
+		userId,
+		XP_REWARDS.PRESET_COMMENTED,
+		"Created comment",
+	).catch((err) => {
+		console.error("[XP_AWARD_ERROR] Failed to award comment XP:", err);
+	});
 
 	return comment;
 }

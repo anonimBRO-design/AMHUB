@@ -1,8 +1,10 @@
 import { ApiError } from "@/lib/api/errors";
 import { calculatePresetPayout } from "@/lib/monetization/payout";
 import type { PresetOrder } from "@presethub/types";
+import { createNotification } from "./notifications.dal";
 import { assertPresetExists } from "./presets.dal";
 import type { DalClient } from "./types";
+import { awardUserXp } from "./users.dal";
 
 export interface CreateOrderParams {
 	presetId: string;
@@ -177,7 +179,7 @@ export async function checkUserPresetAccess(
 ): Promise<{ hasAccess: boolean; isPaid: boolean; price: number }> {
 	const { data: preset } = await client
 		.from("presets")
-		.select("creator_id")
+		.select("creator_id, is_paid, price")
 		.eq("id", presetId)
 		.maybeSingle();
 
@@ -222,4 +224,77 @@ export async function checkUserPresetAccess(
 			price: 0,
 		};
 	}
+}
+
+/**
+ * Retrieves an order by its unique human-readable order number (e.g. AM-20260827-XXXX)
+ */
+export async function getOrderByOrderNumber(
+	client: DalClient,
+	orderNumber: string,
+): Promise<PresetOrder | null> {
+	const { data, error } = await client
+		.from("preset_orders")
+		.select("*, presets (id, title, slug, thumbnail_url)")
+		.eq("order_number", orderNumber)
+		.maybeSingle();
+
+	if (error || !data) return null;
+	return data as unknown as PresetOrder;
+}
+
+/**
+ * Fulfills a paid order: marks paid, records payment reference, sends notifications to buyer and seller, and awards XP.
+ */
+export async function fulfillPaidOrder(
+	client: DalClient,
+	orderId: string,
+	paymentReference?: string,
+): Promise<PresetOrder> {
+	const updated = await updateOrderStatus(
+		client,
+		orderId,
+		"paid",
+		paymentReference,
+	);
+
+	// Trigger notifications and XP asynchronously
+	try {
+		const { data: orderDetails } = await client
+			.from("preset_orders")
+			.select(
+				"buyer_id, seller_id, preset_id, creator_payout_amount, presets (title)",
+			)
+			.eq("id", orderId)
+			.maybeSingle();
+
+		if (orderDetails) {
+			const o = orderDetails as any;
+			const presetTitle = o.presets?.title || "Preset";
+
+			// 1. Notify buyer
+			await createNotification(client, {
+				userId: o.buyer_id,
+				type: "system",
+				presetId: o.preset_id,
+				message: `Pembayaran sukses! Preset "${presetTitle}" sekarang dapat diunduh.`,
+			});
+
+			// 2. Notify seller
+			await createNotification(client, {
+				userId: o.seller_id,
+				actorId: o.buyer_id,
+				type: "download",
+				presetId: o.preset_id,
+				message: `Preset "${presetTitle}" kamu telah dibeli! Saldo Rp ${o.creator_payout_amount?.toLocaleString("id-ID")} berhasil ditambahkan.`,
+			});
+
+			// 3. Award XP to seller (+50 XP for selling a preset)
+			await awardUserXp(client, o.seller_id, 50, "Preset sold");
+		}
+	} catch (e) {
+		console.error("Failed to process post-payment order fulfillment:", e);
+	}
+
+	return updated;
 }

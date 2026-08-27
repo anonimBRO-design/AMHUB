@@ -93,7 +93,8 @@ export async function PATCH(request: NextRequest, context: RouteContext) {
 		}
 
 		if (body.credit_display_name !== undefined) {
-			updatePayload.credit_display_name = body.credit_display_name?.trim() || null;
+			updatePayload.credit_display_name =
+				body.credit_display_name?.trim() || null;
 		}
 
 		if (body.max_allowed_presets !== undefined) {

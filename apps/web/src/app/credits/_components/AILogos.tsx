@@ -2,7 +2,9 @@ import type React from "react";
 
 export function ChatGPTLogo({
 	className = "w-12 h-12",
-}: { className?: string }) {
+}: {
+	className?: string;
+}) {
 	return (
 		<img
 			src="/ai-logos/chatgpt.svg"
@@ -15,7 +17,9 @@ export function ChatGPTLogo({
 
 export function ClaudeLogo({
 	className = "w-12 h-12",
-}: { className?: string }) {
+}: {
+	className?: string;
+}) {
 	return (
 		<img
 			src="/ai-logos/claude.svg"
@@ -28,7 +32,9 @@ export function ClaudeLogo({
 
 export function GeminiLogo({
 	className = "w-12 h-12",
-}: { className?: string }) {
+}: {
+	className?: string;
+}) {
 	return (
 		<img
 			src="/ai-logos/gemini.svg"
@@ -52,7 +58,9 @@ export function CodexLogo({ className = "w-12 h-12" }: { className?: string }) {
 
 export function OpenCodeLogo({
 	className = "w-12 h-12",
-}: { className?: string }) {
+}: {
+	className?: string;
+}) {
 	return (
 		<img
 			src="/ai-logos/opencode.svg"
@@ -65,7 +73,9 @@ export function OpenCodeLogo({
 
 export function NineRouterLogo({
 	className = "w-12 h-12",
-}: { className?: string }) {
+}: {
+	className?: string;
+}) {
 	return (
 		<img
 			src="/ai-logos/9router.svg"
@@ -78,7 +88,9 @@ export function NineRouterLogo({
 
 export function AntigravityLogo({
 	className = "w-12 h-12",
-}: { className?: string }) {
+}: {
+	className?: string;
+}) {
 	return (
 		<img
 			src="/ai-logos/antigravity.svg"

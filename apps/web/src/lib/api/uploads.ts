@@ -159,6 +159,38 @@ export function validateFileMetadata(
 	}
 }
 
+/**
+ * Defensive XML check: prevents XXE (XML External Entity), Billion Laughs,
+ * and malicious entity expansions in uploaded Alight Motion presets.
+ */
+export function validateXmlSafety(xmlContent: string): {
+	safe: boolean;
+	reason?: string;
+} {
+	if (!xmlContent || typeof xmlContent !== "string") {
+		return { safe: false, reason: "Invalid XML content." };
+	}
+
+	// 1. Check for DTD / DOCTYPE declarations (classic XXE vector)
+	if (/<!DOCTYPE/i.test(xmlContent) || /<!ENTITY/i.test(xmlContent)) {
+		return {
+			safe: false,
+			reason:
+				"XML contains prohibited DOCTYPE or ENTITY declarations (XXE defense).",
+		};
+	}
+
+	// 2. Check for external resource references
+	if (/SYSTEM\s+["']/i.test(xmlContent) || /PUBLIC\s+["']/i.test(xmlContent)) {
+		return {
+			safe: false,
+			reason: "XML contains prohibited external entity references.",
+		};
+	}
+
+	return { safe: true };
+}
+
 // ─────────────────────────────────────────────────────────────────────────────
 // Storage path generation
 // ─────────────────────────────────────────────────────────────────────────────

@@ -197,11 +197,15 @@ export const PresetCard = React.forwardRef<HTMLDivElement, PresetCardProps>(
 							);
 						}
 						setIsLiked(!nextState);
-						setLikeCount((prev) => (!nextState ? prev + 1 : Math.max(0, prev - 1)));
+						setLikeCount((prev) =>
+							!nextState ? prev + 1 : Math.max(0, prev - 1),
+						);
 					}
 				} catch {
 					setIsLiked(!nextState);
-					setLikeCount((prev) => (!nextState ? prev + 1 : Math.max(0, prev - 1)));
+					setLikeCount((prev) =>
+						!nextState ? prev + 1 : Math.max(0, prev - 1),
+					);
 				}
 			}
 		};
@@ -211,7 +215,9 @@ export const PresetCard = React.forwardRef<HTMLDivElement, PresetCardProps>(
 			e.preventDefault();
 			const nextState = !isBookmarked;
 			setIsBookmarked(nextState);
-			setBookmarkCount((prev) => (nextState ? prev + 1 : Math.max(0, prev - 1)));
+			setBookmarkCount((prev) =>
+				nextState ? prev + 1 : Math.max(0, prev - 1),
+			);
 
 			if (onBookmark) {
 				onBookmark(preset.id);
@@ -229,11 +235,15 @@ export const PresetCard = React.forwardRef<HTMLDivElement, PresetCardProps>(
 							);
 						}
 						setIsBookmarked(!nextState);
-						setBookmarkCount((prev) => (!nextState ? prev + 1 : Math.max(0, prev - 1)));
+						setBookmarkCount((prev) =>
+							!nextState ? prev + 1 : Math.max(0, prev - 1),
+						);
 					}
 				} catch {
 					setIsBookmarked(!nextState);
-					setBookmarkCount((prev) => (!nextState ? prev + 1 : Math.max(0, prev - 1)));
+					setBookmarkCount((prev) =>
+						!nextState ? prev + 1 : Math.max(0, prev - 1),
+					);
 				}
 			}
 		};
@@ -508,7 +518,9 @@ export const PresetCard = React.forwardRef<HTMLDivElement, PresetCardProps>(
 								)}
 							>
 								<MessageSquare className="h-3.5 w-3.5 text-blue-400 fill-blue-400/15" />
-								<span className="text-[11px] font-bold">{preset.commentCount ?? 0}</span>
+								<span className="text-[11px] font-bold">
+									{preset.commentCount ?? 0}
+								</span>
 							</a>
 						</div>
 

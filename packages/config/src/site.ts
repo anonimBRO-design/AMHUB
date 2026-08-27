@@ -20,24 +20,28 @@ export function getSiteUrl(): string {
 }
 
 export const siteConfig = {
-	name: "PresetHub",
-	description: "Discover, share, and track FL Studio presets",
+	name: "AMHUB",
+	description:
+		"Komunitas & Marketplace Preset Alight Motion Terbesar di Indonesia",
 	url: getSiteUrl(),
 	routes: [
 		{ path: "/", label: "Home" },
-		{ path: "/search", label: "Search" },
+		{ path: "/home", label: "Feed" },
+		{ path: "/explore", label: "Explore" },
 		{ path: "/creators", label: "Creators" },
 		{ path: "/leaderboard", label: "Leaderboard" },
+		{ path: "/collections", label: "Collections" },
 		{ path: "/upload", label: "Upload" },
-		{ path: "/profile/[username]", label: "Profile" },
-		{ path: "/preset/[id]", label: "Preset Detail" },
+		{ path: "/dashboard", label: "Dashboard" },
+		{ path: "/settings", label: "Settings" },
 		{ path: "/auth/login", label: "Login" },
 		{ path: "/auth/register", label: "Register" },
 	] as const,
 	socialLinks: {
-		twitter: "https://twitter.com/presethub",
-		github: "https://github.com/presethub",
-		discord: "https://discord.gg/presethub",
+		tiktok: "https://tiktok.com/@amhub.id",
+		instagram: "https://instagram.com/amhub.id",
+		youtube: "https://youtube.com/@amhub-official",
+		discord: "https://discord.gg/amhub",
 	},
 } as const;
 

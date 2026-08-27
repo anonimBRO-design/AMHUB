@@ -58,7 +58,7 @@ export function EditPresetModal({
 	const [error, setError] = useState<string | null>(null);
 
 	// Sync fields when preset changes
-	if (preset && preset.id && !isSubmitting) {
+	if (preset?.id && !isSubmitting) {
 		if (preset.title !== title && title === "") {
 			setTitle(preset.title);
 			setDescription(preset.description || "");

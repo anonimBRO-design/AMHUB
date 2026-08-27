@@ -37,11 +37,14 @@ export function PodiumCard({
 		rank === 1
 			? {
 					order: "order-1 sm:order-2",
-					scale: "sm:-translate-y-4 shadow-[0_0_35px_rgba(245,158,11,0.2)] border-amber-400/40 bg-gradient-to-b from-amber-500/15 via-[var(--color-bg-surface)] to-[var(--color-bg-surface)]",
-					crownBg: "bg-gradient-to-r from-amber-400 to-yellow-400 text-black shadow-lg shadow-amber-400/30",
+					scale:
+						"sm:-translate-y-4 shadow-[0_0_35px_rgba(245,158,11,0.2)] border-amber-400/40 bg-gradient-to-b from-amber-500/15 via-[var(--color-bg-surface)] to-[var(--color-bg-surface)]",
+					crownBg:
+						"bg-gradient-to-r from-amber-400 to-yellow-400 text-black shadow-lg shadow-amber-400/30",
 					badgeLabel: "1st CHAMPION",
 					badgeIcon: Crown,
-					avatarBorder: "border-amber-400 ring-4 ring-amber-400/20 shadow-amber-400/30",
+					avatarBorder:
+						"border-amber-400 ring-4 ring-amber-400/20 shadow-amber-400/30",
 					avatarSize: "w-20 h-20 sm:w-24 sm:h-24",
 					podiumHeight: "min-h-[380px] sm:min-h-[420px]",
 					textColor: "text-amber-300",
@@ -50,8 +53,10 @@ export function PodiumCard({
 			: rank === 2
 				? {
 						order: "order-2 sm:order-1",
-						scale: "shadow-[0_0_25px_rgba(148,163,184,0.15)] border-slate-400/30 bg-gradient-to-b from-slate-400/10 via-[var(--color-bg-surface)] to-[var(--color-bg-surface)]",
-						crownBg: "bg-gradient-to-r from-slate-200 to-slate-400 text-slate-950 shadow-md",
+						scale:
+							"shadow-[0_0_25px_rgba(148,163,184,0.15)] border-slate-400/30 bg-gradient-to-b from-slate-400/10 via-[var(--color-bg-surface)] to-[var(--color-bg-surface)]",
+						crownBg:
+							"bg-gradient-to-r from-slate-200 to-slate-400 text-slate-950 shadow-md",
 						badgeLabel: "2nd RUNNER UP",
 						badgeIcon: Trophy,
 						avatarBorder: "border-slate-300 ring-2 ring-slate-300/20",
@@ -62,8 +67,10 @@ export function PodiumCard({
 					}
 				: {
 						order: "order-3 sm:order-3",
-						scale: "shadow-[0_0_25px_rgba(217,119,6,0.15)] border-amber-700/40 bg-gradient-to-b from-amber-800/15 via-[var(--color-bg-surface)] to-[var(--color-bg-surface)]",
-						crownBg: "bg-gradient-to-r from-amber-600 to-amber-700 text-amber-50 shadow-md",
+						scale:
+							"shadow-[0_0_25px_rgba(217,119,6,0.15)] border-amber-700/40 bg-gradient-to-b from-amber-800/15 via-[var(--color-bg-surface)] to-[var(--color-bg-surface)]",
+						crownBg:
+							"bg-gradient-to-r from-amber-600 to-amber-700 text-amber-50 shadow-md",
 						badgeLabel: "3rd PODIUM",
 						badgeIcon: Medal,
 						avatarBorder: "border-amber-600 ring-2 ring-amber-600/20",

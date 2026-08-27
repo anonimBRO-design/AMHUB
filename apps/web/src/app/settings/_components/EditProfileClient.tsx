@@ -136,7 +136,9 @@ export function EditProfileClient({ profile }: EditProfileClientProps) {
 				banner_updated: bannerUrl !== profile.banner_url,
 			});
 
-			setSuccessMessage(t.settings.savedSuccess || "Profile updated successfully!");
+			setSuccessMessage(
+				t.settings.savedSuccess || "Profile updated successfully!",
+			);
 
 			if (username.trim().toLowerCase() !== profile.username) {
 				router.push(`/u/${username.trim().toLowerCase()}`);

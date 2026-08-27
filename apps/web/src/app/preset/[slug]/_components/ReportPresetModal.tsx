@@ -15,7 +15,8 @@ const REPORT_REASONS = [
 	{
 		id: "reupload",
 		label: "Reupload / Hak Cipta",
-		description: "Preset ini diambil atau diunggah ulang tanpa izin pembuat asli.",
+		description:
+			"Preset ini diambil atau diunggah ulang tanpa izin pembuat asli.",
 	},
 	{
 		id: "broken",
@@ -80,7 +81,9 @@ export function ReportPresetModal({
 			}, 2500);
 		} catch (err: unknown) {
 			setError(
-				err instanceof Error ? err.message : "Terjadi kesalahan saat melaporkan",
+				err instanceof Error
+					? err.message
+					: "Terjadi kesalahan saat melaporkan",
 			);
 		} finally {
 			setIsLoading(false);
@@ -131,7 +134,8 @@ export function ReportPresetModal({
 							Laporan Terkirim!
 						</h4>
 						<p className="text-xs text-[var(--color-text-secondary)] max-w-xs mx-auto">
-							Terima kasih atas kontribusimu menjaga komunitas AMHUB tetap aman dan berkualitas.
+							Terima kasih atas kontribusimu menjaga komunitas AMHUB tetap aman
+							dan berkualitas.
 						</p>
 					</div>
 				) : (

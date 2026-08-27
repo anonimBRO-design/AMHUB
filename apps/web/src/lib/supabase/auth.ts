@@ -6,7 +6,9 @@ import { createSupabaseServerClient } from "./server";
 
 export type SupabaseUser = NonNullable<
 	Awaited<
-		ReturnType<Awaited<ReturnType<typeof createSupabaseServerClient>>["auth"]["getUser"]>
+		ReturnType<
+			Awaited<ReturnType<typeof createSupabaseServerClient>>["auth"]["getUser"]
+		>
 	>["data"]["user"]
 >;
 

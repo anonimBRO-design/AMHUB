@@ -30,7 +30,8 @@ export function Footer() {
 						</Link>
 						<p className="font-body text-xs text-[var(--color-text-tertiary)] leading-relaxed">
 							The premier community platform for Alight Motion creators.
-							Discover, share, and import pro XML, Google Drive, and link presets.
+							Discover, share, and import pro XML, Google Drive, and link
+							presets.
 						</p>
 						<a
 							href="https://sociabuzz.com/anonimbro"
@@ -136,7 +137,9 @@ export function Footer() {
 										type="button"
 										onClick={() => {
 											if (typeof window !== "undefined") {
-												window.dispatchEvent(new CustomEvent("pwa:open-install"));
+												window.dispatchEvent(
+													new CustomEvent("pwa:open-install"),
+												);
 											}
 										}}
 										className="hover:text-[var(--color-interactive-primary)] text-purple-400 font-medium transition-colors text-left inline-flex items-center gap-1"

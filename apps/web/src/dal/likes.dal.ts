@@ -1,8 +1,10 @@
 import type { PresetWithCreator } from "@/data/presets";
+import { XP_REWARDS } from "@/lib/gamification/xp";
 import { syncPresetCounter } from "./helpers";
 import { createNotification } from "./notifications.dal";
 import { PRESET_SELECT_WITH_CREATOR, assertPresetExists } from "./presets.dal";
 import type { DalClient } from "./types";
+import { awardUserXp } from "./users.dal";
 
 export async function listUserLikedPresets(
 	client: DalClient,
@@ -54,12 +56,23 @@ export async function likePreset(
 			(preset as { creator_id: string }).creator_id &&
 			(preset as { creator_id: string }).creator_id !== userId
 		) {
+			const creatorId = (preset as { creator_id: string }).creator_id;
 			await createNotification(client, {
-				userId: (preset as { creator_id: string }).creator_id,
+				userId: creatorId,
 				actorId: userId,
 				type: "like",
 				presetId,
 				message: `liked your preset "${(preset as { title?: string }).title || "Preset"}"`,
+			});
+
+			// Award creator XP for receiving a like
+			awardUserXp(
+				client,
+				creatorId,
+				XP_REWARDS.PRESET_LIKED,
+				"Preset liked",
+			).catch((err) => {
+				console.error("[XP_AWARD_ERROR] Failed to award like XP:", err);
 			});
 		}
 	} catch (e) {

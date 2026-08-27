@@ -174,7 +174,9 @@ export default async function Image({
 						{creatorName.slice(0, 2).toUpperCase()}
 					</div>
 					<div style={{ display: "flex", flexDirection: "column" }}>
-						<span style={{ fontSize: "22px", fontWeight: 700, color: "#F8FAFC" }}>
+						<span
+							style={{ fontSize: "22px", fontWeight: 700, color: "#F8FAFC" }}
+						>
 							{creatorName}
 						</span>
 						<span style={{ fontSize: "16px", color: "#64748B" }}>
@@ -185,10 +187,28 @@ export default async function Image({
 
 				{/* Stats */}
 				<div style={{ display: "flex", alignItems: "center", gap: "24px" }}>
-					<div style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "18px", color: "#F43F5E", fontWeight: 700 }}>
+					<div
+						style={{
+							display: "flex",
+							alignItems: "center",
+							gap: "8px",
+							fontSize: "18px",
+							color: "#F43F5E",
+							fontWeight: 700,
+						}}
+					>
 						❤️ <span>{likes} Likes</span>
 					</div>
-					<div style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "18px", color: "#10B981", fontWeight: 700 }}>
+					<div
+						style={{
+							display: "flex",
+							alignItems: "center",
+							gap: "8px",
+							fontSize: "18px",
+							color: "#10B981",
+							fontWeight: 700,
+						}}
+					>
 						📥 <span>{downloads} Downloads</span>
 					</div>
 				</div>

@@ -2,7 +2,13 @@
 
 import { AuthModal } from "@/app/_components/AuthModal";
 import type { User } from "@presethub/types";
-import { createContext, useContext, useEffect, useState } from "react";
+import {
+	createContext,
+	useCallback,
+	useContext,
+	useEffect,
+	useState,
+} from "react";
 
 interface AuthContextType {
 	currentUser: User | null;
@@ -38,10 +44,10 @@ export function AuthProvider({
 		return false;
 	};
 
-	const openAuthModal = (title?: string) => {
+	const openAuthModal = useCallback((title?: string) => {
 		if (title) setModalTitle(title);
 		setIsOpen(true);
-	};
+	}, []);
 
 	const closeAuthModal = () => {
 		setIsOpen(false);
@@ -57,7 +63,7 @@ export function AuthProvider({
 		return () => {
 			window.removeEventListener("auth:required", handleAuthRequired);
 		};
-	}, []);
+	}, [openAuthModal]);
 
 	return (
 		<AuthContext.Provider

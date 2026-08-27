@@ -47,7 +47,9 @@ export function BookmarkButton({
 		} catch (error) {
 			console.error("Failed to toggle bookmark", error);
 			setIsBookmarked(!nextState); // Rollback on error
-			setCurrentCount((prev) => (!nextState ? prev + 1 : Math.max(0, prev - 1)));
+			setCurrentCount((prev) =>
+				!nextState ? prev + 1 : Math.max(0, prev - 1),
+			);
 			onBookmarkChange?.(!nextState);
 		} finally {
 			setIsLoading(false);

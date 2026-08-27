@@ -1,13 +1,17 @@
 "use client";
 
+import { useAuth } from "@/context/AuthContext";
 import {
 	Check,
 	Copy,
 	Download,
 	ExternalLink,
 	FileCode,
+	Loader2,
+	Lock,
 	QrCode,
 	Share2,
+	ShoppingBag,
 	Smartphone,
 	Zap,
 } from "lucide-react";
@@ -24,17 +28,27 @@ interface InstallSectionProps {
 		price?: number;
 		isPaid?: boolean;
 		currency?: string;
+		hasAccess?: boolean;
 	};
 }
 
 export function InstallSection({ preset }: InstallSectionProps) {
+	const { requireAuth } = useAuth();
 	const [copied, setCopied] = useState(false);
 	const [shared, setShared] = useState(false);
+	const [isOrdering, setIsOrdering] = useState(false);
+	const [orderError, setOrderError] = useState<string | null>(null);
 
-	const linkToCopy =
-		preset.amLink ||
-		preset.fileUrl ||
-		(typeof window !== "undefined" ? window.location.href : "");
+	const isLocked = Boolean(preset.isPaid && !preset.hasAccess);
+
+	// SECURITY: If locked, never copy sensitive file or AM links
+	const linkToCopy = isLocked
+		? typeof window !== "undefined"
+			? window.location.href
+			: ""
+		: preset.amLink ||
+			preset.fileUrl ||
+			(typeof window !== "undefined" ? window.location.href : "");
 
 	const handleDownload = async (
 		e: React.MouseEvent<HTMLAnchorElement>,
@@ -109,7 +123,8 @@ export function InstallSection({ preset }: InstallSectionProps) {
 	};
 
 	const handleShare = async () => {
-		const currentUrl = typeof window !== "undefined" ? window.location.href : "";
+		const currentUrl =
+			typeof window !== "undefined" ? window.location.href : "";
 		if (typeof navigator !== "undefined" && navigator.share) {
 			try {
 				await navigator.share({
@@ -124,6 +139,32 @@ export function InstallSection({ preset }: InstallSectionProps) {
 			}
 		} else {
 			handleCopy();
+		}
+	};
+
+	const handlePurchase = async () => {
+		if (!requireAuth(undefined, "Login untuk membeli preset ini")) return;
+		setIsOrdering(true);
+		setOrderError(null);
+		try {
+			const res = await fetch("/api/orders", {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({ preset_id: preset.id }),
+			});
+			const data = await res.json();
+			if (!res.ok) {
+				throw new Error(data?.error?.message || "Gagal membuat order.");
+			}
+			const orderNum = data?.data?.order_number || data?.order_number;
+			alert(
+				`Order #${orderNum} berhasil dibuat! Silakan selesaikan pembayaran.`,
+			);
+		} catch (err: unknown) {
+			const msg = err instanceof Error ? err.message : "Gagal memproses order";
+			setOrderError(msg);
+		} finally {
+			setIsOrdering(false);
 		}
 	};
 
@@ -163,37 +204,78 @@ export function InstallSection({ preset }: InstallSectionProps) {
 			</div>
 
 			{/* Main Action Buttons */}
-			<div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-				{preset.amLink && (
-					<a
-						href={preset.amLink}
-						target="_blank"
-						rel="noopener noreferrer"
-						onClick={(e) => handleDownload(e, "amLink", preset.amLink || "")}
-						className="inline-flex items-center justify-center gap-2 min-h-[48px] px-5 rounded-lg bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-bold text-sm shadow-lg shadow-emerald-500/25 hover:from-emerald-600 hover:to-teal-600 active:scale-[0.98] transition-all group"
-					>
-						<Zap className="w-4.5 h-4.5 fill-current text-white animate-pulse" />
-						<span>Open in Alight Motion</span>
-						<ExternalLink className="w-4 h-4 opacity-75 group-hover:translate-x-0.5 transition-transform" />
-					</a>
-				)}
+			{isLocked ? (
+				<div className="p-4 sm:p-5 rounded-xl bg-gradient-to-br from-amber-500/10 via-amber-500/5 to-transparent border border-amber-500/30 text-center space-y-3">
+					<div className="inline-flex items-center justify-center w-11 h-11 rounded-2xl bg-amber-500/20 text-amber-400 border border-amber-500/30 shadow-inner">
+						<Lock className="w-5 h-5" />
+					</div>
+					<div>
+						<h3 className="text-sm font-bold text-[var(--color-text-primary)]">
+							Preset Berbayar Eksklusif
+						</h3>
+						<p className="text-xs text-[var(--color-text-secondary)] max-w-md mx-auto mt-0.5">
+							Beli sekarang untuk langsung membuka akses download file XML, QR
+							Code, dan link import Alight Motion.
+						</p>
+					</div>
 
-				{preset.fileUrl && (
-					<a
-						href={preset.fileUrl}
-						download
-						onClick={(e) => handleDownload(e, "fileUrl", preset.fileUrl || "")}
-						className="inline-flex items-center justify-center gap-2 min-h-[48px] px-5 rounded-lg bg-[var(--color-bg-elevated)] text-[var(--color-text-primary)] font-bold text-sm border border-[var(--color-border-subtle)] hover:border-emerald-500/40 hover:bg-emerald-500/5 active:scale-[0.98] transition-all"
+					{orderError && (
+						<p className="text-xs text-rose-400 font-semibold">{orderError}</p>
+					)}
+
+					<button
+						type="button"
+						onClick={handlePurchase}
+						disabled={isOrdering}
+						className="w-full sm:w-auto inline-flex items-center justify-center gap-2 min-h-[48px] px-8 rounded-lg bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-slate-950 font-black text-sm shadow-lg shadow-amber-500/25 active:scale-[0.98] transition-all cursor-pointer disabled:opacity-50"
 					>
-						{preset.fileType === "qr" ? (
-							<QrCode className="w-4.5 h-4.5 text-purple-400" />
+						{isOrdering ? (
+							<Loader2 className="w-4.5 h-4.5 animate-spin text-slate-950" />
 						) : (
-							<FileCode className="w-4.5 h-4.5 text-emerald-400" />
+							<ShoppingBag className="w-4.5 h-4.5 text-slate-950 fill-current" />
 						)}
-						<span>Download {preset.fileType?.toUpperCase() || "File"}</span>
-					</a>
-				)}
-			</div>
+						<span>
+							{isOrdering
+								? "Memproses Order..."
+								: `Beli Sekarang • Rp ${(preset.price ?? 0).toLocaleString("id-ID")}`}
+						</span>
+					</button>
+				</div>
+			) : (
+				<div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+					{preset.amLink && (
+						<a
+							href={preset.amLink}
+							target="_blank"
+							rel="noopener noreferrer"
+							onClick={(e) => handleDownload(e, "amLink", preset.amLink || "")}
+							className="inline-flex items-center justify-center gap-2 min-h-[48px] px-5 rounded-lg bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-bold text-sm shadow-lg shadow-emerald-500/25 hover:from-emerald-600 hover:to-teal-600 active:scale-[0.98] transition-all group"
+						>
+							<Zap className="w-4.5 h-4.5 fill-current text-white animate-pulse" />
+							<span>Open in Alight Motion</span>
+							<ExternalLink className="w-4 h-4 opacity-75 group-hover:translate-x-0.5 transition-transform" />
+						</a>
+					)}
+
+					{preset.fileUrl && (
+						<a
+							href={preset.fileUrl}
+							download
+							onClick={(e) =>
+								handleDownload(e, "fileUrl", preset.fileUrl || "")
+							}
+							className="inline-flex items-center justify-center gap-2 min-h-[48px] px-5 rounded-lg bg-[var(--color-bg-elevated)] text-[var(--color-text-primary)] font-bold text-sm border border-[var(--color-border-subtle)] hover:border-emerald-500/40 hover:bg-emerald-500/5 active:scale-[0.98] transition-all"
+						>
+							{preset.fileType === "qr" ? (
+								<QrCode className="w-4.5 h-4.5 text-purple-400" />
+							) : (
+								<FileCode className="w-4.5 h-4.5 text-emerald-400" />
+							)}
+							<span>Download {preset.fileType?.toUpperCase() || "File"}</span>
+						</a>
+					)}
+				</div>
+			)}
 
 			{/* Direct Link / Copy / Share Bar */}
 			{linkToCopy && (
@@ -245,10 +327,12 @@ export function InstallSection({ preset }: InstallSectionProps) {
 						Tekan tombol <strong>Open in Alight Motion</strong> di HP kamu.
 					</li>
 					<li>
-						Jika download file <strong>XML</strong>: Buka Alight Motion &gt; Project &gt; Import XML.
+						Jika download file <strong>XML</strong>: Buka Alight Motion &gt;
+						Project &gt; Import XML.
 					</li>
 					<li>
-						Jika pakai <strong>Preset Link 5MB</strong>: Klik link di atas, Alight Motion akan otomatis mendownload aset project.
+						Jika pakai <strong>Preset Link 5MB</strong>: Klik link di atas,
+						Alight Motion akan otomatis mendownload aset project.
 					</li>
 				</ol>
 			</div>

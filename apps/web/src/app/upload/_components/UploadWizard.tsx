@@ -31,7 +31,9 @@ const WIZARD_STEPS = [
 	{ num: 4, label: "Review & Publish" },
 ];
 
-async function extractThumbnailFromVideo(videoFile: File): Promise<File | null> {
+async function extractThumbnailFromVideo(
+	videoFile: File,
+): Promise<File | null> {
 	return new Promise((resolve) => {
 		try {
 			const video = document.createElement("video");
@@ -47,7 +49,10 @@ async function extractThumbnailFromVideo(videoFile: File): Promise<File | null> 
 			};
 
 			video.onloadeddata = () => {
-				video.currentTime = Math.min(0.5, Math.max(0.1, (video.duration || 1) * 0.1));
+				video.currentTime = Math.min(
+					0.5,
+					Math.max(0.1, (video.duration || 1) * 0.1),
+				);
 			};
 
 			video.onseeked = () => {

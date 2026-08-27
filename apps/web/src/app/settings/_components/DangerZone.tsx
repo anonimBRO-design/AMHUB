@@ -46,14 +46,20 @@ export function DangerZone() {
 						) : (
 							<LogOut className="w-4 h-4" />
 						)}
-						<span>{isLoggingOut ? "Signing Out..." : "Sign Out of Account"}</span>
+						<span>
+							{isLoggingOut ? "Signing Out..." : "Sign Out of Account"}
+						</span>
 					</div>
 				</button>
 
 				{/* Delete Account Button */}
 				<button
 					type="button"
-					onClick={() => alert("To delete your account and all associated presets/data, please contact support at support@amhub.com")}
+					onClick={() =>
+						alert(
+							"To delete your account and all associated presets/data, please contact support at support@amhub.com",
+						)
+					}
 					className="w-full flex items-center justify-between p-4 text-xs font-semibold text-[var(--color-text-tertiary)] hover:text-rose-400 hover:bg-rose-500/5 transition-colors cursor-pointer"
 				>
 					<div className="flex items-center gap-3">

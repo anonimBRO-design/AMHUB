@@ -119,10 +119,7 @@ export async function GET(request: NextRequest) {
 			const level = typeof raw.level === "number" ? raw.level : 1;
 			const createdAt = String(raw.created_at || new Date().toISOString());
 			const updatedAt = String(raw.updated_at || createdAt);
-			const role = String(
-				raw.role ||
-					(isStaff || username.toLowerCase() === "afgan" ? "admin" : "user"),
-			);
+			const role = String(raw.role || (isStaff ? "admin" : "user"));
 
 			return {
 				id,
@@ -229,12 +226,8 @@ export async function DELETE(request: NextRequest) {
 			is_staff?: boolean;
 		};
 
-		// 6. Prevent deleting another admin or @afgan
-		if (
-			targetProfile.username.toLowerCase() === "afgan" ||
-			targetProfile.is_staff ||
-			targetProfile.role === "admin"
-		) {
+		// 6. Prevent deleting another admin
+		if (targetProfile.is_staff || targetProfile.role === "admin") {
 			return apiErrorResponse(
 				new ApiError({
 					code: "bad_request",

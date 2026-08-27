@@ -41,6 +41,7 @@ export interface ListPresetsFilter {
 	page: number;
 	limit: number;
 	category?: string;
+	status?: "pending" | "published" | "rejected" | "removed";
 }
 
 export interface CreatePresetData {
@@ -70,13 +71,14 @@ export async function listPresets(
 	client: DalClient,
 	filter: ListPresetsFilter,
 ) {
-	const { page, limit, category } = filter;
+	const { page, limit, category, status = "published" } = filter;
 	const offset = (page - 1) * limit;
 	const to = offset + limit - 1;
 
 	let query = client
 		.from("presets")
 		.select("*", { count: "exact" })
+		.eq("status", status)
 		.range(offset, to)
 		.order("created_at", { ascending: false });
 
@@ -534,7 +536,7 @@ export async function updatePresetByOwner(
 ) {
 	const { data: existing, error: checkError } = await client
 		.from("presets")
-		.select("id, creator_id")
+		.select("id, creator_id, status")
 		.eq("id", presetId)
 		.single();
 
@@ -545,9 +547,21 @@ export async function updatePresetByOwner(
 	const existingRecord = existing as unknown as {
 		id: string;
 		creator_id: string;
+		status?: string;
 	};
 	if (existingRecord.creator_id !== creatorId) {
 		throw new Error("Unauthorized: You can only edit your own presets");
+	}
+
+	// Moderation enforcement: if banned/rejected by staff, creator cannot self-publish
+	if (
+		(existingRecord.status === "rejected" ||
+			existingRecord.status === "removed") &&
+		data.status === "published"
+	) {
+		throw new Error(
+			"This preset was rejected or removed by staff and cannot be re-published without appeal.",
+		);
 	}
 
 	const { data: updated, error: updateError } = await client
@@ -780,4 +794,3 @@ export async function incrementPresetView(
 		return 0;
 	}
 }
-

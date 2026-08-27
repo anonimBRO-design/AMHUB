@@ -118,7 +118,9 @@ export async function getLeaderboardData(
 
 		if (followRecords) {
 			for (const f of followRecords) {
-				followingSet.add((f as unknown as { following_id: string }).following_id);
+				followingSet.add(
+					(f as unknown as { following_id: string }).following_id,
+				);
 			}
 		}
 	}

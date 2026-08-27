@@ -1,4 +1,5 @@
 import { ApiError } from "@/lib/api/errors";
+import { calculateLevelFromXp } from "@/lib/gamification/xp";
 import type { Database, UpdateUserProfileInput, User } from "@presethub/types";
 import { assertExists, handleDuplicateKey } from "./helpers";
 import { createNotification } from "./notifications.dal";
@@ -266,10 +267,19 @@ export async function listPopularCreators(
 export const RESERVED_USERNAMES = [
 	"admin",
 	"administrator",
+	"afgan",
+	"root",
+	"staff",
+	"moderator",
+	"mod",
+	"official",
+	"amhub",
 	"system",
 	"guest",
 	"anonymous",
 	"support",
+	"help",
+	"security",
 	"api",
 	"settings",
 	"profile",
@@ -472,4 +482,52 @@ export async function unfollowUser(
 		.eq("following_id", validTargetUser.id);
 
 	if (deleteError) throw deleteError;
+}
+
+/**
+ * Awards XP to a user, recalculates level, and updates database.
+ */
+export async function awardUserXp(
+	client: DalClient,
+	userId: string,
+	amount: number,
+	_reason?: string,
+): Promise<{ xp: number; level: number; levelUp: boolean } | null> {
+	if (amount <= 0) return null;
+
+	try {
+		const { data: user, error } = await client
+			.from("users")
+			.select("id, xp, level")
+			.eq("id", userId)
+			.maybeSingle();
+
+		if (error || !user) {
+			return null;
+		}
+
+		const currentXp = (user as { xp?: number }).xp ?? 0;
+		const currentLevel = (user as { level?: number }).level ?? 1;
+		const newXp = currentXp + amount;
+		const { level: newLevel } = calculateLevelFromXp(newXp);
+		const levelUp = newLevel > currentLevel;
+
+		await client
+			.from("users")
+			.update({
+				xp: newXp,
+				level: newLevel,
+				updated_at: new Date().toISOString(),
+			} as never)
+			.eq("id", userId);
+
+		return {
+			xp: newXp,
+			level: newLevel,
+			levelUp,
+		};
+	} catch (e) {
+		console.error("Failed to award XP:", e);
+		return null;
+	}
 }

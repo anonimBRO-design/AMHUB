@@ -1,9 +1,9 @@
 "use client";
 
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
+import { getSiteUrl } from "@presethub/config";
 import { AuthLayout, Button, Input } from "@presethub/ui";
 import { cn } from "@presethub/ui/lib/utils";
-import { getSiteUrl } from "@presethub/config";
 import { useRouter, useSearchParams } from "next/navigation";
 import { type FormEvent, useMemo, useState } from "react";
 

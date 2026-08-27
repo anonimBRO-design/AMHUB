@@ -133,8 +133,8 @@ function LayoutShellInner({
 						isDarkLiquid
 							? "bg-gradient-to-tr from-purple-600/25 to-indigo-600/20"
 							: isLightLiquid
-							? "bg-gradient-to-tr from-purple-400/20 to-indigo-300/15"
-							: "bg-gradient-to-tr from-purple-600/10 to-transparent"
+								? "bg-gradient-to-tr from-purple-400/20 to-indigo-300/15"
+								: "bg-gradient-to-tr from-purple-600/10 to-transparent"
 					}`}
 				/>
 				<div
@@ -142,8 +142,8 @@ function LayoutShellInner({
 						isDarkLiquid
 							? "bg-gradient-to-bl from-fuchsia-600/20 to-purple-800/25"
 							: isLightLiquid
-							? "bg-gradient-to-bl from-purple-400/15 to-pink-300/15"
-							: "bg-gradient-to-bl from-indigo-600/10 to-transparent"
+								? "bg-gradient-to-bl from-purple-400/15 to-pink-300/15"
+								: "bg-gradient-to-bl from-indigo-600/10 to-transparent"
 					}`}
 					style={{ animationDelay: "4s" }}
 				/>

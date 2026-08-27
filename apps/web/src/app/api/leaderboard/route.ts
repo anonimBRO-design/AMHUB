@@ -13,7 +13,8 @@ export const dynamic = "force-dynamic";
 export async function GET(request: NextRequest) {
 	try {
 		const searchParams = request.nextUrl.searchParams;
-		const period = (searchParams.get("period") || "weekly") as LeaderboardPeriod;
+		const period = (searchParams.get("period") ||
+			"weekly") as LeaderboardPeriod;
 		const metric = (searchParams.get("metric") || "score") as LeaderboardMetric;
 		const limit = Math.min(
 			100,

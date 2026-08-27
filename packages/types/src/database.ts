@@ -645,6 +645,19 @@ export interface Database {
 					},
 				];
 			};
+			creator_withdrawals: {
+				Row: CreatorWithdrawalRow;
+				Insert: CreatorWithdrawalInsert;
+				Update: CreatorWithdrawalUpdate;
+				Relationships: [
+					{
+						foreignKeyName: "creator_withdrawals_creator_id_fkey";
+						columns: ["creator_id"];
+						referencedRelation: "users";
+						referencedColumns: ["id"];
+					},
+				];
+			};
 		};
 		Views: Record<string, never>;
 		Functions: {
@@ -708,6 +721,50 @@ export interface CreatorPermissionInsert {
 
 export type CreatorPermissionUpdate = Partial<CreatorPermissionInsert>;
 
+export type WithdrawalPaymentMethod =
+	| "dana"
+	| "gopay"
+	| "ovo"
+	| "bca"
+	| "bri"
+	| "mandiri";
+
+export type WithdrawalStatus =
+	| "pending"
+	| "processing"
+	| "completed"
+	| "rejected";
+
+export interface CreatorWithdrawalRow {
+	id: string;
+	creator_id: string;
+	amount: number;
+	payment_method: WithdrawalPaymentMethod;
+	account_name: string;
+	account_number: string;
+	status: WithdrawalStatus;
+	rejection_reason: Nullable<string>;
+	payout_reference: Nullable<string>;
+	created_at: string;
+	processed_at: Nullable<string>;
+}
+
+export interface CreatorWithdrawalInsert {
+	id?: string;
+	creator_id: string;
+	amount: number;
+	payment_method: WithdrawalPaymentMethod;
+	account_name: string;
+	account_number: string;
+	status?: WithdrawalStatus;
+	rejection_reason?: Nullable<string>;
+	payout_reference?: Nullable<string>;
+	created_at?: string;
+	processed_at?: Nullable<string>;
+}
+
+export type CreatorWithdrawalUpdate = Partial<CreatorWithdrawalInsert>;
+
 export type Tables<T extends keyof Database["public"]["Tables"]> =
 	Database["public"]["Tables"][T]["Row"];
 export type TablesInsert<T extends keyof Database["public"]["Tables"]> =
@@ -734,3 +791,4 @@ export type Comment = Tables<"comments">;
 export type Notification = Tables<"notifications">;
 export type Follower = Tables<"follows">;
 export type CreatorPermission = Tables<"creator_permissions">;
+export type CreatorWithdrawal = Tables<"creator_withdrawals">;

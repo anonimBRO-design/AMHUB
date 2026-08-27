@@ -53,9 +53,7 @@ export default function ResetPasswordPage() {
 		<AuthLayout>
 			<div className="space-y-4">
 				<h1
-					className={cn(
-						"text-xl font-bold text-[var(--color-text-primary)]",
-					)}
+					className={cn("text-xl font-bold text-[var(--color-text-primary)]")}
 				>
 					Set New Password
 				</h1>

@@ -5,7 +5,8 @@ import { EditProfileClient } from "../_components/EditProfileClient";
 
 export const metadata: Metadata = {
 	title: "Edit Profile | AMHUB",
-	description: "Customize your public creator profile, avatar, banner, and social links.",
+	description:
+		"Customize your public creator profile, avatar, banner, and social links.",
 };
 
 export const dynamic = "force-dynamic";

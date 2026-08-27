@@ -1,5 +1,6 @@
 import { deleteComment, moderateComment } from "@/dal/comments.dal";
 import { requireApiProfile } from "@/lib/api/auth";
+import { enforceRateLimit } from "@/lib/api/rate-limit";
 import { apiErrorResponse, apiResponse } from "@/lib/api/responses";
 import { validateJson, validateRouteParams } from "@/lib/api/validation";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
@@ -23,6 +24,14 @@ export async function PATCH(
 	try {
 		const { commentId } = validateRouteParams(await params, routeParamsSchema);
 		const { supabase, profile } = await requireApiProfile();
+
+		await enforceRateLimit({
+			request,
+			scope: "comments:update",
+			limit: 30,
+			windowMs: 60_000,
+			userId: profile.id,
+		});
 
 		const bodyInput = await validateJson(request, updateCommentSchema);
 
@@ -109,6 +118,14 @@ export async function DELETE(
 	try {
 		const { commentId } = validateRouteParams(await params, routeParamsSchema);
 		const { supabase, profile } = await requireApiProfile();
+
+		await enforceRateLimit({
+			request,
+			scope: "comments:delete",
+			limit: 20,
+			windowMs: 60_000,
+			userId: profile.id,
+		});
 
 		// Fetch existing comment to check ownership and preset_id
 		const { data: existingRaw, error: getError } = await supabase

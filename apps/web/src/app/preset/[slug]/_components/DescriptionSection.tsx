@@ -62,7 +62,9 @@ function renderFormattedDescription(text: string) {
 		const cleanLine = isBullet ? trimmed.replace(/^[-*•]\s+/, "") : line;
 
 		// Process bold (**text**) and mentions (@username) and links (https://...)
-		const parts = cleanLine.split(/(https?:\/\/[^\s]+|@[a-zA-Z0-9_]+|\*\*[^*]+\*\*)/g);
+		const parts = cleanLine.split(
+			/(https?:\/\/[^\s]+|@[a-zA-Z0-9_]+|\*\*[^*]+\*\*)/g,
+		);
 
 		const renderedParts = parts.map((part, partIdx) => {
 			if (!part) return null;
@@ -100,7 +102,10 @@ function renderFormattedDescription(text: string) {
 			// Bold (**text**)
 			if (/^\*\*[^*]+\*\*$/.test(part)) {
 				return (
-					<strong key={partIdx} className="font-bold text-[var(--color-text-primary)]">
+					<strong
+						key={partIdx}
+						className="font-bold text-[var(--color-text-primary)]"
+					>
 						{part.slice(2, -2)}
 					</strong>
 				);
@@ -141,9 +146,16 @@ export function DescriptionSection({
 	const [error, setError] = useState<string | null>(null);
 
 	const isOwner = Boolean(
-		(currentUserId && preset.creator?.id && currentUserId === preset.creator.id) ||
-		(currentUser?.id && preset.creator?.id && currentUser.id === preset.creator.id) ||
-		(currentUser?.username && preset.creator?.username && currentUser.username.toLowerCase() === preset.creator.username.toLowerCase()),
+		(currentUserId &&
+			preset.creator?.id &&
+			currentUserId === preset.creator.id) ||
+			(currentUser?.id &&
+				preset.creator?.id &&
+				currentUser.id === preset.creator.id) ||
+			(currentUser?.username &&
+				preset.creator?.username &&
+				currentUser.username.toLowerCase() ===
+					preset.creator.username.toLowerCase()),
 	);
 
 	const isLong = (description?.length ?? 0) > 280;
@@ -160,7 +172,9 @@ export function DescriptionSection({
 
 			const data = await res.json();
 			if (!res.ok) {
-				throw new Error(data?.error?.message || data?.error || "Gagal mengupdate deskripsi");
+				throw new Error(
+					data?.error?.message || data?.error || "Gagal mengupdate deskripsi",
+				);
 			}
 
 			setDescription(editValue.trim());
@@ -169,7 +183,9 @@ export function DescriptionSection({
 			setTimeout(() => setSaveSuccess(false), 2500);
 			router.refresh();
 		} catch (err: unknown) {
-			setError(err instanceof Error ? err.message : "Terjadi kesalahan saat menyimpan");
+			setError(
+				err instanceof Error ? err.message : "Terjadi kesalahan saat menyimpan",
+			);
 		} finally {
 			setIsSaving(false);
 		}
@@ -285,7 +301,11 @@ export function DescriptionSection({
 						<span className="font-semibold text-[var(--color-text-primary)]">
 							Ubah Deskripsi Preset
 						</span>
-						<span className={editValue.length > 1800 ? "text-amber-400 font-bold" : ""}>
+						<span
+							className={
+								editValue.length > 1800 ? "text-amber-400 font-bold" : ""
+							}
+						>
 							{editValue.length} / 2000 karakter
 						</span>
 					</div>

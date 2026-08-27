@@ -4,6 +4,7 @@ import {
 	updatePresetByOwner,
 } from "@/dal/presets.dal";
 import { requireApiProfile } from "@/lib/api/auth";
+import { enforceRateLimit } from "@/lib/api/rate-limit";
 import { apiErrorResponse, apiResponse } from "@/lib/api/responses";
 import { validateJson, validateRouteParams } from "@/lib/api/validation";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
@@ -21,7 +22,7 @@ const updatePresetSchema = z.object({
 	difficulty: z.enum(["beginner", "intermediate", "advanced"]).optional(),
 	tags: z.array(z.string()).max(10).optional(),
 	style: z.array(z.string()).max(10).optional(),
-	status: z.enum(["pending", "published", "rejected", "removed"]).optional(),
+	status: z.enum(["pending", "published"]).optional(),
 	price: z.number().min(0).max(10000000).optional(),
 	is_paid: z.boolean().optional(),
 	currency: z.string().optional(),
@@ -50,6 +51,15 @@ export async function PATCH(
 	try {
 		const { id } = validateRouteParams(await params, routeParamsSchema);
 		const { supabase, profile } = await requireApiProfile();
+
+		await enforceRateLimit({
+			request,
+			scope: "presets:update",
+			limit: 30,
+			windowMs: 60_000,
+			userId: profile.id,
+		});
+
 		const body = await validateJson(request, updatePresetSchema);
 
 		const updated = await updatePresetByOwner(supabase, profile.id, id, body);
@@ -61,12 +71,20 @@ export async function PATCH(
 }
 
 export async function DELETE(
-	_request: NextRequest,
+	request: NextRequest,
 	{ params }: { params: Promise<{ id: string }> },
 ) {
 	try {
 		const { id } = validateRouteParams(await params, routeParamsSchema);
 		const { supabase, profile } = await requireApiProfile();
+
+		await enforceRateLimit({
+			request,
+			scope: "presets:delete",
+			limit: 15,
+			windowMs: 60_000,
+			userId: profile.id,
+		});
 
 		const result = await deletePresetByOwner(supabase, profile.id, id);
 

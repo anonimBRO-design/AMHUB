@@ -1,5 +1,5 @@
 import type { User as Profile } from "@presethub/types";
-import { ensureUserProfile, type SupabaseUser } from "../supabase/auth";
+import { type SupabaseUser, ensureUserProfile } from "../supabase/auth";
 import {
 	createSupabaseServerClient,
 	type createSupabaseServiceClient,

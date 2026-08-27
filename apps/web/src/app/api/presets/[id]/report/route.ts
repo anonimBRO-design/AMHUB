@@ -1,5 +1,6 @@
 import { createNotification } from "@/dal/notifications.dal";
 import { requireApiProfile } from "@/lib/api/auth";
+import { enforceRateLimit } from "@/lib/api/rate-limit";
 import { apiErrorResponse, apiResponse } from "@/lib/api/responses";
 import { validateJson, validateRouteParams } from "@/lib/api/validation";
 import type { NextRequest } from "next/server";
@@ -28,6 +29,15 @@ export async function POST(
 			routeParamsSchema,
 		);
 		const { supabase, profile } = await requireApiProfile();
+
+		await enforceRateLimit({
+			request,
+			scope: "presets:report",
+			limit: 5,
+			windowMs: 60_000,
+			userId: profile.id,
+		});
+
 		const body = await validateJson(request, reportPresetSchema);
 
 		// Check if preset exists
@@ -72,7 +82,8 @@ export async function POST(
 
 		return apiResponse({
 			success: true,
-			message: "Laporan berhasil dikirim. Terima kasih telah menjaga keamanan komunitas AMHUB!",
+			message:
+				"Laporan berhasil dikirim. Terima kasih telah menjaga keamanan komunitas AMHUB!",
 		});
 	} catch (error) {
 		return apiErrorResponse(error);

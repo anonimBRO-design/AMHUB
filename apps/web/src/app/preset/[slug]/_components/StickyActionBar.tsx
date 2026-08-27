@@ -8,6 +8,7 @@ import {
 	Download,
 	ExternalLink,
 	Heart,
+	Lock,
 	MessageSquare,
 } from "lucide-react";
 import posthog from "posthog-js";
@@ -21,6 +22,9 @@ interface StickyActionBarProps {
 		amLink?: string | null;
 		isLiked?: boolean;
 		isBookmarked?: boolean;
+		price?: number;
+		isPaid?: boolean;
+		hasAccess?: boolean;
 	};
 }
 
@@ -71,8 +75,14 @@ export function StickyActionBar({ preset }: StickyActionBarProps) {
 		}
 	};
 
+	const isLocked = Boolean(preset.isPaid && !preset.hasAccess);
+
 	const handleCopy = async () => {
-		const link = preset.amLink || preset.fileUrl || window.location.href;
+		const link = isLocked
+			? typeof window !== "undefined"
+				? window.location.href
+				: ""
+			: preset.amLink || preset.fileUrl || window.location.href;
 		try {
 			await navigator.clipboard.writeText(link);
 			setCopied(true);
@@ -87,21 +97,37 @@ export function StickyActionBar({ preset }: StickyActionBarProps) {
 	return (
 		<div className="mt-6 p-2.5 rounded-xl bg-[var(--color-bg-surface)] border border-[var(--color-border-subtle)] shadow-lg sm:hidden transition-all">
 			<div className="flex items-center gap-2 max-w-lg mx-auto">
-				{/* Primary Action Button (Download / Import) */}
-				<a
-					href={mainDownloadUrl}
-					target={preset.amLink ? "_blank" : undefined}
-					rel={preset.amLink ? "noopener noreferrer" : undefined}
-					download={!preset.amLink && preset.fileUrl ? true : undefined}
-					className="flex-1 inline-flex items-center justify-center gap-2 min-h-[44px] px-4 rounded-lg bg-[var(--color-interactive-primary)] text-white font-bold text-xs shadow-md shadow-[var(--color-interactive-primary)]/30 hover:bg-[var(--color-interactive-primary-hover)] active:scale-95 transition-all"
-				>
-					{preset.amLink ? (
-						<ExternalLink className="w-4 h-4" />
-					) : (
-						<Download className="w-4 h-4" />
-					)}
-					<span>{preset.amLink ? "Open Link" : "Download XML"}</span>
-				</a>
+				{/* Primary Action Button (Download / Import or Buy) */}
+				{isLocked ? (
+					<button
+						type="button"
+						onClick={() => {
+							const target = document.querySelector("section");
+							target?.scrollIntoView({ behavior: "smooth" });
+						}}
+						className="flex-1 inline-flex items-center justify-center gap-1.5 min-h-[44px] px-4 rounded-lg bg-gradient-to-r from-amber-500 to-orange-500 text-slate-950 font-extrabold text-xs shadow-md shadow-amber-500/25 active:scale-95 transition-all cursor-pointer"
+					>
+						<Lock className="w-4 h-4" />
+						<span>
+							Beli Preset • Rp {(preset.price ?? 0).toLocaleString("id-ID")}
+						</span>
+					</button>
+				) : (
+					<a
+						href={mainDownloadUrl}
+						target={preset.amLink ? "_blank" : undefined}
+						rel={preset.amLink ? "noopener noreferrer" : undefined}
+						download={!preset.amLink && preset.fileUrl ? true : undefined}
+						className="flex-1 inline-flex items-center justify-center gap-2 min-h-[44px] px-4 rounded-lg bg-[var(--color-interactive-primary)] text-white font-bold text-xs shadow-md shadow-[var(--color-interactive-primary)]/30 hover:bg-[var(--color-interactive-primary-hover)] active:scale-95 transition-all"
+					>
+						{preset.amLink ? (
+							<ExternalLink className="w-4 h-4" />
+						) : (
+							<Download className="w-4 h-4" />
+						)}
+						<span>{preset.amLink ? "Open Link" : "Download XML"}</span>
+					</a>
+				)}
 
 				{/* Copy Button */}
 				<button

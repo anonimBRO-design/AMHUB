@@ -1,9 +1,9 @@
 "use client";
 
 import { createSupabaseBrowserClient } from "@/lib/supabase/client";
+import { getSiteUrl } from "@presethub/config";
 import { AuthLayout, Button, Input } from "@presethub/ui";
 import { cn } from "@presethub/ui/lib/utils";
-import { getSiteUrl } from "@presethub/config";
 import { ArrowLeft, CheckCircle2 } from "lucide-react";
 import Link from "next/link";
 import { type FormEvent, useMemo, useState } from "react";
@@ -48,9 +48,7 @@ export default function ForgotPasswordPage() {
 				</Link>
 
 				<h1
-					className={cn(
-						"text-xl font-bold text-[var(--color-text-primary)]",
-					)}
+					className={cn("text-xl font-bold text-[var(--color-text-primary)]")}
 				>
 					Reset Password
 				</h1>
@@ -62,7 +60,11 @@ export default function ForgotPasswordPage() {
 							<span>Check your email</span>
 						</div>
 						<p className="text-xs text-[var(--color-text-secondary)] leading-relaxed">
-							We sent a password reset link to <strong className="text-[var(--color-text-primary)]">{email}</strong>. Click the link in the email to set a new password.
+							We sent a password reset link to{" "}
+							<strong className="text-[var(--color-text-primary)]">
+								{email}
+							</strong>
+							. Click the link in the email to set a new password.
 						</p>
 						<div className="pt-2">
 							<Link
@@ -76,7 +78,8 @@ export default function ForgotPasswordPage() {
 				) : (
 					<>
 						<p className="text-xs text-[var(--color-text-secondary)] leading-relaxed">
-							Enter your registered email address and we'll send you a link to reset your AMHUB password.
+							Enter your registered email address and we'll send you a link to
+							reset your AMHUB password.
 						</p>
 
 						<form onSubmit={handleResetRequest} className="space-y-4 pt-2">

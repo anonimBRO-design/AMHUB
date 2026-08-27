@@ -186,8 +186,7 @@ export function AdminDashboardClient({
 	};
 
 	const adminCount = users.filter(
-		(u) =>
-			u.username.toLowerCase() === "afgan" || u.role === "admin" || u.is_staff,
+		(u) => u.role === "admin" || u.is_staff,
 	).length;
 
 	const verifiedCount = users.filter((u) => u.is_verified).length;
@@ -387,10 +386,7 @@ export function AdminDashboardClient({
 									</thead>
 									<tbody className="divide-y divide-[var(--color-border-subtle)]">
 										{users.map((u) => {
-											const isUserAdmin =
-												u.username.toLowerCase() === "afgan" ||
-												u.role === "admin" ||
-												u.is_staff;
+											const isUserAdmin = u.role === "admin" || u.is_staff;
 											const isSelf = u.id === currentAdmin.id;
 											const avatarUrl = resolveStorageUrl(u.avatar_url);
 

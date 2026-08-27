@@ -225,7 +225,8 @@ export async function POST(request: NextRequest) {
 			return apiErrorResponse(
 				new ApiError({
 					code: "internal_server_error",
-					message: error.message || "Failed to create creator permission record",
+					message:
+						error.message || "Failed to create creator permission record",
 				}),
 			);
 		}

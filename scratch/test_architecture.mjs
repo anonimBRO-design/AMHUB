@@ -26,7 +26,8 @@ function evaluateFollowerTrust(user) {
 	}
 	const createdDate = new Date(user.createdAt);
 	const now = new Date();
-	const ageInDays = (now.getTime() - createdDate.getTime()) / (1000 * 60 * 60 * 24);
+	const ageInDays =
+		(now.getTime() - createdDate.getTime()) / (1000 * 60 * 60 * 24);
 
 	let ageScore = 0.1;
 	if (ageInDays >= 30) ageScore = 0.4;
@@ -45,7 +46,11 @@ function evaluateFollowerTrust(user) {
 	let penaltyScore = 0;
 	if (ageInDays < 3 && user.followingCount > 30 && user.downloadCount === 0) {
 		penaltyScore += 0.4;
-	} else if (user.followingCount > 100 && user.downloadCount === 0 && user.presetCount === 0) {
+	} else if (
+		user.followingCount > 100 &&
+		user.downloadCount === 0 &&
+		user.presetCount === 0
+	) {
 		penaltyScore += 0.3;
 	}
 
@@ -67,7 +72,10 @@ const matureUser = {
 	followingCount: 5,
 };
 const evalMature = evaluateFollowerTrust(matureUser);
-assert.ok(evalMature.weight >= 0.8, "Mature active user should have high weight");
+assert.ok(
+	evalMature.weight >= 0.8,
+	"Mature active user should have high weight",
+);
 assert.equal(evalMature.isActive, true);
 
 // Case B: Brand new account created 5 minutes ago with zero activity
@@ -101,7 +109,9 @@ const spamBotUser = {
 const evalBot = evaluateFollowerTrust(spamBotUser);
 assert.equal(evalBot.weight, 0, "Mass-following bot must receive 0 weight");
 assert.equal(evalBot.isActive, false);
-console.log("✅ Passed: Active follower trust correctly distinguishes mature, new, and spam users.\n");
+console.log(
+	"✅ Passed: Active follower trust correctly distinguishes mature, new, and spam users.\n",
+);
 
 // 3. Test Deterministic Creator Reputation Scoring Formula
 console.log("TEST 3: Creator Reputation Score Calculation");
@@ -121,7 +131,9 @@ function calculateAccountAgeBonus(createdAt) {
 	const periodsOf30Days = ageInDays / 30;
 	const bonus = Math.min(
 		REPUTATION_CONFIG.MAX_AGE_BONUS,
-		Number((periodsOf30Days * REPUTATION_CONFIG.AGE_BONUS_PER_30_DAYS).toFixed(2)),
+		Number(
+			(periodsOf30Days * REPUTATION_CONFIG.AGE_BONUS_PER_30_DAYS).toFixed(2),
+		),
 	);
 	return { ageInDays, bonus };
 }
@@ -131,11 +143,16 @@ function calculateCreatorReputationScore(input) {
 	const qualityLikes = Math.max(0, input.qualityLikes || 0);
 	const activeFollowers = Math.max(0, input.activeFollowers || 0);
 	const suspiciousPenalty = Math.max(0, input.suspiciousActivityPenalty || 0);
-	const { ageInDays, bonus: accountAgeBonus } = calculateAccountAgeBonus(input.createdAt);
+	const { ageInDays, bonus: accountAgeBonus } = calculateAccountAgeBonus(
+		input.createdAt,
+	);
 
-	const uniqueDownloadsPoints = uniqueDownloads * REPUTATION_CONFIG.WEIGHT_UNIQUE_DOWNLOADS;
-	const qualityLikesPoints = qualityLikes * REPUTATION_CONFIG.WEIGHT_QUALITY_LIKES;
-	const activeFollowersPoints = activeFollowers * REPUTATION_CONFIG.WEIGHT_ACTIVE_FOLLOWERS;
+	const uniqueDownloadsPoints =
+		uniqueDownloads * REPUTATION_CONFIG.WEIGHT_UNIQUE_DOWNLOADS;
+	const qualityLikesPoints =
+		qualityLikes * REPUTATION_CONFIG.WEIGHT_QUALITY_LIKES;
+	const activeFollowersPoints =
+		activeFollowers * REPUTATION_CONFIG.WEIGHT_ACTIVE_FOLLOWERS;
 
 	const rawScore =
 		uniqueDownloadsPoints +
@@ -167,8 +184,14 @@ const penalizedResult = calculateCreatorReputationScore({
 	createdAt: new Date(),
 	suspiciousActivityPenalty: 500,
 });
-assert.equal(penalizedResult.totalScore, 0, "Reputation score must never be negative");
-console.log("✅ Passed: Reputation scoring formula matches specification and enforces boundaries.\n");
+assert.equal(
+	penalizedResult.totalScore,
+	0,
+	"Reputation score must never be negative",
+);
+console.log(
+	"✅ Passed: Reputation scoring formula matches specification and enforces boundaries.\n",
+);
 
 // 4. Test Multi-Layer Deduplication Logic
 console.log("TEST 4: Multi-Layer Unique Download Deduplication");
@@ -182,15 +205,24 @@ function recordDownloadSim(params) {
 	let isDuplicate = false;
 	if (userId) {
 		isDuplicate = downloadStore.some(
-			(d) => d.presetId === presetId && d.userId === userId && now - d.timestamp < windowMs,
+			(d) =>
+				d.presetId === presetId &&
+				d.userId === userId &&
+				now - d.timestamp < windowMs,
 		);
 	} else if (anonymousToken) {
 		isDuplicate = downloadStore.some(
-			(d) => d.presetId === presetId && d.anonymousToken === anonymousToken && now - d.timestamp < windowMs,
+			(d) =>
+				d.presetId === presetId &&
+				d.anonymousToken === anonymousToken &&
+				now - d.timestamp < windowMs,
 		);
 	} else if (ipHash) {
 		isDuplicate = downloadStore.some(
-			(d) => d.presetId === presetId && d.ipHash === ipHash && now - d.timestamp < windowMs,
+			(d) =>
+				d.presetId === presetId &&
+				d.ipHash === ipHash &&
+				now - d.timestamp < windowMs,
 		);
 	}
 
@@ -207,32 +239,64 @@ function recordDownloadSim(params) {
 }
 
 // Step A: First download by user A -> UNIQUE
-const d1 = recordDownloadSim({ presetId: "preset-1", userId: "user-A", ipHash: "ip-1" });
+const d1 = recordDownloadSim({
+	presetId: "preset-1",
+	userId: "user-A",
+	ipHash: "ip-1",
+});
 assert.equal(d1, true, "First download must be unique");
 
 // Step B: Immediate second download by user A -> DUPLICATE
-const d2 = recordDownloadSim({ presetId: "preset-1", userId: "user-A", ipHash: "ip-1" });
+const d2 = recordDownloadSim({
+	presetId: "preset-1",
+	userId: "user-A",
+	ipHash: "ip-1",
+});
 assert.equal(d2, false, "Repeat download within window must be duplicate");
 
 // Step C: Different user B from same CGNAT IP -> UNIQUE (User ID takes priority over IP)
-const d3 = recordDownloadSim({ presetId: "preset-1", userId: "user-B", ipHash: "ip-1" });
-assert.equal(d3, true, "Different user on shared CGNAT IP must still count as unique");
+const d3 = recordDownloadSim({
+	presetId: "preset-1",
+	userId: "user-B",
+	ipHash: "ip-1",
+});
+assert.equal(
+	d3,
+	true,
+	"Different user on shared CGNAT IP must still count as unique",
+);
 
 // Step D: Guest with anonymous token -> UNIQUE
-const d4 = recordDownloadSim({ presetId: "preset-1", anonymousToken: "token-guest-1", ipHash: "ip-1" });
+const d4 = recordDownloadSim({
+	presetId: "preset-1",
+	anonymousToken: "token-guest-1",
+	ipHash: "ip-1",
+});
 assert.equal(d4, true, "New anonymous token must be unique");
 
 // Step E: Same guest repeating -> DUPLICATE
-const d5 = recordDownloadSim({ presetId: "preset-1", anonymousToken: "token-guest-1", ipHash: "ip-1" });
+const d5 = recordDownloadSim({
+	presetId: "preset-1",
+	anonymousToken: "token-guest-1",
+	ipHash: "ip-1",
+});
 assert.equal(d5, false, "Same anonymous token repeating must be duplicate");
 
-console.log("✅ Passed: Multi-layer deduplication handles users, tokens, and CGNAT IPs perfectly.\n");
+console.log(
+	"✅ Passed: Multi-layer deduplication handles users, tokens, and CGNAT IPs perfectly.\n",
+);
 
 // 5. Test Monetization 90:10 Revenue Split Calculation
 console.log("TEST 5: Monetization 90:10 Net Revenue Split");
 function calculatePresetPayout(grossAmount, provider = "qris") {
 	if (grossAmount <= 0) {
-		return { gross: 0, processorFee: 0, net: 0, creatorPayout: 0, platformFee: 0 };
+		return {
+			gross: 0,
+			processorFee: 0,
+			net: 0,
+			creatorPayout: 0,
+			platformFee: 0,
+		};
 	}
 	// QRIS fee = 0.7%
 	const processorFee = Number((grossAmount * 0.007).toFixed(2));
@@ -249,7 +313,11 @@ assert.equal(payout10k.processorFee, 70); // 0.7% of 10000 = 70
 assert.equal(payout10k.net, 9930); // 10000 - 70 = 9930
 assert.equal(payout10k.creatorPayout, 8937); // 90% of 9930 = 8937
 assert.equal(payout10k.platformFee, 993); // 10% of 9930 = 993
-assert.equal(payout10k.creatorPayout + payout10k.platformFee, payout10k.net, "Sum of payouts must equal exact net amount");
+assert.equal(
+	payout10k.creatorPayout + payout10k.platformFee,
+	payout10k.net,
+	"Sum of payouts must equal exact net amount",
+);
 
 // Example: Free Preset (Rp 0)
 const payoutFree = calculatePresetPayout(0);
@@ -257,7 +325,9 @@ assert.equal(payoutFree.gross, 0);
 assert.equal(payoutFree.creatorPayout, 0);
 assert.equal(payoutFree.platformFee, 0);
 
-console.log("✅ Passed: 90:10 Monetization split correctly calculates processor fees and payouts.\n");
+console.log(
+	"✅ Passed: 90:10 Monetization split correctly calculates processor fees and payouts.\n",
+);
 
 console.log("==================================================");
 console.log("ALL AMHUB ARCHITECTURE TEST CASES PASSED SUCCESSFULLY!");

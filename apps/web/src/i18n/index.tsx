@@ -34,11 +34,7 @@ function detectLanguage(): Language {
 	return navigator.language.toLowerCase().startsWith("id") ? "id" : "en";
 }
 
-export function LanguageProvider({
-	children,
-}: {
-	children: React.ReactNode;
-}) {
+export function LanguageProvider({ children }: { children: React.ReactNode }) {
 	const [language, setLanguageState] = useState<Language>("en");
 
 	useEffect(() => {

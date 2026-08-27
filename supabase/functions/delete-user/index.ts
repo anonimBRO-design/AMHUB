@@ -62,13 +62,10 @@ serve(async (req) => {
 			callerUser.app_metadata?.role === "admin";
 
 		if (!isAdmin) {
-			return new Response(
-				JSON.stringify({ error: "Admin access required" }),
-				{
-					status: 403,
-					headers: { ...corsHeaders, "Content-Type": "application/json" },
-				},
-			);
+			return new Response(JSON.stringify({ error: "Admin access required" }), {
+				status: 403,
+				headers: { ...corsHeaders, "Content-Type": "application/json" },
+			});
 		}
 
 		const { userId: targetUserId } = await req.json();
@@ -138,10 +135,7 @@ serve(async (req) => {
 			.from("follows")
 			.delete()
 			.or(`follower_id.eq.${targetUserId},following_id.eq.${targetUserId}`);
-		await serviceSupabase
-			.from("comments")
-			.delete()
-			.eq("user_id", targetUserId);
+		await serviceSupabase.from("comments").delete().eq("user_id", targetUserId);
 
 		const { data: userPresets } = await serviceSupabase
 			.from("presets")
@@ -166,10 +160,7 @@ serve(async (req) => {
 					.from("collection_items")
 					.delete()
 					.eq("preset_id", p.id);
-				await serviceSupabase
-					.from("comments")
-					.delete()
-					.eq("preset_id", p.id);
+				await serviceSupabase.from("comments").delete().eq("preset_id", p.id);
 				await serviceSupabase
 					.from("notifications")
 					.delete()

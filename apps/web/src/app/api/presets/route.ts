@@ -1,8 +1,10 @@
 import { createPreset, listPresets } from "@/dal/presets.dal";
+import { awardUserXp } from "@/dal/users.dal";
 import { requireApiProfile } from "@/lib/api/auth";
 import { enforceRateLimit } from "@/lib/api/rate-limit";
 import { apiCreated, apiErrorResponse, apiResponse } from "@/lib/api/responses";
 import { validateJson, validateQuery } from "@/lib/api/validation";
+import { XP_REWARDS } from "@/lib/gamification/xp";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import type { NextRequest } from "next/server";
 import { z } from "zod";
@@ -23,9 +25,7 @@ const createPresetSchema = z.object({
 	difficulty: z
 		.enum(["beginner", "intermediate", "advanced"])
 		.default("beginner"),
-	status: z
-		.enum(["pending", "published", "rejected", "removed"])
-		.default("published"),
+	status: z.enum(["pending", "published"]).default("published"),
 	price: z.number().min(0).max(10000000).default(0),
 	is_paid: z.boolean().default(false),
 	currency: z.string().default("IDR"),
@@ -71,6 +71,16 @@ export async function POST(request: NextRequest) {
 		});
 
 		const preset = await createPreset(supabase, profile.id, data, requestId);
+
+		// Award creator XP for uploading a preset
+		awardUserXp(
+			supabase,
+			profile.id,
+			XP_REWARDS.UPLOAD_PRESET,
+			"Upload preset",
+		).catch((err) => {
+			console.error("[XP_AWARD_ERROR] Failed to award upload XP:", err);
+		});
 
 		return apiCreated(preset, {
 			headers: {

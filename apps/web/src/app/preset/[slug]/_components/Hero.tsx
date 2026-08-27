@@ -89,9 +89,7 @@ export function Hero({ preset, currentUserId }: HeroProps) {
 	const [isLiked, setIsLiked] = useState(preset.isLiked ?? false);
 	const [likeCount, setLikeCount] = useState(preset.likeCount);
 	const [downloadCount, setDownloadCount] = useState(preset.downloadCount);
-	const [bookmarkCount, setBookmarkCount] = useState(
-		preset.bookmarkCount ?? 0,
-	);
+	const [bookmarkCount, setBookmarkCount] = useState(preset.bookmarkCount ?? 0);
 	const [viewCount, setViewCount] = useState(preset.viewCount ?? 0);
 	const [isPlayingVideo, setIsPlayingVideo] = useState(false);
 	const [isMuted, setIsMuted] = useState(false);
@@ -215,7 +213,7 @@ export function Hero({ preset, currentUserId }: HeroProps) {
 	};
 
 	const formatTime = (secs: number) => {
-		if (!secs || isNaN(secs)) return "0:00";
+		if (!secs || Number.isNaN(secs)) return "0:00";
 		const m = Math.floor(secs / 60);
 		const s = Math.floor(secs % 60);
 		return `${m}:${s < 10 ? "0" : ""}${s}`;
@@ -434,7 +432,9 @@ export function Hero({ preset, currentUserId }: HeroProps) {
 							className="inline-flex items-center gap-2 min-h-[42px] px-3.5 rounded-lg border transition-all active:scale-95 shadow-sm font-body bg-blue-500/10 text-blue-400 border-blue-500/25 hover:bg-blue-500/20 hover:border-blue-500/40"
 						>
 							<MessageSquare className="w-4 h-4 fill-blue-400/20 text-blue-400" />
-							<span className="text-xs font-bold">{preset.commentCount ?? 0}</span>
+							<span className="text-xs font-bold">
+								{preset.commentCount ?? 0}
+							</span>
 						</button>
 
 						<ShareButton title={preset.title} />

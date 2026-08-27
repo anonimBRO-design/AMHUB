@@ -1,7 +1,7 @@
 "use client";
 
-import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 import type { SupabaseUser as User } from "@/lib/supabase/auth";
+import { createSupabaseBrowserClient } from "@/lib/supabase/client";
 import { getSiteUrl } from "@presethub/config";
 import { AnimatePresence, motion } from "framer-motion";
 import {
@@ -31,11 +31,13 @@ export function WelcomeClient({ user: initialUser }: WelcomeClientProps) {
 
 	// Check client-side auth state
 	useEffect(() => {
-		supabase.auth.getUser().then(({ data }: { data: { user: User | null } }) => {
-			if (data?.user) {
-				setAuthUser(data.user);
-			}
-		});
+		supabase.auth
+			.getUser()
+			.then(({ data }: { data: { user: User | null } }) => {
+				if (data?.user) {
+					setAuthUser(data.user);
+				}
+			});
 	}, [supabase]);
 
 	// Splash duration & Auth redirection control

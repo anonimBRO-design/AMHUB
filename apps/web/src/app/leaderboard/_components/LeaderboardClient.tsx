@@ -42,10 +42,22 @@ const PERIODS = [
 ] as const;
 
 const METRICS = [
-	{ id: "score", label: "🏆 Skor Reputasi", desc: "Kombinasi kualitas & aktivitas" },
-	{ id: "downloads", label: "📥 Total Downloads", desc: "Preset paling banyak dipakai" },
+	{
+		id: "score",
+		label: "🏆 Skor Reputasi",
+		desc: "Kombinasi kualitas & aktivitas",
+	},
+	{
+		id: "downloads",
+		label: "📥 Total Downloads",
+		desc: "Preset paling banyak dipakai",
+	},
 	{ id: "likes", label: "❤️ Quality Likes", desc: "Paling disukai komunitas" },
-	{ id: "presets", label: "📁 Paling Produktif", desc: "Upload preset terbanyak" },
+	{
+		id: "presets",
+		label: "📁 Paling Produktif",
+		desc: "Upload preset terbanyak",
+	},
 ] as const;
 
 export function LeaderboardClient({ initialData }: LeaderboardClientProps) {
@@ -196,8 +208,8 @@ export function LeaderboardClient({ initialData }: LeaderboardClientProps) {
 						Creator Leaderboard
 					</h1>
 					<p className="text-xs sm:text-sm text-[var(--color-text-secondary)] max-w-xl leading-relaxed">
-						Peringkat creator Alight Motion terbaik di AMHUB berdasarkan karya terpopuler,
-						unduhan terbanyak, dan reputasi komunitas.
+						Peringkat creator Alight Motion terbaik di AMHUB berdasarkan karya
+						terpopuler, unduhan terbanyak, dan reputasi komunitas.
 					</p>
 
 					{/* Navigation Switch Tabs */}
@@ -312,7 +324,8 @@ export function LeaderboardClient({ initialData }: LeaderboardClientProps) {
 						Belum Ada Data Peringkat
 					</h3>
 					<p className="text-xs text-[var(--color-text-secondary)] max-w-sm mx-auto">
-						Jadilah creator pertama yang mengunggah preset di AMHUB dan rebut posisi #1 di Podium Leaderboard!
+						Jadilah creator pertama yang mengunggah preset di AMHUB dan rebut
+						posisi #1 di Podium Leaderboard!
 					</p>
 					<Link
 						href="/upload"
@@ -344,7 +357,9 @@ export function LeaderboardClient({ initialData }: LeaderboardClientProps) {
 										creator={data.topThree[1]}
 										rank={2}
 										onFollowToggle={handleFollowToggle}
-										isPendingFollow={Boolean(followPendingMap[data.topThree[1].id])}
+										isPendingFollow={Boolean(
+											followPendingMap[data.topThree[1].id],
+										)}
 									/>
 								)}
 
@@ -354,7 +369,9 @@ export function LeaderboardClient({ initialData }: LeaderboardClientProps) {
 										creator={data.topThree[0]}
 										rank={1}
 										onFollowToggle={handleFollowToggle}
-										isPendingFollow={Boolean(followPendingMap[data.topThree[0].id])}
+										isPendingFollow={Boolean(
+											followPendingMap[data.topThree[0].id],
+										)}
 									/>
 								)}
 
@@ -364,7 +381,9 @@ export function LeaderboardClient({ initialData }: LeaderboardClientProps) {
 										creator={data.topThree[2]}
 										rank={3}
 										onFollowToggle={handleFollowToggle}
-										isPendingFollow={Boolean(followPendingMap[data.topThree[2].id])}
+										isPendingFollow={Boolean(
+											followPendingMap[data.topThree[2].id],
+										)}
 									/>
 								)}
 							</div>
@@ -438,15 +457,24 @@ export function LeaderboardClient({ initialData }: LeaderboardClientProps) {
 											<div className="flex items-center gap-3 sm:gap-6 shrink-0">
 												{/* Stats Pills (Hidden on very small mobile) */}
 												<div className="hidden sm:flex items-center gap-4 text-xs font-semibold text-[var(--color-text-secondary)] font-body">
-													<div className="flex items-center gap-1 text-emerald-400" title="Total Downloads">
+													<div
+														className="flex items-center gap-1 text-emerald-400"
+														title="Total Downloads"
+													>
 														<Download className="w-3.5 h-3.5" />
 														<span>{c.totalDownloads}</span>
 													</div>
-													<div className="flex items-center gap-1 text-rose-400" title="Total Likes">
+													<div
+														className="flex items-center gap-1 text-rose-400"
+														title="Total Likes"
+													>
 														<Heart className="w-3.5 h-3.5" />
 														<span>{c.likeCount}</span>
 													</div>
-													<div className="flex items-center gap-1 text-purple-400" title="Preset Count">
+													<div
+														className="flex items-center gap-1 text-purple-400"
+														title="Preset Count"
+													>
 														<Layers className="w-3.5 h-3.5" />
 														<span>{c.presetCount}</span>
 													</div>
