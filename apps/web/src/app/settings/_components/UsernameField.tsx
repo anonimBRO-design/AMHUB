@@ -4,39 +4,6 @@ import { AlertCircle, Check, Loader2 } from "lucide-react";
 import type React from "react";
 import { useEffect, useRef, useState } from "react";
 
-const RESERVED_USERNAMES = [
-	"admin",
-	"administrator",
-	"afgan",
-	"root",
-	"staff",
-	"moderator",
-	"mod",
-	"official",
-	"amhub",
-	"system",
-	"guest",
-	"anonymous",
-	"support",
-	"help",
-	"security",
-	"api",
-	"settings",
-	"profile",
-	"me",
-	"home",
-	"explore",
-	"upload",
-	"dashboard",
-	"notifications",
-	"bookmarks",
-	"likes",
-	"login",
-	"register",
-	"auth",
-	"credits",
-];
-
 interface UsernameFieldProps {
 	value: string;
 	initialUsername: string;
@@ -66,9 +33,13 @@ export function UsernameField({
 
 	useEffect(() => {
 		const controller = new AbortController();
-		const normalized = value.trim().toLowerCase();
+		const normalized = value.trim().toLowerCase().replace(/^@+/, "");
+		const normalizedInitial = (initialUsername ?? "")
+			.trim()
+			.toLowerCase()
+			.replace(/^@+/, "");
 
-		if (normalized === initialUsername.trim().toLowerCase()) {
+		if (normalized && normalized === normalizedInitial) {
 			setAvailability({ status: "valid", message: "Username available" });
 			setIsChecking(false);
 			onValidityChangeRef.current?.(true, false);
@@ -90,16 +61,6 @@ export function UsernameField({
 				status: "invalid",
 				message:
 					"Only lowercase letters, numbers, underscores, and hyphens allowed.",
-			});
-			setIsChecking(false);
-			onValidityChangeRef.current?.(false, false);
-			return;
-		}
-
-		if (RESERVED_USERNAMES.includes(normalized)) {
-			setAvailability({
-				status: "invalid",
-				message: "This username is reserved.",
 			});
 			setIsChecking(false);
 			onValidityChangeRef.current?.(false, false);
