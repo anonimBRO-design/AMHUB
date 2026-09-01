@@ -13,6 +13,7 @@ import {
 	Search,
 	ShieldAlert,
 	ShieldCheck,
+	ShieldX,
 	Sparkles,
 	Trash2,
 	UserCheck,
@@ -69,6 +70,14 @@ export function AdminDashboardClient({
 	} | null>(null);
 	const [isVerifying, setIsVerifying] = useState<boolean>(false);
 	const [verifyError, setVerifyError] = useState<string | null>(null);
+
+	// Role Promotion/Demotion Modal State
+	const [roleTarget, setRoleTarget] = useState<{
+		user: AdminUserRecord;
+		targetRole: "admin" | "user";
+	} | null>(null);
+	const [isUpdatingRole, setIsUpdatingRole] = useState<boolean>(false);
+	const [roleError, setRoleError] = useState<string | null>(null);
 
 	const fetchUsers = useCallback(async (query = "") => {
 		setIsLoading(true);
@@ -182,6 +191,60 @@ export function AdminDashboardClient({
 			);
 		} finally {
 			setIsVerifying(false);
+		}
+	};
+
+	const handleRoleConfirm = async () => {
+		if (!roleTarget) return;
+		setIsUpdatingRole(true);
+		setRoleError(null);
+
+		const { user: target, targetRole } = roleTarget;
+
+		try {
+			const res = await fetch("/api/admin/users/role", {
+				method: "PATCH",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({
+					userId: target.id,
+					role: targetRole,
+				}),
+			});
+			const json = await res.json();
+
+			if (!res.ok) {
+				throw new Error(json.error?.message || "Failed to update user role.");
+			}
+
+			// Optimistic local state update
+			setUsers((prev) =>
+				prev.map((u) =>
+					u.id === target.id
+						? {
+								...u,
+								role: targetRole,
+								is_staff: targetRole === "admin",
+							}
+						: u,
+				),
+			);
+
+			setToast({
+				type: "success",
+				message: `Account @${target.username} ${
+					targetRole === "admin"
+						? "dijadikan Admin"
+						: "dicabut status Admin-nya"
+				} berhasil.`,
+			});
+			setRoleTarget(null);
+		} catch (err) {
+			console.error("Role update failed:", err);
+			setRoleError(
+				err instanceof Error ? err.message : "Failed to update user role.",
+			);
+		} finally {
+			setIsUpdatingRole(false);
 		}
 	};
 
@@ -496,6 +559,41 @@ export function AdminDashboardClient({
 													{/* Actions */}
 													<td className="px-6 py-4 text-right">
 														<div className="flex items-center justify-end gap-2">
+															{/* Admin Role Action */}
+															{!isSelf &&
+																u.username.toLowerCase() !== "afgan" &&
+																(isUserAdmin ? (
+																	<button
+																		type="button"
+																		onClick={() =>
+																			setRoleTarget({
+																				user: u,
+																				targetRole: "user",
+																			})
+																		}
+																		className="inline-flex items-center gap-1 px-2.5 py-1 rounded-xl bg-purple-500/10 text-purple-300 border border-purple-500/20 hover:bg-purple-500/20 text-[11px] font-semibold transition-all active:scale-95"
+																		title="Cabut hak akses admin"
+																	>
+																		<ShieldX className="w-3 h-3 text-purple-400" />
+																		<span>Cabut Admin</span>
+																	</button>
+																) : (
+																	<button
+																		type="button"
+																		onClick={() =>
+																			setRoleTarget({
+																				user: u,
+																				targetRole: "admin",
+																			})
+																		}
+																		className="inline-flex items-center gap-1 px-2.5 py-1 rounded-xl bg-amber-500/10 text-amber-400 border border-amber-500/20 hover:bg-amber-500/20 text-[11px] font-semibold transition-all active:scale-95"
+																		title="Jadikan pengguna sebagai Admin"
+																	>
+																		<ShieldCheck className="w-3 h-3" />
+																		<span>Jadikan Admin</span>
+																	</button>
+																))}
+
 															{/* Verification Action */}
 															{u.is_verified ? (
 																<button
@@ -563,6 +661,89 @@ export function AdminDashboardClient({
 			{activeTab === "creator_permissions" && (
 				<div className="animate-in fade-in duration-200">
 					<CreatorPermissionsTab />
+				</div>
+			)}
+
+			{/* Role Promotion/Demotion Confirmation Modal */}
+			{roleTarget && (
+				<div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4 animate-in fade-in">
+					<div className="w-full max-w-md rounded-3xl bg-[var(--color-bg-surface)] border border-[var(--color-border-subtle)] p-6 shadow-2xl space-y-4 text-left">
+						<div className="flex items-center gap-3">
+							<div
+								className={`p-3 rounded-2xl border shrink-0 ${
+									roleTarget.targetRole === "admin"
+										? "bg-amber-500/10 border-amber-500/20 text-amber-400"
+										: "bg-purple-500/10 border-purple-500/20 text-purple-400"
+								}`}
+							>
+								{roleTarget.targetRole === "admin" ? (
+									<ShieldCheck className="w-6 h-6" />
+								) : (
+									<ShieldX className="w-6 h-6" />
+								)}
+							</div>
+							<div>
+								<h3 className="text-lg font-extrabold text-[var(--color-text-primary)]">
+									{roleTarget.targetRole === "admin"
+										? `Jadikan @${roleTarget.user.username} Admin?`
+										: `Cabut Admin @${roleTarget.user.username}?`}
+								</h3>
+								<p className="text-xs text-[var(--color-text-secondary)]">
+									{roleTarget.targetRole === "admin"
+										? "User ini akan mendapatkan akses penuh ke Admin Control Center."
+										: "Hak akses admin user ini akan dicabut kembali menjadi user biasa."}
+								</p>
+							</div>
+						</div>
+
+						{roleError && (
+							<div className="p-3 rounded-xl bg-rose-500/10 border border-rose-500/20 text-xs font-semibold text-rose-400">
+								{roleError}
+							</div>
+						)}
+
+						<div className="flex items-center gap-3 pt-2">
+							<button
+								type="button"
+								onClick={() => setRoleTarget(null)}
+								disabled={isUpdatingRole}
+								className="flex-1 min-h-[44px] rounded-2xl bg-[var(--color-bg-elevated)] border border-[var(--color-border-subtle)] text-xs font-semibold text-[var(--color-text-primary)] hover:bg-[var(--color-bg-base)] transition-colors disabled:opacity-50"
+							>
+								Batal
+							</button>
+
+							<button
+								type="button"
+								onClick={handleRoleConfirm}
+								disabled={isUpdatingRole}
+								className={`flex-1 min-h-[44px] rounded-2xl text-xs font-bold active:scale-95 transition-all disabled:opacity-50 flex items-center justify-center gap-2 shadow-lg ${
+									roleTarget.targetRole === "admin"
+										? "bg-amber-600 hover:bg-amber-700 text-white shadow-amber-600/30"
+										: "bg-purple-600 hover:bg-purple-700 text-white shadow-purple-600/30"
+								}`}
+							>
+								{isUpdatingRole ? (
+									<>
+										<Loader2 className="w-4 h-4 animate-spin" />
+										<span>Menyimpan...</span>
+									</>
+								) : (
+									<>
+										{roleTarget.targetRole === "admin" ? (
+											<ShieldCheck className="w-4 h-4" />
+										) : (
+											<ShieldX className="w-4 h-4" />
+										)}
+										<span>
+											{roleTarget.targetRole === "admin"
+												? "Konfirmasi Jadikan Admin"
+												: "Konfirmasi Cabut Admin"}
+										</span>
+									</>
+								)}
+							</button>
+						</div>
+					</div>
 				</div>
 			)}
 
