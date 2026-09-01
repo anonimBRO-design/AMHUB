@@ -2,6 +2,7 @@ import { getUnreadNotificationCount } from "@/data/notifications";
 import { getCurrentProfile } from "@/lib/supabase/auth";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { resolveStorageUrl } from "@/lib/supabase/storage";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import type { Metadata, Viewport } from "next";
 import { PostHogProvider } from "./PostHogProvider";
 import { PwaManager } from "./_components/PwaManager";
@@ -67,6 +68,7 @@ export default async function RootLayout({
 					</LayoutShell>
 					<PwaManager />
 				</PostHogProvider>
+				<SpeedInsights />
 			</body>
 		</html>
 	);
