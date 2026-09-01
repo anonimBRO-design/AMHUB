@@ -317,10 +317,6 @@ export async function isUsernameAvailable(
 		};
 	}
 
-	if (RESERVED_USERNAMES.includes(normalized)) {
-		return { available: false, reason: "This username is reserved." };
-	}
-
 	const { data: existingUser, error } = await client
 		.from("users")
 		.select("id, username")
@@ -336,10 +332,16 @@ export async function isUsernameAvailable(
 			id: string;
 			username: string;
 		};
+		// If the caller already owns this username, it is completely valid for them
 		if (currentUserId && validExisting.id === currentUserId) {
 			return { available: true, isCurrent: true, reason: "Username available" };
 		}
 		return { available: false, reason: "Username is already taken." };
+	}
+
+	// For any new registration or rename to an unclaimed username, block reserved handles
+	if (RESERVED_USERNAMES.includes(normalized)) {
+		return { available: false, reason: "This username is reserved." };
 	}
 
 	return { available: true, isCurrent: false, reason: "Username available" };
@@ -364,16 +366,19 @@ export async function updateUserProfile(
 
 	if (input.username) {
 		const normalizedUsername = input.username.trim().toLowerCase();
-		const checkResult = await isUsernameAvailable(
-			client,
-			normalizedUsername,
-			validTargetUser.id,
-		);
-		if (!checkResult.available) {
-			throw new ApiError({
-				code: "bad_request",
-				message: checkResult.reason,
-			});
+		// Only check availability if user is actively changing their username
+		if (normalizedUsername !== validTargetUser.username.toLowerCase()) {
+			const checkResult = await isUsernameAvailable(
+				client,
+				normalizedUsername,
+				validTargetUser.id,
+			);
+			if (!checkResult.available) {
+				throw new ApiError({
+					code: "bad_request",
+					message: checkResult.reason,
+				});
+			}
 		}
 	}
 
