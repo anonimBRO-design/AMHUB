@@ -210,6 +210,7 @@ export function AdminDashboardClient({
 				headers: { "Content-Type": "application/json" },
 				body: JSON.stringify({
 					userId: target.id,
+					username: target.username,
 					role: targetRole,
 				}),
 			});

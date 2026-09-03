@@ -1,4 +1,4 @@
-﻿import { isAdminProfile } from "@/lib/admin";
+import { isAdminProfile } from "@/lib/admin";
 import { requireApiProfile } from "@/lib/api/auth";
 import { ApiError } from "@/lib/api/errors";
 import { apiErrorResponse, apiResponse } from "@/lib/api/responses";
@@ -31,11 +31,17 @@ export async function PATCH(request: NextRequest) {
 
 		// 3. Validate request payload
 		const body = await request.json().catch(() => ({}));
-		const { userId, role } = body;
+		const { userId, username, role } = body;
 
-		if (!userId || typeof userId !== "string" || !userId.trim()) {
+		if (
+			(!userId || typeof userId !== "string" || !userId.trim()) &&
+			(!username || typeof username !== "string" || !username.trim())
+		) {
 			return apiErrorResponse(
-				new ApiError({ code: "bad_request", message: "User ID is required" }),
+				new ApiError({
+					code: "bad_request",
+					message: "User ID or username is required",
+				}),
 			);
 		}
 
@@ -49,7 +55,12 @@ export async function PATCH(request: NextRequest) {
 		}
 
 		// Prevent self-demotion
-		if (userId === profile.id && role !== "admin") {
+		if (
+			(userId === profile.id ||
+				(username &&
+					username.toLowerCase() === profile.username.toLowerCase())) &&
+			role !== "admin"
+		) {
 			return apiErrorResponse(
 				new ApiError({
 					code: "bad_request",
@@ -67,28 +78,63 @@ export async function PATCH(request: NextRequest) {
 			console.warn("Service role client unavailable for role update:", e);
 		}
 
-		const activeClient = serviceSupabase || supabase;
+		const clientsToTry = serviceSupabase
+			? [serviceSupabase, supabase]
+			: [supabase];
 
-		// 5. Verify target user exists
-		const { data: targetUser, error: fetchErr } = await activeClient
-			.from("users")
-			.select("id, username, display_name, role, is_staff")
-			.eq("id", userId)
-			.maybeSingle();
+		// 5. Verify target user exists by ID or by username (avoid selecting 'role' in case column hasn't migrated)
+		let targetRecord: {
+			id: string;
+			username: string;
+			display_name: string;
+			is_staff?: boolean;
+		} | null = null;
 
-		if (fetchErr || !targetUser) {
+		for (const client of clientsToTry) {
+			if (targetRecord) break;
+
+			// A. Try finding by UUID if userId looks like UUID
+			if (
+				userId &&
+				/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(
+					userId.trim(),
+				)
+			) {
+				const { data, error } = await client
+					.from("users")
+					.select("id, username, display_name, is_staff")
+					.eq("id", userId.trim())
+					.maybeSingle();
+
+				if (data && !error) {
+					targetRecord = data as any;
+					break;
+				}
+			}
+
+			// B. Try finding by username
+			const targetUsername =
+				username || (userId && !userId.includes("-") ? userId : null);
+
+			if (targetUsername) {
+				const { data, error } = await client
+					.from("users")
+					.select("id, username, display_name, is_staff")
+					.ilike("username", targetUsername.trim())
+					.maybeSingle();
+
+				if (data && !error) {
+					targetRecord = data as any;
+					break;
+				}
+			}
+		}
+
+		if (!targetRecord) {
 			return apiErrorResponse(
 				new ApiError({ code: "not_found", message: "User not found" }),
 			);
 		}
-
-		const targetRecord = targetUser as unknown as {
-			id: string;
-			username: string;
-			display_name: string;
-			role?: string;
-			is_staff?: boolean;
-		};
 
 		// Prevent demoting the founder @afgan
 		if (targetRecord.username.toLowerCase() === "afgan" && role !== "admin") {
@@ -102,7 +148,7 @@ export async function PATCH(request: NextRequest) {
 
 		const isStaff = role === "admin";
 
-		// 6. Perform UPDATE on public.users
+		// 6. Perform UPDATE on public.users (try RPC first, then direct table update)
 		let updatedUser: {
 			id: string;
 			username: string;
@@ -111,51 +157,82 @@ export async function PATCH(request: NextRequest) {
 			is_staff: boolean;
 		} | null = null;
 
-		if (serviceSupabase) {
-			const res = await serviceSupabase
-				.from("users")
-				.update({ role, is_staff: isStaff } as never)
-				.eq("id", userId)
-				.select("id, username, display_name, role, is_staff")
-				.maybeSingle();
+		// A. Try Security Definer RPC function if available
+		for (const client of clientsToTry) {
+			if (updatedUser) break;
+			try {
+				const rpcRes = await (
+					client.rpc as unknown as (
+						fn: string,
+						args: Record<string, unknown>,
+					) => Promise<{ data: unknown; error: unknown }>
+				)("admin_update_user_role", {
+					target_user_id: targetRecord.id,
+					target_role: role,
+				});
 
-			if (!res.error && res.data) {
-				updatedUser = res.data as unknown as {
-					id: string;
-					username: string;
-					display_name: string;
-					role: string;
-					is_staff: boolean;
-				};
+				if (!rpcRes.error && rpcRes.data) {
+					const rpcData = rpcRes.data as any;
+					updatedUser = {
+						id: rpcData.id || targetRecord.id,
+						username: rpcData.username || targetRecord.username,
+						display_name: targetRecord.display_name,
+						role,
+						is_staff: isStaff,
+					};
+				}
+			} catch {
+				// RPC may not be installed, proceed to direct update
+			}
+		}
 
-				// Synchronize app_metadata on auth.users
-				try {
-					await serviceSupabase.auth.admin.updateUserById(userId, {
-						app_metadata: { role },
-					});
-				} catch (authErr) {
-					console.warn("Failed to sync auth.users metadata:", authErr);
+		// B. Direct table update fallback
+		if (!updatedUser) {
+			for (const client of clientsToTry) {
+				if (updatedUser) break;
+
+				// Try updating both role and is_staff
+				let res = await client
+					.from("users")
+					.update({ role, is_staff: isStaff } as never)
+					.eq("id", targetRecord.id)
+					.select("id, username, display_name, is_staff")
+					.maybeSingle();
+
+				// If error (e.g. column 'role' does not exist in schema), update only is_staff
+				if (
+					res.error &&
+					(res.error.code === "42703" || res.error.message?.includes("role"))
+				) {
+					res = await client
+						.from("users")
+						.update({ is_staff: isStaff } as never)
+						.eq("id", targetRecord.id)
+						.select("id, username, display_name, is_staff")
+						.maybeSingle();
+				}
+
+				if (!res.error && res.data) {
+					const d = res.data as any;
+					updatedUser = {
+						id: d.id,
+						username: d.username,
+						display_name: d.display_name,
+						role,
+						is_staff: isStaff,
+					};
 				}
 			}
 		}
 
-		// Fallback direct update via activeClient if service client is unavailable
-		if (!updatedUser) {
-			const res = await activeClient
-				.from("users")
-				.update({ role, is_staff: isStaff } as never)
-				.eq("id", userId)
-				.select("id, username, display_name, role, is_staff")
-				.maybeSingle();
-
-			if (!res.error && res.data) {
-				updatedUser = res.data as unknown as {
-					id: string;
-					username: string;
-					display_name: string;
-					role: string;
-					is_staff: boolean;
-				};
+		// C. Synchronize auth.users app_metadata if serviceSupabase is available
+		if (serviceSupabase && targetRecord.id) {
+			try {
+				await serviceSupabase.auth.admin.updateUserById(targetRecord.id, {
+					app_metadata: { role },
+				});
+			} catch (authErr) {
+				console.warn("Could not sync auth.users metadata:", authErr);
 			}
 		}
 
@@ -171,7 +248,7 @@ export async function PATCH(request: NextRequest) {
 		return apiResponse({
 			success: true,
 			user: updatedUser,
-			message: `Account @${updatedUser.username} ${role === "admin" ? "promoted to Admin" : "demoted to regular User"} successfully.`,
+			message: `Account @${updatedUser.username} ${role === "admin" ? "dijadikan Admin" : "dicabut dari Admin"} berhasil.`,
 		});
 	} catch (error) {
 		return apiErrorResponse(error);
