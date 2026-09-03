@@ -38,24 +38,72 @@ export async function GET(request: NextRequest) {
 
 		let query = dbClient
 			.from("creator_withdrawals")
-			.select("*, creator:creator_id (id, username, display_name, avatar_url)")
+			.select("*")
 			.order("created_at", { ascending: false });
 
 		if (status !== "all") {
 			query = query.eq("status", status);
 		}
 
-		const { data, error } = await query;
+		const { data: rawWithdrawals, error } = await query;
 
 		if (error) {
 			console.error("Admin withdrawals query error:", error);
+			// If table does not exist yet in dev/staging, return empty list gracefully
+			if (error.code === "42P01" || error.message?.includes("does not exist")) {
+				return apiResponse([]);
+			}
 			throw new ApiError({
 				code: "internal_server_error",
-				message: "Failed to fetch creator withdrawals",
+				message: error.message || "Failed to fetch creator withdrawals",
 			});
 		}
 
-		return apiResponse(data ?? []);
+		const withdrawals = rawWithdrawals ?? [];
+
+		// Fetch creators in batch to avoid fragile PostgREST foreign key embedding errors
+		const creatorIds = Array.from(
+			new Set(
+				withdrawals
+					.map((w: any) => w.creator_id)
+					.filter((id): id is string => Boolean(id)),
+			),
+		);
+
+		const creatorMap = new Map<
+			string,
+			{
+				id: string;
+				username: string;
+				display_name: string;
+				avatar_url?: string | null;
+			}
+		>();
+
+		if (creatorIds.length > 0) {
+			const { data: creators, error: creatorErr } = await dbClient
+				.from("users")
+				.select("id, username, display_name, avatar_url")
+				.in("id", creatorIds);
+
+			if (!creatorErr && creators) {
+				for (const c of creators as any[]) {
+					creatorMap.set(c.id, {
+						id: c.id,
+						username: c.username,
+						display_name: c.display_name,
+						avatar_url: c.avatar_url,
+					});
+				}
+			}
+		}
+
+		const mappedWithdrawals = withdrawals.map((item: any) => ({
+			...item,
+			creator: creatorMap.get(item.creator_id) || null,
+		}));
+
+		return apiResponse(mappedWithdrawals);
 	} catch (error) {
 		return apiErrorResponse(error);
 	}
@@ -95,22 +143,36 @@ export async function PATCH(request: NextRequest) {
 			updatePayload.rejection_reason = body.rejection_reason;
 		}
 
-		const { data, error } = await dbClient
+		const { data: updatedItem, error } = await dbClient
 			.from("creator_withdrawals")
 			.update(updatePayload as never)
 			.eq("id", body.id)
-			.select("*, creator:creator_id (id, username, display_name, avatar_url)")
+			.select("*")
 			.single();
 
 		if (error) {
 			console.error("Admin update withdrawal error:", error);
 			throw new ApiError({
 				code: "internal_server_error",
-				message: "Failed to update withdrawal request",
+				message: error.message || "Failed to update withdrawal request",
 			});
 		}
 
-		return apiResponse(data);
+		// Fetch creator details
+		let creator = null;
+		if (updatedItem && (updatedItem as any).creator_id) {
+			const { data: creatorData } = await dbClient
+				.from("users")
+				.select("id, username, display_name, avatar_url")
+				.eq("id", (updatedItem as any).creator_id)
+				.maybeSingle();
+			creator = creatorData;
+		}
+
+		return apiResponse({
+			...(updatedItem as any),
+			creator,
+		});
 	} catch (error) {
 		return apiErrorResponse(error);
 	}
