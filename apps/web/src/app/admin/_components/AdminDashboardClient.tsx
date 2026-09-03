@@ -4,6 +4,7 @@ import { resolveStorageUrl } from "@/lib/supabase/storage-url";
 import type { User as Profile } from "@presethub/types";
 import {
 	AlertTriangle,
+	Banknote,
 	CheckCircle2,
 	Clock,
 	Loader2,
@@ -23,6 +24,8 @@ import {
 import Link from "next/link";
 import React, { useCallback, useEffect, useState } from "react";
 import { CreatorPermissionsTab } from "./CreatorPermissionsTab";
+import { ReportsModerationTab } from "./ReportsModerationTab";
+import { WithdrawalsAdminTab } from "./WithdrawalsAdminTab";
 
 interface AdminUserRecord {
 	id: string;
@@ -45,9 +48,9 @@ interface AdminDashboardClientProps {
 export function AdminDashboardClient({
 	currentAdmin,
 }: AdminDashboardClientProps) {
-	const [activeTab, setActiveTab] = useState<"users" | "creator_permissions">(
-		"users",
-	);
+	const [activeTab, setActiveTab] = useState<
+		"users" | "creator_permissions" | "reports" | "withdrawals"
+	>("users");
 	const [users, setUsers] = useState<AdminUserRecord[]>([]);
 	const [totalCount, setTotalCount] = useState<number>(0);
 	const [searchQuery, setSearchQuery] = useState<string>("");
@@ -344,6 +347,32 @@ export function AdminDashboardClient({
 				>
 					<Sparkles className="w-4 h-4 text-purple-300" />
 					<span>Creator Permissions & Outreach</span>
+				</button>
+
+				<button
+					type="button"
+					onClick={() => setActiveTab("reports")}
+					className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all ${
+						activeTab === "reports"
+							? "bg-[var(--color-interactive-primary)] text-white shadow-md shadow-purple-950/30"
+							: "text-[var(--color-text-secondary)] hover:text-white hover:bg-white/[0.04]"
+					}`}
+				>
+					<ShieldAlert className="w-4 h-4 text-amber-300" />
+					<span>Moderasi Konten & Preset</span>
+				</button>
+
+				<button
+					type="button"
+					onClick={() => setActiveTab("withdrawals")}
+					className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all ${
+						activeTab === "withdrawals"
+							? "bg-[var(--color-interactive-primary)] text-white shadow-md shadow-purple-950/30"
+							: "text-[var(--color-text-secondary)] hover:text-white hover:bg-white/[0.04]"
+					}`}
+				>
+					<Banknote className="w-4 h-4 text-emerald-300" />
+					<span>Payout Creator</span>
 				</button>
 			</div>
 
@@ -661,6 +690,20 @@ export function AdminDashboardClient({
 			{activeTab === "creator_permissions" && (
 				<div className="animate-in fade-in duration-200">
 					<CreatorPermissionsTab />
+				</div>
+			)}
+
+			{/* Tab 3: Reports & Content Moderation */}
+			{activeTab === "reports" && (
+				<div className="animate-in fade-in duration-200">
+					<ReportsModerationTab />
+				</div>
+			)}
+
+			{/* Tab 4: Creator Payouts & Withdrawals */}
+			{activeTab === "withdrawals" && (
+				<div className="animate-in fade-in duration-200">
+					<WithdrawalsAdminTab />
 				</div>
 			)}
 

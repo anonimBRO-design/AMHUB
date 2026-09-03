@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import posthog from "posthog-js";
 import { useState } from "react";
+import { type PresetOrderItem, PresetPaymentModal } from "./PresetPaymentModal";
 
 interface InstallSectionProps {
 	preset: {
@@ -38,6 +39,10 @@ export function InstallSection({ preset }: InstallSectionProps) {
 	const [shared, setShared] = useState(false);
 	const [isOrdering, setIsOrdering] = useState(false);
 	const [orderError, setOrderError] = useState<string | null>(null);
+	const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
+	const [currentOrder, setCurrentOrder] = useState<PresetOrderItem | null>(
+		null,
+	);
 
 	const isLocked = Boolean(preset.isPaid && !preset.hasAccess);
 
@@ -156,10 +161,9 @@ export function InstallSection({ preset }: InstallSectionProps) {
 			if (!res.ok) {
 				throw new Error(data?.error?.message || "Gagal membuat order.");
 			}
-			const orderNum = data?.data?.order_number || data?.order_number;
-			alert(
-				`Order #${orderNum} berhasil dibuat! Silakan selesaikan pembayaran.`,
-			);
+			const orderData = (data?.data || data) as PresetOrderItem;
+			setCurrentOrder(orderData);
+			setIsPaymentModalOpen(true);
 		} catch (err: unknown) {
 			const msg = err instanceof Error ? err.message : "Gagal memproses order";
 			setOrderError(msg);
@@ -336,6 +340,25 @@ export function InstallSection({ preset }: InstallSectionProps) {
 					</li>
 				</ol>
 			</div>
+
+			{/* Checkout & Payment Modal */}
+			{preset.isPaid && (
+				<PresetPaymentModal
+					isOpen={isPaymentModalOpen}
+					onClose={() => setIsPaymentModalOpen(false)}
+					preset={{
+						id: preset.id,
+						title: preset.title,
+						price: preset.price || 0,
+						currency: preset.currency,
+					}}
+					initialOrder={currentOrder}
+					onPaymentSuccess={() => {
+						setIsPaymentModalOpen(false);
+						window.location.reload();
+					}}
+				/>
+			)}
 		</section>
 	);
 }

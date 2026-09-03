@@ -120,7 +120,12 @@
 
 - **BUG-2** — `fix(ui)`: format `app-layout.tsx` to satisfy Biome lint.
 - **BUG-1 / TD-3** — `fix(dal)`: env-gate mock fallback; prod surfaces DB errors and returns real empties (404 for unknown slugs/users).
+- **MISS-13** — `feat(wallet)`: Creator Wallet & Withdrawals UI in `/dashboard` (DANA, GoPay, OVO, BCA, Mandiri, BRI).
+- **MISS-14** — `feat(checkout)`: Interactive Checkout & QRIS Payment Modal in `/preset/[slug]`.
+- **MISS-15** — `feat(admin)`: Content Moderation & Creator Payout tabs in `/admin` with `/api/admin/presets` & `/api/admin/withdrawals`.
+- **SEO-1** — `feat(seo)`: Dynamic `sitemap.ts` and `robots.ts` for Next.js 15.
+- **BUG-6** — `fix(tooling)`: Unified turbo format script & Biome Windows line-ending formatting.
 
 ---
 
-_Maintained by the assistant (Nawala). Re-run audit checks when significant changes land._
+_Maintained by the assistant (Antigravity). Re-run audit checks when significant changes land._

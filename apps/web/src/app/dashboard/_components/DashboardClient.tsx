@@ -1,6 +1,7 @@
 "use client";
 
 import { AnalyticsChart } from "./AnalyticsChart";
+import { CreatorWallet } from "./CreatorWallet";
 import { DashboardHero } from "./DashboardHero";
 import { MyPresetsManager } from "./MyPresetsManager";
 import { QuickActions } from "./QuickActions";
@@ -82,6 +83,8 @@ export function DashboardClient({
 					<RecentActivity />
 				</div>
 			</div>
+
+			<CreatorWallet />
 
 			<MyPresetsManager initialPresets={initialPresets} />
 		</div>
