@@ -45,16 +45,44 @@ export async function GET(request: NextRequest) {
 			dbQuery = dbQuery.or(`title.ilike.%${query}%,slug.ilike.%${query}%`);
 		}
 
-		const {
-			data: rawPresets,
-			count,
-			error,
-		} = await dbQuery
+		let queryResult = await dbQuery
 			.order("created_at", { ascending: false })
 			.range(offset, offset + limit - 1);
 
+		if (queryResult.error) {
+			console.warn(
+				"Admin presets ordered query failed, retrying simple range:",
+				queryResult.error,
+			);
+			queryResult = await dbClient
+				.from("presets")
+				.select("*")
+				.range(offset, offset + limit - 1);
+		}
+
+		const { data: rawPresets, count, error } = queryResult;
+
 		if (error) {
 			console.error("Admin presets query error:", error);
+			const msg = (error.message || "").toLowerCase();
+			if (
+				error.code === "42P01" ||
+				error.code === "PGRST204" ||
+				error.code === "PGRST205" ||
+				msg.includes("schema cache")
+			) {
+				return apiResponse([], {
+					meta: {
+						pagination: {
+							page,
+							limit,
+							offset,
+							total: 0,
+							hasMore: false,
+						},
+					},
+				});
+			}
 			throw new ApiError({
 				code: "internal_server_error",
 				message: error.message || "Failed to fetch presets for moderation",

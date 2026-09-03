@@ -70,8 +70,13 @@ export function WithdrawalsAdminTab() {
 				if (statusFilter !== "all") params.set("status", statusFilter);
 
 				const res = await fetch(`/api/admin/withdrawals?${params.toString()}`);
-				if (!res.ok) throw new Error("Gagal memuat antrean penarikan saldo");
-				const json = await res.json();
+				const json = await res.json().catch(() => ({}));
+				if (!res.ok) {
+					throw new Error(
+						json.error?.message ||
+							`[HTTP ${res.status}] Gagal memuat antrean penarikan saldo`,
+					);
+				}
 				setWithdrawals(json.data || []);
 			} catch (err) {
 				const msg =

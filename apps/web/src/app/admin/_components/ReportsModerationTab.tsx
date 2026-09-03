@@ -73,8 +73,13 @@ export function ReportsModerationTab() {
 				params.set("limit", "40");
 
 				const res = await fetch(`/api/admin/presets?${params.toString()}`);
-				if (!res.ok) throw new Error("Gagal mengambil data preset moderasi");
-				const json = await res.json();
+				const json = await res.json().catch(() => ({}));
+				if (!res.ok) {
+					throw new Error(
+						json.error?.message ||
+							`[HTTP ${res.status}] Gagal mengambil data preset moderasi`,
+					);
+				}
 				setPresets(json.data || []);
 			} catch (err) {
 				const msg = err instanceof Error ? err.message : "Gagal memuat preset";

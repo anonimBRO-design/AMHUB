@@ -49,8 +49,17 @@ export async function GET(request: NextRequest) {
 
 		if (error) {
 			console.error("Admin withdrawals query error:", error);
-			// If table does not exist yet in dev/staging, return empty list gracefully
-			if (error.code === "42P01" || error.message?.includes("does not exist")) {
+			const msg = (error.message || "").toLowerCase();
+			const code = error.code || "";
+			// If table does not exist or schema cache doesn't have it yet, return empty list cleanly
+			if (
+				code === "42P01" ||
+				code === "PGRST204" ||
+				code === "PGRST205" ||
+				msg.includes("does not exist") ||
+				msg.includes("schema cache") ||
+				msg.includes("could not find the table")
+			) {
 				return apiResponse([]);
 			}
 			throw new ApiError({
