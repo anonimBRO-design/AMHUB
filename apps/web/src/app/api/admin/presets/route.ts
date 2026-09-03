@@ -83,6 +83,14 @@ export async function GET(request: NextRequest) {
 					},
 				});
 			}
+
+			if (error.code === "42501" || msg.includes("permission denied")) {
+				throw new ApiError({
+					code: "forbidden",
+					message:
+						"Permission denied (42501): Jalankan 'GRANT ALL ON public.presets TO authenticated;' di Supabase SQL Editor atau pasang SUPABASE_SERVICE_ROLE_KEY di Vercel.",
+				});
+			}
 			throw new ApiError({
 				code: "internal_server_error",
 				message: error.message || "Failed to fetch presets for moderation",
