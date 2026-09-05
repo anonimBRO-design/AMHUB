@@ -30,6 +30,8 @@ export default async function ExplorePage({ searchParams }: ExplorePageProps) {
 	const sort = typeof params.sort === "string" ? params.sort : undefined;
 	const fileType =
 		typeof params.fileType === "string" ? params.fileType : undefined;
+	const amVersion =
+		typeof params.amVersion === "string" ? params.amVersion : undefined;
 
 	let presets: ReturnType<typeof mapPresetToCardPreset>[] = [];
 	try {
@@ -43,6 +45,7 @@ export default async function ExplorePage({ searchParams }: ExplorePageProps) {
 				category,
 				difficulty,
 				fileType: fileType as "xml" | "qr" | "link" | undefined,
+				amVersion,
 				sort: sort as
 					| "created_at"
 					| "oldest"

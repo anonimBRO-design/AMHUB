@@ -1,5 +1,6 @@
 import { createPreset, listPresets } from "@/dal/presets.dal";
 import { awardUserXp } from "@/dal/users.dal";
+import { normalizeAmVersion } from "@/lib/am-version";
 import { requireApiProfile } from "@/lib/api/auth";
 import { enforceRateLimit } from "@/lib/api/rate-limit";
 import { apiCreated, apiErrorResponse, apiResponse } from "@/lib/api/responses";
@@ -9,30 +10,54 @@ import { createSupabaseServerClient } from "@/lib/supabase/server";
 import type { NextRequest } from "next/server";
 import { z } from "zod";
 
-const createPresetSchema = z.object({
-	slug: z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/),
-	title: z.string().min(1).max(100),
-	description: z.string().max(2000).optional(),
-	thumbnail_url: z.string().min(1),
-	preview_video_url: z.string().min(1).optional(),
-	file_type: z.enum(["xml", "qr", "link", "google_drive", "alight_creative"]),
-	file_types: z.array(z.string()).optional(),
-	file_url: z.string().min(1).optional(),
-	am_link: z.string().min(1).optional(),
-	category: z.string(),
-	style: z.array(z.string()).max(10).default([]),
-	tags: z.array(z.string()).max(10).default([]),
-	difficulty: z
-		.enum(["beginner", "intermediate", "advanced"])
-		.default("beginner"),
-	status: z.enum(["pending", "published"]).default("published"),
-	price: z.number().min(0).max(10000000).default(0),
-	is_paid: z.boolean().default(false),
-	currency: z.string().default("IDR"),
-	am_version_min: z.string().optional(),
-	am_version_max: z.string().optional(),
-	device_support: z.array(z.enum(["android", "ios", "both"])).default(["both"]),
-});
+const amVersionField = (label: string) =>
+	z
+		.string()
+		.trim()
+		.regex(/^\d{1,3}(\.\d{1,3}){0,2}$/, `${label}: format angka, cth. 5.0.5`)
+		.transform((v) => normalizeAmVersion(v) ?? v)
+		.optional();
+
+const createPresetSchema = z
+	.object({
+		slug: z.string().regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/),
+		title: z.string().min(1).max(100),
+		description: z.string().max(2000).optional(),
+		thumbnail_url: z.string().min(1),
+		preview_video_url: z.string().min(1).optional(),
+		file_type: z.enum(["xml", "qr", "link", "google_drive", "alight_creative"]),
+		file_types: z.array(z.string()).optional(),
+		file_url: z.string().min(1).optional(),
+		am_link: z.string().min(1).optional(),
+		category: z.string(),
+		style: z.array(z.string()).max(10).default([]),
+		tags: z.array(z.string()).max(10).default([]),
+		difficulty: z
+			.enum(["beginner", "intermediate", "advanced"])
+			.default("beginner"),
+		status: z.enum(["pending", "published"]).default("published"),
+		price: z.number().min(0).max(10000000).default(0),
+		is_paid: z.boolean().default(false),
+		currency: z.string().default("IDR"),
+		am_version_min: amVersionField("Versi minimal"),
+		am_version_max: amVersionField("Versi maksimal"),
+		device_support: z
+			.array(z.enum(["android", "ios", "both"]))
+			.default(["both"]),
+	})
+	.superRefine((data, ctx) => {
+		if (
+			data.am_version_min &&
+			data.am_version_max &&
+			data.am_version_max < data.am_version_min
+		) {
+			ctx.addIssue({
+				code: z.ZodIssueCode.custom,
+				path: ["am_version_max"],
+				message: "Versi maksimal harus >= versi minimal.",
+			});
+		}
+	});
 
 export async function POST(request: NextRequest) {
 	const requestId = `req_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;

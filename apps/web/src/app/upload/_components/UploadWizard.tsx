@@ -1,5 +1,6 @@
 "use client";
 
+import { formatAmVersion, normalizeAmVersion } from "@/lib/am-version";
 import { resolveStorageUrl } from "@/lib/supabase/storage-url";
 import type {
 	PresetSourceFormat,
@@ -123,6 +124,18 @@ export function UploadWizard() {
 	>("intermediate");
 	const [isPaid, setIsPaid] = useState(false);
 	const [price, setPrice] = useState(0);
+	const [amVersionMin, setAmVersionMin] = useState("");
+	const [amVersionMax, setAmVersionMax] = useState("");
+
+	const isAmVersionRangeValid = () => {
+		const normalizedMin = normalizeAmVersion(amVersionMin);
+		const normalizedMax = normalizeAmVersion(amVersionMax);
+		if (amVersionMin.trim() && !normalizedMin) return false;
+		if (amVersionMax.trim() && !normalizedMax) return false;
+		if (normalizedMin && normalizedMax && normalizedMax < normalizedMin)
+			return false;
+		return true;
+	};
 
 	// Real-time Validation State
 	const [validation, setValidation] = useState<ValidationResult>({
@@ -141,7 +154,11 @@ export function UploadWizard() {
 			);
 		}
 		if (currentStep === 3) {
-			return !title.trim() || (isPaid && (price < 1000 || Number.isNaN(price)));
+			return (
+				!title.trim() ||
+				(isPaid && (price < 1000 || Number.isNaN(price))) ||
+				!isAmVersionRangeValid()
+			);
 		}
 		return false;
 	};
@@ -170,6 +187,12 @@ export function UploadWizard() {
 			}
 			if (isPaid && (price < 1000 || Number.isNaN(price))) {
 				setError("Harga preset berbayar minimal Rp 1.000.");
+				return;
+			}
+			if (!isAmVersionRangeValid()) {
+				setError(
+					"Versi Alight Motion tidak valid. Gunakan format angka (cth. 5.0.5) dan pastikan versi maksimal >= versi minimal.",
+				);
 				return;
 			}
 			setCurrentStep(4);
@@ -504,6 +527,8 @@ export function UploadWizard() {
 					is_paid: isPaid,
 					price: isPaid ? price : 0,
 					currency: "IDR",
+					am_version_min: normalizeAmVersion(amVersionMin) ?? undefined,
+					am_version_max: normalizeAmVersion(amVersionMax) ?? undefined,
 				}),
 			});
 
@@ -633,6 +658,10 @@ export function UploadWizard() {
 						onIsPaidChange={setIsPaid}
 						price={price}
 						onPriceChange={setPrice}
+						amVersionMin={amVersionMin}
+						onAmVersionMinChange={setAmVersionMin}
+						amVersionMax={amVersionMax}
+						onAmVersionMaxChange={setAmVersionMax}
 					/>
 				)}
 
@@ -642,6 +671,8 @@ export function UploadWizard() {
 						description={description}
 						category={category}
 						difficulty={difficulty}
+						amVersionMin={formatAmVersion(amVersionMin)}
+						amVersionMax={formatAmVersion(amVersionMax)}
 						selectedFileTypes={selectedFileTypes}
 						presetFile={presetFile}
 						amLink={amLink}

@@ -9,6 +9,7 @@ import type { ListQueryParams } from "@presethub/types";
 export type ExtendedListQueryParams = ListQueryParams & {
 	category?: string;
 	difficulty?: string;
+	amVersion?: string;
 };
 
 export type PresetWithCreator = {
@@ -23,6 +24,8 @@ export type PresetWithCreator = {
 	am_link: string | null;
 	category: string;
 	difficulty: "beginner" | "intermediate" | "advanced";
+	am_version_min: string | null;
+	am_version_max: string | null;
 	download_count: number;
 	unique_download_count?: number;
 	price?: number;

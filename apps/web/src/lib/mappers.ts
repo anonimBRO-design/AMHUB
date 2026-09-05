@@ -1,4 +1,5 @@
 import type { PresetWithCreator } from "@/data/presets";
+import { formatAmVersion } from "@/lib/am-version";
 import { resolveStorageUrl } from "@/lib/supabase/storage";
 import type { PresetCardPreset } from "@presethub/ui";
 
@@ -38,6 +39,8 @@ export function mapPresetToCardPreset(
 		previewVideoUrl: preset.preview_video_url ?? undefined,
 		category: preset.category,
 		difficulty: preset.difficulty as "beginner" | "intermediate" | "advanced",
+		amVersionMin: formatAmVersion(preset.am_version_min) ?? undefined,
+		amVersionMax: formatAmVersion(preset.am_version_max) ?? undefined,
 		fileType: (preset.file_type || "xml").toUpperCase(),
 		downloadCount: preset.download_count,
 		likeCount: preset.like_count,

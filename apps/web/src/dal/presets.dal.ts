@@ -2,6 +2,7 @@ import type {
 	ExtendedListQueryParams,
 	PresetWithCreator,
 } from "@/data/presets";
+import { normalizeAmVersion } from "@/lib/am-version";
 import { createSupabaseServiceClient } from "@/lib/supabase/server";
 import type { Database } from "@presethub/types";
 import { assertExists } from "./helpers";
@@ -19,6 +20,8 @@ export const PRESET_SELECT_WITH_CREATOR = `
 	am_link,
 	category,
 	difficulty,
+	am_version_min,
+	am_version_max,
 	tags,
 	status,
 	download_count,
@@ -261,6 +264,15 @@ export async function listPublishedPresets(
 
 		if (params.fileType) {
 			query = query.eq("file_type", params.fileType);
+		}
+
+		if (params.amVersion) {
+			const normalized = normalizeAmVersion(params.amVersion);
+			if (normalized) {
+				query = query
+					.or(`am_version_min.is.null,am_version_min.lte.${normalized}`)
+					.or(`am_version_max.is.null,am_version_max.gte.${normalized}`);
+			}
 		}
 
 		if (params.tags && params.tags.length > 0) {

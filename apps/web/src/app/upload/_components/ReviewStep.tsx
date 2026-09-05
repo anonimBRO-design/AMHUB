@@ -23,6 +23,8 @@ interface ReviewStepProps {
 	previewVideoFile?: File | null;
 	isPaid?: boolean;
 	price?: number;
+	amVersionMin?: string | null;
+	amVersionMax?: string | null;
 }
 
 export function ReviewStep({
@@ -38,6 +40,8 @@ export function ReviewStep({
 	previewVideoFile,
 	isPaid = false,
 	price = 0,
+	amVersionMin = null,
+	amVersionMax = null,
 }: ReviewStepProps) {
 	const thumbnailPreviewUrl = thumbnailFile
 		? URL.createObjectURL(thumbnailFile)
@@ -179,6 +183,17 @@ export function ReviewStep({
 						) : (
 							<span className="font-bold text-emerald-400">Gratis (Free)</span>
 						)}
+					</div>
+
+					<div className="p-3 rounded-2xl bg-[var(--color-bg-surface)] border border-[var(--color-border-subtle)] space-y-1 col-span-2 sm:col-span-1">
+						<span className="text-[var(--color-text-tertiary)] block text-[10px] font-bold uppercase">
+							Versi AM
+						</span>
+						<span className="font-bold text-[var(--color-text-primary)] font-mono">
+							{amVersionMin && amVersionMax
+								? `${amVersionMin} – ${amVersionMax}`
+								: (amVersionMin ?? amVersionMax ?? "Semua versi")}
+						</span>
 					</div>
 
 					{/* Selected Sources List */}

@@ -33,6 +33,8 @@ interface HeroProps {
 		previewVideoUrl?: string | null;
 		category: string;
 		difficulty: "beginner" | "intermediate" | "advanced";
+		amVersionMin?: string | null;
+		amVersionMax?: string | null;
 		fileType?: string;
 		downloadCount: number;
 		likeCount: number;
@@ -279,6 +281,11 @@ export function Hero({ preset, currentUserId }: HeroProps) {
 						<span className="px-2.5 py-1 rounded-md text-[10px] sm:text-xs font-semibold capitalize bg-white/10 backdrop-blur-md text-white border border-white/10">
 							{preset.difficulty}
 						</span>
+						{preset.amVersionMin && (
+							<span className="px-2.5 py-1 rounded-md text-[10px] sm:text-xs font-bold tracking-wider bg-cyan-500/90 backdrop-blur-md text-white shadow-md">
+								AM {preset.amVersionMin}+
+							</span>
+						)}
 						{preset.isPaid && (preset.price ?? 0) > 0 ? (
 							<span className="px-2.5 py-1 rounded-md text-[10px] sm:text-xs font-extrabold tracking-wider bg-amber-400 text-amber-950 shadow-md">
 								Rp {(preset.price ?? 0).toLocaleString("id-ID")}

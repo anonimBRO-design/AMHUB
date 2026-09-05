@@ -1,5 +1,6 @@
 "use client";
 
+import { normalizeAmVersion } from "@/lib/am-version";
 import { Check, RotateCcw, SlidersHorizontal, X } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState, useTransition } from "react";
@@ -38,8 +39,15 @@ export function FilterSheet({ isOpen, onClose }: FilterSheetProps) {
 	const [selectedFileType, setSelectedFileType] = useState<string | null>(
 		searchParams.get("fileType"),
 	);
+	const [amVersion, setAmVersion] = useState<string>(
+		searchParams.get("amVersion") ?? "",
+	);
 
 	if (!isOpen) return null;
+
+	const trimmedAmVersion = amVersion.trim();
+	const isAmVersionValid =
+		!trimmedAmVersion || normalizeAmVersion(trimmedAmVersion) !== null;
 
 	const handleApply = () => {
 		const params = new URLSearchParams(searchParams.toString());
@@ -53,6 +61,10 @@ export function FilterSheet({ isOpen, onClose }: FilterSheetProps) {
 		if (selectedFileType) params.set("fileType", selectedFileType);
 		else params.delete("fileType");
 
+		if (trimmedAmVersion && isAmVersionValid)
+			params.set("amVersion", trimmedAmVersion);
+		else params.delete("amVersion");
+
 		startTransition(() => {
 			router.push(`/explore?${params.toString()}`);
 			onClose();
@@ -63,10 +75,12 @@ export function FilterSheet({ isOpen, onClose }: FilterSheetProps) {
 		setSelectedCategory(null);
 		setSelectedDifficulty(null);
 		setSelectedFileType(null);
+		setAmVersion("");
 		const params = new URLSearchParams(searchParams.toString());
 		params.delete("category");
 		params.delete("difficulty");
 		params.delete("fileType");
+		params.delete("amVersion");
 		startTransition(() => {
 			router.push(`/explore?${params.toString()}`);
 			onClose();
@@ -185,6 +199,34 @@ export function FilterSheet({ isOpen, onClose }: FilterSheetProps) {
 							);
 						})}
 					</div>
+				</div>
+
+				{/* AM Version Section */}
+				<div className="space-y-3">
+					<h3 className="text-xs font-bold uppercase tracking-wider text-[var(--color-text-secondary)]">
+						Versi AM Saya
+					</h3>
+					<input
+						type="text"
+						inputMode="decimal"
+						value={amVersion}
+						onChange={(e) => setAmVersion(e.target.value)}
+						placeholder="cth. 5.0.5 — tampilkan preset yang kompatibel"
+						className={`w-full min-h-[44px] px-4 rounded-xl bg-[var(--color-bg-base)] border text-sm font-mono text-[var(--color-text-primary)] placeholder:text-[var(--color-text-tertiary)] placeholder:font-sans focus:outline-none ${
+							isAmVersionValid
+								? "border-[var(--color-border-subtle)] focus:border-[var(--color-interactive-primary)]"
+								: "border-rose-500 focus:border-rose-500"
+						}`}
+					/>
+					{!isAmVersionValid ? (
+						<p className="text-[11px] text-rose-400 font-semibold">
+							Format angka, cth. 5.0.5
+						</p>
+					) : (
+						<p className="text-[11px] text-[var(--color-text-tertiary)]">
+							Kosongkan untuk semua versi.
+						</p>
+					)}
 				</div>
 
 				{/* Action Buttons */}

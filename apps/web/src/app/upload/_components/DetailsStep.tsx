@@ -1,5 +1,6 @@
 "use client";
 
+import { normalizeAmVersion } from "@/lib/am-version";
 import {
 	Banknote,
 	Check,
@@ -10,6 +11,7 @@ import {
 	Info,
 	Layers,
 	Layers3,
+	Smartphone,
 	Sparkles,
 	Volume2,
 	Waves,
@@ -29,6 +31,10 @@ interface DetailsStepProps {
 	onIsPaidChange: (isPaid: boolean) => void;
 	price: number;
 	onPriceChange: (price: number) => void;
+	amVersionMin: string;
+	onAmVersionMinChange: (version: string) => void;
+	amVersionMax: string;
+	onAmVersionMaxChange: (version: string) => void;
 }
 
 const CATEGORIES = [
@@ -64,12 +70,21 @@ export function DetailsStep({
 	onIsPaidChange,
 	price,
 	onPriceChange,
+	amVersionMin,
+	onAmVersionMinChange,
+	amVersionMax,
+	onAmVersionMaxChange,
 }: DetailsStepProps) {
 	// Payout estimation (QRIS 0.7% fee + 90:10 split)
 	const qrisFee = Math.max(0, Math.round(price * 0.007));
 	const netAmount = Math.max(0, price - qrisFee);
 	const creatorEarnings = Math.round(netAmount * 0.9);
 	const platformFee = netAmount - creatorEarnings;
+
+	const isMinVersionValid =
+		!amVersionMin.trim() || normalizeAmVersion(amVersionMin) !== null;
+	const isMaxVersionValid =
+		!amVersionMax.trim() || normalizeAmVersion(amVersionMax) !== null;
 
 	return (
 		<div className="space-y-6">
@@ -363,6 +378,72 @@ export function DetailsStep({
 						);
 					})}
 				</div>
+			</div>
+
+			{/* Alight Motion Version Support */}
+			<div className="space-y-2">
+				<span className="block text-xs font-bold uppercase tracking-wider text-[var(--color-text-secondary)]">
+					Versi Alight Motion
+				</span>
+				<div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+					<div className="space-y-1.5">
+						<label
+							htmlFor="upload-am-version-min"
+							className="flex items-center gap-1.5 text-[11px] font-semibold text-[var(--color-text-secondary)]"
+						>
+							<Smartphone className="w-3.5 h-3.5" />
+							Versi Minimal
+						</label>
+						<input
+							id="upload-am-version-min"
+							type="text"
+							inputMode="decimal"
+							value={amVersionMin}
+							onChange={(e) => onAmVersionMinChange(e.target.value)}
+							placeholder="cth. 5.0.5 (opsional)"
+							className={`w-full min-h-[44px] px-4 rounded-2xl bg-[var(--color-bg-base)] border text-sm font-mono text-[var(--color-text-primary)] placeholder:text-[var(--color-text-tertiary)] placeholder:font-sans focus:outline-none ${
+								isMinVersionValid
+									? "border-[var(--color-border-subtle)] focus:border-[var(--color-interactive-primary)]"
+									: "border-rose-500 focus:border-rose-500"
+							}`}
+						/>
+						{!isMinVersionValid && (
+							<p className="text-[11px] text-rose-400 font-semibold">
+								Format angka, cth. 5.0.5
+							</p>
+						)}
+					</div>
+					<div className="space-y-1.5">
+						<label
+							htmlFor="upload-am-version-max"
+							className="flex items-center gap-1.5 text-[11px] font-semibold text-[var(--color-text-secondary)]"
+						>
+							<Smartphone className="w-3.5 h-3.5" />
+							Versi Maksimal
+						</label>
+						<input
+							id="upload-am-version-max"
+							type="text"
+							inputMode="decimal"
+							value={amVersionMax}
+							onChange={(e) => onAmVersionMaxChange(e.target.value)}
+							placeholder="cth. 5.1.0 (opsional)"
+							className={`w-full min-h-[44px] px-4 rounded-2xl bg-[var(--color-bg-base)] border text-sm font-mono text-[var(--color-text-primary)] placeholder:text-[var(--color-text-tertiary)] placeholder:font-sans focus:outline-none ${
+								isMaxVersionValid
+									? "border-[var(--color-border-subtle)] focus:border-[var(--color-interactive-primary)]"
+									: "border-rose-500 focus:border-rose-500"
+							}`}
+						/>
+						{!isMaxVersionValid && (
+							<p className="text-[11px] text-rose-400 font-semibold">
+								Format angka, cth. 5.1.0
+							</p>
+						)}
+					</div>
+				</div>
+				<p className="text-[11px] text-[var(--color-text-tertiary)]">
+					Kosongkan bila preset cocok untuk semua versi.
+				</p>
 			</div>
 		</div>
 	);

@@ -30,6 +30,8 @@ interface InstallSectionProps {
 		isPaid?: boolean;
 		currency?: string;
 		hasAccess?: boolean;
+		amVersionMin?: string | null;
+		amVersionMax?: string | null;
 	};
 }
 
@@ -206,6 +208,26 @@ export function InstallSection({ preset }: InstallSectionProps) {
 					)}
 				</div>
 			</div>
+
+			{(preset.amVersionMin || preset.amVersionMax) && (
+				<div className="flex items-start gap-2.5 p-3.5 rounded-xl bg-cyan-500/10 border border-cyan-500/30">
+					<Smartphone className="w-4 h-4 text-cyan-400 shrink-0 mt-0.5" />
+					<div className="text-xs">
+						<p className="font-bold text-[var(--color-text-primary)]">
+							Kompatibilitas:{" "}
+							{preset.amVersionMin && preset.amVersionMax
+								? `AM ${preset.amVersionMin} – ${preset.amVersionMax}`
+								: preset.amVersionMin
+									? `AM ${preset.amVersionMin} atau lebih baru`
+									: `Hingga AM ${preset.amVersionMax}`}
+						</p>
+						<p className="text-[var(--color-text-secondary)] mt-0.5">
+							Pastikan versi Alight Motion kamu sesuai agar preset bisa diimport
+							tanpa error.
+						</p>
+					</div>
+				</div>
+			)}
 
 			{/* Main Action Buttons */}
 			{isLocked ? (

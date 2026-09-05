@@ -14,6 +14,7 @@ import {
 	FileCode,
 	Layers,
 	Ratio,
+	Smartphone,
 	Sparkles,
 	X,
 	Zap,
@@ -30,6 +31,8 @@ interface DescriptionSectionProps {
 		category: string;
 		difficulty: "beginner" | "intermediate" | "advanced";
 		fileType?: string;
+		amVersionMin?: string | null;
+		amVersionMax?: string | null;
 		aspectRatio?: string;
 		createdAt?: string;
 		creator: {
@@ -278,6 +281,22 @@ export function DescriptionSection({
 						</span>
 					</div>
 				</div>
+
+				{(preset.amVersionMin || preset.amVersionMax) && (
+					<div className="flex items-center gap-2 px-2 py-1">
+						<Smartphone className="w-4 h-4 text-cyan-400 shrink-0" />
+						<div>
+							<span className="block text-[10px] text-[var(--color-text-tertiary)] uppercase font-semibold">
+								Versi AM
+							</span>
+							<span className="font-bold text-[var(--color-text-primary)] font-mono">
+								{preset.amVersionMin && preset.amVersionMax
+									? `${preset.amVersionMin} – ${preset.amVersionMax}`
+									: (preset.amVersionMin ?? preset.amVersionMax)}
+							</span>
+						</div>
+					</div>
+				)}
 
 				{formattedDate && (
 					<div className="flex items-center gap-2 px-2 py-1">

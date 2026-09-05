@@ -25,15 +25,17 @@ export function ExploreClient({ presets }: ExploreClientProps) {
 	const sort = searchParams.get("sort") ?? undefined;
 	const difficulty = searchParams.get("difficulty") ?? undefined;
 	const fileType = searchParams.get("fileType") ?? undefined;
+	const amVersion = searchParams.get("amVersion") ?? undefined;
 
 	let activeFilterCount = 0;
 	if (category) activeFilterCount++;
 	if (difficulty) activeFilterCount++;
 	if (fileType) activeFilterCount++;
+	if (amVersion) activeFilterCount++;
 	if (sort && sort !== "created_at") activeFilterCount++;
 
 	const isFiltered = Boolean(
-		searchQuery || category || sort || difficulty || fileType,
+		searchQuery || category || sort || difficulty || fileType || amVersion,
 	);
 
 	return (

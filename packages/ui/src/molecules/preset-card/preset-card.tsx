@@ -26,6 +26,8 @@ export interface PresetCardPreset {
 	previewVideoUrl?: string;
 	category: string;
 	difficulty: "beginner" | "intermediate" | "advanced";
+	amVersionMin?: string | null;
+	amVersionMax?: string | null;
 	downloadCount: number;
 	likeCount: number;
 	commentCount: number;
@@ -52,7 +54,7 @@ export interface PresetCardPreset {
 }
 
 const PRESET_PLACEHOLDER_SVG =
-	"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='600' height='338' viewBox='0 0 600 338'><rect width='100%' height='100%' fill='%2318181b'/><path d='M270 140l80 45-80 45v-90z' fill='%23a855f7'/><text x='50%' y='78%' text-anchor='middle' fill='%23a1a1aa' font-family='sans-serif' font-size='14' font-weight='600'>ALIGHT MOTION PRESET</text></svg>";
+	"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='600' height='338' viewBox='0 0 600 338'><rect width='100%' height='100%' fill='%2318181b'/><path d='M270 140l80 45-80 45v-90z' fill='%2300C8FF'/><text x='50%' y='78%' text-anchor='middle' fill='%23a1a1aa' font-family='sans-serif' font-size='14' font-weight='600'>ALIGHT MOTION PRESET</text></svg>";
 
 function getAspectRatioClass(_preset?: PresetCardPreset): string {
 	return "aspect-[9/16]";
