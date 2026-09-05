@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import posthog from "posthog-js";
 import { useState } from "react";
+import QRCode from "react-qr-code";
 import { type PresetOrderItem, PresetPaymentModal } from "./PresetPaymentModal";
 
 interface InstallSectionProps {
@@ -268,39 +269,89 @@ export function InstallSection({ preset }: InstallSectionProps) {
 					</button>
 				</div>
 			) : (
-				<div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-					{preset.amLink && (
-						<a
-							href={preset.amLink}
-							target="_blank"
-							rel="noopener noreferrer"
-							onClick={(e) => handleDownload(e, "amLink", preset.amLink || "")}
-							className="inline-flex items-center justify-center gap-2 min-h-[48px] px-5 rounded-lg bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-bold text-sm shadow-lg shadow-emerald-500/25 hover:from-emerald-600 hover:to-teal-600 active:scale-[0.98] transition-all group"
-						>
-							<Zap className="w-4.5 h-4.5 fill-current text-white animate-pulse" />
-							<span>Open in Alight Motion</span>
-							<ExternalLink className="w-4 h-4 opacity-75 group-hover:translate-x-0.5 transition-transform" />
-						</a>
-					)}
+				<>
+					<div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+						{preset.amLink && (
+							<a
+								href={preset.amLink}
+								target="_blank"
+								rel="noopener noreferrer"
+								onClick={(e) =>
+									handleDownload(e, "amLink", preset.amLink || "")
+								}
+								className="inline-flex items-center justify-center gap-2 min-h-[48px] px-5 rounded-lg bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-bold text-sm shadow-lg shadow-emerald-500/25 hover:from-emerald-600 hover:to-teal-600 active:scale-[0.98] transition-all group"
+							>
+								<Zap className="w-4.5 h-4.5 fill-current text-white animate-pulse" />
+								<span>Open in Alight Motion</span>
+								<ExternalLink className="w-4 h-4 opacity-75 group-hover:translate-x-0.5 transition-transform" />
+							</a>
+						)}
 
-					{preset.fileUrl && (
-						<a
-							href={preset.fileUrl}
-							download
-							onClick={(e) =>
-								handleDownload(e, "fileUrl", preset.fileUrl || "")
-							}
-							className="inline-flex items-center justify-center gap-2 min-h-[48px] px-5 rounded-lg bg-[var(--color-bg-elevated)] text-[var(--color-text-primary)] font-bold text-sm border border-[var(--color-border-subtle)] hover:border-emerald-500/40 hover:bg-emerald-500/5 active:scale-[0.98] transition-all"
-						>
-							{preset.fileType === "qr" ? (
-								<QrCode className="w-4.5 h-4.5 text-cyan-400" />
-							) : (
-								<FileCode className="w-4.5 h-4.5 text-emerald-400" />
-							)}
-							<span>Download {preset.fileType?.toUpperCase() || "File"}</span>
-						</a>
+						{preset.fileUrl && (
+							<a
+								href={preset.fileUrl}
+								download
+								onClick={(e) =>
+									handleDownload(e, "fileUrl", preset.fileUrl || "")
+								}
+								className="inline-flex items-center justify-center gap-2 min-h-[48px] px-5 rounded-lg bg-[var(--color-bg-elevated)] text-[var(--color-text-primary)] font-bold text-sm border border-[var(--color-border-subtle)] hover:border-emerald-500/40 hover:bg-emerald-500/5 active:scale-[0.98] transition-all"
+							>
+								{preset.fileType === "qr" ? (
+									<QrCode className="w-4.5 h-4.5 text-cyan-400" />
+								) : (
+									<FileCode className="w-4.5 h-4.5 text-emerald-400" />
+								)}
+								<span>Download {preset.fileType?.toUpperCase() || "File"}</span>
+							</a>
+						)}
+					</div>
+
+					{/* QR Import: scan dari HP untuk import langsung */}
+					{preset.fileType === "qr" && preset.fileUrl ? (
+						<div className="p-4 rounded-xl bg-[var(--color-bg-base)]/60 border border-[var(--color-border-subtle)]/60 text-center space-y-3">
+							<div className="inline-block p-3 rounded-2xl bg-white shadow-md">
+								{/* eslint-disable-next-line @next/next/no-img-element */}
+								<img
+									src={preset.fileUrl}
+									alt={`QR Code ${preset.title}`}
+									className="w-44 h-44 sm:w-52 sm:h-52 object-contain rounded-lg"
+									loading="lazy"
+								/>
+							</div>
+							<div>
+								<p className="text-xs font-bold text-[var(--color-text-primary)]">
+									Scan QR ini dari Alight Motion
+								</p>
+								<p className="text-[11px] text-[var(--color-text-secondary)] mt-0.5">
+									Buka AM &gt; scan untuk import project otomatis, atau download
+									gambarnya dulu.
+								</p>
+							</div>
+						</div>
+					) : (
+						linkToCopy && (
+							<div className="flex items-center gap-4 p-4 rounded-xl bg-[var(--color-bg-base)]/60 border border-[var(--color-border-subtle)]/60">
+								<div className="p-2 rounded-xl bg-white shadow-md shrink-0">
+									<QRCode
+										value={linkToCopy}
+										size={96}
+										bgColor="#ffffff"
+										fgColor="#08070c"
+									/>
+								</div>
+								<div className="text-left">
+									<p className="text-xs font-bold text-[var(--color-text-primary)]">
+										Import via HP
+									</p>
+									<p className="text-[11px] text-[var(--color-text-secondary)] mt-0.5 leading-relaxed">
+										Buka halaman ini di HP, atau scan QR untuk membuka link
+										import langsung di Alight Motion.
+									</p>
+								</div>
+							</div>
+						)
 					)}
-				</div>
+				</>
 			)}
 
 			{/* Direct Link / Copy / Share Bar */}
@@ -360,6 +411,12 @@ export function InstallSection({ preset }: InstallSectionProps) {
 						Jika pakai <strong>Preset Link 5MB</strong>: Klik link di atas,
 						Alight Motion akan otomatis mendownload aset project.
 					</li>
+					{preset.fileType === "qr" && (
+						<li>
+							Jika file <strong>QR Code</strong>: Scan gambar QR di atas
+							langsung dari Alight Motion untuk import otomatis.
+						</li>
+					)}
 				</ol>
 			</div>
 
