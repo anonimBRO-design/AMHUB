@@ -1,6 +1,6 @@
 "use client";
 
-import { resolveStorageUrl } from "@/lib/supabase/storage";
+import { resolveStorageUrl } from "@/lib/supabase/storage-url";
 import { GitFork, History } from "lucide-react";
 import Link from "next/link";
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { resolveStorageUrl } from "@/lib/supabase/storage";
+import { resolveStorageUrl } from "@/lib/supabase/storage-url";
 import {
 	ChevronDown,
 	ChevronUp,

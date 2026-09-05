@@ -2,7 +2,7 @@
 
 import { useAuth } from "@/context/AuthContext";
 import type { ChallengeEntryWithPreset } from "@/dal/challenges.dal";
-import { resolveStorageUrl } from "@/lib/supabase/storage";
+import { resolveStorageUrl } from "@/lib/supabase/storage-url";
 import type { Challenge } from "@presethub/types";
 import { Check, Clock, Plus, Trophy, Users } from "lucide-react";
 import Link from "next/link";
