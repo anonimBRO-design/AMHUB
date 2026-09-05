@@ -1,5 +1,6 @@
 "use client";
 
+import { AffiliateCard } from "./AffiliateCard";
 import { AnalyticsChart } from "./AnalyticsChart";
 import { CreatorWallet } from "./CreatorWallet";
 import { DashboardHero } from "./DashboardHero";
@@ -85,6 +86,8 @@ export function DashboardClient({
 			</div>
 
 			<CreatorWallet />
+
+			<AffiliateCard username={user.username} />
 
 			<MyPresetsManager initialPresets={initialPresets} />
 		</div>

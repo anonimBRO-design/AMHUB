@@ -12,6 +12,7 @@ import { useEffect, useState } from "react";
 import { DesktopDock } from "./DesktopDock";
 import { LanguageSwitcher } from "./LanguageSwitcher";
 import { PointerCaptureGuard } from "./PointerCaptureGuard";
+import { ReferralTracker } from "./ReferralTracker";
 import { ThemeToggle } from "./ThemeToggle";
 
 interface LayoutShellProps {
@@ -160,6 +161,7 @@ export const LayoutShell: React.FC<LayoutShellProps> = (props) => {
 			<AuthProvider currentUser={props.currentUser}>
 				<ThemeProvider>
 					<PointerCaptureGuard />
+					<ReferralTracker />
 					<LayoutShellInner {...props} />
 				</ThemeProvider>
 			</AuthProvider>

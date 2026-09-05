@@ -11,6 +11,7 @@ export interface CreateOrderParams {
 	buyerId: string;
 	paymentProvider?: string;
 	licenseType?: "personal" | "commercial";
+	referrerId?: string | null;
 }
 
 /**
@@ -113,11 +114,18 @@ export async function createPresetOrder(
 		grossAmount = preset.commercial_price as number;
 	}
 
-	// 3. Compute 90:10 monetization split
+	// 3. Compute 90:10 monetization split (5% of net to referrer, from platform share)
+	const referrerId =
+		params.referrerId &&
+		params.referrerId !== buyerId &&
+		params.referrerId !== preset.creator_id
+			? params.referrerId
+			: null;
 	const payout = calculatePresetPayout({
 		grossAmount,
 		currency: preset.currency || "IDR",
 		paymentProvider,
+		hasReferrer: Boolean(referrerId),
 	});
 
 	const orderNumber = generateOrderNumber();
@@ -131,6 +139,8 @@ export async function createPresetOrder(
 			buyer_id: buyerId,
 			seller_id: preset.creator_id,
 			license_type: licenseType,
+			referrer_id: referrerId,
+			referrer_commission: payout.referrerCommissionAmount,
 			gross_amount: payout.grossAmount,
 			currency: payout.currency,
 			payment_provider: paymentProvider,

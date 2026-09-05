@@ -14,6 +14,8 @@ export interface PayoutCalculationInput {
 	currency?: string;
 	paymentProvider?: "qris" | "ewallet" | "va" | "manual" | string;
 	customProcessorFee?: number;
+	/** Affiliate referrer present: 5% of net goes to referrer (from platform share) */
+	hasReferrer?: boolean;
 }
 
 export interface PayoutCalculationResult {
@@ -22,10 +24,14 @@ export interface PayoutCalculationResult {
 	processorFee: number;
 	netAmount: number;
 	creatorPayoutAmount: number; // 90% of net
-	platformFeeAmount: number; // 10% of net
+	platformFeeAmount: number; // 10% of net (minus referrer share)
+	referrerCommissionAmount: number; // 5% of net when referred, else 0
 	creatorPercentage: number; // 90
 	platformPercentage: number; // 10
 }
+
+/** Affiliate commission: 5% of net, deducted from the platform share */
+export const AFFILIATE_COMMISSION_RATE = 0.05;
 
 /**
  * Standard Indonesian Payment Gateway Fee structures (Midtrans/Xendit reference)
@@ -76,6 +82,7 @@ export function calculatePresetPayout(
 			netAmount: 0,
 			creatorPayoutAmount: 0,
 			platformFeeAmount: 0,
+			referrerCommissionAmount: 0,
 			creatorPercentage: 90,
 			platformPercentage: 10,
 		};
@@ -94,9 +101,13 @@ export function calculatePresetPayout(
 
 	// 90% Creator / 10% Platform split
 	const creatorPayoutAmount = Number((netAmount * 0.9).toFixed(2));
+	// Affiliate referrer takes 5% of net from the platform share
+	const referrerCommissionAmount = input.hasReferrer
+		? Number((netAmount * AFFILIATE_COMMISSION_RATE).toFixed(2))
+		: 0;
 	// Ensure platform gets the exact remainder to prevent 1-cent discrepancy
 	const platformFeeAmount = Number(
-		(netAmount - creatorPayoutAmount).toFixed(2),
+		(netAmount - creatorPayoutAmount - referrerCommissionAmount).toFixed(2),
 	);
 
 	return {
@@ -106,6 +117,7 @@ export function calculatePresetPayout(
 		netAmount,
 		creatorPayoutAmount,
 		platformFeeAmount,
+		referrerCommissionAmount,
 		creatorPercentage: 90,
 		platformPercentage: 10,
 	};

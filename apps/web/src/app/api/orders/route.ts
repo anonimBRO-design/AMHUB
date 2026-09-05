@@ -1,4 +1,10 @@
 import { createPresetOrder } from "@/dal/orders.dal";
+import { getUserByUsernameOrNull } from "@/dal/users.dal";
+import {
+	AFFILIATE_REF_COOKIE,
+	isValidReferralCode,
+	normalizeReferralCode,
+} from "@/lib/affiliate";
 import { requireApiProfile } from "@/lib/api/auth";
 import { ApiError } from "@/lib/api/errors";
 import { enforceRateLimit } from "@/lib/api/rate-limit";
@@ -20,6 +26,32 @@ const createOrderSchema = z.object({
 		.default("personal"),
 });
 
+/**
+ * Resolve the `am_ref` cookie (a username) to a user id.
+ * Returns null for missing/invalid/self referrals — never blocks checkout.
+ */
+async function resolveReferrerId(
+	supabase: Parameters<typeof getUserByUsernameOrNull>[0],
+	rawRef: string | undefined,
+	buyerId: string,
+): Promise<string | null> {
+	try {
+		if (!isValidReferralCode(rawRef)) return null;
+		const username = normalizeReferralCode(rawRef as string);
+		const user = (await getUserByUsernameOrNull(
+			supabase,
+			username,
+		)) as unknown as {
+			id?: string;
+			username?: string;
+		} | null;
+		if (!user?.id || user.id === buyerId) return null;
+		return user.id;
+	} catch {
+		return null;
+	}
+}
+
 export async function POST(request: NextRequest) {
 	try {
 		const { supabase, profile } = await requireApiProfile();
@@ -38,6 +70,11 @@ export async function POST(request: NextRequest) {
 			buyerId: profile.id,
 			paymentProvider: body.payment_provider,
 			licenseType: body.license_type,
+			referrerId: await resolveReferrerId(
+				supabase,
+				request.cookies.get(AFFILIATE_REF_COOKIE)?.value,
+				profile.id,
+			),
 		});
 
 		return apiCreated(order);

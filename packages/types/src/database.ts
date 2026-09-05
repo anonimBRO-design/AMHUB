@@ -296,6 +296,8 @@ export interface Database {
 					buyer_id: string;
 					seller_id: string;
 					license_type: "personal" | "commercial";
+					referrer_id: Nullable<string>;
+					referrer_commission: number;
 					gross_amount: number;
 					currency: string;
 					payment_provider: string;
@@ -321,6 +323,8 @@ export interface Database {
 					buyer_id: string;
 					seller_id: string;
 					license_type?: "personal" | "commercial";
+					referrer_id?: Nullable<string>;
+					referrer_commission?: number;
 					gross_amount: number;
 					currency?: string;
 					payment_provider?: string;
@@ -358,6 +362,12 @@ export interface Database {
 					{
 						foreignKeyName: "preset_orders_seller_id_fkey";
 						columns: ["seller_id"];
+						referencedRelation: "users";
+						referencedColumns: ["id"];
+					},
+					{
+						foreignKeyName: "preset_orders_referrer_id_fkey";
+						columns: ["referrer_id"];
 						referencedRelation: "users";
 						referencedColumns: ["id"];
 					},
