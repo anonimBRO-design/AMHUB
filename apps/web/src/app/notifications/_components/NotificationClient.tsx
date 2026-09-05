@@ -123,6 +123,7 @@ export function NotificationClient({
 			if (activeFilter === "like") return item.type === "like";
 			if (activeFilter === "comment") return item.type === "comment";
 			if (activeFilter === "follow") return item.type === "follow";
+			if (activeFilter === "new_preset") return item.type === "new_preset";
 			if (activeFilter === "system")
 				return (
 					item.type === "system" ||

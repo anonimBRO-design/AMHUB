@@ -35,7 +35,8 @@ export interface CreateNotificationInput {
 		| "bookmark"
 		| "approval"
 		| "moderation"
-		| "system";
+		| "system"
+		| "new_preset";
 	presetId?: string;
 	message?: string;
 }
@@ -73,6 +74,51 @@ export async function createNotification(
 	} catch (error) {
 		console.error("Error creating notification:", error);
 		return null;
+	}
+}
+
+/**
+ * Fan-out "new preset released" notifications to all followers of a creator.
+ * Failures are swallowed so publishing never breaks. Capped per batch.
+ */
+export async function notifyFollowersNewPreset(
+	client: DalClient,
+	creatorId: string,
+	presetId: string,
+	presetTitle: string,
+): Promise<number> {
+	try {
+		const { data: followers, error } = await client
+			.from("follows")
+			.select("follower_id")
+			.eq("following_id", creatorId)
+			.limit(1000);
+		if (error || !followers || followers.length === 0) return 0;
+
+		const rows = (followers as { follower_id: string }[])
+			.map((f) => f.follower_id)
+			.filter((id) => id && id !== creatorId)
+			.map((followerId) => ({
+				user_id: followerId,
+				actor_id: creatorId,
+				type: "new_preset",
+				preset_id: presetId,
+				message: `merilis preset baru: ${presetTitle}`,
+				is_read: false,
+			}));
+
+		if (rows.length === 0) return 0;
+		const { error: insertError } = await client
+			.from("notifications")
+			.insert(rows as never);
+		if (insertError) {
+			console.error("Failed fan-out new_preset notifications:", insertError);
+			return 0;
+		}
+		return rows.length;
+	} catch (error) {
+		console.error("Error fan-out new_preset notifications:", error);
+		return 0;
 	}
 }
 

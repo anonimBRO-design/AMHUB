@@ -8,6 +8,7 @@ import {
 	Heart,
 	MessageSquare,
 	ShieldAlert,
+	Sparkles,
 	UserPlus,
 } from "lucide-react";
 
@@ -20,6 +21,7 @@ export interface NotificationItemData {
 		| "download"
 		| "bookmark"
 		| "download_milestone"
+		| "new_preset"
 		| "system";
 	actor?: { username: string; displayName: string; avatarUrl?: string | null };
 	preset?: { slug: string; title: string; thumbnailUrl?: string | null };
@@ -48,6 +50,8 @@ export function NotificationCard({
 				return <MessageSquare className="w-3.5 h-3.5 text-blue-400" />;
 			case "follow":
 				return <UserPlus className="w-3.5 h-3.5 text-cyan-400" />;
+			case "new_preset":
+				return <Sparkles className="w-3.5 h-3.5 text-cyan-400" />;
 			case "bookmark":
 				return <Bookmark className="w-3.5 h-3.5 text-amber-400" />;
 			case "download":

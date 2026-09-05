@@ -35,7 +35,8 @@ export type NotificationType =
 	| "comment"
 	| "follow"
 	| "download"
-	| "system";
+	| "system"
+	| "new_preset";
 export type CreatorPermissionPlatform =
 	| "tiktok"
 	| "instagram"

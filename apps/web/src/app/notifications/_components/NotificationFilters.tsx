@@ -5,6 +5,7 @@ import {
 	Heart,
 	MessageSquare,
 	ShieldAlert,
+	Sparkles,
 	UserPlus,
 } from "lucide-react";
 
@@ -14,6 +15,7 @@ export type NotificationFilterType =
 	| "like"
 	| "comment"
 	| "follow"
+	| "new_preset"
 	| "system";
 
 interface NotificationFiltersProps {
@@ -33,6 +35,7 @@ export function NotificationFilters({
 		{ id: "like" as const, label: "Likes", icon: Heart },
 		{ id: "comment" as const, label: "Comments", icon: MessageSquare },
 		{ id: "follow" as const, label: "Follows", icon: UserPlus },
+		{ id: "new_preset" as const, label: "Rilis", icon: Sparkles },
 		{ id: "system" as const, label: "System", icon: ShieldAlert },
 	];
 

@@ -1,3 +1,4 @@
+import { notifyFollowersNewPreset } from "@/dal/notifications.dal";
 import { createPreset, listPresets } from "@/dal/presets.dal";
 import { awardUserXp } from "@/dal/users.dal";
 import { normalizeAmVersion } from "@/lib/am-version";
@@ -107,6 +108,18 @@ export async function POST(request: NextRequest) {
 		).catch((err) => {
 			console.error("[XP_AWARD_ERROR] Failed to award upload XP:", err);
 		});
+
+		// Notify followers about the new release (non-blocking for response)
+		if ((preset as { status?: string })?.status !== "pending") {
+			notifyFollowersNewPreset(
+				supabase,
+				profile.id,
+				(preset as { id: string }).id,
+				data.title,
+			).catch((err) => {
+				console.error("[FOLLOWER_NOTIFY_ERROR] Failed fan-out:", err);
+			});
+		}
 
 		return apiCreated(preset, {
 			headers: {
