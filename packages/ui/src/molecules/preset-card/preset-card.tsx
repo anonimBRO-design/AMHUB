@@ -29,6 +29,7 @@ export interface PresetCardPreset {
 	amVersionMin?: string | null;
 	amVersionMax?: string | null;
 	downloadCount: number;
+	uniqueDownloadCount?: number;
 	likeCount: number;
 	commentCount: number;
 	viewCount: number;

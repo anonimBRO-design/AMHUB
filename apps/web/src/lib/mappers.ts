@@ -43,6 +43,7 @@ export function mapPresetToCardPreset(
 		amVersionMax: formatAmVersion(preset.am_version_max) ?? undefined,
 		fileType: (preset.file_type || "xml").toUpperCase(),
 		downloadCount: preset.download_count,
+		uniqueDownloadCount: preset.unique_download_count ?? undefined,
 		likeCount: preset.like_count,
 		commentCount: preset.comment_count,
 		viewCount: preset.view_count,

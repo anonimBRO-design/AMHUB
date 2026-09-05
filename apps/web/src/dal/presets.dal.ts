@@ -26,6 +26,7 @@ export const PRESET_SELECT_WITH_CREATOR = `
 	status,
 	download_count,
 	view_count,
+	unique_download_count,
 	like_count,
 	bookmark_count,
 	comment_count,

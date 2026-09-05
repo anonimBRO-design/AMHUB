@@ -9,6 +9,7 @@ import { CreatorCard } from "./CreatorCard";
 import { DescriptionSection } from "./DescriptionSection";
 import { Hero } from "./Hero";
 import { InstallSection } from "./InstallSection";
+import { PresetStats } from "./PresetStats";
 import { RelatedPresets } from "./RelatedPresets";
 import { StickyActionBar } from "./StickyActionBar";
 import { TagList } from "./TagList";
@@ -89,6 +90,14 @@ export function PresetDetailClient({
 				<div className="lg:col-span-2 space-y-6">
 					<InstallSection preset={preset} />
 					<DescriptionSection preset={preset} currentUserId={currentUserId} />
+					<PresetStats
+						views={preset.viewCount ?? 0}
+						downloads={preset.downloadCount ?? 0}
+						uniqueDownloads={preset.uniqueDownloadCount}
+						likes={preset.likeCount ?? 0}
+						bookmarks={preset.bookmarkCount ?? 0}
+						comments={preset.commentCount ?? 0}
+					/>
 					<TagList preset={preset} />
 					<CommentSection
 						presetId={preset.id}
