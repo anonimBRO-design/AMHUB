@@ -39,6 +39,7 @@ const createPresetSchema = z
 		price: z.number().min(0).max(10000000).default(0),
 		is_paid: z.boolean().default(false),
 		currency: z.string().default("IDR"),
+		commercial_price: z.number().min(0).max(10000000).default(0),
 		am_version_min: amVersionField("Versi minimal"),
 		am_version_max: amVersionField("Versi maksimal"),
 		device_support: z

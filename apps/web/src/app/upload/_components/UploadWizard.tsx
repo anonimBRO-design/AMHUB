@@ -124,6 +124,7 @@ export function UploadWizard() {
 	>("intermediate");
 	const [isPaid, setIsPaid] = useState(false);
 	const [price, setPrice] = useState(0);
+	const [commercialPrice, setCommercialPrice] = useState(0);
 	const [amVersionMin, setAmVersionMin] = useState("");
 	const [amVersionMax, setAmVersionMax] = useState("");
 
@@ -157,6 +158,9 @@ export function UploadWizard() {
 			return (
 				!title.trim() ||
 				(isPaid && (price < 1000 || Number.isNaN(price))) ||
+				(isPaid &&
+					commercialPrice > 0 &&
+					(commercialPrice < price || Number.isNaN(commercialPrice))) ||
 				!isAmVersionRangeValid()
 			);
 		}
@@ -187,6 +191,14 @@ export function UploadWizard() {
 			}
 			if (isPaid && (price < 1000 || Number.isNaN(price))) {
 				setError("Harga preset berbayar minimal Rp 1.000.");
+				return;
+			}
+			if (
+				isPaid &&
+				commercialPrice > 0 &&
+				(commercialPrice < price || Number.isNaN(commercialPrice))
+			) {
+				setError("Harga lisensi komersial minimal sama dengan harga personal.");
 				return;
 			}
 			if (!isAmVersionRangeValid()) {
@@ -527,6 +539,8 @@ export function UploadWizard() {
 					is_paid: isPaid,
 					price: isPaid ? price : 0,
 					currency: "IDR",
+					commercial_price:
+						isPaid && commercialPrice >= price ? commercialPrice : 0,
 					am_version_min: normalizeAmVersion(amVersionMin) ?? undefined,
 					am_version_max: normalizeAmVersion(amVersionMax) ?? undefined,
 				}),
@@ -658,6 +672,8 @@ export function UploadWizard() {
 						onIsPaidChange={setIsPaid}
 						price={price}
 						onPriceChange={setPrice}
+						commercialPrice={commercialPrice}
+						onCommercialPriceChange={setCommercialPrice}
 						amVersionMin={amVersionMin}
 						onAmVersionMinChange={setAmVersionMin}
 						amVersionMax={amVersionMax}
@@ -680,6 +696,7 @@ export function UploadWizard() {
 						previewVideoFile={previewVideoFile}
 						isPaid={isPaid}
 						price={isPaid ? price : 0}
+						commercialPrice={isPaid ? commercialPrice : 0}
 					/>
 				)}
 			</div>

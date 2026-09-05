@@ -14,6 +14,10 @@ const createOrderSchema = z.object({
 		.enum(["qris", "ewallet", "va", "manual"])
 		.optional()
 		.default("qris"),
+	license_type: z
+		.enum(["personal", "commercial"])
+		.optional()
+		.default("personal"),
 });
 
 export async function POST(request: NextRequest) {
@@ -33,6 +37,7 @@ export async function POST(request: NextRequest) {
 			presetId: body.preset_id,
 			buyerId: profile.id,
 			paymentProvider: body.payment_provider,
+			licenseType: body.license_type,
 		});
 
 		return apiCreated(order);

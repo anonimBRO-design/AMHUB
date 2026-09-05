@@ -111,6 +111,7 @@ export default async function PresetDetailPage({ params }: PageProps) {
 		amLink: hasAccess ? rawPreset.am_link : null,
 		isPaid,
 		hasAccess,
+		license: accessResult.license,
 		aspectRatio: cardPreset.aspectRatio,
 		aspectRatios:
 			(rawPreset as { aspect_ratios?: string[]; aspectRatios?: string[] })

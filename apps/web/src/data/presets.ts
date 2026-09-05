@@ -31,6 +31,7 @@ export type PresetWithCreator = {
 	price?: number;
 	is_paid?: boolean;
 	currency?: string;
+	commercial_price?: number;
 	view_count: number;
 	like_count: number;
 	bookmark_count: number;

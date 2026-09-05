@@ -23,6 +23,7 @@ interface ReviewStepProps {
 	previewVideoFile?: File | null;
 	isPaid?: boolean;
 	price?: number;
+	commercialPrice?: number;
 	amVersionMin?: string | null;
 	amVersionMax?: string | null;
 }
@@ -40,6 +41,7 @@ export function ReviewStep({
 	previewVideoFile,
 	isPaid = false,
 	price = 0,
+	commercialPrice = 0,
 	amVersionMin = null,
 	amVersionMax = null,
 }: ReviewStepProps) {
@@ -179,6 +181,11 @@ export function ReviewStep({
 								<span className="block text-[10px] text-emerald-400 font-semibold">
 									Net: +Rp {creatorEarnings.toLocaleString("id-ID")}
 								</span>
+								{commercialPrice > 0 && (
+									<span className="block text-[10px] text-cyan-400 font-semibold mt-0.5">
+										+ Komersial: Rp {commercialPrice.toLocaleString("id-ID")}
+									</span>
+								)}
 							</div>
 						) : (
 							<span className="font-bold text-emerald-400">Gratis (Free)</span>

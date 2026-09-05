@@ -33,6 +33,8 @@ interface InstallSectionProps {
 		hasAccess?: boolean;
 		amVersionMin?: string | null;
 		amVersionMax?: string | null;
+		commercialPrice?: number | null;
+		license?: "personal" | "commercial" | null;
 	};
 }
 
@@ -46,8 +48,20 @@ export function InstallSection({ preset }: InstallSectionProps) {
 	const [currentOrder, setCurrentOrder] = useState<PresetOrderItem | null>(
 		null,
 	);
+	const [selectedLicense, setSelectedLicense] = useState<
+		"personal" | "commercial"
+	>("personal");
 
 	const isLocked = Boolean(preset.isPaid && !preset.hasAccess);
+	const commercialOffered = (preset.commercialPrice ?? 0) > 0;
+	const effectiveLicense =
+		selectedLicense === "commercial" && commercialOffered
+			? "commercial"
+			: "personal";
+	const effectivePrice =
+		effectiveLicense === "commercial"
+			? (preset.commercialPrice ?? preset.price ?? 0)
+			: (preset.price ?? 0);
 
 	// SECURITY: If locked, never copy sensitive file or AM links
 	const linkToCopy = isLocked
@@ -158,7 +172,10 @@ export function InstallSection({ preset }: InstallSectionProps) {
 			const res = await fetch("/api/orders", {
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify({ preset_id: preset.id }),
+				body: JSON.stringify({
+					preset_id: preset.id,
+					license_type: effectiveLicense,
+				}),
 			});
 			const data = await res.json();
 			if (!res.ok) {
@@ -198,6 +215,12 @@ export function InstallSection({ preset }: InstallSectionProps) {
 					<span className="px-2.5 py-1 rounded-md text-xs font-bold uppercase tracking-wider bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
 						{preset.fileType?.toUpperCase() || "XML"}
 					</span>
+					{!isLocked && preset.isPaid && preset.license && (
+						<span className="px-2.5 py-1 rounded-md text-xs font-bold tracking-wider bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">
+							Lisensi:{" "}
+							{preset.license === "commercial" ? "Komersial" : "Personal"}
+						</span>
+					)}
 					{preset.isPaid && (preset.price ?? 0) > 0 ? (
 						<span className="px-2.5 py-1 rounded-md text-xs font-extrabold tracking-wider bg-amber-400 text-amber-950 shadow-md">
 							Rp {(preset.price ?? 0).toLocaleString("id-ID")}
@@ -250,6 +273,49 @@ export function InstallSection({ preset }: InstallSectionProps) {
 						<p className="text-xs text-rose-400 font-semibold">{orderError}</p>
 					)}
 
+					{commercialOffered && (
+						<div className="grid grid-cols-2 gap-2 text-left">
+							<button
+								type="button"
+								onClick={() => setSelectedLicense("personal")}
+								className={`p-3 rounded-xl border transition-all ${
+									effectiveLicense === "personal"
+										? "bg-amber-500/15 border-amber-500 ring-1 ring-amber-500"
+										: "bg-black/20 border-amber-500/20 hover:border-amber-500/50"
+								}`}
+							>
+								<span className="block text-[11px] font-bold text-[var(--color-text-primary)]">
+									Personal
+								</span>
+								<span className="block text-[10px] text-[var(--color-text-secondary)] mt-0.5">
+									Proyek pribadi
+								</span>
+								<span className="block text-xs font-extrabold text-amber-400 mt-1">
+									Rp {(preset.price ?? 0).toLocaleString("id-ID")}
+								</span>
+							</button>
+							<button
+								type="button"
+								onClick={() => setSelectedLicense("commercial")}
+								className={`p-3 rounded-xl border transition-all ${
+									effectiveLicense === "commercial"
+										? "bg-cyan-500/15 border-cyan-500 ring-1 ring-cyan-500"
+										: "bg-black/20 border-cyan-500/20 hover:border-cyan-500/50"
+								}`}
+							>
+								<span className="block text-[11px] font-bold text-[var(--color-text-primary)]">
+									Komersial
+								</span>
+								<span className="block text-[10px] text-[var(--color-text-secondary)] mt-0.5">
+									Konten monetisasi
+								</span>
+								<span className="block text-xs font-extrabold text-cyan-400 mt-1">
+									Rp {(preset.commercialPrice ?? 0).toLocaleString("id-ID")}
+								</span>
+							</button>
+						</div>
+					)}
+
 					<button
 						type="button"
 						onClick={handlePurchase}
@@ -264,7 +330,7 @@ export function InstallSection({ preset }: InstallSectionProps) {
 						<span>
 							{isOrdering
 								? "Memproses Order..."
-								: `Beli Sekarang • Rp ${(preset.price ?? 0).toLocaleString("id-ID")}`}
+								: `Beli ${effectiveLicense === "commercial" ? "Komersial" : "Sekarang"} • Rp ${effectivePrice.toLocaleString("id-ID")}`}
 						</span>
 					</button>
 				</div>
@@ -428,7 +494,7 @@ export function InstallSection({ preset }: InstallSectionProps) {
 					preset={{
 						id: preset.id,
 						title: preset.title,
-						price: preset.price || 0,
+						price: effectivePrice,
 						currency: preset.currency,
 					}}
 					initialOrder={currentOrder}

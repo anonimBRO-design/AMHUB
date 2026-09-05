@@ -27,6 +27,10 @@ export const PRESET_SELECT_WITH_CREATOR = `
 	download_count,
 	view_count,
 	unique_download_count,
+	price,
+	is_paid,
+	currency,
+	commercial_price,
 	like_count,
 	bookmark_count,
 	comment_count,
@@ -66,6 +70,7 @@ export interface CreatePresetData {
 	price?: number;
 	is_paid?: boolean;
 	currency?: string;
+	commercial_price?: number;
 	am_version_min?: string;
 	am_version_max?: string;
 	device_support?: ("android" | "ios" | "both")[];

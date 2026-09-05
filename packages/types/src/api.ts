@@ -224,6 +224,7 @@ export interface PresetOrderResponse {
 	preset_id: string;
 	buyer_id: string;
 	seller_id: string;
+	license_type: "personal" | "commercial";
 	gross_amount: number;
 	currency: string;
 	payment_provider: string;
@@ -240,6 +241,7 @@ export interface PresetOrderResponse {
 export interface CreatePresetOrderInput {
 	preset_id: string;
 	payment_provider?: string;
+	license_type?: "personal" | "commercial";
 }
 
 export interface CreateCreatorPermissionInput {

@@ -10,6 +10,7 @@ export interface CreateOrderParams {
 	presetId: string;
 	buyerId: string;
 	paymentProvider?: string;
+	licenseType?: "personal" | "commercial";
 }
 
 /**
@@ -29,11 +30,15 @@ export async function createPresetOrder(
 	params: CreateOrderParams,
 ): Promise<PresetOrder> {
 	const { presetId, buyerId, paymentProvider = "qris" } = params;
+	const licenseType =
+		params.licenseType === "commercial" ? "commercial" : "personal";
 
 	// 1. Fetch preset details
 	const { data: presetData, error: presetError } = await client
 		.from("presets")
-		.select("id, title, creator_id, price, is_paid, currency, status")
+		.select(
+			"id, title, creator_id, price, is_paid, currency, status, commercial_price",
+		)
 		.eq("id", presetId)
 		.maybeSingle();
 
@@ -52,6 +57,7 @@ export async function createPresetOrder(
 		is_paid: boolean;
 		currency: string;
 		status: string;
+		commercial_price?: number;
 	};
 
 	if (preset.status !== "published") {
@@ -75,25 +81,41 @@ export async function createPresetOrder(
 		});
 	}
 
-	// 2. Check if buyer already purchased this preset
+	// 2. Check if buyer already purchased this preset (same license = conflict,
+	// different license = allowed upgrade path)
 	const { data: existingPaidOrder } = await client
 		.from("preset_orders")
-		.select("id, order_number, payment_status")
+		.select("id, order_number, payment_status, license_type")
 		.eq("preset_id", presetId)
 		.eq("buyer_id", buyerId)
 		.eq("payment_status", "paid")
 		.maybeSingle();
 
-	if (existingPaidOrder) {
+	const existingLicense = (
+		existingPaidOrder as { license_type?: string } | null
+	)?.license_type;
+	if (existingPaidOrder && existingLicense === licenseType) {
 		throw new ApiError({
 			code: "conflict",
 			message: "You have already purchased this preset.",
 		});
 	}
 
+	// 2b. Resolve gross amount from the chosen license tier
+	let grossAmount = preset.price ?? 0;
+	if (licenseType === "commercial") {
+		if ((preset.commercial_price ?? 0) <= 0) {
+			throw new ApiError({
+				code: "bad_request",
+				message: "Lisensi komersial tidak ditawarkan untuk preset ini.",
+			});
+		}
+		grossAmount = preset.commercial_price as number;
+	}
+
 	// 3. Compute 90:10 monetization split
 	const payout = calculatePresetPayout({
-		grossAmount: preset.price,
+		grossAmount,
 		currency: preset.currency || "IDR",
 		paymentProvider,
 	});
@@ -108,6 +130,7 @@ export async function createPresetOrder(
 			preset_id: preset.id,
 			buyer_id: buyerId,
 			seller_id: preset.creator_id,
+			license_type: licenseType,
 			gross_amount: payout.grossAmount,
 			currency: payout.currency,
 			payment_provider: paymentProvider,
@@ -176,7 +199,12 @@ export async function checkUserPresetAccess(
 	client: DalClient,
 	presetId: string,
 	userId?: string | null,
-): Promise<{ hasAccess: boolean; isPaid: boolean; price: number }> {
+): Promise<{
+	hasAccess: boolean;
+	isPaid: boolean;
+	price: number;
+	license: "personal" | "commercial" | null;
+}> {
 	const { data: preset } = await client
 		.from("presets")
 		.select("creator_id, is_paid, price")
@@ -184,7 +212,7 @@ export async function checkUserPresetAccess(
 		.maybeSingle();
 
 	if (!preset) {
-		return { hasAccess: false, isPaid: false, price: 0 };
+		return { hasAccess: false, isPaid: false, price: 0, license: null };
 	}
 
 	const p = preset as { creator_id: string; is_paid?: boolean; price?: number };
@@ -192,36 +220,47 @@ export async function checkUserPresetAccess(
 	const price = p.price ?? 0;
 
 	if (!isPaid) {
-		return { hasAccess: true, isPaid: false, price: 0 };
+		return { hasAccess: true, isPaid: false, price: 0, license: null };
 	}
 
 	if (userId && p.creator_id === userId) {
-		return { hasAccess: true, isPaid: true, price };
+		return { hasAccess: true, isPaid: true, price, license: null };
 	}
 
 	if (!userId) {
-		return { hasAccess: false, isPaid: true, price };
+		return { hasAccess: false, isPaid: true, price, license: null };
 	}
 
 	try {
 		const { data: order } = await client
 			.from("preset_orders")
-			.select("id")
+			.select("id, license_type")
 			.eq("preset_id", presetId)
 			.eq("buyer_id", userId)
 			.eq("payment_status", "paid")
+			.order("created_at", { ascending: false })
+			.limit(1)
 			.maybeSingle();
+
+		const license =
+			(order as { license_type?: string } | null)?.license_type === "commercial"
+				? ("commercial" as const)
+				: order
+					? ("personal" as const)
+					: null;
 
 		return {
 			hasAccess: Boolean(order),
 			isPaid: true,
 			price,
+			license,
 		};
 	} catch {
 		return {
 			hasAccess: true,
 			isPaid: false,
 			price: 0,
+			license: null,
 		};
 	}
 }

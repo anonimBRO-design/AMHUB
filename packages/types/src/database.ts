@@ -181,6 +181,7 @@ export interface Database {
 					price: number;
 					is_paid: boolean;
 					currency: string;
+					commercial_price: number;
 					view_count: number;
 					like_count: number;
 					bookmark_count: number;
@@ -217,6 +218,7 @@ export interface Database {
 					price?: number;
 					is_paid?: boolean;
 					currency?: string;
+					commercial_price?: number;
 					view_count?: number;
 					like_count?: number;
 					bookmark_count?: number;
@@ -290,6 +292,7 @@ export interface Database {
 					preset_id: string;
 					buyer_id: string;
 					seller_id: string;
+					license_type: "personal" | "commercial";
 					gross_amount: number;
 					currency: string;
 					payment_provider: string;
@@ -314,6 +317,7 @@ export interface Database {
 					preset_id: string;
 					buyer_id: string;
 					seller_id: string;
+					license_type?: "personal" | "commercial";
 					gross_amount: number;
 					currency?: string;
 					payment_provider?: string;

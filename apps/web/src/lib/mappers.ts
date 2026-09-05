@@ -65,5 +65,6 @@ export function mapPresetToCardPreset(
 		price: preset.price ?? 0,
 		isPaid: Boolean(preset.is_paid && (preset.price ?? 0) > 0),
 		currency: preset.currency || "IDR",
+		commercialPrice: preset.commercial_price ?? undefined,
 	};
 }

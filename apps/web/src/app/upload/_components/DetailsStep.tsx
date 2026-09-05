@@ -31,6 +31,8 @@ interface DetailsStepProps {
 	onIsPaidChange: (isPaid: boolean) => void;
 	price: number;
 	onPriceChange: (price: number) => void;
+	commercialPrice: number;
+	onCommercialPriceChange: (price: number) => void;
 	amVersionMin: string;
 	onAmVersionMinChange: (version: string) => void;
 	amVersionMax: string;
@@ -70,6 +72,8 @@ export function DetailsStep({
 	onIsPaidChange,
 	price,
 	onPriceChange,
+	commercialPrice,
+	onCommercialPriceChange,
 	amVersionMin,
 	onAmVersionMinChange,
 	amVersionMax,
@@ -319,6 +323,64 @@ export function DetailsStep({
 									dll). Payout ditransfer otomatis.
 								</span>
 							</p>
+						</div>
+
+						{/* Commercial License Upgrade */}
+						<div className="p-3.5 rounded-xl bg-[var(--color-bg-surface)] border border-[var(--color-border-subtle)] space-y-3">
+							<button
+								type="button"
+								onClick={() =>
+									onCommercialPriceChange(
+										commercialPrice > 0 ? 0 : Math.max(price * 2, 20000),
+									)
+								}
+								className="w-full flex items-center justify-between gap-2 text-left"
+							>
+								<span>
+									<span className="block text-xs font-bold text-[var(--color-text-primary)]">
+										Tawarkan Lisensi Komersial
+									</span>
+									<span className="block text-[11px] text-[var(--color-text-secondary)] mt-0.5">
+										Pembeli bisa pakai preset untuk konten monetisasi
+									</span>
+								</span>
+								<span
+									className={`relative w-11 h-6 rounded-full transition-colors shrink-0 ${
+										commercialPrice > 0
+											? "bg-[var(--color-interactive-primary)]"
+											: "bg-[var(--color-border-subtle)]"
+									}`}
+								>
+									<span
+										className={`absolute top-0.5 w-5 h-5 rounded-full bg-white shadow transition-all ${
+											commercialPrice > 0 ? "left-[22px]" : "left-0.5"
+										}`}
+									/>
+								</span>
+							</button>
+							{commercialPrice > 0 && (
+								<div className="relative">
+									<span className="absolute left-4 top-1/2 -translate-y-1/2 font-bold text-xs text-[var(--color-text-secondary)]">
+										Rp
+									</span>
+									<input
+										type="number"
+										min={price}
+										max={10000000}
+										step={1000}
+										value={commercialPrice || ""}
+										onChange={(e) =>
+											onCommercialPriceChange(Number(e.target.value) || 0)
+										}
+										placeholder="50000"
+										className="w-full min-h-[44px] pl-10 pr-4 rounded-xl bg-[var(--color-bg-base)] border border-[var(--color-border-subtle)] text-sm font-bold text-[var(--color-text-primary)] focus:outline-none focus:border-[var(--color-interactive-primary)]"
+									/>
+									<p className="text-[11px] text-[var(--color-text-tertiary)] mt-1.5">
+										Minimal sama dengan harga personal (Rp{" "}
+										{price.toLocaleString("id-ID")}).
+									</p>
+								</div>
+							)}
 						</div>
 					</div>
 				)}
