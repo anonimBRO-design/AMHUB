@@ -550,6 +550,35 @@ export interface Database {
 					},
 				];
 			};
+			collection_collaborators: {
+				Row: {
+					collection_id: string;
+					user_id: string;
+					added_at: string;
+				};
+				Insert: {
+					collection_id: string;
+					user_id: string;
+					added_at?: string;
+				};
+				Update: Partial<
+					Database["public"]["Tables"]["collection_collaborators"]["Insert"]
+				>;
+				Relationships: [
+					{
+						foreignKeyName: "collection_collaborators_collection_id_fkey";
+						columns: ["collection_id"];
+						referencedRelation: "collections";
+						referencedColumns: ["id"];
+					},
+					{
+						foreignKeyName: "collection_collaborators_user_id_fkey";
+						columns: ["user_id"];
+						referencedRelation: "users";
+						referencedColumns: ["id"];
+					},
+				];
+			};
 			follows: {
 				Row: {
 					follower_id: string;

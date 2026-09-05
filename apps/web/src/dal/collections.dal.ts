@@ -151,10 +151,23 @@ export async function getCollectionById(
 
 	const isOwner = currentUserId === validCollection.owner_id;
 	if (!validCollection.is_public && !isOwner) {
-		throw new ApiError({
-			code: "not_found",
-			message: "Collection was not found.",
-		});
+		if (!currentUserId) {
+			throw new ApiError({
+				code: "not_found",
+				message: "Collection was not found.",
+			});
+		}
+		const isCollaborator = await isCollectionCollaborator(
+			client,
+			id,
+			currentUserId,
+		);
+		if (!isCollaborator) {
+			throw new ApiError({
+				code: "not_found",
+				message: "Collection was not found.",
+			});
+		}
 	}
 
 	return validCollection;
@@ -211,4 +224,232 @@ export async function deleteCollection(client: DalClient, id: string) {
 		.eq("id", id);
 
 	if (deleteError) throw deleteError;
+}
+
+export interface CollectionCollaborator {
+	user_id: string;
+	added_at: string;
+	user: {
+		id: string;
+		username: string;
+		display_name: string;
+		avatar_url: string | null;
+	};
+}
+
+export async function isCollectionCollaborator(
+	client: DalClient,
+	collectionId: string,
+	userId: string,
+): Promise<boolean> {
+	try {
+		const { data, error } = await client
+			.from("collection_collaborators")
+			.select("user_id")
+			.eq("collection_id", collectionId)
+			.eq("user_id", userId)
+			.maybeSingle();
+		return !error && Boolean(data);
+	} catch {
+		return false;
+	}
+}
+
+export async function canEditCollection(
+	client: DalClient,
+	collectionId: string,
+	userId: string,
+	isStaff = false,
+): Promise<boolean> {
+	if (isStaff) return true;
+	try {
+		const owner = await getCollectionOwner(client, collectionId);
+		if (owner.owner_id === userId) return true;
+		return await isCollectionCollaborator(client, collectionId, userId);
+	} catch {
+		return false;
+	}
+}
+
+export async function listCollaborators(
+	client: DalClient,
+	collectionId: string,
+): Promise<CollectionCollaborator[]> {
+	const { data, error } = await client
+		.from("collection_collaborators")
+		.select(
+			`user_id, added_at,
+			user:users!collection_collaborators_user_id_fkey (
+				id, username, display_name, avatar_url
+			)`,
+		)
+		.eq("collection_id", collectionId)
+		.order("added_at", { ascending: true });
+	if (error) throw error;
+	return (data ?? []) as unknown as CollectionCollaborator[];
+}
+
+export async function addCollaborator(
+	client: DalClient,
+	collectionId: string,
+	userId: string,
+) {
+	const owner = await getCollectionOwner(client, collectionId);
+	if (owner.owner_id === userId) {
+		throw new ApiError({
+			code: "bad_request",
+			message: "Pemilik koleksi sudah punya akses penuh.",
+		});
+	}
+	const { data, error } = await client
+		.from("collection_collaborators")
+		.insert({ collection_id: collectionId, user_id: userId } as never)
+		.select("collection_id, user_id, added_at")
+		.single();
+	if (error) {
+		if ((error as { code?: string }).code === "23505") {
+			throw new ApiError({
+				code: "conflict",
+				message: "Pengguna ini sudah menjadi kolaborator.",
+			});
+		}
+		throw error;
+	}
+	return data;
+}
+
+export async function removeCollaborator(
+	client: DalClient,
+	collectionId: string,
+	userId: string,
+) {
+	const { error } = await client
+		.from("collection_collaborators")
+		.delete()
+		.eq("collection_id", collectionId)
+		.eq("user_id", userId);
+	if (error) throw error;
+}
+
+export interface CollectionItemWithPreset {
+	preset_id: string;
+	added_at: string;
+	sort_order: number;
+	preset: {
+		id: string;
+		slug: string;
+		title: string;
+		thumbnail_url: string;
+		category: string;
+		difficulty: "beginner" | "intermediate" | "advanced";
+		file_type: string;
+		like_count: number;
+		download_count: number;
+		view_count: number;
+		comment_count: number;
+		created_at: string;
+		creator: {
+			id: string;
+			username: string;
+			display_name: string;
+			avatar_url: string | null;
+			is_verified: boolean;
+		};
+	};
+}
+
+export async function listCollectionItems(
+	client: DalClient,
+	collectionId: string,
+): Promise<CollectionItemWithPreset[]> {
+	const { data, error } = await client
+		.from("collection_items")
+		.select(
+			`preset_id, added_at, sort_order,
+			preset:presets!collection_items_preset_id_fkey (
+				id, slug, title, thumbnail_url, category, difficulty, file_type,
+				like_count, download_count, view_count, comment_count,
+				created_at, status,
+				creator:users!presets_creator_id_fkey (
+					id, username, display_name, avatar_url, is_verified
+				)
+			)`,
+		)
+		.eq("collection_id", collectionId)
+		.order("sort_order", { ascending: true })
+		.order("added_at", { ascending: false });
+	if (error) throw error;
+	const items = (data ?? []) as unknown as (Omit<
+		CollectionItemWithPreset,
+		"preset"
+	> & {
+		preset: CollectionItemWithPreset["preset"] & { status?: string };
+	})[];
+	return items.filter(
+		(item) => item.preset && item.preset.status === "published",
+	);
+}
+
+export async function addCollectionItem(
+	client: DalClient,
+	collectionId: string,
+	presetId: string,
+) {
+	const { data: preset } = await client
+		.from("presets")
+		.select("id, status")
+		.eq("id", presetId)
+		.maybeSingle();
+	const p = preset as { status?: string } | null;
+	if (!p || p.status !== "published") {
+		throw new ApiError({
+			code: "bad_request",
+			message: "Hanya preset yang sudah publish bisa ditambahkan.",
+		});
+	}
+	const { error } = await client
+		.from("collection_items")
+		.insert({ collection_id: collectionId, preset_id: presetId } as never);
+	if (error) {
+		if ((error as { code?: string }).code === "23505") {
+			throw new ApiError({
+				code: "conflict",
+				message: "Preset ini sudah ada di koleksi.",
+			});
+		}
+		throw error;
+	}
+	await syncCollectionPresetCount(client, collectionId);
+}
+
+export async function removeCollectionItem(
+	client: DalClient,
+	collectionId: string,
+	presetId: string,
+) {
+	const { error } = await client
+		.from("collection_items")
+		.delete()
+		.eq("collection_id", collectionId)
+		.eq("preset_id", presetId);
+	if (error) throw error;
+	await syncCollectionPresetCount(client, collectionId);
+}
+
+async function syncCollectionPresetCount(
+	client: DalClient,
+	collectionId: string,
+) {
+	try {
+		const { count } = await client
+			.from("collection_items")
+			.select("preset_id", { count: "exact", head: true })
+			.eq("collection_id", collectionId);
+		await client
+			.from("collections")
+			.update({ preset_count: count ?? 0 } as never)
+			.eq("id", collectionId);
+	} catch {
+		// count sync is best-effort
+	}
 }
