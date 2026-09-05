@@ -10,6 +10,7 @@ export type ExtendedListQueryParams = ListQueryParams & {
 	category?: string;
 	difficulty?: string;
 	amVersion?: string;
+	hasVideo?: boolean;
 };
 
 export type PresetWithCreator = {

@@ -287,6 +287,10 @@ export async function listPublishedPresets(
 			query = query.contains("tags", params.tags);
 		}
 
+		if (params.hasVideo) {
+			query = query.not("preview_video_url", "is", null);
+		}
+
 		const sortOption = params.sort ?? "created_at";
 		if (sortOption === "oldest") {
 			query = query.order("created_at", { ascending: true });

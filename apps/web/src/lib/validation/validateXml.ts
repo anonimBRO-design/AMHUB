@@ -1,6 +1,18 @@
 import type { ValidationCheck, ValidationResult } from "./types";
 
 const MAX_XML_FILE_SIZE = 15 * 1024 * 1024; // 15 MB
+const MAX_XML_ELEMENTS = 200000;
+const MAX_XML_DEPTH = 100;
+
+const UNSAFE_PATTERNS: { pattern: RegExp; label: string }[] = [
+	{ pattern: /<!DOCTYPE/i, label: "DOCTYPE declaration" },
+	{ pattern: /<!ENTITY/i, label: "ENTITY declaration (XXE risk)" },
+	{ pattern: /<script[\s>]/i, label: "<script> tag" },
+	{ pattern: /<iframe[\s>]/i, label: "<iframe> tag" },
+	{ pattern: /<object[\s>]/i, label: "<object> tag" },
+	{ pattern: /<embed[\s>]/i, label: "<embed> tag" },
+	{ pattern: /javascript:/i, label: "javascript: URI" },
+];
 
 export async function validateXml(
 	file: File | null,
@@ -24,6 +36,16 @@ export async function validateXml(
 		{
 			id: "xml_syntax",
 			label: "XML syntax valid",
+			status: "idle",
+		},
+		{
+			id: "xml_safety",
+			label: "No unsafe content (XXE/scripts)",
+			status: "idle",
+		},
+		{
+			id: "xml_complexity",
+			label: "Complexity within limits",
 			status: "idle",
 		},
 		{
@@ -174,7 +196,75 @@ export async function validateXml(
 		};
 	}
 
-	// 5. Detect Alight Motion preset structure
+	// 5. Safety scan: block XXE / billion-laughs vectors and active content.
+	// DOMParser in modern browsers does not resolve external entities, but we
+	// reject the declarations outright so malicious files never reach storage.
+	const unsafeHit = UNSAFE_PATTERNS.find((u) => u.pattern.test(textContent));
+	if (unsafeHit) {
+		checks[4] = {
+			...checks[4],
+			status: "error",
+			message: `Blocked unsafe content: ${unsafeHit.label}.`,
+		};
+		return {
+			isValid: false,
+			isValidating: false,
+			checks,
+			error:
+				"File preset ditolak otomatis: konten tidak aman terdeteksi (risiko XXE/skrip).",
+		};
+	}
+	checks[4] = {
+		...checks[4],
+		status: "success",
+		message: "No DOCTYPE/ENTITY/scripts",
+	};
+
+	// 6. Complexity guard: cap element count and nesting depth so a single
+	// file cannot freeze the importer or blow up storage rendering.
+	let elementCount = 0;
+	let maxDepth = 0;
+	let tooComplex: string | null = null;
+	const stack: { el: Element; depth: number }[] = [
+		{ el: xmlDoc.documentElement, depth: 1 },
+	];
+	while (stack.length > 0) {
+		const { el, depth } = stack.pop() as { el: Element; depth: number };
+		elementCount += 1;
+		if (depth > maxDepth) maxDepth = depth;
+		if (elementCount > MAX_XML_ELEMENTS) {
+			tooComplex = `Melebihi ${MAX_XML_ELEMENTS.toLocaleString("id-ID")} elemen.`;
+			break;
+		}
+		if (maxDepth > MAX_XML_DEPTH) {
+			tooComplex = `Kedalaman nesting melebihi ${MAX_XML_DEPTH} level.`;
+			break;
+		}
+		const children = el.children;
+		for (let i = children.length - 1; i >= 0; i--) {
+			stack.push({ el: children[i], depth: depth + 1 });
+		}
+	}
+	if (tooComplex) {
+		checks[5] = {
+			...checks[5],
+			status: "error",
+			message: tooComplex,
+		};
+		return {
+			isValid: false,
+			isValidating: false,
+			checks,
+			error: "File preset ditolak otomatis: struktur terlalu kompleks.",
+		};
+	}
+	checks[5] = {
+		...checks[5],
+		status: "success",
+		message: `${elementCount.toLocaleString("id-ID")} elemen, depth ${maxDepth}`,
+	};
+
+	// 7. Detect Alight Motion preset structure
 	const rootElement = xmlDoc.documentElement;
 	const rootName = rootElement.nodeName.toLowerCase();
 	const xmlText = textContent.toLowerCase();
@@ -193,8 +283,8 @@ export async function validateXml(
 		xmlText.includes("<transform");
 
 	if (!isAmPreset) {
-		checks[4] = {
-			...checks[4],
+		checks[6] = {
+			...checks[6],
 			status: "error",
 			message:
 				"XML does not contain recognized Alight Motion elements (<scene>, <layer>, <effect>, etc.).",
@@ -207,8 +297,8 @@ export async function validateXml(
 		};
 	}
 
-	checks[4] = {
-		...checks[4],
+	checks[6] = {
+		...checks[6],
 		status: "success",
 		message: `Alight Motion structure (${rootName || "preset"}) detected`,
 	};
