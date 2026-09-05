@@ -365,7 +365,7 @@ export const PresetCard = React.forwardRef<HTMLDivElement, PresetCardProps>(
 					</div>
 
 					{variant === "featured" && (
-						<div className="absolute bottom-3 left-3 pointer-events-none z-0 rounded-md bg-purple-900/40 border border-purple-500/40 px-2.5 py-1 text-[var(--font-size-label-sm)] font-bold text-purple-300">
+						<div className="absolute bottom-3 left-3 pointer-events-none z-0 rounded-md bg-cyan-900/40 border border-cyan-500/40 px-2.5 py-1 text-[var(--font-size-label-sm)] font-bold text-cyan-300">
 							Featured
 						</div>
 					)}
@@ -449,7 +449,7 @@ export const PresetCard = React.forwardRef<HTMLDivElement, PresetCardProps>(
 					</div>
 
 					{/* Title & Description */}
-					<h3 className="mb-1 text-sm sm:text-base font-semibold text-[var(--color-text-primary)] group-hover:text-purple-300 transition-colors line-clamp-1">
+					<h3 className="mb-1 text-sm sm:text-base font-semibold text-[var(--color-text-primary)] group-hover:text-cyan-300 transition-colors line-clamp-1">
 						{preset.title}
 					</h3>
 					<p className="mb-3 text-xs sm:text-sm text-[var(--color-text-secondary)] line-clamp-2">

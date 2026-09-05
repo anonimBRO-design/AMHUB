@@ -132,14 +132,14 @@ export function PwaManager() {
 			{/* Floating Premium Install Banner */}
 			{showBanner && (
 				<div className="fixed bottom-24 left-4 right-4 sm:left-auto sm:right-6 sm:max-w-md z-50 animate-in slide-in-from-bottom-5 duration-300">
-					<div className="relative overflow-hidden rounded-2xl bg-[#13111C]/95 border border-purple-500/30 p-4 shadow-2xl backdrop-blur-xl ring-1 ring-white/10">
+					<div className="relative overflow-hidden rounded-2xl bg-[#13111C]/95 border border-cyan-500/30 p-4 shadow-2xl backdrop-blur-xl ring-1 ring-white/10">
 						{/* Background Glow Effect */}
-						<div className="absolute -right-8 -top-8 w-24 h-24 bg-purple-600/30 rounded-full blur-2xl pointer-events-none" />
+						<div className="absolute -right-8 -top-8 w-24 h-24 bg-cyan-600/30 rounded-full blur-2xl pointer-events-none" />
 						<div className="absolute -left-8 -bottom-8 w-24 h-24 bg-pink-600/20 rounded-full blur-2xl pointer-events-none" />
 
 						<div className="flex items-start gap-3.5 relative z-10">
 							{/* App Icon */}
-							<div className="relative w-12 h-12 rounded-xl overflow-hidden border border-purple-500/40 shadow-md shrink-0 bg-black">
+							<div className="relative w-12 h-12 rounded-xl overflow-hidden border border-cyan-500/40 shadow-md shrink-0 bg-black">
 								<Image
 									src="/icon-192.png"
 									alt="AMHUB Logo"
@@ -154,7 +154,7 @@ export function PwaManager() {
 									<h4 className="text-sm font-extrabold text-white tracking-tight">
 										Install AMHUB App
 									</h4>
-									<span className="px-1.5 py-0.2 rounded-full text-[9px] font-extrabold bg-gradient-to-r from-purple-500 to-pink-500 text-white uppercase tracking-wider">
+									<span className="px-1.5 py-0.2 rounded-full text-[9px] font-extrabold bg-gradient-to-r from-cyan-500 to-pink-500 text-white uppercase tracking-wider">
 										GRATIS
 									</span>
 								</div>
@@ -168,7 +168,7 @@ export function PwaManager() {
 									<button
 										type="button"
 										onClick={handleInstallClick}
-										className="inline-flex items-center justify-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white text-xs font-bold shadow-lg shadow-purple-900/30 active:scale-95 transition-all"
+										className="inline-flex items-center justify-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-cyan-600 to-pink-600 hover:from-cyan-500 hover:to-pink-500 text-white text-xs font-bold shadow-lg shadow-cyan-900/30 active:scale-95 transition-all"
 									>
 										<Download className="w-3.5 h-3.5" />
 										<span>Install Sekarang</span>
@@ -200,8 +200,8 @@ export function PwaManager() {
 			{/* iOS Safari Step-by-Step Install Guide Modal */}
 			{showIOSModal && (
 				<div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200">
-					<div className="relative w-full max-w-sm rounded-3xl bg-[#13111C] border border-purple-500/40 p-6 shadow-2xl space-y-4 text-center">
-						<div className="w-12 h-12 mx-auto rounded-2xl bg-purple-500/20 border border-purple-500/30 flex items-center justify-center text-purple-400">
+					<div className="relative w-full max-w-sm rounded-3xl bg-[#13111C] border border-cyan-500/40 p-6 shadow-2xl space-y-4 text-center">
+						<div className="w-12 h-12 mx-auto rounded-2xl bg-cyan-500/20 border border-cyan-500/30 flex items-center justify-center text-cyan-400">
 							<Smartphone className="w-6 h-6" />
 						</div>
 
@@ -216,7 +216,7 @@ export function PwaManager() {
 
 						<div className="space-y-3 text-left bg-white/5 p-4 rounded-2xl border border-white/10 text-xs text-gray-200">
 							<div className="flex items-center gap-3">
-								<span className="w-6 h-6 rounded-full bg-purple-600 text-white font-bold flex items-center justify-center text-xs shrink-0">
+								<span className="w-6 h-6 rounded-full bg-cyan-600 text-white font-bold flex items-center justify-center text-xs shrink-0">
 									1
 								</span>
 								<p>
@@ -227,7 +227,7 @@ export function PwaManager() {
 							</div>
 
 							<div className="flex items-center gap-3">
-								<span className="w-6 h-6 rounded-full bg-purple-600 text-white font-bold flex items-center justify-center text-xs shrink-0">
+								<span className="w-6 h-6 rounded-full bg-cyan-600 text-white font-bold flex items-center justify-center text-xs shrink-0">
 									2
 								</span>
 								<p>
@@ -238,7 +238,7 @@ export function PwaManager() {
 							</div>
 
 							<div className="flex items-center gap-3">
-								<span className="w-6 h-6 rounded-full bg-purple-600 text-white font-bold flex items-center justify-center text-xs shrink-0">
+								<span className="w-6 h-6 rounded-full bg-cyan-600 text-white font-bold flex items-center justify-center text-xs shrink-0">
 									3
 								</span>
 								<p>
@@ -251,7 +251,7 @@ export function PwaManager() {
 						<button
 							type="button"
 							onClick={() => setShowIOSModal(false)}
-							className="w-full py-2.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-bold text-xs shadow-lg shadow-purple-900/30 active:scale-95 transition-all"
+							className="w-full py-2.5 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-white font-bold text-xs shadow-lg shadow-cyan-900/30 active:scale-95 transition-all"
 						>
 							Saya Mengerti
 						</button>

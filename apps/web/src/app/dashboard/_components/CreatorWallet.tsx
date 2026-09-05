@@ -223,7 +223,7 @@ export function CreatorWallet() {
 			<div className="p-6 rounded-2xl bg-[var(--color-bg-surface)] border border-[var(--color-border-subtle)] relative overflow-hidden">
 				<div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
 					<div className="flex items-center gap-3">
-						<div className="p-3 rounded-xl bg-gradient-to-br from-violet-600/20 to-fuchsia-600/20 text-violet-400 border border-violet-500/30">
+						<div className="p-3 rounded-xl bg-gradient-to-br from-cyan-600/20 to-fuchsia-600/20 text-cyan-400 border border-cyan-500/30">
 							<Wallet className="w-6 h-6" />
 						</div>
 						<div>
@@ -231,7 +231,7 @@ export function CreatorWallet() {
 								<h3 className="text-lg font-bold text-[var(--color-text-primary)]">
 									Dompet & Penghasilan Creator
 								</h3>
-								<span className="px-2 py-0.5 rounded text-[10px] font-extrabold bg-violet-500/20 text-violet-300 border border-violet-500/30">
+								<span className="px-2 py-0.5 rounded text-[10px] font-extrabold bg-cyan-500/20 text-cyan-300 border border-cyan-500/30">
 									90% SHARE
 								</span>
 							</div>
@@ -258,7 +258,7 @@ export function CreatorWallet() {
 							type="button"
 							onClick={handleOpenModal}
 							disabled={balance.availableBalance < 20000}
-							className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold text-white bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 shadow-md shadow-violet-600/20 transition-all disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+							className="inline-flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold text-white bg-gradient-to-r from-cyan-600 to-sky-600 hover:from-cyan-500 hover:to-sky-500 shadow-md shadow-cyan-600/20 transition-all disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
 						>
 							<ArrowDownToLine className="w-4 h-4" />
 							Tarik Saldo
@@ -269,15 +269,15 @@ export function CreatorWallet() {
 				{/* Balance Stats Cards */}
 				<div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-6">
 					{/* Available Balance */}
-					<div className="p-4 rounded-xl bg-gradient-to-br from-violet-950/30 to-purple-950/20 border border-violet-500/20">
-						<div className="flex items-center justify-between text-xs text-violet-300 font-medium">
+					<div className="p-4 rounded-xl bg-gradient-to-br from-cyan-950/30 to-cyan-950/20 border border-cyan-500/20">
+						<div className="flex items-center justify-between text-xs text-cyan-300 font-medium">
 							<span>Saldo Siap Tarik</span>
-							<Coins className="w-4 h-4 text-violet-400" />
+							<Coins className="w-4 h-4 text-cyan-400" />
 						</div>
 						<div className="mt-2 text-2xl font-black text-white tracking-tight">
 							Rp {balance.availableBalance.toLocaleString("id-ID")}
 						</div>
-						<div className="mt-1 text-[11px] text-violet-300/70">
+						<div className="mt-1 text-[11px] text-cyan-300/70">
 							{balance.availableBalance >= 20000
 								? "Dapat dicairkan sekarang"
 								: "Min. penarikan Rp 20.000"}
@@ -318,7 +318,7 @@ export function CreatorWallet() {
 			<div className="p-6 rounded-2xl bg-[var(--color-bg-surface)] border border-[var(--color-border-subtle)] space-y-4">
 				<div className="flex items-center justify-between">
 					<div className="flex items-center gap-2 text-base font-bold text-[var(--color-text-primary)]">
-						<History className="w-4 h-4 text-violet-400" />
+						<History className="w-4 h-4 text-cyan-400" />
 						<h4>Riwayat Penarikan Dana</h4>
 					</div>
 					<span className="text-xs text-[var(--color-text-secondary)]">
@@ -328,7 +328,7 @@ export function CreatorWallet() {
 
 				{isLoading ? (
 					<div className="py-12 flex flex-col items-center justify-center gap-2 text-[var(--color-text-secondary)]">
-						<Loader2 className="w-6 h-6 animate-spin text-violet-400" />
+						<Loader2 className="w-6 h-6 animate-spin text-cyan-400" />
 						<p className="text-xs">Memuat data penarikan...</p>
 					</div>
 				) : withdrawals.length === 0 ? (
@@ -363,7 +363,7 @@ export function CreatorWallet() {
 											})}
 										</td>
 										<td className="py-3 px-3 text-[var(--color-text-primary)]">
-											<div className="font-semibold uppercase tracking-wider text-[11px] text-violet-300">
+											<div className="font-semibold uppercase tracking-wider text-[11px] text-cyan-300">
 												{w.payment_method}
 											</div>
 											<div className="text-[var(--color-text-secondary)] text-[11px]">
@@ -395,7 +395,7 @@ export function CreatorWallet() {
 					<div className="w-full max-w-md rounded-2xl bg-[var(--color-bg-surface)] border border-[var(--color-border-subtle)] shadow-2xl overflow-hidden p-6 space-y-5">
 						<div className="flex items-center justify-between">
 							<div className="flex items-center gap-2">
-								<div className="p-2 rounded-lg bg-violet-600/20 text-violet-400">
+								<div className="p-2 rounded-lg bg-cyan-600/20 text-cyan-400">
 									<ArrowDownToLine className="w-5 h-5" />
 								</div>
 								<h3 className="text-base font-bold text-[var(--color-text-primary)]">
@@ -448,7 +448,7 @@ export function CreatorWallet() {
 										step={5000}
 										value={amount}
 										onChange={(e) => setAmount(Number(e.target.value))}
-										className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-[var(--color-bg-elevated)] border border-[var(--color-border-subtle)] text-sm font-bold text-[var(--color-text-primary)] focus:outline-none focus:border-violet-500"
+										className="w-full pl-10 pr-4 py-2.5 rounded-xl bg-[var(--color-bg-elevated)] border border-[var(--color-border-subtle)] text-sm font-bold text-[var(--color-text-primary)] focus:outline-none focus:border-cyan-500"
 										required
 									/>
 								</div>
@@ -463,7 +463,7 @@ export function CreatorWallet() {
 											}
 											className={`px-2.5 py-1 rounded-lg text-[11px] font-semibold transition-colors ${
 												amount === val
-													? "bg-violet-600 text-white"
+													? "bg-cyan-600 text-white"
 													: "bg-[var(--color-bg-elevated)] text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]"
 											}`}
 										>
@@ -473,7 +473,7 @@ export function CreatorWallet() {
 									<button
 										type="button"
 										onClick={() => setAmount(balance.availableBalance)}
-										className="px-2.5 py-1 rounded-lg text-[11px] font-semibold bg-violet-500/20 text-violet-300 hover:bg-violet-500/30"
+										className="px-2.5 py-1 rounded-lg text-[11px] font-semibold bg-cyan-500/20 text-cyan-300 hover:bg-cyan-500/30"
 									>
 										Tarik Semua
 									</button>
@@ -493,7 +493,7 @@ export function CreatorWallet() {
 											onClick={() => setPaymentMethod(method.id)}
 											className={`p-2.5 rounded-xl text-center border transition-all flex flex-col items-center gap-1 ${
 												paymentMethod === method.id
-													? "border-violet-500 bg-violet-500/10 text-white shadow-sm"
+													? "border-cyan-500 bg-cyan-500/10 text-white shadow-sm"
 													: "border-[var(--color-border-subtle)] bg-[var(--color-bg-elevated)] text-[var(--color-text-secondary)] hover:border-[var(--color-border-default)]"
 											}`}
 										>
@@ -514,7 +514,7 @@ export function CreatorWallet() {
 									placeholder="Contoh: Budi Santoso"
 									value={accountName}
 									onChange={(e) => setAccountName(e.target.value)}
-									className="w-full px-3.5 py-2 rounded-xl bg-[var(--color-bg-elevated)] border border-[var(--color-border-subtle)] text-xs text-[var(--color-text-primary)] focus:outline-none focus:border-violet-500"
+									className="w-full px-3.5 py-2 rounded-xl bg-[var(--color-bg-elevated)] border border-[var(--color-border-subtle)] text-xs text-[var(--color-text-primary)] focus:outline-none focus:border-cyan-500"
 									required
 								/>
 							</div>
@@ -529,7 +529,7 @@ export function CreatorWallet() {
 									placeholder="Contoh: 081234567890 atau 1234567890"
 									value={accountNumber}
 									onChange={(e) => setAccountNumber(e.target.value)}
-									className="w-full px-3.5 py-2 rounded-xl bg-[var(--color-bg-elevated)] border border-[var(--color-border-subtle)] text-xs text-[var(--color-text-primary)] focus:outline-none focus:border-violet-500 font-mono"
+									className="w-full px-3.5 py-2 rounded-xl bg-[var(--color-bg-elevated)] border border-[var(--color-border-subtle)] text-xs text-[var(--color-text-primary)] focus:outline-none focus:border-cyan-500 font-mono"
 									required
 								/>
 							</div>
@@ -539,7 +539,7 @@ export function CreatorWallet() {
 								<button
 									type="submit"
 									disabled={isSubmitting || !!formSuccess}
-									className="w-full py-2.5 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 shadow-md transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+									className="w-full py-2.5 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-cyan-600 to-sky-600 hover:from-cyan-500 hover:to-sky-500 shadow-md transition-all flex items-center justify-center gap-2 disabled:opacity-50"
 								>
 									{isSubmitting ? (
 										<>

@@ -214,10 +214,10 @@
 
 	/* Accent Scale */
 	--color-accent-400: var(--color-accent-400);
-	--color-accent-500: #8b5cf6;
-	--color-accent-600: #7c3aed;
-	--color-accent-700: #6d28d9;
-	--color-accent-800: #5b21b6;
+	--color-accent-500: #00b8e6;
+	--color-accent-600: #00c8ff;
+	--color-accent-700: #0099cc;
+	--color-accent-800: #0077a3;
 }
 
 /* Glassmorphism Utility Classes (Replaced with Solid) */
@@ -306,7 +306,7 @@
 }
 
 ::selection {
-	background-color: rgba(124, 58, 237, 0.3);
+	background-color: rgba(0, 200, 255, 0.3);
 	color: #ffffff;
 }
 
@@ -452,7 +452,7 @@ h6,
 	background: var(--glass-bg-hover);
 	border-color: var(--glass-border-hover);
 	transform: translateY(-2px) scale(1.008);
-	box-shadow: 0 16px 36px rgba(124, 58, 237, 0.18), inset 0 1px 0
+	box-shadow: 0 16px 36px rgba(0, 200, 255, 0.18), inset 0 1px 0
 		rgba(255, 255, 255, 0.12);
 }
 
@@ -493,10 +493,10 @@ h6,
 [data-theme="light"],
 .light {
 	color-scheme: light;
-	--color-text-primary: #070110;
-	--color-text-secondary: #300e54;
-	--color-text-tertiary: #4c1d95;
-	--color-text-disabled: #7c3aed;
+	--color-text-primary: #04141b;
+	--color-text-secondary: #0c4a6e;
+	--color-text-tertiary: #0e7490;
+	--color-text-disabled: #00c8ff;
 }
 
 [data-theme="light-liquid"] h1,
@@ -511,7 +511,7 @@ h6,
 [data-theme="light"] h4,
 [data-theme="light"] h5,
 [data-theme="light"] h6 {
-	color: #070110;
+	color: #04141b;
 }
 
 /* Override washed-out texts in light mode */
@@ -526,17 +526,17 @@ h6,
 [data-theme="light"] .text-zinc-500,
 [data-theme="light-liquid"] .text-gray-400,
 [data-theme="light"] .text-gray-400 {
-	color: #3b1464 !important;
+	color: #0c4a6e !important;
 }
 
-[data-theme="light-liquid"] .text-purple-300,
-[data-theme="light"] .text-purple-300 {
-	color: #6d28d9 !important;
+[data-theme="light-liquid"] .text-cyan-300,
+[data-theme="light"] .text-cyan-300 {
+	color: #0099cc !important;
 }
 
-[data-theme="light-liquid"] .text-purple-400,
-[data-theme="light"] .text-purple-400 {
-	color: #581c87 !important;
+[data-theme="light-liquid"] .text-cyan-400,
+[data-theme="light"] .text-cyan-400 {
+	color: #155e75 !important;
 }
 
 [data-theme="light-liquid"] .text-amber-400,
@@ -553,11 +553,11 @@ h6,
 	color: #166534 !important;
 }
 
-[data-theme="light-liquid"] .text-indigo-400,
-[data-theme="light"] .text-indigo-400,
-[data-theme="light-liquid"] .text-indigo-300,
-[data-theme="light"] .text-indigo-300 {
-	color: #3730a3 !important;
+[data-theme="light-liquid"] .text-sky-400,
+[data-theme="light"] .text-sky-400,
+[data-theme="light-liquid"] .text-sky-300,
+[data-theme="light"] .text-sky-300 {
+	color: #075985 !important;
 }
 
 /* Universal Form Controls High Contrast for Light Mode */
@@ -568,20 +568,20 @@ h6,
 [data-theme="light"] textarea,
 [data-theme="light"] select {
 	background-color: rgba(255, 255, 255, 0.95) !important;
-	color: #070110 !important;
-	border-color: rgba(124, 58, 237, 0.28) !important;
+	color: #04141b !important;
+	border-color: rgba(0, 200, 255, 0.28) !important;
 }
 
 [data-theme="light-liquid"] input::placeholder,
 [data-theme="light-liquid"] textarea::placeholder,
 [data-theme="light"] input::placeholder,
 [data-theme="light"] textarea::placeholder {
-	color: #6b21a8 !important;
+	color: #0e7490 !important;
 	opacity: 0.65;
 }
 
 [data-theme="light-liquid"] label,
 [data-theme="light"] label {
-	color: #070110 !important;
+	color: #04141b !important;
 	font-weight: 700 !important;
 }

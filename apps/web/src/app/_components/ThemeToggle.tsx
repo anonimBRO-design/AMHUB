@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useTheme } from "@/context/ThemeContext";
 import { Moon, Sparkles, Sun } from "lucide-react";
@@ -22,7 +22,7 @@ export function ThemeToggle() {
 			aria-label="Toggle Theme Mode"
 		>
 			{theme === "normal" ? (
-				<Moon className="w-4 h-4 text-purple-300 transition-transform duration-300 rotate-0 hover:-rotate-12" />
+				<Moon className="w-4 h-4 text-cyan-300 transition-transform duration-300 rotate-0 hover:-rotate-12" />
 			) : theme === "dark-liquid" ? (
 				<Sparkles className="w-4 h-4 text-fuchsia-400 transition-transform duration-300 rotate-0 hover:rotate-45" />
 			) : (

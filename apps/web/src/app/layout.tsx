@@ -9,7 +9,7 @@ import { LayoutShell } from "./_components/layout-shell";
 import "../styles/globals.css";
 
 export const viewport: Viewport = {
-	themeColor: "#7C3AED",
+	themeColor: "#00C8FF",
 	width: "device-width",
 	initialScale: 1,
 	maximumScale: 1,
@@ -57,7 +57,7 @@ export default async function RootLayout({
 
 	return (
 		<html lang="en" data-theme="dark-liquid">
-			<body className="bg-[#08070c] text-[var(--color-text-primary)] antialiased transition-colors duration-500 selection:bg-purple-500/30 selection:text-white">
+			<body className="bg-[#08070c] text-[var(--color-text-primary)] antialiased transition-colors duration-500 selection:bg-cyan-500/30 selection:text-white">
 				<PostHogProvider currentUser={currentUser}>
 					<LayoutShell
 						currentUser={resolvedUser}

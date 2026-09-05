@@ -19,7 +19,7 @@ export function EmptyState({
 	const config = {
 		presets: {
 			icon: Sparkles,
-			color: "text-purple-400 bg-purple-500/10 border-purple-500/20",
+			color: "text-cyan-400 bg-cyan-500/10 border-cyan-500/20",
 			defaultTitle: "No Presets Created Yet",
 			defaultDescription:
 				"Start sharing your Alight Motion XML, QR, and link presets with the community.",
@@ -28,7 +28,7 @@ export function EmptyState({
 		},
 		analytics: {
 			icon: BarChart3,
-			color: "text-indigo-400 bg-indigo-500/10 border-indigo-500/20",
+			color: "text-sky-400 bg-sky-500/10 border-sky-500/20",
 			defaultTitle: "No Analytics Data Yet",
 			defaultDescription:
 				"Analytics will automatically appear here once users view, like, or download your presets.",

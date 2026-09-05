@@ -83,7 +83,7 @@ export function AnalyticsChart({ initialData }: AnalyticsChartProps) {
 			{/* Header & Filter Pills */}
 			<div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
 				<div className="flex items-center gap-2">
-					<div className="p-2 rounded-xl bg-purple-500/10 text-purple-400 border border-purple-500/20">
+					<div className="p-2 rounded-xl bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">
 						<BarChart3 className="w-4 h-4" />
 					</div>
 					<div>

@@ -47,7 +47,7 @@ export function NotificationCard({
 			case "comment":
 				return <MessageSquare className="w-3.5 h-3.5 text-blue-400" />;
 			case "follow":
-				return <UserPlus className="w-3.5 h-3.5 text-purple-400" />;
+				return <UserPlus className="w-3.5 h-3.5 text-cyan-400" />;
 			case "bookmark":
 				return <Bookmark className="w-3.5 h-3.5 text-amber-400" />;
 			case "download":
@@ -56,7 +56,7 @@ export function NotificationCard({
 			case "system":
 				return <Award className="w-3.5 h-3.5 text-amber-400" />;
 			default:
-				return <ShieldAlert className="w-3.5 h-3.5 text-indigo-400" />;
+				return <ShieldAlert className="w-3.5 h-3.5 text-sky-400" />;
 		}
 	};
 
@@ -79,7 +79,7 @@ export function NotificationCard({
 						className="w-10 h-10 rounded-full object-cover border border-[var(--color-border-subtle)]"
 					/>
 				) : (
-					<div className="w-10 h-10 rounded-full bg-purple-600/30 text-purple-300 font-bold text-xs flex items-center justify-center border border-purple-500/30">
+					<div className="w-10 h-10 rounded-full bg-cyan-600/30 text-cyan-300 font-bold text-xs flex items-center justify-center border border-cyan-500/30">
 						{(notification.actor?.displayName || "AM")
 							.slice(0, 2)
 							.toUpperCase()}

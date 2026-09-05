@@ -21,14 +21,14 @@ export function StatsSection() {
 			title: "1-Tap Links",
 			description:
 				"Direct alight.link project imports with zero redirection or popups.",
-			color: "text-indigo-400 border-indigo-500/20",
+			color: "text-sky-400 border-sky-500/20",
 		},
 		{
 			icon: ShieldCheck,
 			title: "Verified Quality",
 			description:
 				"Every preset is checked and verified by editor community moderators.",
-			color: "text-purple-400 border-purple-500/20",
+			color: "text-cyan-400 border-cyan-500/20",
 		},
 	];
 

@@ -157,8 +157,8 @@ export function UsernameField({
 			<div className="flex items-center gap-1.5 text-xs font-semibold pt-0.5 px-1">
 				{isChecking ? (
 					<>
-						<Loader2 className="w-3.5 h-3.5 animate-spin text-purple-400" />
-						<span className="text-purple-300">Checking availability...</span>
+						<Loader2 className="w-3.5 h-3.5 animate-spin text-cyan-400" />
+						<span className="text-cyan-300">Checking availability...</span>
 					</>
 				) : availability.status === "valid" ? (
 					<>

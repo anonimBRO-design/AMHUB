@@ -43,7 +43,7 @@ export function Hero({ stats, featuredPreset }: HeroProps) {
 				<div className="lg:col-span-7 space-y-6 text-center md:text-left">
 					{/* Pill Badge */}
 					<div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-semibold bg-[var(--color-bg-accent)] text-[var(--color-interactive-primary)] border border-[var(--color-border-accent)] transition-all duration-300 hover:scale-105 hover:bg-[var(--color-bg-accent)]/80">
-						<Sparkles className="w-3.5 h-3.5 animate-pulse text-purple-400" />
+						<Sparkles className="w-3.5 h-3.5 animate-pulse text-cyan-400" />
 						<span>AMHUB #1</span>
 						<span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping" />
 					</div>
@@ -93,7 +93,7 @@ export function Hero({ stats, featuredPreset }: HeroProps) {
 						</div>
 
 						<div className="flex flex-col items-center md:items-start p-3 rounded-2xl bg-[var(--color-bg-elevated)] border border-[var(--color-border-subtle)]">
-							<div className="flex items-center gap-1.5 text-indigo-400 font-display font-black text-xl sm:text-2xl">
+							<div className="flex items-center gap-1.5 text-sky-400 font-display font-black text-xl sm:text-2xl">
 								<ShieldCheck className="w-4 h-4 hidden sm:inline" />
 								<span>
 									{totalCreators > 1000
@@ -107,7 +107,7 @@ export function Hero({ stats, featuredPreset }: HeroProps) {
 						</div>
 
 						<div className="flex flex-col items-center md:items-start p-3 rounded-2xl bg-[var(--color-bg-elevated)] border border-[var(--color-border-subtle)]">
-							<div className="flex items-center gap-1.5 text-purple-400 font-display font-black text-xl sm:text-2xl">
+							<div className="flex items-center gap-1.5 text-cyan-400 font-display font-black text-xl sm:text-2xl">
 								<Zap className="w-4 h-4 hidden sm:inline" />
 								<span>
 									{totalDownloads > 1000
@@ -144,7 +144,7 @@ export function Hero({ stats, featuredPreset }: HeroProps) {
 												className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
 											/>
 										) : (
-											<div className="w-full h-full bg-purple-900/30" />
+											<div className="w-full h-full bg-cyan-900/30" />
 										)}
 										<div className="absolute inset-0 bg-[var(--color-bg-base)]/40" />
 
@@ -191,10 +191,10 @@ export function Hero({ stats, featuredPreset }: HeroProps) {
 													<img
 														src={featuredPreset.creator.avatarUrl}
 														alt={featuredPreset.creator.displayName}
-														className="w-8 h-8 rounded-full object-cover ring-2 ring-purple-500/50"
+														className="w-8 h-8 rounded-full object-cover ring-2 ring-cyan-500/50"
 													/>
 												) : (
-													<div className="w-8 h-8 rounded-full bg-purple-600/40 border border-purple-400 flex items-center justify-center text-white font-bold text-xs">
+													<div className="w-8 h-8 rounded-full bg-cyan-600/40 border border-cyan-400 flex items-center justify-center text-white font-bold text-xs">
 														{featuredPreset.creator.displayName
 															?.slice(0, 2)
 															.toUpperCase()}
@@ -235,7 +235,7 @@ export function Hero({ stats, featuredPreset }: HeroProps) {
 								</Link>
 							) : (
 								<div className="p-8 text-center space-y-3 text-[var(--color-text-primary)] my-auto">
-									<div className="w-12 h-12 rounded-2xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center mx-auto text-purple-400">
+									<div className="w-12 h-12 rounded-2xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center mx-auto text-cyan-400">
 										<span className="w-6 h-6 animate-pulse">✨</span>
 									</div>
 									<h4 className="font-display font-bold text-base text-[var(--color-text-primary)]">
@@ -247,7 +247,7 @@ export function Hero({ stats, featuredPreset }: HeroProps) {
 									</p>
 									<Link
 										href="/upload"
-										className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-500 text-white font-bold text-xs shadow-lg active:scale-95 transition-all"
+										className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-white font-bold text-xs shadow-lg active:scale-95 transition-all"
 									>
 										<Zap className="w-4 h-4 text-amber-300" />
 										<span>{t.common.upload}</span>
@@ -258,11 +258,11 @@ export function Hero({ stats, featuredPreset }: HeroProps) {
 
 						{/* Floating Decorative Badge 1 (Top Left) */}
 						<div className="absolute -top-4 -left-4 z-30 px-3.5 py-2 rounded-2xl bg-[var(--color-bg-elevated)] border border-[var(--color-border-accent)] text-white shadow-xl flex items-center gap-2 animate-ambient-float">
-							<div className="w-6 h-6 rounded-lg bg-purple-500/20 flex items-center justify-center text-purple-300">
+							<div className="w-6 h-6 rounded-lg bg-cyan-500/20 flex items-center justify-center text-cyan-300">
 								<Zap className="w-3.5 h-3.5" />
 							</div>
 							<div className="text-left">
-								<span className="text-[10px] font-bold text-purple-300 block uppercase tracking-wider">
+								<span className="text-[10px] font-bold text-cyan-300 block uppercase tracking-wider">
 									Format
 								</span>
 								<span className="text-xs font-black text-white">

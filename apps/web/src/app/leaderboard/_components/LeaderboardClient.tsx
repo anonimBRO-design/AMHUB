@@ -197,7 +197,7 @@ export function LeaderboardClient({ initialData }: LeaderboardClientProps) {
 			{/* Top Glass Header Banner */}
 			<div className="relative overflow-hidden p-6 sm:p-8 rounded-xl backdrop-blur-2xl bg-white/[0.02] border border-white/[0.08] shadow-[0_16px_48px_rgba(0,0,0,0.4)] flex flex-col sm:flex-row sm:items-center justify-between gap-4">
 				<div className="pointer-events-none absolute -top-24 -right-24 w-72 h-72 bg-amber-500/15 rounded-full blur-[100px]" />
-				<div className="pointer-events-none absolute -bottom-24 -left-24 w-72 h-72 bg-purple-600/15 rounded-full blur-[100px]" />
+				<div className="pointer-events-none absolute -bottom-24 -left-24 w-72 h-72 bg-cyan-600/15 rounded-full blur-[100px]" />
 
 				<div className="space-y-2 relative z-10">
 					<div className="flex items-center gap-2 text-xs font-extrabold text-amber-400 uppercase tracking-wider">
@@ -258,7 +258,7 @@ export function LeaderboardClient({ initialData }: LeaderboardClientProps) {
 								onClick={() => handlePeriodChange(p.id)}
 								className={`flex items-center gap-2 px-4 py-2 rounded-md text-xs font-bold transition-all whitespace-nowrap ${
 									isActive
-										? "bg-[var(--color-interactive-primary)] text-white shadow-md shadow-purple-600/25"
+										? "bg-[var(--color-interactive-primary)] text-white shadow-md shadow-cyan-600/25"
 										: "text-[var(--color-text-secondary)] hover:text-white hover:bg-white/5"
 								}`}
 							>
@@ -280,7 +280,7 @@ export function LeaderboardClient({ initialData }: LeaderboardClientProps) {
 								onClick={() => handleMetricChange(m.id)}
 								className={`p-3 rounded-lg border text-left transition-all ${
 									isActive
-										? "bg-purple-500/15 border-purple-500/50 text-white shadow-md shadow-purple-500/10"
+										? "bg-cyan-500/15 border-cyan-500/50 text-white shadow-md shadow-cyan-500/10"
 										: "bg-[var(--color-bg-surface)] border-[var(--color-border-subtle)] text-[var(--color-text-secondary)] hover:border-[var(--color-border-strong)] hover:text-white"
 								}`}
 							>
@@ -329,7 +329,7 @@ export function LeaderboardClient({ initialData }: LeaderboardClientProps) {
 					</p>
 					<Link
 						href="/upload"
-						className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-lg bg-[var(--color-interactive-primary)] text-white text-xs font-bold shadow-md shadow-purple-600/30"
+						className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-lg bg-[var(--color-interactive-primary)] text-white text-xs font-bold shadow-md shadow-cyan-600/30"
 					>
 						<span>Upload Preset Sekarang</span>
 						<ArrowUpRight className="w-4 h-4" />
@@ -395,7 +395,7 @@ export function LeaderboardClient({ initialData }: LeaderboardClientProps) {
 						<div className="space-y-4">
 							<div className="flex items-center justify-between px-1">
 								<div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[var(--color-text-primary)]">
-									<Trophy className="w-4 h-4 text-purple-400" />
+									<Trophy className="w-4 h-4 text-cyan-400" />
 									<span>Peringkat 4 - 50</span>
 								</div>
 								<span className="text-[11px] text-[var(--color-text-tertiary)]">
@@ -425,7 +425,7 @@ export function LeaderboardClient({ initialData }: LeaderboardClientProps) {
 													href={`/u/${c.username}`}
 													className="flex items-center gap-3 min-w-0 group-hover:opacity-90 transition-opacity"
 												>
-													<div className="w-10 h-10 sm:w-11 sm:h-11 rounded-lg overflow-hidden bg-purple-900/40 border border-white/10 shrink-0">
+													<div className="w-10 h-10 sm:w-11 sm:h-11 rounded-lg overflow-hidden bg-cyan-900/40 border border-white/10 shrink-0">
 														{avatarUrl ? (
 															<img
 																src={avatarUrl}
@@ -443,7 +443,7 @@ export function LeaderboardClient({ initialData }: LeaderboardClientProps) {
 														<div className="flex items-center gap-1.5 text-xs sm:text-sm font-bold text-[var(--color-text-primary)] group-hover:text-[var(--color-interactive-primary)] transition-colors truncate">
 															<span className="truncate">{c.displayName}</span>
 															{c.isVerified && (
-																<ShieldCheck className="w-3.5 h-3.5 text-purple-400 shrink-0" />
+																<ShieldCheck className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
 															)}
 														</div>
 														<p className="text-[11px] font-mono text-[var(--color-text-tertiary)] truncate">
@@ -472,7 +472,7 @@ export function LeaderboardClient({ initialData }: LeaderboardClientProps) {
 														<span>{c.likeCount}</span>
 													</div>
 													<div
-														className="flex items-center gap-1 text-purple-400"
+														className="flex items-center gap-1 text-cyan-400"
 														title="Preset Count"
 													>
 														<Layers className="w-3.5 h-3.5" />

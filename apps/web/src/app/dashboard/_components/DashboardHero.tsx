@@ -42,7 +42,7 @@ export function DashboardHero({ user }: DashboardHeroProps) {
 							{typeof user.level === "number" && (
 								<>
 									<span>•</span>
-									<span className="inline-flex items-center gap-1 font-bold text-purple-400">
+									<span className="inline-flex items-center gap-1 font-bold text-cyan-400">
 										<Award className="w-3.5 h-3.5" /> Level {user.level} Creator
 									</span>
 								</>

@@ -96,7 +96,7 @@ export function PodiumCard({
 				</div>
 
 				<div className="flex items-center gap-1 px-2 py-0.5 rounded-md bg-white/5 border border-white/10 text-[11px] font-mono text-[var(--color-text-secondary)]">
-					<Sparkles className="w-3 h-3 text-purple-400" />
+					<Sparkles className="w-3 h-3 text-cyan-400" />
 					<span>{Math.round(creator.reputationScore)} pts</span>
 				</div>
 			</div>
@@ -114,7 +114,7 @@ export function PodiumCard({
 								className="w-full h-full object-cover"
 							/>
 						) : (
-							<div className="w-full h-full flex items-center justify-center bg-purple-900/60 text-white font-extrabold text-xl sm:text-2xl">
+							<div className="w-full h-full flex items-center justify-center bg-cyan-900/60 text-white font-extrabold text-xl sm:text-2xl">
 								{creator.displayName[0]?.toUpperCase() || "U"}
 							</div>
 						)}
@@ -135,7 +135,7 @@ export function PodiumCard({
 					>
 						<span className="truncate">{creator.displayName}</span>
 						{creator.isVerified && (
-							<ShieldCheck className="w-4 h-4 text-purple-400 shrink-0" />
+							<ShieldCheck className="w-4 h-4 text-cyan-400 shrink-0" />
 						)}
 					</Link>
 					<p className="text-xs text-[var(--color-text-tertiary)] font-mono truncate">
@@ -175,7 +175,7 @@ export function PodiumCard({
 
 					<div className="p-2 rounded-lg bg-[var(--color-bg-base)]/80 border border-[var(--color-border-subtle)]/60">
 						<div className="font-extrabold text-[var(--color-text-primary)] flex items-center justify-center gap-1">
-							<Layers className="w-3 h-3 text-purple-400" />
+							<Layers className="w-3 h-3 text-cyan-400" />
 							<span>{creator.presetCount}</span>
 						</div>
 						<div className="text-[9px] text-[var(--color-text-tertiary)] uppercase font-semibold">
@@ -197,7 +197,7 @@ export function PodiumCard({
 						className={`w-full py-2.5 px-4 rounded-lg text-xs font-bold transition-all active:scale-95 shadow-sm flex items-center justify-center gap-1.5 ${
 							creator.isFollowing
 								? "bg-[var(--color-bg-elevated)] text-emerald-400 border border-emerald-500/30 hover:bg-rose-500/10 hover:text-rose-400 hover:border-rose-500/30"
-								: "bg-[var(--color-interactive-primary)] text-white hover:bg-[var(--color-interactive-primary-hover)] shadow-purple-600/20"
+								: "bg-[var(--color-interactive-primary)] text-white hover:bg-[var(--color-interactive-primary-hover)] shadow-cyan-600/20"
 						}`}
 					>
 						{isPendingFollow ? (

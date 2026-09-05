@@ -40,11 +40,11 @@ export function ExploreClient({ presets }: ExploreClientProps) {
 		<div className="space-y-8 max-w-6xl mx-auto px-4 sm:px-0">
 			{/* Top Glass Header Banner */}
 			<div className="relative overflow-hidden p-6 sm:p-8 rounded-3xl backdrop-blur-2xl bg-white/[0.02] border border-white/[0.08] shadow-[0_16px_48px_rgba(0,0,0,0.4)] flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-				<div className="pointer-events-none absolute -top-24 -right-24 w-64 h-64 bg-purple-600/15 rounded-full blur-[90px]" />
+				<div className="pointer-events-none absolute -top-24 -right-24 w-64 h-64 bg-cyan-600/15 rounded-full blur-[90px]" />
 
 				<div className="space-y-2 relative z-10">
 					<div className="flex items-center gap-2 text-xs font-extrabold text-[var(--color-interactive-primary)] uppercase tracking-wider">
-						<Compass className="w-4 h-4 text-purple-400 animate-spin-slow" />
+						<Compass className="w-4 h-4 text-cyan-400 animate-spin-slow" />
 						<span>Explore Catalog</span>
 					</div>
 					<h1 className="font-display text-3xl sm:text-4xl font-extrabold tracking-tight text-white">
@@ -52,7 +52,7 @@ export function ExploreClient({ presets }: ExploreClientProps) {
 					</h1>
 					{/* Navigation Tabs */}
 					<div className="flex items-center gap-2 pt-2">
-						<span className="px-4 py-1.5 rounded-xl bg-purple-600 text-white text-xs font-bold shadow-md shadow-purple-600/30">
+						<span className="px-4 py-1.5 rounded-xl bg-cyan-600 text-white text-xs font-bold shadow-md shadow-cyan-600/30">
 							Presets
 						</span>
 						<a
@@ -64,7 +64,7 @@ export function ExploreClient({ presets }: ExploreClientProps) {
 					</div>
 				</div>
 
-				<div className="relative z-10 flex items-center gap-2 px-4 py-2 rounded-2xl backdrop-blur-xl bg-purple-500/10 border border-purple-500/20 text-purple-300 text-xs font-bold tracking-wide w-fit">
+				<div className="relative z-10 flex items-center gap-2 px-4 py-2 rounded-2xl backdrop-blur-xl bg-cyan-500/10 border border-cyan-500/20 text-cyan-300 text-xs font-bold tracking-wide w-fit">
 					<Sparkles className="w-4 h-4 text-amber-400 animate-pulse" />
 					<span>{presets.length} Presets Available</span>
 				</div>

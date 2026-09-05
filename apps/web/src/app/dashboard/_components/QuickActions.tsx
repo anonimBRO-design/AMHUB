@@ -19,7 +19,7 @@ export function QuickActions({ username }: QuickActionsProps) {
 			description: "Bundle presets into playlists",
 			href: "/dashboard#collections",
 			icon: FolderPlus,
-			color: "text-purple-400 bg-purple-500/10 border-purple-500/20",
+			color: "text-cyan-400 bg-cyan-500/10 border-cyan-500/20",
 		},
 		{
 			label: "Edit Profile",

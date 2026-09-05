@@ -28,7 +28,7 @@ export function TrendingSection({ presets }: TrendingSectionProps) {
 						<Link
 							key={cat}
 							href={`/explore?category=${encodeURIComponent(cat.toLowerCase())}`}
-							className="px-3 py-1 rounded-full bg-purple-500/10 hover:bg-purple-500/20 text-purple-300 text-xs font-semibold border border-purple-500/20 transition-all shrink-0"
+							className="px-3 py-1 rounded-full bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-300 text-xs font-semibold border border-cyan-500/20 transition-all shrink-0"
 						>
 							#{cat}
 						</Link>

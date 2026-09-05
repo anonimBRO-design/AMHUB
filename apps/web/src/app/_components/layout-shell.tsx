@@ -131,19 +131,19 @@ function LayoutShellInner({
 				<div
 					className={`absolute -top-40 -left-40 w-[500px] h-[500px] rounded-full blur-[120px] animate-float-ambient ${
 						isDarkLiquid
-							? "bg-gradient-to-tr from-purple-600/25 to-indigo-600/20"
+							? "bg-gradient-to-tr from-cyan-600/25 to-sky-600/20"
 							: isLightLiquid
-								? "bg-gradient-to-tr from-purple-400/20 to-indigo-300/15"
-								: "bg-gradient-to-tr from-purple-600/10 to-transparent"
+								? "bg-gradient-to-tr from-cyan-400/20 to-sky-300/15"
+								: "bg-gradient-to-tr from-cyan-600/10 to-transparent"
 					}`}
 				/>
 				<div
 					className={`absolute top-1/3 -right-40 w-[600px] h-[600px] rounded-full blur-[140px] animate-float-ambient ${
 						isDarkLiquid
-							? "bg-gradient-to-bl from-fuchsia-600/20 to-purple-800/25"
+							? "bg-gradient-to-bl from-fuchsia-600/20 to-cyan-800/25"
 							: isLightLiquid
-								? "bg-gradient-to-bl from-purple-400/15 to-pink-300/15"
-								: "bg-gradient-to-bl from-indigo-600/10 to-transparent"
+								? "bg-gradient-to-bl from-cyan-400/15 to-pink-300/15"
+								: "bg-gradient-to-bl from-sky-600/10 to-transparent"
 					}`}
 					style={{ animationDelay: "4s" }}
 				/>

@@ -46,7 +46,7 @@ const ACTIVITY_CONFIG: Record<
 	},
 	follow: {
 		icon: UserPlus,
-		color: "text-purple-400 bg-purple-500/10 border-purple-500/20",
+		color: "text-cyan-400 bg-cyan-500/10 border-cyan-500/20",
 	},
 	download: {
 		icon: Download,
@@ -81,7 +81,7 @@ export function ActivitySection({ activities }: ActivitySectionProps) {
 		return (
 			<div className="p-5 rounded-3xl bg-[var(--color-bg-surface)] border border-[var(--color-border-subtle)] space-y-4 shadow-lg">
 				<div className="flex items-center gap-2">
-					<Activity className="w-4 h-4 text-purple-400" />
+					<Activity className="w-4 h-4 text-cyan-400" />
 					<h3 className="text-sm font-bold text-[var(--color-text-primary)] uppercase tracking-wider">
 						Recent Activity
 					</h3>
@@ -101,7 +101,7 @@ export function ActivitySection({ activities }: ActivitySectionProps) {
 	return (
 		<div className="p-5 rounded-3xl bg-[var(--color-bg-surface)] border border-[var(--color-border-subtle)] space-y-4 shadow-lg">
 			<div className="flex items-center gap-2">
-				<Activity className="w-4 h-4 text-purple-400" />
+				<Activity className="w-4 h-4 text-cyan-400" />
 				<h3 className="text-sm font-bold text-[var(--color-text-primary)] uppercase tracking-wider">
 					Recent Activity
 				</h3>

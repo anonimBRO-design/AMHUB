@@ -287,7 +287,7 @@ export function AdminDashboardClient({
 			)}
 
 			{/* Header */}
-			<div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-6 rounded-3xl bg-gradient-to-r from-purple-950/40 via-[var(--color-bg-surface)] to-[var(--color-bg-surface)] border border-[var(--color-border-subtle)] shadow-xl">
+			<div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-6 rounded-3xl bg-gradient-to-r from-cyan-950/40 via-[var(--color-bg-surface)] to-[var(--color-bg-surface)] border border-[var(--color-border-subtle)] shadow-xl">
 				<div className="space-y-1">
 					<div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[var(--color-interactive-primary)]">
 						<ShieldAlert className="w-4 h-4" />
@@ -329,7 +329,7 @@ export function AdminDashboardClient({
 					onClick={() => setActiveTab("users")}
 					className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all ${
 						activeTab === "users"
-							? "bg-[var(--color-interactive-primary)] text-white shadow-md shadow-purple-950/30"
+							? "bg-[var(--color-interactive-primary)] text-white shadow-md shadow-cyan-950/30"
 							: "text-[var(--color-text-secondary)] hover:text-white hover:bg-white/[0.04]"
 					}`}
 				>
@@ -342,11 +342,11 @@ export function AdminDashboardClient({
 					onClick={() => setActiveTab("creator_permissions")}
 					className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all ${
 						activeTab === "creator_permissions"
-							? "bg-[var(--color-interactive-primary)] text-white shadow-md shadow-purple-950/30"
+							? "bg-[var(--color-interactive-primary)] text-white shadow-md shadow-cyan-950/30"
 							: "text-[var(--color-text-secondary)] hover:text-white hover:bg-white/[0.04]"
 					}`}
 				>
-					<Sparkles className="w-4 h-4 text-purple-300" />
+					<Sparkles className="w-4 h-4 text-cyan-300" />
 					<span>Creator Permissions & Outreach</span>
 				</button>
 
@@ -355,7 +355,7 @@ export function AdminDashboardClient({
 					onClick={() => setActiveTab("reports")}
 					className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all ${
 						activeTab === "reports"
-							? "bg-[var(--color-interactive-primary)] text-white shadow-md shadow-purple-950/30"
+							? "bg-[var(--color-interactive-primary)] text-white shadow-md shadow-cyan-950/30"
 							: "text-[var(--color-text-secondary)] hover:text-white hover:bg-white/[0.04]"
 					}`}
 				>
@@ -368,7 +368,7 @@ export function AdminDashboardClient({
 					onClick={() => setActiveTab("withdrawals")}
 					className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all ${
 						activeTab === "withdrawals"
-							? "bg-[var(--color-interactive-primary)] text-white shadow-md shadow-purple-950/30"
+							? "bg-[var(--color-interactive-primary)] text-white shadow-md shadow-cyan-950/30"
 							: "text-[var(--color-text-secondary)] hover:text-white hover:bg-white/[0.04]"
 					}`}
 				>
@@ -385,7 +385,7 @@ export function AdminDashboardClient({
 						<div className="p-5 rounded-3xl bg-[var(--color-bg-surface)] border border-[var(--color-border-subtle)] shadow-md space-y-1">
 							<div className="flex items-center justify-between text-xs font-medium text-[var(--color-text-secondary)]">
 								<span>Total Users</span>
-								<Users className="w-4 h-4 text-purple-400" />
+								<Users className="w-4 h-4 text-cyan-400" />
 							</div>
 							<div className="text-2xl sm:text-3xl font-black text-[var(--color-text-primary)]">
 								{totalCount}
@@ -506,7 +506,7 @@ export function AdminDashboardClient({
 																		className="w-full h-full object-cover"
 																	/>
 																) : (
-																	<div className="w-full h-full flex items-center justify-center font-bold text-white bg-purple-900/60">
+																	<div className="w-full h-full flex items-center justify-center font-bold text-white bg-cyan-900/60">
 																		{u.display_name[0]?.toUpperCase() || "U"}
 																	</div>
 																)}
@@ -601,10 +601,10 @@ export function AdminDashboardClient({
 																				targetRole: "user",
 																			})
 																		}
-																		className="inline-flex items-center gap-1 px-2.5 py-1 rounded-xl bg-purple-500/10 text-purple-300 border border-purple-500/20 hover:bg-purple-500/20 text-[11px] font-semibold transition-all active:scale-95"
+																		className="inline-flex items-center gap-1 px-2.5 py-1 rounded-xl bg-cyan-500/10 text-cyan-300 border border-cyan-500/20 hover:bg-cyan-500/20 text-[11px] font-semibold transition-all active:scale-95"
 																		title="Cabut hak akses admin"
 																	>
-																		<ShieldX className="w-3 h-3 text-purple-400" />
+																		<ShieldX className="w-3 h-3 text-cyan-400" />
 																		<span>Cabut Admin</span>
 																	</button>
 																) : (
@@ -717,7 +717,7 @@ export function AdminDashboardClient({
 								className={`p-3 rounded-2xl border shrink-0 ${
 									roleTarget.targetRole === "admin"
 										? "bg-amber-500/10 border-amber-500/20 text-amber-400"
-										: "bg-purple-500/10 border-purple-500/20 text-purple-400"
+										: "bg-cyan-500/10 border-cyan-500/20 text-cyan-400"
 								}`}
 							>
 								{roleTarget.targetRole === "admin" ? (
@@ -763,7 +763,7 @@ export function AdminDashboardClient({
 								className={`flex-1 min-h-[44px] rounded-2xl text-xs font-bold active:scale-95 transition-all disabled:opacity-50 flex items-center justify-center gap-2 shadow-lg ${
 									roleTarget.targetRole === "admin"
 										? "bg-amber-600 hover:bg-amber-700 text-white shadow-amber-600/30"
-										: "bg-purple-600 hover:bg-purple-700 text-white shadow-purple-600/30"
+										: "bg-cyan-600 hover:bg-cyan-700 text-white shadow-cyan-600/30"
 								}`}
 							>
 								{isUpdatingRole ? (

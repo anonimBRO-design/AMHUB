@@ -133,7 +133,7 @@ export function PreviewVideoStep({
 
 					<div className="space-y-3 p-6">
 						<div className="p-3 rounded-2xl bg-[var(--color-bg-elevated)] text-[var(--color-text-secondary)] w-fit mx-auto border border-[var(--color-border-subtle)]">
-							<Film className="w-8 h-8 text-indigo-400" />
+							<Film className="w-8 h-8 text-sky-400" />
 						</div>
 						<div className="space-y-1">
 							<p className="text-sm font-bold text-[var(--color-text-primary)]">

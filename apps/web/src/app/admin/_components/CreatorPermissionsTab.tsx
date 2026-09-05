@@ -364,7 +364,7 @@ export function CreatorPermissionsTab() {
 					onClick={() => setActiveStatus("all")}
 					className={`p-4 rounded-2xl border text-left transition-all ${
 						activeStatus === "all"
-							? "bg-purple-600/20 border-purple-500/50 shadow-[0_0_20px_rgba(168,85,247,0.15)]"
+							? "bg-cyan-600/20 border-cyan-500/50 shadow-[0_0_20px_rgba(0,200,255,0.15)]"
 							: "bg-[var(--color-bg-surface)] border-[var(--color-border-subtle)] hover:border-[var(--color-border-default)]"
 					}`}
 				>
@@ -372,7 +372,7 @@ export function CreatorPermissionsTab() {
 						<span className="text-xs font-bold uppercase tracking-wider">
 							Total Kreator
 						</span>
-						<Users className="w-4 h-4 text-purple-400" />
+						<Users className="w-4 h-4 text-cyan-400" />
 					</div>
 					<div className="text-2xl font-black font-display text-white">
 						{stats.total}
@@ -404,17 +404,17 @@ export function CreatorPermissionsTab() {
 					onClick={() => setActiveStatus("contacted")}
 					className={`p-4 rounded-2xl border text-left transition-all ${
 						activeStatus === "contacted"
-							? "bg-indigo-500/20 border-indigo-500/50 shadow-[0_0_20px_rgba(99,102,241,0.15)]"
+							? "bg-sky-500/20 border-sky-500/50 shadow-[0_0_20px_rgba(14,165,233,0.15)]"
 							: "bg-[var(--color-bg-surface)] border-[var(--color-border-subtle)] hover:border-[var(--color-border-default)]"
 					}`}
 				>
 					<div className="flex items-center justify-between text-[var(--color-text-secondary)] mb-2">
-						<span className="text-xs font-bold uppercase tracking-wider text-indigo-300">
+						<span className="text-xs font-bold uppercase tracking-wider text-sky-300">
 							Contacted
 						</span>
-						<MessageSquare className="w-4 h-4 text-indigo-400" />
+						<MessageSquare className="w-4 h-4 text-sky-400" />
 					</div>
-					<div className="text-2xl font-black font-display text-indigo-400">
+					<div className="text-2xl font-black font-display text-sky-400">
 						{stats.contacted}
 					</div>
 				</button>
@@ -470,7 +470,7 @@ export function CreatorPermissionsTab() {
 						value={searchQuery}
 						onChange={(e) => setSearchQuery(e.target.value)}
 						placeholder="Cari kreator (@username, display name)..."
-						className="w-full pl-10 pr-4 py-2 rounded-xl bg-[var(--color-bg-elevated)] border border-[var(--color-border-subtle)] text-sm text-white placeholder:text-[var(--color-text-tertiary)] focus:outline-none focus:border-purple-500/50 focus:ring-1 focus:ring-purple-500/50 transition-all"
+						className="w-full pl-10 pr-4 py-2 rounded-xl bg-[var(--color-bg-elevated)] border border-[var(--color-border-subtle)] text-sm text-white placeholder:text-[var(--color-text-tertiary)] focus:outline-none focus:border-cyan-500/50 focus:ring-1 focus:ring-cyan-500/50 transition-all"
 					/>
 				</div>
 
@@ -494,7 +494,7 @@ export function CreatorPermissionsTab() {
 							setAddError(null);
 							setIsAddModalOpen(true);
 						}}
-						className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-[var(--color-interactive-primary)] text-white text-sm font-bold shadow-lg shadow-purple-950/40 hover:opacity-95 active:scale-95 transition-all"
+						className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-[var(--color-interactive-primary)] text-white text-sm font-bold shadow-lg shadow-cyan-950/40 hover:opacity-95 active:scale-95 transition-all"
 					>
 						<Plus className="w-4 h-4" />
 						<span>Tambah Kreator</span>
@@ -505,7 +505,7 @@ export function CreatorPermissionsTab() {
 			{/* Creator Pipeline List */}
 			{isLoading && permissions.length === 0 ? (
 				<div className="py-20 flex flex-col items-center justify-center space-y-3">
-					<Loader2 className="w-8 h-8 animate-spin text-purple-400" />
+					<Loader2 className="w-8 h-8 animate-spin text-cyan-400" />
 					<p className="text-sm text-[var(--color-text-secondary)]">
 						Memuat pipeline izin kreator...
 					</p>
@@ -518,7 +518,7 @@ export function CreatorPermissionsTab() {
 				</div>
 			) : permissions.length === 0 ? (
 				<div className="p-12 text-center rounded-3xl bg-[var(--color-bg-surface)] border border-[var(--color-border-subtle)] space-y-4">
-					<div className="w-12 h-12 rounded-2xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center mx-auto text-purple-400">
+					<div className="w-12 h-12 rounded-2xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center mx-auto text-cyan-400">
 						<MessageSquare className="w-6 h-6" />
 					</div>
 					<div className="space-y-1">
@@ -534,7 +534,7 @@ export function CreatorPermissionsTab() {
 					<button
 						type="button"
 						onClick={() => setIsAddModalOpen(true)}
-						className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-purple-600 hover:bg-purple-500 text-white text-xs font-bold transition-all"
+						className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-cyan-600 hover:bg-cyan-500 text-white text-xs font-bold transition-all"
 					>
 						<Plus className="w-4 h-4" />
 						<span>Tambah Kreator Pertama</span>
@@ -557,7 +557,7 @@ export function CreatorPermissionsTab() {
 								<div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
 									<div className="flex items-center gap-3">
 										{/* Platform Icon Badge */}
-										<div className="w-10 h-10 rounded-xl bg-black/60 border border-white/10 flex items-center justify-center font-bold text-sm text-purple-300 shrink-0">
+										<div className="w-10 h-10 rounded-xl bg-black/60 border border-white/10 flex items-center justify-center font-bold text-sm text-cyan-300 shrink-0">
 											TT
 										</div>
 
@@ -570,7 +570,7 @@ export function CreatorPermissionsTab() {
 													href={item.profile_url}
 													target="_blank"
 													rel="noopener noreferrer"
-													className="text-xs text-purple-400 hover:text-purple-300 inline-flex items-center gap-0.5"
+													className="text-xs text-cyan-400 hover:text-cyan-300 inline-flex items-center gap-0.5"
 												>
 													<span>@{item.creator_username}</span>
 													<ExternalLink className="w-3 h-3" />
@@ -620,7 +620,7 @@ export function CreatorPermissionsTab() {
 													: isRejected
 														? "bg-rose-500/15 text-rose-400 border border-rose-500/30"
 														: isContacted
-															? "bg-indigo-500/15 text-indigo-300 border border-indigo-500/30"
+															? "bg-sky-500/15 text-sky-300 border border-sky-500/30"
 															: "bg-amber-500/15 text-amber-300 border border-amber-500/30"
 											}`}
 										>
@@ -635,7 +635,7 @@ export function CreatorPermissionsTab() {
 									<div className="p-3.5 rounded-xl bg-[var(--color-bg-elevated)] border border-[var(--color-border-subtle)] text-xs text-[var(--color-text-secondary)] leading-relaxed relative group">
 										<div className="flex items-center justify-between mb-1.5 text-[10px] font-bold uppercase text-[var(--color-text-tertiary)] tracking-wider">
 											<span className="flex items-center gap-1">
-												<Sparkles className="w-3 h-3 text-purple-400" />
+												<Sparkles className="w-3 h-3 text-cyan-400" />
 												Draft Pesan Izin (AI Generated)
 											</span>
 										</div>
@@ -659,7 +659,7 @@ export function CreatorPermissionsTab() {
 									<button
 										type="button"
 										onClick={() => handleCopyAndOpenTikTok(item)}
-										className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-purple-600/20 hover:bg-purple-600/30 text-purple-300 border border-purple-500/30 text-xs font-bold transition-all active:scale-95"
+										className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-cyan-600/20 hover:bg-cyan-600/30 text-cyan-300 border border-cyan-500/30 text-xs font-bold transition-all active:scale-95"
 									>
 										{copiedId === item.id ? (
 											<>
@@ -670,7 +670,7 @@ export function CreatorPermissionsTab() {
 											<>
 												<Copy className="w-3.5 h-3.5" />
 												<span>Copy Pesan & Buka TikTok</span>
-												<ExternalLink className="w-3 h-3 text-purple-400 opacity-70" />
+												<ExternalLink className="w-3 h-3 text-cyan-400 opacity-70" />
 											</>
 										)}
 									</button>
@@ -739,7 +739,7 @@ export function CreatorPermissionsTab() {
 					<div className="w-full max-w-lg rounded-3xl bg-[var(--color-bg-surface)] border border-[var(--color-border-default)] p-6 shadow-2xl space-y-5">
 						<div className="flex items-center justify-between">
 							<div className="flex items-center gap-2">
-								<div className="p-2 rounded-xl bg-purple-600/20 text-purple-300 border border-purple-500/30">
+								<div className="p-2 rounded-xl bg-cyan-600/20 text-cyan-300 border border-cyan-500/30">
 									<UserPlus className="w-5 h-5" />
 								</div>
 								<div>
@@ -790,7 +790,7 @@ export function CreatorPermissionsTab() {
 										}
 										placeholder="contoh: colzpreset"
 										required
-										className="w-full pl-8 pr-4 py-2.5 rounded-xl bg-[var(--color-bg-input)] border border-[var(--color-border-subtle)] text-sm text-[var(--color-text-primary)] placeholder:text-[var(--color-text-tertiary)] focus:outline-none focus:border-purple-500/50"
+										className="w-full pl-8 pr-4 py-2.5 rounded-xl bg-[var(--color-bg-input)] border border-[var(--color-border-subtle)] text-sm text-[var(--color-text-primary)] placeholder:text-[var(--color-text-tertiary)] focus:outline-none focus:border-cyan-500/50"
 									/>
 								</div>
 							</div>
@@ -813,7 +813,7 @@ export function CreatorPermissionsTab() {
 										}))
 									}
 									placeholder="contoh: Colz | Preset AM"
-									className="w-full px-3.5 py-2.5 rounded-xl bg-[var(--color-bg-input)] border border-[var(--color-border-subtle)] text-sm text-[var(--color-text-primary)] placeholder:text-[var(--color-text-tertiary)] focus:outline-none focus:border-purple-500/50"
+									className="w-full px-3.5 py-2.5 rounded-xl bg-[var(--color-bg-input)] border border-[var(--color-border-subtle)] text-sm text-[var(--color-text-primary)] placeholder:text-[var(--color-text-tertiary)] focus:outline-none focus:border-cyan-500/50"
 								/>
 							</div>
 
@@ -835,19 +835,19 @@ export function CreatorPermissionsTab() {
 										}))
 									}
 									placeholder="contoh: Malam Pagi Velocity / 3D Shake"
-									className="w-full px-3.5 py-2.5 rounded-xl bg-[var(--color-bg-input)] border border-[var(--color-border-subtle)] text-sm text-[var(--color-text-primary)] placeholder:text-[var(--color-text-tertiary)] focus:outline-none focus:border-purple-500/50"
+									className="w-full px-3.5 py-2.5 rounded-xl bg-[var(--color-bg-input)] border border-[var(--color-border-subtle)] text-sm text-[var(--color-text-primary)] placeholder:text-[var(--color-text-tertiary)] focus:outline-none focus:border-cyan-500/50"
 								/>
 							</div>
 
 							{/* Live AI Message Preview */}
 							<div className="space-y-1.5">
 								<div className="flex items-center justify-between text-xs">
-									<span className="font-bold text-purple-600 dark:text-purple-300 flex items-center gap-1.5">
+									<span className="font-bold text-cyan-600 dark:text-cyan-300 flex items-center gap-1.5">
 										<Sparkles className="w-3.5 h-3.5" />
 										Preview Pesan Izin (Dibuat Otomatis)
 									</span>
 								</div>
-								<div className="p-3 rounded-xl bg-[var(--color-bg-elevated)] border border-purple-500/20 text-xs text-[var(--color-text-primary)] font-mono leading-relaxed max-h-32 overflow-y-auto">
+								<div className="p-3 rounded-xl bg-[var(--color-bg-elevated)] border border-cyan-500/20 text-xs text-[var(--color-text-primary)] font-mono leading-relaxed max-h-32 overflow-y-auto">
 									{generatePermissionMessage(
 										addForm.displayName || addForm.username || "kak",
 										addForm.targetPreset,
@@ -986,7 +986,7 @@ export function CreatorPermissionsTab() {
 											? "contoh: 'Boleh ambil 2 preset video terbaru aja ya kak'"
 											: "contoh: 'Kreator tidak bersedia presetnya dipasang di luar TikTok'"
 									}
-									className="w-full px-3.5 py-2.5 rounded-xl bg-[var(--color-bg-input)] border border-[var(--color-border-subtle)] text-sm text-[var(--color-text-primary)] placeholder:text-[var(--color-text-tertiary)] focus:outline-none focus:border-purple-500/50"
+									className="w-full px-3.5 py-2.5 rounded-xl bg-[var(--color-bg-input)] border border-[var(--color-border-subtle)] text-sm text-[var(--color-text-primary)] placeholder:text-[var(--color-text-tertiary)] focus:outline-none focus:border-cyan-500/50"
 								/>
 							</div>
 

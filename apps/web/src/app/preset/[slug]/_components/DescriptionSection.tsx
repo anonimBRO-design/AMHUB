@@ -92,7 +92,7 @@ function renderFormattedDescription(text: string) {
 					<Link
 						key={partIdx}
 						href={`/u/${username}`}
-						className="text-purple-400 font-semibold hover:underline bg-purple-500/10 px-1.5 py-0.5 rounded-md"
+						className="text-cyan-400 font-semibold hover:underline bg-cyan-500/10 px-1.5 py-0.5 rounded-md"
 					>
 						{part}
 					</Link>
@@ -204,7 +204,7 @@ export function DescriptionSection({
 			{/* Header with Title & Edit Action */}
 			<div className="flex items-center justify-between gap-3">
 				<div className="flex items-center gap-2.5">
-					<div className="p-2 rounded-lg bg-purple-500/10 text-purple-400 border border-purple-500/20">
+					<div className="p-2 rounded-lg bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">
 						<AlignLeft className="w-5 h-5" />
 					</div>
 					<div>
@@ -234,7 +234,7 @@ export function DescriptionSection({
 							}}
 							className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-[var(--color-bg-elevated)] hover:bg-[var(--color-border-subtle)] text-[var(--color-text-primary)] hover:text-white border border-[var(--color-border-subtle)] text-xs font-bold transition-all active:scale-95 shadow-sm"
 						>
-							<Edit3 className="w-3.5 h-3.5 text-purple-400" />
+							<Edit3 className="w-3.5 h-3.5 text-cyan-400" />
 							<span>Edit Deskripsi</span>
 						</button>
 					)}
@@ -244,7 +244,7 @@ export function DescriptionSection({
 			{/* Quick Specification Metadata Badges */}
 			<div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 p-3 rounded-lg bg-[var(--color-bg-base)]/70 border border-[var(--color-border-subtle)]/60 text-xs">
 				<div className="flex items-center gap-2 px-2 py-1">
-					<Ratio className="w-4 h-4 text-purple-400 shrink-0" />
+					<Ratio className="w-4 h-4 text-cyan-400 shrink-0" />
 					<div>
 						<span className="block text-[10px] text-[var(--color-text-tertiary)] uppercase font-semibold">
 							Rasio Layar
@@ -296,7 +296,7 @@ export function DescriptionSection({
 
 			{/* Main Description Body / Edit Mode */}
 			{isEditing ? (
-				<div className="space-y-3 p-4 rounded-lg bg-[var(--color-bg-base)] border border-purple-500/30 shadow-inner">
+				<div className="space-y-3 p-4 rounded-lg bg-[var(--color-bg-base)] border border-cyan-500/30 shadow-inner">
 					<div className="flex items-center justify-between text-xs text-[var(--color-text-tertiary)]">
 						<span className="font-semibold text-[var(--color-text-primary)]">
 							Ubah Deskripsi Preset

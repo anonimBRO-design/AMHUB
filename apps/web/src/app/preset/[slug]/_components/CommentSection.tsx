@@ -158,7 +158,7 @@ export function CommentSection({
 												className="w-5 h-5 rounded-md object-cover"
 											/>
 										) : (
-											<div className="w-5 h-5 rounded-md bg-purple-600/30 text-purple-300 font-bold text-[10px] flex items-center justify-center">
+											<div className="w-5 h-5 rounded-md bg-cyan-600/30 text-cyan-300 font-bold text-[10px] flex items-center justify-center">
 												{comment.user.displayName.slice(0, 2).toUpperCase()}
 											</div>
 										)}
@@ -191,7 +191,7 @@ export function CommentSection({
 					})
 				) : (
 					<div className="p-8 text-center rounded-lg bg-[var(--color-bg-base)]/40 border border-white/[0.05] space-y-2">
-						<MessageSquare className="w-6 h-6 text-purple-400 mx-auto opacity-50" />
+						<MessageSquare className="w-6 h-6 text-cyan-400 mx-auto opacity-50" />
 						<p className="text-xs font-bold text-[var(--color-text-primary)]">
 							Belum ada komentar
 						</p>

@@ -50,7 +50,7 @@ export function Hero({ user }: HeroProps) {
 				</>
 			) : (
 				<>
-					<div className="absolute inset-0 bg-gradient-to-r from-purple-900/60 via-indigo-900/60 to-violet-900/60 z-0 pointer-events-none" />
+					<div className="absolute inset-0 bg-gradient-to-r from-cyan-900/60 via-sky-900/60 to-cyan-900/60 z-0 pointer-events-none" />
 					<div className="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-[var(--color-bg-surface)]/90 z-0 pointer-events-none" />
 					<div className="absolute -top-12 -left-12 w-64 h-64 bg-[var(--color-interactive-primary)]/20 rounded-full blur-3xl pointer-events-none z-0" />
 				</>

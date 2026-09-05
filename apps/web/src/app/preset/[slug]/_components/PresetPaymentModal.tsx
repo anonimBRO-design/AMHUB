@@ -133,7 +133,7 @@ export function PresetPaymentModal({
 				{/* Header */}
 				<div>
 					<div className="flex items-center gap-2">
-						<div className="p-2 rounded-xl bg-violet-600/20 text-violet-400 border border-violet-500/30">
+						<div className="p-2 rounded-xl bg-cyan-600/20 text-cyan-400 border border-cyan-500/30">
 							<ShieldCheck className="w-5 h-5" />
 						</div>
 						<div>
@@ -153,7 +153,7 @@ export function PresetPaymentModal({
 						<span className="truncate max-w-[200px] font-medium text-[var(--color-text-primary)]">
 							{preset.title}
 						</span>
-						<span className="font-bold text-violet-400">
+						<span className="font-bold text-cyan-400">
 							Rp {preset.price.toLocaleString("id-ID")}
 						</span>
 					</div>
@@ -213,11 +213,11 @@ export function PresetPaymentModal({
 								onClick={() => setSelectedMethod("qris")}
 								className={`flex-1 py-2 rounded-xl text-xs font-bold border transition-all flex items-center justify-center gap-1.5 ${
 									selectedMethod === "qris"
-										? "border-violet-500 bg-violet-500/15 text-white shadow-sm"
+										? "border-cyan-500 bg-cyan-500/15 text-white shadow-sm"
 										: "border-[var(--color-border-subtle)] bg-[var(--color-bg-elevated)] text-[var(--color-text-secondary)] hover:border-[var(--color-border-default)]"
 								}`}
 							>
-								<QrCode className="w-4 h-4 text-violet-400" />
+								<QrCode className="w-4 h-4 text-cyan-400" />
 								QRIS (Semua E-Wallet)
 							</button>
 							<button
@@ -225,11 +225,11 @@ export function PresetPaymentModal({
 								onClick={() => setSelectedMethod("transfer")}
 								className={`flex-1 py-2 rounded-xl text-xs font-bold border transition-all flex items-center justify-center gap-1.5 ${
 									selectedMethod === "transfer"
-										? "border-violet-500 bg-violet-500/10 text-white shadow-sm"
+										? "border-cyan-500 bg-cyan-500/10 text-white shadow-sm"
 										: "border-[var(--color-border-subtle)] bg-[var(--color-bg-elevated)] text-[var(--color-text-secondary)] hover:border-[var(--color-border-default)]"
 								}`}
 							>
-								<CreditCard className="w-4 h-4 text-violet-400" />
+								<CreditCard className="w-4 h-4 text-cyan-400" />
 								Manual / Bank
 							</button>
 						</div>
@@ -317,7 +317,7 @@ export function PresetPaymentModal({
 											width="28"
 											height="28"
 											rx="4"
-											fill="#7C3AED"
+											fill="#00C8FF"
 										/>
 										<path
 											d="M44 50L48 54L56 44"
@@ -364,7 +364,7 @@ export function PresetPaymentModal({
 									<button
 										type="button"
 										onClick={() => handleCopy("8870812345678", "va")}
-										className="flex items-center gap-1 font-mono font-bold text-violet-400 hover:underline"
+										className="flex items-center gap-1 font-mono font-bold text-cyan-400 hover:underline"
 									>
 										<span>8870812345678</span>
 										{copiedNumber ? (
@@ -391,7 +391,7 @@ export function PresetPaymentModal({
 
 						{/* Status feedback & check button */}
 						{statusMessage && (
-							<div className="p-2.5 rounded-xl bg-violet-500/10 border border-violet-500/20 text-center text-xs text-violet-300 flex items-center justify-center gap-2">
+							<div className="p-2.5 rounded-xl bg-cyan-500/10 border border-cyan-500/20 text-center text-xs text-cyan-300 flex items-center justify-center gap-2">
 								<Clock className="w-3.5 h-3.5" />
 								<span>{statusMessage}</span>
 							</div>
@@ -402,7 +402,7 @@ export function PresetPaymentModal({
 								type="button"
 								onClick={checkPaymentStatus}
 								disabled={isCheckingStatus}
-								className="w-full py-2.5 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 transition-all flex items-center justify-center gap-2 cursor-pointer shadow-md disabled:opacity-50"
+								className="w-full py-2.5 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-cyan-600 to-sky-600 hover:from-cyan-500 hover:to-sky-500 transition-all flex items-center justify-center gap-2 cursor-pointer shadow-md disabled:opacity-50"
 							>
 								{isCheckingStatus ? (
 									<>

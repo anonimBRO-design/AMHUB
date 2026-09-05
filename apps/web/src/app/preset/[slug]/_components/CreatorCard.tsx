@@ -98,7 +98,7 @@ export function CreatorCard({ creator }: CreatorCardProps) {
 								className="w-12 h-12 sm:w-13 sm:h-13 rounded-xl object-cover border-2 border-[var(--color-interactive-primary)]/40 group-hover:scale-105 transition-transform"
 							/>
 						) : (
-							<div className="w-12 h-12 sm:w-13 sm:h-13 rounded-xl bg-purple-600/30 border-2 border-purple-500/40 text-white font-bold text-base flex items-center justify-center">
+							<div className="w-12 h-12 sm:w-13 sm:h-13 rounded-xl bg-cyan-600/30 border-2 border-cyan-500/40 text-white font-bold text-base flex items-center justify-center">
 								{creator.displayName.slice(0, 2).toUpperCase()}
 							</div>
 						)}
@@ -155,7 +155,7 @@ export function CreatorCard({ creator }: CreatorCardProps) {
 			{/* Creator Stats Row */}
 			<div className="flex items-center justify-between pt-3 text-xs border-t border-[var(--color-border-subtle)]/60 text-[var(--color-text-secondary)] font-medium font-body">
 				<span>{creator.presetCount ?? 0} Presets</span>
-				<span className="font-semibold text-purple-400">
+				<span className="font-semibold text-cyan-400">
 					{followerCount > 1000
 						? `${(followerCount / 1000).toFixed(1)}K`
 						: followerCount}{" "}

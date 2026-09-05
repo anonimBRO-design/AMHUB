@@ -36,7 +36,7 @@ export function AIContributorGrid() {
 			provider: "OpenAI",
 			role: "Code generation and monorepo codebase assistance.",
 			icon: CodexLogo,
-			color: "text-purple-400 bg-purple-500/10 border-purple-500/20",
+			color: "text-cyan-400 bg-cyan-500/10 border-cyan-500/20",
 		},
 		{
 			name: "OpenCode",
@@ -50,7 +50,7 @@ export function AIContributorGrid() {
 			provider: "Router Infrastructure",
 			role: "Multi-model routing and provider management.",
 			icon: NineRouterLogo,
-			color: "text-indigo-400 bg-indigo-500/10 border-indigo-500/20",
+			color: "text-sky-400 bg-sky-500/10 border-sky-500/20",
 		},
 		{
 			name: "Antigravity",

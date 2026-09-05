@@ -214,7 +214,7 @@ export function ReportsModerationTab() {
 								onClick={() => setStatusFilter(status)}
 								className={`px-3 py-1.5 rounded-xl text-xs font-bold capitalize transition-all whitespace-nowrap ${
 									statusFilter === status
-										? "bg-violet-600 text-white shadow-sm"
+										? "bg-cyan-600 text-white shadow-sm"
 										: "bg-[var(--color-bg-elevated)] text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]"
 								}`}
 							>
@@ -233,7 +233,7 @@ export function ReportsModerationTab() {
 							placeholder="Cari judul / slug preset..."
 							value={searchQuery}
 							onChange={(e) => setSearchQuery(e.target.value)}
-							className="w-full pl-9 pr-3 py-1.5 rounded-xl bg-[var(--color-bg-elevated)] border border-[var(--color-border-subtle)] text-xs text-[var(--color-text-primary)] focus:outline-none focus:border-violet-500"
+							className="w-full pl-9 pr-3 py-1.5 rounded-xl bg-[var(--color-bg-elevated)] border border-[var(--color-border-subtle)] text-xs text-[var(--color-text-primary)] focus:outline-none focus:border-cyan-500"
 						/>
 					</div>
 
@@ -255,7 +255,7 @@ export function ReportsModerationTab() {
 			<div className="p-6 rounded-2xl bg-[var(--color-bg-surface)] border border-[var(--color-border-subtle)] space-y-4">
 				<div className="flex items-center justify-between">
 					<div className="flex items-center gap-2">
-						<ShieldAlert className="w-5 h-5 text-violet-400" />
+						<ShieldAlert className="w-5 h-5 text-cyan-400" />
 						<h3 className="text-base font-bold text-[var(--color-text-primary)]">
 							Moderasi Konten & Preset
 						</h3>
@@ -267,7 +267,7 @@ export function ReportsModerationTab() {
 
 				{isLoading ? (
 					<div className="py-16 flex flex-col items-center justify-center gap-2 text-[var(--color-text-secondary)]">
-						<Loader2 className="w-6 h-6 animate-spin text-violet-400" />
+						<Loader2 className="w-6 h-6 animate-spin text-cyan-400" />
 						<p className="text-xs">Memuat daftar preset...</p>
 					</div>
 				) : presets.length === 0 ? (
@@ -313,7 +313,7 @@ export function ReportsModerationTab() {
 													<Link
 														href={`/preset/${preset.slug}`}
 														target="_blank"
-														className="font-bold text-[var(--color-text-primary)] hover:text-violet-400 transition-colors flex items-center gap-1"
+														className="font-bold text-[var(--color-text-primary)] hover:text-cyan-400 transition-colors flex items-center gap-1"
 													>
 														<span>{preset.title}</span>
 														<ExternalLink className="w-3 h-3 opacity-60" />
@@ -344,7 +344,7 @@ export function ReportsModerationTab() {
 
 										{/* Type & Category */}
 										<td className="py-3 px-3">
-											<div className="font-semibold text-violet-300 capitalize">
+											<div className="font-semibold text-cyan-300 capitalize">
 												{preset.category}
 											</div>
 											<div className="text-[10px] text-[var(--color-text-tertiary)] uppercase mt-0.5">

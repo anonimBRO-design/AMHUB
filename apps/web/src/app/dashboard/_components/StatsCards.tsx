@@ -17,7 +17,7 @@ export function StatsCards({ stats }: StatsCardsProps) {
 			label: "Total Presets",
 			value: stats.presetCount,
 			icon: Grid,
-			color: "text-indigo-400 bg-indigo-500/10 border-indigo-500/20",
+			color: "text-sky-400 bg-sky-500/10 border-sky-500/20",
 		},
 		{
 			label: "Total Downloads",
@@ -41,7 +41,7 @@ export function StatsCards({ stats }: StatsCardsProps) {
 			label: "Followers",
 			value: stats.followerCount,
 			icon: Users,
-			color: "text-purple-400 bg-purple-500/10 border-purple-500/20",
+			color: "text-cyan-400 bg-cyan-500/10 border-cyan-500/20",
 		},
 		{
 			label: "Following",

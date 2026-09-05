@@ -204,7 +204,7 @@ export function EditProfileClient({ profile }: EditProfileClientProps) {
 									<div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
 								</>
 							) : (
-								<div className="absolute inset-0 bg-gradient-to-r from-purple-900/60 via-indigo-900/60 to-violet-900/60 flex items-center justify-center">
+								<div className="absolute inset-0 bg-gradient-to-r from-cyan-900/60 via-sky-900/60 to-cyan-900/60 flex items-center justify-center">
 									<span className="text-xs text-white/60 font-semibold">
 										Default Gradient Banner
 									</span>

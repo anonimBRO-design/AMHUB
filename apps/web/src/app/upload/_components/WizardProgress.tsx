@@ -28,7 +28,7 @@ export function WizardProgress({
 			{/* Progress Bar Line */}
 			<div className="w-full h-1.5 rounded-full bg-[var(--color-bg-elevated)] overflow-hidden">
 				<div
-					className="h-full bg-gradient-to-r from-[var(--color-interactive-primary)] to-purple-400 transition-all duration-300 ease-out"
+					className="h-full bg-gradient-to-r from-[var(--color-interactive-primary)] to-cyan-400 transition-all duration-300 ease-out"
 					style={{ width: `${progressPercent}%` }}
 				/>
 			</div>

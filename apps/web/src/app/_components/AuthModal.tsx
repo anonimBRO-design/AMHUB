@@ -56,12 +56,12 @@ export function AuthModal({
 						animate={{ opacity: 1, scale: 1, y: 0 }}
 						exit={{ opacity: 0, scale: 0.95, y: 8 }}
 						transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
-						className="relative w-full max-w-md p-6 sm:p-8 rounded-3xl backdrop-blur-2xl bg-[#0f0e14]/90 border border-white/[0.1] shadow-2xl shadow-purple-950/40 space-y-6 text-center overflow-hidden z-10"
+						className="relative w-full max-w-md p-6 sm:p-8 rounded-3xl backdrop-blur-2xl bg-[#0f0e14]/90 border border-white/[0.1] shadow-2xl shadow-cyan-950/40 space-y-6 text-center overflow-hidden z-10"
 					>
 						{/* Ambient Glow Orbs in Modal Background */}
-						<div className="absolute -top-28 -left-28 w-64 h-64 bg-purple-600/30 rounded-full blur-[80px] pointer-events-none animate-pulse" />
-						<div className="absolute -bottom-28 -right-28 w-64 h-64 bg-indigo-600/25 rounded-full blur-[80px] pointer-events-none animate-ambient-float" />
-						<div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-48 bg-purple-500/10 rounded-full blur-3xl pointer-events-none" />
+						<div className="absolute -top-28 -left-28 w-64 h-64 bg-cyan-600/30 rounded-full blur-[80px] pointer-events-none animate-pulse" />
+						<div className="absolute -bottom-28 -right-28 w-64 h-64 bg-sky-600/25 rounded-full blur-[80px] pointer-events-none animate-ambient-float" />
+						<div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-48 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none" />
 
 						{/* Close Button */}
 						<button
@@ -75,7 +75,7 @@ export function AuthModal({
 						{/* Header */}
 						<div className="space-y-3 pt-2">
 							<div className="relative w-16 h-16 mx-auto group">
-								<div className="absolute -inset-2 rounded-2xl bg-gradient-to-tr from-purple-600 to-indigo-500 opacity-60 blur-md group-hover:opacity-90 transition-opacity duration-300" />
+								<div className="absolute -inset-2 rounded-2xl bg-gradient-to-tr from-cyan-600 to-sky-500 opacity-60 blur-md group-hover:opacity-90 transition-opacity duration-300" />
 								<div className="relative w-full h-full rounded-2xl bg-white/[0.04] backdrop-blur-md border border-white/[0.12] p-2.5 flex items-center justify-center shadow-lg">
 									<img
 										src="/logo.png"
@@ -111,7 +111,7 @@ export function AuthModal({
 								type="button"
 								onClick={handleGoogleLogin}
 								disabled={isLoading}
-								className="w-full min-h-[52px] h-13 sm:h-14 rounded-2xl bg-white text-gray-950 font-extrabold text-sm sm:text-base flex items-center justify-center gap-3 hover:bg-white/95 transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] shadow-[0_0_20px_rgba(255,255,255,0.15)] hover:shadow-[0_0_28px_rgba(255,255,255,0.28)] focus:outline-none focus:ring-2 focus:ring-purple-500/50 active:scale-[0.97] disabled:opacity-50 cursor-pointer"
+								className="w-full min-h-[52px] h-13 sm:h-14 rounded-2xl bg-white text-gray-950 font-extrabold text-sm sm:text-base flex items-center justify-center gap-3 hover:bg-white/95 transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] shadow-[0_0_20px_rgba(255,255,255,0.15)] hover:shadow-[0_0_28px_rgba(255,255,255,0.28)] focus:outline-none focus:ring-2 focus:ring-cyan-500/50 active:scale-[0.97] disabled:opacity-50 cursor-pointer"
 							>
 								<svg
 									className="w-5 h-5"
@@ -146,7 +146,7 @@ export function AuthModal({
 									posthog.capture("auth_login_started", { method: "email" });
 									onClose();
 								}}
-								className="w-full min-h-[52px] h-13 sm:h-14 rounded-2xl bg-gradient-to-r from-[var(--color-interactive-primary)] via-purple-600 to-indigo-600 text-white font-extrabold text-sm sm:text-base flex items-center justify-center gap-2 hover:opacity-95 transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] shadow-[0_0_24px_rgba(124,58,237,0.35)] hover:shadow-[0_0_32px_rgba(124,58,237,0.5)] focus:outline-none focus:ring-2 focus:ring-purple-500/50 active:scale-[0.97]"
+								className="w-full min-h-[52px] h-13 sm:h-14 rounded-2xl bg-gradient-to-r from-[var(--color-interactive-primary)] via-cyan-600 to-sky-600 text-white font-extrabold text-sm sm:text-base flex items-center justify-center gap-2 hover:opacity-95 transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] shadow-[0_0_24px_rgba(0,200,255,0.35)] hover:shadow-[0_0_32px_rgba(0,200,255,0.5)] focus:outline-none focus:ring-2 focus:ring-cyan-500/50 active:scale-[0.97]"
 							>
 								<LogIn className="w-4.5 h-4.5" />
 								<span>Log In with Email</span>
@@ -156,7 +156,7 @@ export function AuthModal({
 							<Link
 								href="/auth/register"
 								onClick={onClose}
-								className="w-full min-h-[52px] h-13 sm:h-14 rounded-2xl bg-white/[0.04] backdrop-blur-md border border-white/[0.1] text-white font-extrabold text-sm sm:text-base flex items-center justify-center gap-2 hover:bg-white/[0.08] hover:border-white/[0.2] transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] focus:outline-none focus:ring-2 focus:ring-purple-500/50 active:scale-[0.97]"
+								className="w-full min-h-[52px] h-13 sm:h-14 rounded-2xl bg-white/[0.04] backdrop-blur-md border border-white/[0.1] text-white font-extrabold text-sm sm:text-base flex items-center justify-center gap-2 hover:bg-white/[0.08] hover:border-white/[0.2] transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] focus:outline-none focus:ring-2 focus:ring-cyan-500/50 active:scale-[0.97]"
 							>
 								<UserPlus className="w-4.5 h-4.5" />
 								<span>Create Account</span>

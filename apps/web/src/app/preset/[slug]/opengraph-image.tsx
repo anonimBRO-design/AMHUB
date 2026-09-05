@@ -38,7 +38,7 @@ export default async function Image({
 				justifyContent: "space-between",
 				backgroundColor: "#090A0F",
 				backgroundImage:
-					"radial-gradient(circle at 25% 25%, rgba(16, 185, 129, 0.15) 0%, transparent 50%), radial-gradient(circle at 75% 75%, rgba(139, 92, 246, 0.15) 0%, transparent 50%)",
+					"radial-gradient(circle at 25% 25%, rgba(16, 185, 129, 0.15) 0%, transparent 50%), radial-gradient(circle at 75% 75%, rgba(0, 200, 255, 0.15) 0%, transparent 50%)",
 				padding: "60px",
 				fontFamily: "sans-serif",
 				color: "#FFFFFF",
@@ -94,9 +94,9 @@ export default async function Image({
 					</div>
 					<div
 						style={{
-							backgroundColor: "rgba(139, 92, 246, 0.2)",
-							border: "1px solid rgba(139, 92, 246, 0.4)",
-							color: "#A78BFA",
+							backgroundColor: "rgba(0, 200, 255, 0.2)",
+							border: "1px solid rgba(0, 200, 255, 0.4)",
+							color: "#00E5FF",
 							padding: "6px 16px",
 							borderRadius: "999px",
 							fontSize: "16px",
@@ -162,7 +162,7 @@ export default async function Image({
 							width: "56px",
 							height: "56px",
 							borderRadius: "999px",
-							backgroundColor: "#8B5CF6",
+							backgroundColor: "#00B8E6",
 							display: "flex",
 							alignItems: "center",
 							justifyContent: "center",

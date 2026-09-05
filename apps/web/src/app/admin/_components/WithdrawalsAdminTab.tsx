@@ -210,7 +210,7 @@ export function WithdrawalsAdminTab() {
 								onClick={() => setStatusFilter(status)}
 								className={`px-3 py-1.5 rounded-xl text-xs font-bold capitalize transition-all whitespace-nowrap ${
 									statusFilter === status
-										? "bg-violet-600 text-white shadow-sm"
+										? "bg-cyan-600 text-white shadow-sm"
 										: "bg-[var(--color-bg-elevated)] text-[var(--color-text-secondary)] hover:text-[var(--color-text-primary)]"
 								}`}
 							>
@@ -237,7 +237,7 @@ export function WithdrawalsAdminTab() {
 			<div className="p-6 rounded-2xl bg-[var(--color-bg-surface)] border border-[var(--color-border-subtle)] space-y-4">
 				<div className="flex items-center justify-between">
 					<div className="flex items-center gap-2">
-						<Banknote className="w-5 h-5 text-violet-400" />
+						<Banknote className="w-5 h-5 text-cyan-400" />
 						<h3 className="text-base font-bold text-[var(--color-text-primary)]">
 							Pencairan Saldo & Payout Creator
 						</h3>
@@ -249,7 +249,7 @@ export function WithdrawalsAdminTab() {
 
 				{isLoading ? (
 					<div className="py-16 flex flex-col items-center justify-center gap-2 text-[var(--color-text-secondary)]">
-						<Loader2 className="w-6 h-6 animate-spin text-violet-400" />
+						<Loader2 className="w-6 h-6 animate-spin text-cyan-400" />
 						<p className="text-xs">Memuat antrean penarikan dana...</p>
 					</div>
 				) : withdrawals.length === 0 ? (
@@ -292,7 +292,7 @@ export function WithdrawalsAdminTab() {
 												<Link
 													href={`/u/${item.creator.username}`}
 													target="_blank"
-													className="font-bold text-[var(--color-text-primary)] hover:text-violet-400 transition-colors flex items-center gap-1"
+													className="font-bold text-[var(--color-text-primary)] hover:text-cyan-400 transition-colors flex items-center gap-1"
 												>
 													<span>@{item.creator.username}</span>
 													<ExternalLink className="w-3 h-3 opacity-60" />
@@ -311,7 +311,7 @@ export function WithdrawalsAdminTab() {
 
 										{/* Metode & Rekening */}
 										<td className="py-3 px-3">
-											<div className="font-bold uppercase text-[11px] text-violet-300">
+											<div className="font-bold uppercase text-[11px] text-cyan-300">
 												{item.payment_method}
 											</div>
 											<div className="text-[11px] text-[var(--color-text-primary)] flex items-center gap-1.5 mt-0.5">
@@ -436,7 +436,7 @@ export function WithdrawalsAdminTab() {
 								<span className="text-[var(--color-text-secondary)]">
 									Tujuan:
 								</span>
-								<span className="font-semibold text-violet-300 uppercase">
+								<span className="font-semibold text-cyan-300 uppercase">
 									{selectedAction.item.payment_method} •{" "}
 									{selectedAction.item.account_number}
 								</span>

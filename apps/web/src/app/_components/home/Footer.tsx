@@ -142,7 +142,7 @@ export function Footer() {
 												);
 											}
 										}}
-										className="hover:text-[var(--color-interactive-primary)] text-purple-400 font-medium transition-colors text-left inline-flex items-center gap-1"
+										className="hover:text-[var(--color-interactive-primary)] text-cyan-400 font-medium transition-colors text-left inline-flex items-center gap-1"
 									>
 										<span>📲 Install App (PWA)</span>
 									</button>

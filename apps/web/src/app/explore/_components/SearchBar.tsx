@@ -202,7 +202,7 @@ export function SearchBar({
 				<div className="absolute top-full left-0 right-0 mt-2 p-3 rounded-2xl backdrop-blur-2xl bg-[#0f0e14]/95 border border-white/10 shadow-2xl space-y-2 z-50">
 					<div className="flex items-center justify-between px-2 pb-1 border-b border-white/[0.08]">
 						<span className="text-[11px] font-bold uppercase tracking-wider text-[var(--color-text-tertiary)] flex items-center gap-1.5">
-							<Clock className="w-3.5 h-3.5 text-purple-400" />
+							<Clock className="w-3.5 h-3.5 text-cyan-400" />
 							Recent Searches
 						</span>
 						<button

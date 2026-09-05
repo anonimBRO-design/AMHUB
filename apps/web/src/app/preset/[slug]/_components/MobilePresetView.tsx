@@ -68,7 +68,7 @@ export function MobilePresetView({ preset }: MobilePresetViewProps) {
 				{/* Bottom Overlay Content */}
 				<div className="absolute bottom-0 left-0 right-0 p-5 pt-12 text-white pointer-events-none">
 					<div className="flex items-center gap-3 mb-4 pointer-events-auto cursor-pointer">
-						<div className="relative w-12 h-12 rounded-full ring-2 ring-purple-500 overflow-hidden bg-black/20">
+						<div className="relative w-12 h-12 rounded-full ring-2 ring-cyan-500 overflow-hidden bg-black/20">
 							{preset.creator?.avatarUrl ? (
 								<Image
 									src={preset.creator.avatarUrl}

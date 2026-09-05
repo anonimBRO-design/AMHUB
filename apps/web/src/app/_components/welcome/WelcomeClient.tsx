@@ -86,14 +86,14 @@ export function WelcomeClient({ user: initialUser }: WelcomeClientProps) {
 				>
 					{/* Particle Glow Backdrop */}
 					<div className="absolute inset-0 flex items-center justify-center pointer-events-none overflow-hidden">
-						<div className="w-[450px] h-[450px] rounded-full bg-gradient-to-tr from-purple-600/25 via-indigo-500/15 to-purple-600/25 blur-[100px] animate-pulse" />
-						<div className="absolute w-72 h-72 rounded-full bg-purple-500/20 blur-[80px] animate-ambient-float" />
+						<div className="w-[450px] h-[450px] rounded-full bg-gradient-to-tr from-cyan-600/25 via-sky-500/15 to-cyan-600/25 blur-[100px] animate-pulse" />
+						<div className="absolute w-72 h-72 rounded-full bg-cyan-500/20 blur-[80px] animate-ambient-float" />
 					</div>
 
 					<div className="relative z-10 flex flex-col items-center gap-6">
 						{/* Logo Glow Ring */}
 						<div className="relative group">
-							<div className="absolute -inset-6 rounded-full bg-gradient-to-r from-purple-600 via-indigo-500 to-purple-600 opacity-70 blur-2xl animate-pulse" />
+							<div className="absolute -inset-6 rounded-full bg-gradient-to-r from-cyan-600 via-sky-500 to-cyan-600 opacity-70 blur-2xl animate-pulse" />
 							<div className="relative p-4 rounded-3xl bg-white/[0.04] border border-white/[0.12] backdrop-blur-xl shadow-2xl">
 								<img
 									src="/logo.png"
@@ -112,7 +112,7 @@ export function WelcomeClient({ user: initialUser }: WelcomeClientProps) {
 						</div>
 
 						<div className="text-center space-y-1.5">
-							<h1 className="font-['Syne',sans-serif] font-display text-2xl sm:text-3xl font-black tracking-wider bg-clip-text text-transparent bg-gradient-to-r from-white via-purple-200 to-indigo-200">
+							<h1 className="font-['Syne',sans-serif] font-display text-2xl sm:text-3xl font-black tracking-wider bg-clip-text text-transparent bg-gradient-to-r from-white via-cyan-200 to-sky-200">
 								AMHUB
 							</h1>
 							<p className="text-xs text-[var(--color-text-tertiary)] font-semibold tracking-widest uppercase">
@@ -122,7 +122,7 @@ export function WelcomeClient({ user: initialUser }: WelcomeClientProps) {
 
 						{/* Loading bar */}
 						<div className="w-40 h-1.5 bg-white/10 rounded-full overflow-hidden mt-3 p-0.5 backdrop-blur-sm border border-white/5">
-							<div className="h-full bg-gradient-to-r from-purple-500 via-indigo-400 to-purple-500 rounded-full w-full animate-loading-bar shadow-[0_0_12px_rgba(124,58,237,0.8)]" />
+							<div className="h-full bg-gradient-to-r from-cyan-500 via-sky-400 to-cyan-500 rounded-full w-full animate-loading-bar shadow-[0_0_12px_rgba(0,200,255,0.8)]" />
 						</div>
 					</div>
 				</motion.div>
@@ -136,16 +136,16 @@ export function WelcomeClient({ user: initialUser }: WelcomeClientProps) {
 					className="relative min-h-screen bg-[var(--color-bg-base)] text-[var(--color-text-primary)] flex flex-col justify-between overflow-x-hidden select-none"
 				>
 					{/* Ambient Floating Orbs */}
-					<div className="fixed top-[-10%] left-1/2 -translate-x-1/2 w-[500px] h-[500px] bg-gradient-to-br from-purple-600/20 via-indigo-600/15 to-transparent rounded-full blur-[140px] pointer-events-none animate-ambient-float" />
-					<div className="fixed bottom-[-10%] right-[-10%] w-[420px] h-[420px] bg-gradient-to-tl from-indigo-600/15 via-purple-900/20 to-transparent rounded-full blur-[130px] pointer-events-none animate-glow-pulse" />
-					<div className="fixed top-[40%] left-[-15%] w-[350px] h-[350px] bg-purple-900/15 rounded-full blur-[120px] pointer-events-none" />
+					<div className="fixed top-[-10%] left-1/2 -translate-x-1/2 w-[500px] h-[500px] bg-gradient-to-br from-cyan-600/20 via-sky-600/15 to-transparent rounded-full blur-[140px] pointer-events-none animate-ambient-float" />
+					<div className="fixed bottom-[-10%] right-[-10%] w-[420px] h-[420px] bg-gradient-to-tl from-sky-600/15 via-cyan-900/20 to-transparent rounded-full blur-[130px] pointer-events-none animate-glow-pulse" />
+					<div className="fixed top-[40%] left-[-15%] w-[350px] h-[350px] bg-cyan-900/15 rounded-full blur-[120px] pointer-events-none" />
 
 					{/* Main Content Container */}
 					<div className="relative z-10 flex-1 max-w-md w-full mx-auto px-5 pt-8 pb-10 flex flex-col justify-between space-y-8">
 						{/* Top Branding */}
 						<div className="flex flex-col items-center text-center space-y-4 pt-4">
 							<div className="relative group">
-								<div className="absolute -inset-3 rounded-3xl bg-gradient-to-r from-purple-600 to-indigo-600 opacity-40 blur-xl group-hover:opacity-75 transition-opacity duration-500" />
+								<div className="absolute -inset-3 rounded-3xl bg-gradient-to-r from-cyan-600 to-sky-600 opacity-40 blur-xl group-hover:opacity-75 transition-opacity duration-500" />
 								<div className="relative p-3 rounded-2xl bg-white/[0.04] border border-white/[0.1] backdrop-blur-xl shadow-xl">
 									<img
 										src="/logo.png"
@@ -163,8 +163,8 @@ export function WelcomeClient({ user: initialUser }: WelcomeClientProps) {
 								</div>
 							</div>
 
-							<div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-purple-500/10 border border-purple-500/20 text-purple-300 text-xs font-bold tracking-wider backdrop-blur-md shadow-[0_0_15px_rgba(124,58,237,0.15)]">
-								<Sparkles className="w-3.5 h-3.5 text-purple-400 animate-pulse" />
+							<div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-300 text-xs font-bold tracking-wider backdrop-blur-md shadow-[0_0_15px_rgba(0,200,255,0.15)]">
+								<Sparkles className="w-3.5 h-3.5 text-cyan-400 animate-pulse" />
 								<span>VERSION 1.0 NOW LIVE</span>
 							</div>
 						</div>
@@ -173,7 +173,7 @@ export function WelcomeClient({ user: initialUser }: WelcomeClientProps) {
 						<div className="text-center space-y-3">
 							<h1 className="font-['Syne',sans-serif] font-display text-2xl sm:text-3xl font-extrabold tracking-tight text-white leading-tight">
 								Discover Premium <br />
-								<span className="bg-clip-text text-transparent bg-gradient-to-r from-purple-400 via-indigo-300 to-purple-200">
+								<span className="bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 via-sky-300 to-cyan-200">
 									Alight Motion Presets
 								</span>
 							</h1>
@@ -186,7 +186,7 @@ export function WelcomeClient({ user: initialUser }: WelcomeClientProps) {
 						{/* Feature Cards Grid */}
 						<div className="grid grid-cols-2 gap-3">
 							<div className="p-4 rounded-2xl backdrop-blur-xl bg-white/[0.03] border border-white/[0.08] hover:border-white/[0.16] hover:bg-white/[0.06] transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-0.5 shadow-lg hover:shadow-[0_8px_24px_rgba(0,0,0,0.4)] space-y-2 group cursor-default">
-								<div className="w-9 h-9 rounded-xl bg-gradient-to-br from-purple-500/20 to-purple-600/10 border border-purple-500/30 text-purple-300 flex items-center justify-center shadow-[0_0_12px_rgba(168,85,247,0.2)]">
+								<div className="w-9 h-9 rounded-xl bg-gradient-to-br from-cyan-500/20 to-cyan-600/10 border border-cyan-500/30 text-cyan-300 flex items-center justify-center shadow-[0_0_12px_rgba(0,200,255,0.2)]">
 									<FileCode2 className="w-4.5 h-4.5" />
 								</div>
 								<h3 className="font-['Syne',sans-serif] font-display text-xs font-bold text-white">
@@ -198,7 +198,7 @@ export function WelcomeClient({ user: initialUser }: WelcomeClientProps) {
 							</div>
 
 							<div className="p-4 rounded-2xl backdrop-blur-xl bg-white/[0.03] border border-white/[0.08] hover:border-white/[0.16] hover:bg-white/[0.06] transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-0.5 shadow-lg hover:shadow-[0_8px_24px_rgba(0,0,0,0.4)] space-y-2 group cursor-default">
-								<div className="w-9 h-9 rounded-xl bg-gradient-to-br from-indigo-500/20 to-indigo-600/10 border border-indigo-500/30 text-indigo-300 flex items-center justify-center shadow-[0_0_12px_rgba(99,102,241,0.2)]">
+								<div className="w-9 h-9 rounded-xl bg-gradient-to-br from-sky-500/20 to-sky-600/10 border border-sky-500/30 text-sky-300 flex items-center justify-center shadow-[0_0_12px_rgba(14,165,233,0.2)]">
 									<HardDrive className="w-4.5 h-4.5" />
 								</div>
 								<h3 className="font-['Syne',sans-serif] font-display text-xs font-bold text-white">
@@ -272,7 +272,7 @@ export function WelcomeClient({ user: initialUser }: WelcomeClientProps) {
 							{/* 2. Secondary Login CTA */}
 							<Link
 								href="/auth/login"
-								className="w-full min-h-[52px] h-13 sm:h-14 rounded-2xl bg-gradient-to-r from-[var(--color-interactive-primary)] via-purple-600 to-indigo-600 text-white font-extrabold text-sm sm:text-base flex items-center justify-center gap-2 hover:opacity-95 transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] shadow-[0_0_24px_rgba(124,58,237,0.35)] hover:shadow-[0_0_32px_rgba(124,58,237,0.5)] active:scale-[0.97]"
+								className="w-full min-h-[52px] h-13 sm:h-14 rounded-2xl bg-gradient-to-r from-[var(--color-interactive-primary)] via-cyan-600 to-sky-600 text-white font-extrabold text-sm sm:text-base flex items-center justify-center gap-2 hover:opacity-95 transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] shadow-[0_0_24px_rgba(0,200,255,0.35)] hover:shadow-[0_0_32px_rgba(0,200,255,0.5)] active:scale-[0.97]"
 							>
 								<LogIn className="w-4.5 h-4.5" />
 								<span>Log In</span>
@@ -293,7 +293,7 @@ export function WelcomeClient({ user: initialUser }: WelcomeClientProps) {
 								className="w-full py-3.5 text-center text-xs sm:text-sm font-semibold text-[var(--color-text-tertiary)] hover:text-white transition-colors duration-300 flex items-center justify-center gap-1.5 group min-h-[52px]"
 							>
 								<span>Continue as Guest</span>
-								<ChevronRight className="w-4 h-4 group-hover:translate-x-1.5 transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] text-[var(--color-text-tertiary)] group-hover:text-purple-400" />
+								<ChevronRight className="w-4 h-4 group-hover:translate-x-1.5 transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] text-[var(--color-text-tertiary)] group-hover:text-cyan-400" />
 							</Link>
 						</div>
 					</div>

@@ -201,11 +201,11 @@ export function CreatorsClient({
 		<div className="space-y-8 max-w-6xl mx-auto px-4 sm:px-6 py-6 pb-24">
 			{/* Top Glass Header Banner */}
 			<div className="relative overflow-hidden p-6 sm:p-8 rounded-3xl backdrop-blur-2xl bg-white/[0.02] border border-white/[0.08] shadow-[0_16px_48px_rgba(0,0,0,0.4)] flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-				<div className="pointer-events-none absolute -top-24 -right-24 w-64 h-64 bg-purple-600/15 rounded-full blur-[90px]" />
+				<div className="pointer-events-none absolute -top-24 -right-24 w-64 h-64 bg-cyan-600/15 rounded-full blur-[90px]" />
 
 				<div className="space-y-2 relative z-10">
 					<div className="flex items-center gap-2 text-xs font-extrabold text-[var(--color-interactive-primary)] uppercase tracking-wider">
-						<Users className="w-4 h-4 text-purple-400" />
+						<Users className="w-4 h-4 text-cyan-400" />
 						<span>Community Directory</span>
 					</div>
 					<h1 className="font-display text-3xl sm:text-4xl font-extrabold tracking-tight text-white">
@@ -225,7 +225,7 @@ export function CreatorsClient({
 							<Sparkles className="w-3.5 h-3.5 text-amber-400" />
 							<span>Leaderboard</span>
 						</Link>
-						<span className="px-4 py-1.5 rounded-lg bg-purple-600 text-white text-xs font-bold shadow-md shadow-purple-600/30">
+						<span className="px-4 py-1.5 rounded-lg bg-cyan-600 text-white text-xs font-bold shadow-md shadow-cyan-600/30">
 							Jelajahi Kreator
 						</span>
 						<Link
@@ -237,7 +237,7 @@ export function CreatorsClient({
 					</div>
 				</div>
 
-				<div className="relative z-10 flex items-center gap-2 px-4 py-2.5 rounded-2xl backdrop-blur-xl bg-purple-500/10 border border-purple-500/20 text-purple-300 text-xs font-bold tracking-wide w-fit">
+				<div className="relative z-10 flex items-center gap-2 px-4 py-2.5 rounded-2xl backdrop-blur-xl bg-cyan-500/10 border border-cyan-500/20 text-cyan-300 text-xs font-bold tracking-wide w-fit">
 					<Sparkles className="w-4 h-4 text-amber-400 animate-pulse" />
 					<span>{totalCount} Total User</span>
 				</div>
@@ -282,7 +282,7 @@ export function CreatorsClient({
 								onClick={() => setActiveFilter(f.id)}
 								className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${
 									activeFilter === f.id
-										? "bg-[var(--color-interactive-primary)] text-white shadow-md shadow-purple-600/20"
+										? "bg-[var(--color-interactive-primary)] text-white shadow-md shadow-cyan-600/20"
 										: "bg-transparent text-[var(--color-text-secondary)] hover:text-white hover:bg-white/5"
 								}`}
 							>
@@ -389,7 +389,7 @@ export function CreatorsClient({
 									<div className="flex items-start justify-between gap-3">
 										<div className="flex items-center gap-3.5 min-w-0">
 											{/* Avatar */}
-											<div className="w-12 h-12 rounded-full overflow-hidden bg-gradient-to-br from-purple-900 to-indigo-950 shrink-0 border border-white/10 group-hover:border-purple-500/50 transition-colors shadow-inner">
+											<div className="w-12 h-12 rounded-full overflow-hidden bg-gradient-to-br from-cyan-900 to-sky-950 shrink-0 border border-white/10 group-hover:border-cyan-500/50 transition-colors shadow-inner">
 												{avatarUrl ? (
 													<img
 														src={avatarUrl}
@@ -433,7 +433,7 @@ export function CreatorsClient({
 												className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all active:scale-95 shrink-0 shadow-sm ${
 													c.is_following
 														? "bg-[var(--color-bg-elevated)] text-emerald-400 border border-emerald-500/30 hover:bg-rose-500/10 hover:text-rose-400 hover:border-rose-500/30"
-														: "bg-[var(--color-interactive-primary)] text-white hover:bg-purple-700"
+														: "bg-[var(--color-interactive-primary)] text-white hover:bg-cyan-700"
 												}`}
 											>
 												{isPending ? (
@@ -479,7 +479,7 @@ export function CreatorsClient({
 										</div>
 
 										<div className="p-1.5 rounded-xl bg-white/[0.02]">
-											<div className="font-extrabold text-purple-400 flex items-center justify-center gap-1">
+											<div className="font-extrabold text-cyan-400 flex items-center justify-center gap-1">
 												<Video className="w-3 h-3" />
 												<span>{c.preset_count}</span>
 											</div>
@@ -504,12 +504,12 @@ export function CreatorsClient({
 							>
 								{isLoadingMore ? (
 									<>
-										<Loader2 className="w-4 h-4 animate-spin text-purple-400" />
+										<Loader2 className="w-4 h-4 animate-spin text-cyan-400" />
 										<span>Memuat...</span>
 									</>
 								) : (
 									<>
-										<RefreshCw className="w-4 h-4 text-purple-400" />
+										<RefreshCw className="w-4 h-4 text-cyan-400" />
 										<span>Muat Lebih Banyak Kreator</span>
 									</>
 								)}

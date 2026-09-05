@@ -297,7 +297,7 @@ export function TermsClient() {
 							Alight Motion Disclaimer:
 						</strong>{" "}
 						AMHUB is an independent community hub and is{" "}
-						<strong className="text-purple-400">
+						<strong className="text-cyan-400">
 							not affiliated with, endorsed by, or sponsored by Alight Creative,
 							Inc.
 						</strong>{" "}
@@ -556,13 +556,13 @@ export function TermsClient() {
 			</div>
 
 			{/* Hero Header Banner */}
-			<div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-purple-950/40 via-[var(--color-bg-surface)] to-[var(--color-bg-base)] border border-[var(--color-border-subtle)] p-6 sm:p-10 shadow-2xl space-y-4">
+			<div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-cyan-950/40 via-[var(--color-bg-surface)] to-[var(--color-bg-base)] border border-[var(--color-border-subtle)] p-6 sm:p-10 shadow-2xl space-y-4">
 				{/* Ambient Glows */}
-				<div className="absolute -top-24 -right-24 w-72 h-72 bg-purple-600/20 rounded-full blur-3xl pointer-events-none" />
-				<div className="absolute -bottom-24 -left-24 w-72 h-72 bg-indigo-600/15 rounded-full blur-3xl pointer-events-none" />
+				<div className="absolute -top-24 -right-24 w-72 h-72 bg-cyan-600/20 rounded-full blur-3xl pointer-events-none" />
+				<div className="absolute -bottom-24 -left-24 w-72 h-72 bg-sky-600/15 rounded-full blur-3xl pointer-events-none" />
 
 				<div className="relative z-10 space-y-3 max-w-3xl">
-					<div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-purple-500/10 border border-purple-500/20 text-purple-300 text-xs font-bold uppercase tracking-wider">
+					<div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-cyan-500/10 border border-cyan-500/20 text-cyan-300 text-xs font-bold uppercase tracking-wider">
 						<Sparkles className="w-3.5 h-3.5" />
 						<span>Legal & Community Guidelines</span>
 					</div>
@@ -668,7 +668,7 @@ export function TermsClient() {
 					})}
 
 					{/* Bottom Reaffirmation Box */}
-					<div className="p-6 sm:p-8 rounded-3xl bg-gradient-to-r from-purple-900/30 via-indigo-900/20 to-[var(--color-bg-surface)] border border-purple-500/30 shadow-xl flex flex-col sm:flex-row items-center justify-between gap-6">
+					<div className="p-6 sm:p-8 rounded-3xl bg-gradient-to-r from-cyan-900/30 via-sky-900/20 to-[var(--color-bg-surface)] border border-cyan-500/30 shadow-xl flex flex-col sm:flex-row items-center justify-between gap-6">
 						<div className="space-y-1 text-center sm:text-left">
 							<h3 className="font-['Syne',sans-serif] font-display text-base sm:text-lg font-bold text-white">
 								Ready to start exploring?
@@ -681,7 +681,7 @@ export function TermsClient() {
 						<div className="flex items-center gap-3 shrink-0">
 							<Link
 								href="/explore"
-								className="px-5 py-2.5 rounded-2xl bg-gradient-to-r from-[var(--color-interactive-primary)] to-purple-600 hover:opacity-95 text-white text-xs font-bold transition-all shadow-md active:scale-95"
+								className="px-5 py-2.5 rounded-2xl bg-gradient-to-r from-[var(--color-interactive-primary)] to-cyan-600 hover:opacity-95 text-white text-xs font-bold transition-all shadow-md active:scale-95"
 							>
 								Explore Presets
 							</Link>

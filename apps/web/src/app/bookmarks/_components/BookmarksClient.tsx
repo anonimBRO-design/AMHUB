@@ -55,7 +55,7 @@ export function BookmarksClient({ initialPresets }: BookmarksClientProps) {
 				</div>
 
 				<div className="flex items-center gap-2 text-xs text-[var(--color-text-secondary)] font-medium">
-					<Sparkles className="w-4 h-4 text-purple-400" />
+					<Sparkles className="w-4 h-4 text-cyan-400" />
 					<span>{presets.length} Presets Saved</span>
 				</div>
 			</div>
@@ -112,7 +112,7 @@ export function BookmarksClient({ initialPresets }: BookmarksClientProps) {
 			) : (
 				<div className="flex flex-col items-center justify-center p-12 text-center rounded-3xl bg-[var(--color-bg-surface)] border border-[var(--color-border-subtle)] space-y-3 max-w-md mx-auto my-8 shadow-xl">
 					<div className="p-4 rounded-2xl bg-[var(--color-bg-elevated)] text-[var(--color-text-tertiary)] border border-[var(--color-border-subtle)]">
-						<FolderHeart className="w-8 h-8 text-purple-400" />
+						<FolderHeart className="w-8 h-8 text-cyan-400" />
 					</div>
 					<h3 className="text-base font-bold text-[var(--color-text-primary)]">
 						No bookmarked presets yet

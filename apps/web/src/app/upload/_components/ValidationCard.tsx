@@ -38,13 +38,13 @@ export function ValidationCard({
 			{/* Header */}
 			<div className="flex items-center justify-between border-b border-white/[0.08] pb-3">
 				<div className="flex items-center gap-2">
-					<ShieldCheck className="w-4 h-4 text-purple-400" />
+					<ShieldCheck className="w-4 h-4 text-cyan-400" />
 					<h4 className="font-display text-xs font-bold uppercase tracking-wider text-white">
 						{formatTitle} Validation Checklist
 					</h4>
 				</div>
 				{isValidating && (
-					<div className="flex items-center gap-1.5 text-[11px] font-semibold text-purple-400">
+					<div className="flex items-center gap-1.5 text-[11px] font-semibold text-cyan-400">
 						<Loader2 className="w-3.5 h-3.5 animate-spin" />
 						<span>Validating...</span>
 					</div>
@@ -67,7 +67,7 @@ export function ValidationCard({
 									<XCircle className="w-4 h-4 text-rose-400 shrink-0" />
 								)}
 								{check.status === "loading" && (
-									<Loader2 className="w-4 h-4 text-purple-400 animate-spin shrink-0" />
+									<Loader2 className="w-4 h-4 text-cyan-400 animate-spin shrink-0" />
 								)}
 								{check.status === "idle" && (
 									<div className="w-4 h-4 rounded-full border border-white/20 shrink-0" />

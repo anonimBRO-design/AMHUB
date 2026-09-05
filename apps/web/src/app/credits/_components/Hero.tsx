@@ -4,7 +4,7 @@ export function Hero() {
 	return (
 		<div className="relative overflow-hidden p-6 sm:p-10 rounded-3xl bg-gradient-to-br from-[var(--color-bg-elevated)] via-[var(--color-bg-surface)] to-[var(--color-bg-base)] border border-[var(--color-border-subtle)] text-center space-y-4 shadow-2xl">
 			<div className="absolute -top-24 -left-24 w-72 h-72 bg-[var(--color-interactive-primary)]/15 rounded-full blur-3xl pointer-events-none" />
-			<div className="absolute -bottom-24 -right-24 w-72 h-72 bg-purple-500/15 rounded-full blur-3xl pointer-events-none" />
+			<div className="absolute -bottom-24 -right-24 w-72 h-72 bg-cyan-500/15 rounded-full blur-3xl pointer-events-none" />
 
 			<div className="relative z-10 space-y-4 max-w-xl mx-auto flex flex-col items-center">
 				<img

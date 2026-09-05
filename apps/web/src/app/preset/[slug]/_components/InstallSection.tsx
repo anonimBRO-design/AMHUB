@@ -271,7 +271,7 @@ export function InstallSection({ preset }: InstallSectionProps) {
 							className="inline-flex items-center justify-center gap-2 min-h-[48px] px-5 rounded-lg bg-[var(--color-bg-elevated)] text-[var(--color-text-primary)] font-bold text-sm border border-[var(--color-border-subtle)] hover:border-emerald-500/40 hover:bg-emerald-500/5 active:scale-[0.98] transition-all"
 						>
 							{preset.fileType === "qr" ? (
-								<QrCode className="w-4.5 h-4.5 text-purple-400" />
+								<QrCode className="w-4.5 h-4.5 text-cyan-400" />
 							) : (
 								<FileCode className="w-4.5 h-4.5 text-emerald-400" />
 							)}
@@ -323,7 +323,7 @@ export function InstallSection({ preset }: InstallSectionProps) {
 			{/* Mobile Quick Guide */}
 			<div className="p-4 rounded-lg bg-[var(--color-bg-base)]/60 border border-[var(--color-border-subtle)]/60 space-y-2">
 				<div className="flex items-center gap-2 text-xs font-bold text-[var(--color-text-primary)]">
-					<Smartphone className="w-4 h-4 text-indigo-400" />
+					<Smartphone className="w-4 h-4 text-sky-400" />
 					<span>Cara Pasang Preset di Alight Motion:</span>
 				</div>
 				<ol className="list-decimal list-inside text-xs text-[var(--color-text-secondary)] space-y-1.5 leading-relaxed pl-1">

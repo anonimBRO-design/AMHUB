@@ -137,7 +137,7 @@ export function ProfileClient({
 			{activeTab === "collections" && (
 				<section className="p-8 text-center rounded-3xl bg-[var(--color-bg-surface)] border border-[var(--color-border-subtle)] space-y-3">
 					<div className="p-3 rounded-2xl bg-[var(--color-bg-elevated)] text-[var(--color-text-tertiary)] w-fit mx-auto">
-						<Sparkles className="w-6 h-6 text-purple-400" />
+						<Sparkles className="w-6 h-6 text-cyan-400" />
 					</div>
 					<h3 className="text-base font-bold text-[var(--color-text-primary)]">
 						Public Collections

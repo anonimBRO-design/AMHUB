@@ -251,8 +251,8 @@ export function Hero({ preset, currentUserId }: HeroProps) {
 							className="absolute inset-0 w-full h-full object-contain"
 						/>
 					) : (
-						<div className="absolute inset-0 bg-gradient-to-br from-purple-950/80 via-indigo-950/60 to-black flex items-center justify-center">
-							<Sparkles className="w-16 h-16 text-purple-400 opacity-40 animate-pulse" />
+						<div className="absolute inset-0 bg-gradient-to-br from-cyan-950/80 via-sky-950/60 to-black flex items-center justify-center">
+							<Sparkles className="w-16 h-16 text-cyan-400 opacity-40 animate-pulse" />
 						</div>
 					)}
 
@@ -306,7 +306,7 @@ export function Hero({ preset, currentUserId }: HeroProps) {
 								className="relative w-full h-1.5 hover:h-2.5 bg-white/20 rounded-full cursor-pointer mb-2.5 transition-all overflow-hidden"
 							>
 								<div
-									className="absolute top-0 left-0 bottom-0 bg-gradient-to-r from-purple-500 to-[var(--color-interactive-primary)] rounded-full transition-[width] duration-75"
+									className="absolute top-0 left-0 bottom-0 bg-gradient-to-r from-cyan-500 to-[var(--color-interactive-primary)] rounded-full transition-[width] duration-75"
 									style={{
 										width: `${duration ? (currentTime / duration) * 100 : 0}%`,
 									}}

@@ -26,7 +26,7 @@ export function CreatorSection({ creators = [] }: CreatorSectionProps) {
 			<section className="space-y-4">
 				<div className="flex items-center justify-between px-1">
 					<div className="flex items-center gap-2">
-						<div className="p-1.5 rounded-lg bg-purple-500/10 text-purple-400 border border-purple-500/20">
+						<div className="p-1.5 rounded-lg bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">
 							<Users className="w-4 h-4" />
 						</div>
 						<h2 className="font-display text-lg sm:text-xl font-bold tracking-tight text-[var(--color-text-primary)]">
@@ -79,7 +79,7 @@ export function CreatorSection({ creators = [] }: CreatorSectionProps) {
 						href={`/u/${creator.username}`}
 						className="group flex items-center gap-3.5 p-4 rounded-xl bg-[var(--color-bg-surface)] border border-[var(--color-border-subtle)] hover:bg-[var(--color-bg-elevated)] hover:border-[var(--color-border-strong)] transition-all duration-300 active:scale-[0.98] shadow-sm"
 					>
-						<div className="relative h-12 w-12 rounded-xl overflow-hidden border-2 border-purple-500/40 shrink-0 bg-purple-900/30">
+						<div className="relative h-12 w-12 rounded-xl overflow-hidden border-2 border-cyan-500/40 shrink-0 bg-cyan-900/30">
 							{creator.avatar_url ? (
 								<img
 									src={creator.avatar_url}
@@ -87,7 +87,7 @@ export function CreatorSection({ creators = [] }: CreatorSectionProps) {
 									className="w-full h-full object-cover group-hover:scale-105 transition-transform"
 								/>
 							) : (
-								<div className="w-full h-full bg-purple-600/40 flex items-center justify-center text-white font-bold text-sm">
+								<div className="w-full h-full bg-cyan-600/40 flex items-center justify-center text-white font-bold text-sm">
 									{creator.display_name?.slice(0, 2).toUpperCase()}
 								</div>
 							)}
@@ -98,7 +98,7 @@ export function CreatorSection({ creators = [] }: CreatorSectionProps) {
 									{creator.display_name}
 								</h3>
 								{creator.is_verified && (
-									<CheckCircle2 className="w-3.5 h-3.5 text-purple-400 shrink-0" />
+									<CheckCircle2 className="w-3.5 h-3.5 text-cyan-400 shrink-0" />
 								)}
 							</div>
 							<p className="text-xs text-[var(--color-text-tertiary)] font-mono truncate">

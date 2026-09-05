@@ -68,7 +68,7 @@ export function RecentActivity() {
 			case "follow":
 				return {
 					icon: UserPlus,
-					color: "text-purple-400 bg-purple-500/10 border-purple-500/20",
+					color: "text-cyan-400 bg-cyan-500/10 border-cyan-500/20",
 				};
 			case "comment":
 				return {

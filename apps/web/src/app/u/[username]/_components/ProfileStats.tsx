@@ -20,13 +20,13 @@ export function ProfileStats({
 			label: "Presets",
 			value: presetCount,
 			icon: Grid,
-			color: "text-indigo-400",
+			color: "text-sky-400",
 		},
 		{
 			label: "Followers",
 			value: followerCount,
 			icon: Users,
-			color: "text-purple-400",
+			color: "text-cyan-400",
 		},
 		{
 			label: "Following",
