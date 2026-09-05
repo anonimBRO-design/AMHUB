@@ -63,6 +63,12 @@ export function ExploreClient({ presets }: ExploreClientProps) {
 						>
 							Jelajahi Kreator
 						</a>
+						<a
+							href="/challenges"
+							className="px-4 py-1.5 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 text-white/70 hover:text-white text-xs font-semibold transition-all"
+						>
+							Challenge
+						</a>
 					</div>
 				</div>
 

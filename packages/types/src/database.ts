@@ -387,6 +387,102 @@ export interface Database {
 					},
 				];
 			};
+			challenges: {
+				Row: {
+					id: string;
+					title: string;
+					description: Nullable<string>;
+					theme: Nullable<string>;
+					cover_url: Nullable<string>;
+					prize_text: Nullable<string>;
+					starts_at: string;
+					ends_at: string;
+					is_active: boolean;
+					created_at: string;
+					updated_at: string;
+				};
+				Insert: {
+					id?: string;
+					title: string;
+					description?: Nullable<string>;
+					theme?: Nullable<string>;
+					cover_url?: Nullable<string>;
+					prize_text?: Nullable<string>;
+					starts_at?: string;
+					ends_at: string;
+					is_active?: boolean;
+					created_at?: string;
+					updated_at?: string;
+				};
+				Update: Partial<Database["public"]["Tables"]["challenges"]["Insert"]>;
+				Relationships: [];
+			};
+			challenge_entries: {
+				Row: {
+					id: string;
+					challenge_id: string;
+					preset_id: string;
+					creator_id: string;
+					created_at: string;
+				};
+				Insert: {
+					id?: string;
+					challenge_id: string;
+					preset_id: string;
+					creator_id: string;
+					created_at?: string;
+				};
+				Update: Partial<
+					Database["public"]["Tables"]["challenge_entries"]["Insert"]
+				>;
+				Relationships: [
+					{
+						foreignKeyName: "challenge_entries_challenge_id_fkey";
+						columns: ["challenge_id"];
+						referencedRelation: "challenges";
+						referencedColumns: ["id"];
+					},
+					{
+						foreignKeyName: "challenge_entries_preset_id_fkey";
+						columns: ["preset_id"];
+						referencedRelation: "presets";
+						referencedColumns: ["id"];
+					},
+				];
+			};
+			challenge_votes: {
+				Row: {
+					id: string;
+					challenge_id: string;
+					preset_id: string;
+					voter_id: string;
+					created_at: string;
+				};
+				Insert: {
+					id?: string;
+					challenge_id: string;
+					preset_id: string;
+					voter_id: string;
+					created_at?: string;
+				};
+				Update: Partial<
+					Database["public"]["Tables"]["challenge_votes"]["Insert"]
+				>;
+				Relationships: [
+					{
+						foreignKeyName: "challenge_votes_challenge_id_fkey";
+						columns: ["challenge_id"];
+						referencedRelation: "challenges";
+						referencedColumns: ["id"];
+					},
+					{
+						foreignKeyName: "challenge_votes_preset_id_fkey";
+						columns: ["preset_id"];
+						referencedRelation: "presets";
+						referencedColumns: ["id"];
+					},
+				];
+			};
 			collections: {
 				Row: {
 					id: string;
@@ -788,6 +884,9 @@ export type PresetDownload = Tables<"preset_downloads">;
 export type PresetOrder = Tables<"preset_orders">;
 export type PresetTag = Tables<"preset_tags">;
 export type PresetLike = Tables<"preset_likes">;
+export type Challenge = Tables<"challenges">;
+export type ChallengeEntry = Tables<"challenge_entries">;
+export type ChallengeVote = Tables<"challenge_votes">;
 export type Bookmark = Tables<"preset_bookmarks">;
 export type Collection = Tables<"collections">;
 export type CollectionItem = Tables<"collection_items">;
