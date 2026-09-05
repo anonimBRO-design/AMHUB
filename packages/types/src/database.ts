@@ -581,6 +581,84 @@ export interface Database {
 					},
 				];
 			};
+			custom_requests: {
+				Row: {
+					id: string;
+					requester_id: string;
+					title: string;
+					description: string;
+					budget_min: number;
+					budget_max: number;
+					deadline_at: Nullable<string>;
+					status: "open" | "in_progress" | "completed" | "cancelled";
+					created_at: string;
+					updated_at: string;
+				};
+				Insert: {
+					id?: string;
+					requester_id: string;
+					title: string;
+					description: string;
+					budget_min?: number;
+					budget_max: number;
+					deadline_at?: Nullable<string>;
+					status?: "open" | "in_progress" | "completed" | "cancelled";
+					created_at?: string;
+					updated_at?: string;
+				};
+				Update: Partial<
+					Database["public"]["Tables"]["custom_requests"]["Insert"]
+				>;
+				Relationships: [
+					{
+						foreignKeyName: "custom_requests_requester_id_fkey";
+						columns: ["requester_id"];
+						referencedRelation: "users";
+						referencedColumns: ["id"];
+					},
+				];
+			};
+			request_offers: {
+				Row: {
+					id: string;
+					request_id: string;
+					creator_id: string;
+					price: number;
+					message: Nullable<string>;
+					eta_days: Nullable<number>;
+					status: "pending" | "accepted" | "rejected" | "withdrawn";
+					created_at: string;
+					updated_at: string;
+				};
+				Insert: {
+					id?: string;
+					request_id: string;
+					creator_id: string;
+					price: number;
+					message?: Nullable<string>;
+					eta_days?: Nullable<number>;
+					status?: "pending" | "accepted" | "rejected" | "withdrawn";
+					created_at?: string;
+					updated_at?: string;
+				};
+				Update: Partial<
+					Database["public"]["Tables"]["request_offers"]["Insert"]
+				>;
+				Relationships: [
+					{
+						foreignKeyName: "request_offers_request_id_fkey";
+						columns: ["request_id"];
+						referencedRelation: "custom_requests";
+						referencedColumns: ["id"];
+					},
+					{
+						foreignKeyName: "request_offers_creator_id_fkey";
+						columns: ["creator_id"];
+						referencedRelation: "users";
+						referencedColumns: ["id"];
+					},
+				];
+			};
 			follows: {
 				Row: {
 					follower_id: string;
@@ -919,6 +997,8 @@ export type PresetLike = Tables<"preset_likes">;
 export type Challenge = Tables<"challenges">;
 export type ChallengeEntry = Tables<"challenge_entries">;
 export type ChallengeVote = Tables<"challenge_votes">;
+export type CustomRequest = Tables<"custom_requests">;
+export type RequestOffer = Tables<"request_offers">;
 export type Bookmark = Tables<"preset_bookmarks">;
 export type Collection = Tables<"collections">;
 export type CollectionItem = Tables<"collection_items">;
