@@ -34,9 +34,7 @@ function LayoutShellInner({
 	const isHomePage = pathname === "/home";
 	const showBackButton = !isWelcomePage && !isHomePage;
 
-	const isDarkLiquid = theme === "dark-liquid";
-	const isLightLiquid = theme === "light-liquid";
-	const isNormal = theme === "normal";
+	const isLight = theme === "light";
 
 	const handleBackClick = () => {
 		if (typeof window !== "undefined" && window.history.length > 1) {
@@ -97,53 +95,20 @@ function LayoutShellInner({
 
 	return (
 		<div className="relative min-h-screen max-w-full overflow-hidden transition-colors duration-500">
-			{/* Dynamic Theme Wallpaper Background (Desktop Landscape) */}
-			{!isNormal && (
-				<>
-					<div
-						className="fixed inset-0 pointer-events-none z-0 bg-cover bg-center bg-no-repeat transition-all duration-700 opacity-90 hidden sm:block"
-						style={{
-							backgroundImage: isDarkLiquid
-								? "url('/wallpapers/liquid-dark.png')"
-								: "url('/wallpapers/liquid-light.png')",
-						}}
-					/>
-					{/* Dynamic Theme Wallpaper Background (Mobile Portrait) */}
-					<div
-						className="fixed inset-0 pointer-events-none z-0 bg-cover bg-center bg-no-repeat transition-all duration-700 opacity-95 sm:hidden"
-						style={{
-							backgroundImage: isDarkLiquid
-								? "url('/wallpapers/liquid-dark-mobile.png')"
-								: "url('/wallpapers/liquid-light-mobile.png')",
-						}}
-					/>
-					{/* Subtle Spatial Tint Overlay */}
-					<div
-						className={`fixed inset-0 pointer-events-none z-0 transition-opacity duration-700 ${
-							isLightLiquid ? "bg-white/15" : "bg-black/35"
-						}`}
-					/>
-				</>
-			)}
-
 			{/* iOS 27 Spatial Ambient Lighting Orbs */}
 			<div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
 				<div
 					className={`absolute -top-40 -left-40 w-[500px] h-[500px] rounded-full blur-[120px] animate-float-ambient ${
-						isDarkLiquid
-							? "bg-gradient-to-tr from-cyan-600/25 to-sky-600/20"
-							: isLightLiquid
-								? "bg-gradient-to-tr from-cyan-400/20 to-sky-300/15"
-								: "bg-gradient-to-tr from-cyan-600/10 to-transparent"
+						isLight
+							? "bg-gradient-to-tr from-cyan-400/20 to-sky-300/15"
+							: "bg-gradient-to-tr from-cyan-600/25 to-sky-600/20"
 					}`}
 				/>
 				<div
 					className={`absolute top-1/3 -right-40 w-[600px] h-[600px] rounded-full blur-[140px] animate-float-ambient ${
-						isDarkLiquid
-							? "bg-gradient-to-bl from-fuchsia-600/20 to-cyan-800/25"
-							: isLightLiquid
-								? "bg-gradient-to-bl from-cyan-400/15 to-pink-300/15"
-								: "bg-gradient-to-bl from-sky-600/10 to-transparent"
+						isLight
+							? "bg-gradient-to-bl from-cyan-400/15 to-pink-300/15"
+							: "bg-gradient-to-bl from-fuchsia-600/20 to-cyan-800/25"
 					}`}
 					style={{ animationDelay: "4s" }}
 				/>

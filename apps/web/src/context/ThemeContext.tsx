@@ -3,7 +3,7 @@
 import type React from "react";
 import { createContext, useContext, useEffect, useState } from "react";
 
-export type ThemeMode = "normal" | "dark-liquid" | "light-liquid";
+export type ThemeMode = "dark" | "light";
 
 interface ThemeContextType {
 	theme: ThemeMode;
@@ -13,23 +13,25 @@ interface ThemeContextType {
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
-const THEME_STORAGE_KEY = "amhub_theme_mode_v2";
+const THEME_STORAGE_KEY = "amhub_theme_mode_v3";
+
+function normalizeSavedTheme(saved: string | null): ThemeMode {
+	if (saved === "light" || saved === "light-liquid") return "light";
+	return "dark";
+}
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-	const [theme, setThemeState] = useState<ThemeMode>("dark-liquid");
+	const [theme, setThemeState] = useState<ThemeMode>("dark");
 	const [mounted, setMounted] = useState(false);
 
 	useEffect(() => {
 		try {
-			const saved = localStorage.getItem(THEME_STORAGE_KEY) as ThemeMode | null;
-			if (saved && ["normal", "dark-liquid", "light-liquid"].includes(saved)) {
-				setThemeState(saved);
-				applyThemeToDOM(saved);
-			} else {
-				applyThemeToDOM("dark-liquid");
-			}
+			const saved = localStorage.getItem(THEME_STORAGE_KEY);
+			const mode = normalizeSavedTheme(saved);
+			setThemeState(mode);
+			applyThemeToDOM(mode);
 		} catch {
-			applyThemeToDOM("dark-liquid");
+			applyThemeToDOM("dark");
 		}
 		setMounted(true);
 	}, []);
@@ -38,11 +40,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 		if (typeof document === "undefined") return;
 		document.documentElement.setAttribute("data-theme", mode);
 		document.documentElement.classList.remove("dark", "light");
-		if (mode === "light-liquid") {
-			document.documentElement.classList.add("light");
-		} else {
-			document.documentElement.classList.add("dark");
-		}
+		document.documentElement.classList.add(mode);
 	};
 
 	const setTheme = (mode: ThemeMode) => {
@@ -54,16 +52,12 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
 	};
 
 	const toggleTheme = () => {
-		let next: ThemeMode = "normal";
-		if (theme === "normal") next = "dark-liquid";
-		else if (theme === "dark-liquid") next = "light-liquid";
-		else next = "normal";
-		setTheme(next);
+		setTheme(theme === "dark" ? "light" : "dark");
 	};
 
 	return (
 		<ThemeContext.Provider
-			value={{ theme: mounted ? theme : "normal", setTheme, toggleTheme }}
+			value={{ theme: mounted ? theme : "dark", setTheme, toggleTheme }}
 		>
 			{children}
 		</ThemeContext.Provider>

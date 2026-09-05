@@ -56,7 +56,7 @@ export default async function RootLayout({
 		: 0;
 
 	return (
-		<html lang="en" data-theme="dark-liquid">
+		<html lang="en" data-theme="dark">
 			<body className="bg-[#08070c] text-[var(--color-text-primary)] antialiased transition-colors duration-500 selection:bg-cyan-500/30 selection:text-white">
 				<PostHogProvider currentUser={currentUser}>
 					<LayoutShell

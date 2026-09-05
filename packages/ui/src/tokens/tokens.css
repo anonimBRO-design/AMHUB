@@ -195,7 +195,7 @@
 	--ease-expo-out: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-/* ─── DARK THEME (Default) ──────────────────────────────────── */
+/* ─── DARK THEME (Normal Dark, default) ───────────────────────── */
 :root {
 	/* Background Colors — Cinema Dark palette */
 	--color-bg-base: #08070c;
@@ -276,76 +276,14 @@
 	--gradient-shimmer: transparent;
 }
 
-/* ─── DARK LIQUID THEME (Cyan Neon Wave Edition) ─────────── */
-[data-theme="dark-liquid"] {
-	/* Background Colors */
-	--color-bg-base: transparent;
-	--color-bg-surface: rgba(22, 7, 44, 0.68);
-	--color-bg-elevated: rgba(34, 12, 66, 0.78);
-	--color-bg-overlay: rgba(6, 2, 12, 0.85);
-	--color-bg-input: rgba(16, 5, 34, 0.75);
-	--color-bg-accent: rgba(0, 200, 255, 0.2);
-	--color-bg-success: rgba(74, 222, 128, 0.15);
-	--color-bg-warning: rgba(251, 191, 36, 0.15);
-	--color-bg-error: rgba(248, 113, 113, 0.15);
-	--color-bg-info: rgba(96, 165, 250, 0.15);
-
-	/* Text Colors */
-	--color-text-primary: #ffffff;
-	--color-text-secondary: #a5f3fc;
-	--color-text-tertiary: #00c8ff;
-	--color-text-disabled: #155e75;
-	--color-text-inverse: #06020c;
-	--color-text-accent: #cffafe;
-	--color-text-success: #4ade80;
-	--color-text-warning: #fbbf24;
-	--color-text-error: #f87171;
-	--color-text-info: #60a5fa;
-
-	/* Border Colors */
-	--color-border-subtle: rgba(0, 229, 255, 0.2);
-	--color-border-default: rgba(0, 229, 255, 0.35);
-	--color-border-strong: rgba(165, 243, 252, 0.55);
-	--color-border-accent: #00e5ff;
-	--color-border-error: #f87171;
-	--color-border-success: #4ade80;
-
-	/* Interactive Colors */
-	--color-interactive-primary: #00c8ff;
-	--color-interactive-primary-hover: #00e5ff;
-	--color-interactive-primary-active: #0099cc;
-	--color-accent-400: #00e5ff;
-	--color-interactive-secondary: rgba(255, 255, 255, 0.08);
-	--color-interactive-secondary-hover: rgba(0, 200, 255, 0.22);
-	--color-interactive-danger: #ef4444;
-	--color-interactive-danger-hover: #f87171;
-
-	/* Liquid Glass Surfaces */
-	--glass-bg: rgba(20, 6, 42, 0.72);
-	--glass-bg-hover: rgba(0, 200, 255, 0.18);
-	--glass-bg-active: rgba(0, 200, 255, 0.28);
-	--glass-border: rgba(0, 229, 255, 0.25);
-	--glass-border-hover: rgba(165, 243, 252, 0.45);
-	--glass-border-strong: rgba(165, 243, 252, 0.7);
-	--glass-blur: 24px;
-	--glass-blur-strong: 32px;
-
-	/* Ambient Glow */
-	--glow-primary: rgba(0, 200, 255, 0.22);
-	--glow-primary-strong: rgba(0, 229, 255, 0.38);
-	--glow-secondary: rgba(0, 200, 255, 0.18);
-	--glow-accent: rgba(236, 72, 153, 0.18);
-}
-
-/* ─── LIGHT LIQUID THEME (Cyan Sky Edition) ────────────── */
-[data-theme="light-liquid"],
+/* ─── LIGHT THEME (Normal Light, solid) ───────────────────────── */
 [data-theme="light"] {
 	/* Background Colors */
-	--color-bg-base: transparent;
-	--color-bg-surface: rgba(255, 255, 255, 0.78);
-	--color-bg-elevated: rgba(255, 255, 255, 0.9);
-	--color-bg-overlay: rgba(23, 8, 46, 0.45);
-	--color-bg-input: rgba(255, 255, 255, 0.85);
+	--color-bg-base: #f8f7fc;
+	--color-bg-surface: #ffffff;
+	--color-bg-elevated: #f0eef5;
+	--color-bg-overlay: rgba(0, 0, 0, 0.5);
+	--color-bg-input: #ffffff;
 	--color-bg-accent: rgba(0, 200, 255, 0.1);
 	--color-bg-success: rgba(34, 197, 94, 0.12);
 	--color-bg-warning: rgba(245, 158, 11, 0.12);
@@ -353,11 +291,11 @@
 	--color-bg-info: rgba(59, 130, 246, 0.12);
 
 	/* Text Colors — High Contrast */
-	--color-text-primary: #090214;
-	--color-text-secondary: #0c4a6e;
-	--color-text-tertiary: #155e75;
-	--color-text-disabled: #00b8e6;
-	--color-text-inverse: #ffffff;
+	--color-text-primary: #0c0b0f;
+	--color-text-secondary: #4a4260;
+	--color-text-tertiary: #8878a0;
+	--color-text-disabled: #c8c3de;
+	--color-text-inverse: #f2eff9;
 	--color-text-accent: #0099cc;
 	--color-text-success: #15803d;
 	--color-text-warning: #b45309;
@@ -377,20 +315,20 @@
 	--color-interactive-primary-hover: #0099cc;
 	--color-interactive-primary-active: #0077a3;
 	--color-accent-400: #00e5ff;
-	--color-interactive-secondary: rgba(255, 255, 255, 0.75);
-	--color-interactive-secondary-hover: rgba(255, 255, 255, 0.95);
+	--color-interactive-secondary: #f0eef5;
+	--color-interactive-secondary-hover: #e2dff0;
 	--color-interactive-danger: #ef4444;
 	--color-interactive-danger-hover: #dc2626;
 
-	/* Liquid Glass Surfaces */
-	--glass-bg: rgba(255, 255, 255, 0.82);
-	--glass-bg-hover: rgba(255, 255, 255, 0.95);
-	--glass-bg-active: #ffffff;
-	--glass-border: rgba(255, 255, 255, 0.95);
-	--glass-border-hover: rgba(0, 200, 255, 0.4);
-	--glass-border-strong: rgba(0, 200, 255, 0.6);
-	--glass-blur: 24px;
-	--glass-blur-strong: 32px;
+	/* Solid Surfaces */
+	--glass-bg: #ffffff;
+	--glass-bg-hover: #f0eef5;
+	--glass-bg-active: #e2dff0;
+	--glass-border: #e2dff0;
+	--glass-border-hover: #c8c3de;
+	--glass-border-strong: #9990b0;
+	--glass-blur: 0px;
+	--glass-blur-strong: 0px;
 
 	/* Ambient Glow */
 	--glow-primary: rgba(0, 200, 255, 0.1);
