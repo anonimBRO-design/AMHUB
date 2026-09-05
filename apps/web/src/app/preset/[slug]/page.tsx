@@ -1,5 +1,6 @@
 import { listComments } from "@/dal/comments.dal";
 import { checkUserPresetAccess } from "@/dal/orders.dal";
+import { getRemixParent, listRemixChildren } from "@/dal/presets.dal";
 import { getFollowerCount } from "@/dal/users.dal";
 import { getPresetBySlug, listPublishedPresets } from "@/data/presets";
 import { mapPresetToCardPreset } from "@/lib/mappers";
@@ -138,6 +139,15 @@ export default async function PresetDetailPage({ params }: PageProps) {
 		.slice(0, 8)
 		.map(mapPresetToCardPreset);
 
+	const remixParent = (rawPreset as { remixed_from_id?: string | null })
+		.remixed_from_id
+		? await getRemixParent(
+				supabase,
+				(rawPreset as { remixed_from_id: string }).remixed_from_id,
+			)
+		: null;
+	const remixChildren = await listRemixChildren(supabase, rawPreset.id, 6);
+
 	const initialComments = (commentsRes.items ?? []).map((c: any) => {
 		const item = c as unknown as {
 			id: string;
@@ -174,6 +184,9 @@ export default async function PresetDetailPage({ params }: PageProps) {
 			relatedPresets={relatedPresets}
 			comments={initialComments}
 			currentUserId={currentUser?.id}
+			remixParent={remixParent}
+			remixChildren={remixChildren.items}
+			remixChildrenTotal={remixChildren.total}
 		/>
 	);
 }

@@ -1,5 +1,5 @@
 import { notifyFollowersNewPreset } from "@/dal/notifications.dal";
-import { createPreset, listPresets } from "@/dal/presets.dal";
+import { createPreset, listPresets, resolvePresetRef } from "@/dal/presets.dal";
 import { awardUserXp } from "@/dal/users.dal";
 import { normalizeAmVersion } from "@/lib/am-version";
 import { requireApiProfile } from "@/lib/api/auth";
@@ -41,6 +41,8 @@ const createPresetSchema = z
 		is_paid: z.boolean().default(false),
 		currency: z.string().default("IDR"),
 		commercial_price: z.number().min(0).max(10000000).default(0),
+		/** Optional remix source: preset uuid, slug, or /preset/<slug> URL */
+		remixed_from: z.string().trim().max(200).optional(),
 		am_version_min: amVersionField("Versi minimal"),
 		am_version_max: amVersionField("Versi maksimal"),
 		device_support: z
@@ -97,7 +99,19 @@ export async function POST(request: NextRequest) {
 			fileType: data.file_type,
 		});
 
-		const preset = await createPreset(supabase, profile.id, data, requestId);
+		// Resolve optional remix source (uuid, slug, or preset URL)
+		let remixedFromId: string | null = null;
+		if (data.remixed_from?.trim()) {
+			remixedFromId = await resolvePresetRef(supabase, data.remixed_from);
+		}
+
+		const { remixed_from: _remixRef, ...presetData } = data;
+		const preset = await createPreset(
+			supabase,
+			profile.id,
+			{ ...presetData, remixed_from_id: remixedFromId },
+			requestId,
+		);
 
 		// Award creator XP for uploading a preset
 		awardUserXp(

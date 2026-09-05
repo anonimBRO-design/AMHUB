@@ -127,6 +127,7 @@ export function UploadWizard() {
 	const [commercialPrice, setCommercialPrice] = useState(0);
 	const [amVersionMin, setAmVersionMin] = useState("");
 	const [amVersionMax, setAmVersionMax] = useState("");
+	const [remixFrom, setRemixFrom] = useState("");
 
 	const isAmVersionRangeValid = () => {
 		const normalizedMin = normalizeAmVersion(amVersionMin);
@@ -543,6 +544,7 @@ export function UploadWizard() {
 						isPaid && commercialPrice >= price ? commercialPrice : 0,
 					am_version_min: normalizeAmVersion(amVersionMin) ?? undefined,
 					am_version_max: normalizeAmVersion(amVersionMax) ?? undefined,
+					remixed_from: remixFrom.trim() || undefined,
 				}),
 			});
 
@@ -678,6 +680,8 @@ export function UploadWizard() {
 						onAmVersionMinChange={setAmVersionMin}
 						amVersionMax={amVersionMax}
 						onAmVersionMaxChange={setAmVersionMax}
+						remixFrom={remixFrom}
+						onRemixFromChange={setRemixFrom}
 					/>
 				)}
 
@@ -689,6 +693,7 @@ export function UploadWizard() {
 						difficulty={difficulty}
 						amVersionMin={formatAmVersion(amVersionMin)}
 						amVersionMax={formatAmVersion(amVersionMax)}
+						remixFrom={remixFrom.trim() || null}
 						selectedFileTypes={selectedFileTypes}
 						presetFile={presetFile}
 						amLink={amLink}

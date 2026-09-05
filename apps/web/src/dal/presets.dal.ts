@@ -31,6 +31,7 @@ export const PRESET_SELECT_WITH_CREATOR = `
 	is_paid,
 	currency,
 	commercial_price,
+	remixed_from_id,
 	like_count,
 	bookmark_count,
 	comment_count,
@@ -71,6 +72,7 @@ export interface CreatePresetData {
 	is_paid?: boolean;
 	currency?: string;
 	commercial_price?: number;
+	remixed_from_id?: string | null;
 	am_version_min?: string;
 	am_version_max?: string;
 	device_support?: ("android" | "ios" | "both")[];
@@ -320,6 +322,113 @@ export async function listPublishedPresets(
 	} catch (error) {
 		console.error("Failed to list published presets:", error);
 		return [];
+	}
+}
+
+export interface RemixNode {
+	id: string;
+	slug: string;
+	title: string;
+	thumbnail_url: string;
+	creator: {
+		id: string;
+		username: string;
+		display_name: string;
+		avatar_url: string | null;
+	};
+}
+
+/**
+ * Resolve a user-supplied remix reference (uuid, slug, or /preset/<slug> URL)
+ * to a published preset id. Returns null when unresolvable.
+ */
+export async function resolvePresetRef(
+	client: DalClient,
+	ref: string,
+): Promise<string | null> {
+	const trimmed = ref.trim();
+	if (!trimmed) return null;
+	const uuidMatch = trimmed.match(
+		/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i,
+	);
+	const slugMatch = trimmed.match(/\/preset\/([A-Za-z0-9-]+)/);
+	const slug =
+		slugMatch?.[1] ??
+		(/^[A-Za-z0-9]+(?:-[A-Za-z0-9]+)*$/.test(trimmed) && !uuidMatch
+			? trimmed
+			: null);
+	try {
+		if (uuidMatch) {
+			const { data } = await client
+				.from("presets")
+				.select("id")
+				.eq("id", trimmed)
+				.eq("status", "published")
+				.maybeSingle();
+			return (data as { id?: string } | null)?.id ?? null;
+		}
+		if (!slug) return null;
+		const { data } = await client
+			.from("presets")
+			.select("id")
+			.eq("slug", slug)
+			.eq("status", "published")
+			.maybeSingle();
+		return (data as { id?: string } | null)?.id ?? null;
+	} catch {
+		return null;
+	}
+}
+
+export async function getRemixParent(
+	client: DalClient,
+	remixedFromId: string,
+): Promise<RemixNode | null> {
+	try {
+		const { data, error } = await client
+			.from("presets")
+			.select(
+				`id, slug, title, thumbnail_url,
+				creator:users!presets_creator_id_fkey (
+					id, username, display_name, avatar_url
+				)`,
+			)
+			.eq("id", remixedFromId)
+			.eq("status", "published")
+			.maybeSingle();
+		if (error || !data) return null;
+		return data as unknown as RemixNode;
+	} catch {
+		return null;
+	}
+}
+
+export async function listRemixChildren(
+	client: DalClient,
+	presetId: string,
+	limit = 6,
+): Promise<{ items: RemixNode[]; total: number }> {
+	try {
+		const { data, count, error } = await client
+			.from("presets")
+			.select(
+				`id, slug, title, thumbnail_url,
+				creator:users!presets_creator_id_fkey (
+					id, username, display_name, avatar_url
+				)`,
+				{ count: "exact" },
+			)
+			.eq("remixed_from_id", presetId)
+			.eq("status", "published")
+			.order("created_at", { ascending: false })
+			.limit(limit);
+		if (error) return { items: [], total: 0 };
+		return {
+			items: (data ?? []) as unknown as RemixNode[],
+			total: count ?? 0,
+		};
+	} catch {
+		return { items: [], total: 0 };
 	}
 }
 

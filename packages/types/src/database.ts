@@ -183,6 +183,7 @@ export interface Database {
 					is_paid: boolean;
 					currency: string;
 					commercial_price: number;
+					remixed_from_id: Nullable<string>;
 					view_count: number;
 					like_count: number;
 					bookmark_count: number;
@@ -220,6 +221,7 @@ export interface Database {
 					is_paid?: boolean;
 					currency?: string;
 					commercial_price?: number;
+					remixed_from_id?: Nullable<string>;
 					view_count?: number;
 					like_count?: number;
 					bookmark_count?: number;

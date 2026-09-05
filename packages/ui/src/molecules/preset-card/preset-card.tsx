@@ -53,6 +53,7 @@ export interface PresetCardPreset {
 	isPaid?: boolean;
 	currency?: string;
 	commercialPrice?: number;
+	remixedFromId?: string | null;
 }
 
 const PRESET_PLACEHOLDER_SVG =

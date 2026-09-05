@@ -32,6 +32,7 @@ export type PresetWithCreator = {
 	is_paid?: boolean;
 	currency?: string;
 	commercial_price?: number;
+	remixed_from_id?: string | null;
 	view_count: number;
 	like_count: number;
 	bookmark_count: number;

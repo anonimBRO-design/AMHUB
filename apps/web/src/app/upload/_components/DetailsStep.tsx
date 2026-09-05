@@ -37,6 +37,8 @@ interface DetailsStepProps {
 	onAmVersionMinChange: (version: string) => void;
 	amVersionMax: string;
 	onAmVersionMaxChange: (version: string) => void;
+	remixFrom: string;
+	onRemixFromChange: (value: string) => void;
 }
 
 const CATEGORIES = [
@@ -78,6 +80,8 @@ export function DetailsStep({
 	onAmVersionMinChange,
 	amVersionMax,
 	onAmVersionMaxChange,
+	remixFrom,
+	onRemixFromChange,
 }: DetailsStepProps) {
 	// Payout estimation (QRIS 0.7% fee + 90:10 split)
 	const qrisFee = Math.max(0, Math.round(price * 0.007));
@@ -505,6 +509,24 @@ export function DetailsStep({
 				</div>
 				<p className="text-[11px] text-[var(--color-text-tertiary)]">
 					Kosongkan bila preset cocok untuk semua versi.
+				</p>
+			</div>
+
+			{/* Remix Source (optional attribution) */}
+			<div className="space-y-2">
+				<span className="block text-xs font-bold uppercase tracking-wider text-[var(--color-text-secondary)]">
+					Remix Dari (Opsional)
+				</span>
+				<input
+					id="upload-remix-from-input"
+					type="text"
+					value={remixFrom}
+					onChange={(e) => onRemixFromChange(e.target.value)}
+					placeholder="Tempel link /preset/slug preset asli"
+					className="w-full min-h-[44px] px-4 rounded-2xl bg-[var(--color-bg-base)] border border-[var(--color-border-subtle)] text-sm font-mono text-[var(--color-text-primary)] placeholder:text-[var(--color-text-tertiary)] placeholder:font-sans focus:outline-none focus:border-[var(--color-interactive-primary)]"
+				/>
+				<p className="text-[11px] text-[var(--color-text-tertiary)]">
+					Preset asli otomatis mendapat atribusi di halaman presetmu.
 				</p>
 			</div>
 		</div>

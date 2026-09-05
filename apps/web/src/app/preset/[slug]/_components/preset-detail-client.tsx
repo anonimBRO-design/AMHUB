@@ -11,6 +11,7 @@ import { Hero } from "./Hero";
 import { InstallSection } from "./InstallSection";
 import { PresetStats } from "./PresetStats";
 import { RelatedPresets } from "./RelatedPresets";
+import { RemixCard, type RemixNodeData } from "./RemixCard";
 import { StickyActionBar } from "./StickyActionBar";
 import { TagList } from "./TagList";
 
@@ -42,6 +43,9 @@ interface PresetDetailClientProps {
 	relatedPresets: PresetCardPreset[];
 	comments?: CommentItem[];
 	currentUserId?: string;
+	remixParent?: RemixNodeData | null;
+	remixChildren?: RemixNodeData[];
+	remixChildrenTotal?: number;
 }
 
 export function PresetDetailClient({
@@ -49,6 +53,9 @@ export function PresetDetailClient({
 	relatedPresets,
 	comments = [],
 	currentUserId,
+	remixParent = null,
+	remixChildren = [],
+	remixChildrenTotal = 0,
 }: PresetDetailClientProps) {
 	const router = useRouter();
 
@@ -99,6 +106,11 @@ export function PresetDetailClient({
 						comments={preset.commentCount ?? 0}
 					/>
 					<TagList preset={preset} />
+					<RemixCard
+						parent={remixParent}
+						remixes={remixChildren}
+						totalChildren={remixChildrenTotal}
+					/>
 					<CommentSection
 						presetId={preset.id}
 						initialComments={comments}

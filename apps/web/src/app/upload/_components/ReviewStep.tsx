@@ -24,6 +24,7 @@ interface ReviewStepProps {
 	isPaid?: boolean;
 	price?: number;
 	commercialPrice?: number;
+	remixFrom?: string | null;
 	amVersionMin?: string | null;
 	amVersionMax?: string | null;
 }
@@ -42,6 +43,7 @@ export function ReviewStep({
 	isPaid = false,
 	price = 0,
 	commercialPrice = 0,
+	remixFrom = null,
 	amVersionMin = null,
 	amVersionMax = null,
 }: ReviewStepProps) {
@@ -200,6 +202,15 @@ export function ReviewStep({
 							{amVersionMin && amVersionMax
 								? `${amVersionMin} – ${amVersionMax}`
 								: (amVersionMin ?? amVersionMax ?? "Semua versi")}
+						</span>
+					</div>
+
+					<div className="p-3 rounded-2xl bg-[var(--color-bg-surface)] border border-[var(--color-border-subtle)] space-y-1 col-span-2 sm:col-span-1">
+						<span className="text-[var(--color-text-tertiary)] block text-[10px] font-bold uppercase">
+							Remix Dari
+						</span>
+						<span className="font-bold text-[var(--color-text-primary)] font-mono text-[11px] break-all">
+							{remixFrom || "Preset orisinal"}
 						</span>
 					</div>
 
