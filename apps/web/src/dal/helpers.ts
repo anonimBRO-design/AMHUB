@@ -55,10 +55,13 @@ export async function syncPresetCounter(
 
 	const { count, error: countError } = await query;
 
-	if (!countError && count !== null) {
-		await countingClient
-			.from("presets")
-			.update({ [counterColumn]: count } as never)
-			.eq("id", presetId);
+	if (countError) {
+		console.error("[syncPresetCounter] Count error:", countError);
+		throw countError;
 	}
+
+	await countingClient
+		.from("presets")
+		.update({ [counterColumn]: count ?? 0 } as never)
+		.eq("id", presetId);
 }

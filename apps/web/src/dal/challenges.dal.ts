@@ -119,8 +119,9 @@ export async function listChallengeEntries(
 			}));
 
 		return entries.sort((a, b) => b.vote_count - a.vote_count);
-	} catch {
-		return [];
+	} catch (error) {
+		console.error("Failed to list challenge entries:", error);
+		throw error;
 	}
 }
 

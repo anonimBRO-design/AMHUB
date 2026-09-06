@@ -1,6 +1,4 @@
 import { ApiError } from "@/lib/api/errors";
-import { calculateLevelFromXp } from "@/lib/gamification/xp";
-import { createSupabaseServiceClient } from "@/lib/supabase/server";
 import type { Database, UpdateUserProfileInput, User } from "@presethub/types";
 import { assertExists, handleDuplicateKey } from "./helpers";
 import { createNotification } from "./notifications.dal";
@@ -39,12 +37,11 @@ export async function getUserByUsername(
 		const { data: user, error } = await client
 			.from("users")
 			.select(PUBLIC_USER_SELECT)
-			.ilike("username", cleanUsername)
+			.eq("username", cleanUsername)
 			.maybeSingle();
 
-		if (error || !user) {
-			return null;
-		}
+		if (error) throw error;
+		if (!user) return null;
 
 		const validUser = user as unknown as User;
 		const [
@@ -87,7 +84,7 @@ export async function getUserByUsername(
 		};
 	} catch (error) {
 		console.error("Failed to get user by username:", error);
-		return null;
+		throw error;
 	}
 }
 
@@ -99,9 +96,8 @@ export async function getUserByAuthId(client: DalClient, userId: string) {
 			.eq("id", userId)
 			.maybeSingle();
 
-		if (error || !user) {
-			return null;
-		}
+		if (error) throw error;
+		if (!user) return null;
 
 		const validUser = user as unknown as User;
 		const [
@@ -132,7 +128,7 @@ export async function getUserByAuthId(client: DalClient, userId: string) {
 		};
 	} catch (error) {
 		console.error("Failed to get user by auth ID:", error);
-		return null;
+		throw error;
 	}
 }
 
@@ -145,14 +141,15 @@ export async function getUserByUsernameOrNull(
 		const { data, error } = await client
 			.from("users")
 			.select("*")
-			.ilike("username", cleanUsername)
+			.eq("username", cleanUsername)
 			.maybeSingle();
 
-		if (error || !data) return null;
+		if (error) throw error;
+		if (!data) return null;
 		return data;
 	} catch (error) {
 		console.error("Failed to get user by username or null:", error);
-		return null;
+		throw error;
 	}
 }
 
@@ -164,11 +161,12 @@ export async function getUserById(client: DalClient, userId: string) {
 			.eq("id", userId)
 			.single();
 
-		if (error || !data) return null;
+		if (error) throw error;
+		if (!data) return null;
 		return data;
 	} catch (error) {
 		console.error("Failed to get user by id:", error);
-		return null;
+		throw error;
 	}
 }
 
@@ -179,11 +177,11 @@ export async function getFollowerCount(client: DalClient, userId: string) {
 			.select("*", { count: "exact", head: true })
 			.eq("following_id", userId);
 
-		if (error) return 0;
+		if (error) throw error;
 		return count ?? 0;
 	} catch (error) {
 		console.error("Failed to get follower count:", error);
-		return 0;
+		throw error;
 	}
 }
 
@@ -194,11 +192,11 @@ export async function getFollowingCount(client: DalClient, userId: string) {
 			.select("*", { count: "exact", head: true })
 			.eq("follower_id", userId);
 
-		if (error) return 0;
+		if (error) throw error;
 		return count ?? 0;
 	} catch (error) {
 		console.error("Failed to get following count:", error);
-		return 0;
+		throw error;
 	}
 }
 
@@ -501,48 +499,50 @@ export async function awardUserXp(
 ): Promise<{ xp: number; level: number; levelUp: boolean } | null> {
 	if (amount <= 0) return null;
 
-	// xp/level are not writable via the authenticated role (column-level RLS),
-	// so writes must go through a privileged service client when available.
-	let writeClient: DalClient = client;
 	try {
-		writeClient = createSupabaseServiceClient() as DalClient;
-	} catch {
-		// No service key configured; fall back to caller's client.
-	}
+		// Use the SECURITY DEFINER RPC so XP updates bypass RLS without needing
+		// SUPABASE_SERVICE_ROLE_KEY.  The function handles row-locking internally.
+		const MAX_RETRIES = 3;
+		for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
+			// On the first attempt we skip the optimistic-concurrency gate
+			// (p_expected_xp = null) so the DB just locks and increments.
+			// Retries are only needed if we get 0 rows back (concurrent gate miss).
+			type XpResult = {
+				id: string;
+				xp: number;
+				level: number;
+				level_up: boolean;
+			};
+			const { data, error } = await (
+				client.rpc as unknown as (
+					fn: string,
+					args: Record<string, unknown>,
+				) => Promise<{ data: XpResult[] | null; error: unknown }>
+			)("increment_user_xp", {
+				p_user_id: userId,
+				p_amount: amount,
+				p_expected_xp: null,
+			});
 
-	try {
-		const { data: user, error } = await writeClient
-			.from("users")
-			.select("id, xp, level")
-			.eq("id", userId)
-			.maybeSingle();
+			if (error) throw error;
 
-		if (error || !user) {
-			return null;
+			const row = Array.isArray(data) ? data[0] : data;
+			if (row) {
+				return {
+					xp: row.xp as number,
+					level: row.level as number,
+					levelUp: row.level_up as boolean,
+				};
+			}
+			// 0 rows → concurrent gate miss (shouldn't happen with null gate, but be safe)
 		}
 
-		const currentXp = (user as { xp?: number }).xp ?? 0;
-		const currentLevel = (user as { level?: number }).level ?? 1;
-		const newXp = currentXp + amount;
-		const { level: newLevel } = calculateLevelFromXp(newXp);
-		const levelUp = newLevel > currentLevel;
-
-		await writeClient
-			.from("users")
-			.update({
-				xp: newXp,
-				level: newLevel,
-				updated_at: new Date().toISOString(),
-			} as never)
-			.eq("id", userId);
-
-		return {
-			xp: newXp,
-			level: newLevel,
-			levelUp,
-		};
+		throw new ApiError({
+			code: "conflict",
+			message: "Failed to award XP after concurrent updates, please retry.",
+		});
 	} catch (e) {
 		console.error("Failed to award XP:", e);
-		return null;
+		throw e;
 	}
 }

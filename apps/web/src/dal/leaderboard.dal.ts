@@ -60,14 +60,7 @@ export async function getLeaderboardData(
 
 	if (creatorErr || !creatorRows) {
 		console.error("Error fetching creator IDs for leaderboard:", creatorErr);
-		return {
-			period,
-			metric,
-			topThree: [],
-			rankings: [],
-			totalCreators: 0,
-			updatedAt: new Date().toISOString(),
-		};
+		throw creatorErr;
 	}
 
 	const uniqueCreatorIds = Array.from(
@@ -212,7 +205,7 @@ export async function getLeaderboardData(
 		metric,
 		topThree,
 		rankings,
-		totalCreators: ranked.length,
+		totalCreators: uniqueCreatorIds.length,
 		updatedAt: new Date().toISOString(),
 	};
 }

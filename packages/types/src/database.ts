@@ -885,6 +885,19 @@ export interface Database {
 				Args: { user_id?: string };
 				Returns: boolean;
 			};
+			increment_user_xp: {
+				Args: {
+					p_user_id: string;
+					p_amount: number;
+					p_expected_xp?: number | null;
+				};
+				Returns: Array<{
+					id: string;
+					xp: number;
+					level: number;
+					level_up: boolean;
+				}>;
+			};
 		};
 		Enums: {
 			PresetFileType: PresetFileType;

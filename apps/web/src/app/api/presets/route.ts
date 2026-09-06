@@ -36,7 +36,7 @@ const createPresetSchema = z
 		difficulty: z
 			.enum(["beginner", "intermediate", "advanced"])
 			.default("beginner"),
-		status: z.enum(["pending", "published"]).default("published"),
+		status: z.enum(["pending", "published"]).default("pending"),
 		price: z.number().min(0).max(10000000).default(0),
 		is_paid: z.boolean().default(false),
 		currency: z.string().default("IDR"),

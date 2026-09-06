@@ -53,21 +53,26 @@ export async function getCreatorBalance(
 	);
 
 	// 2. Fetch total withdrawals (pending, processing, completed)
-	const { data: withdrawals, error: withdrawError } = await client
-		.from("creator_withdrawals")
-		.select("amount, status")
-		.eq("creator_id", creatorId)
-		.in("status", ["pending", "processing", "completed"]);
+	let totalWithdrawn = 0;
+	try {
+		const { data: withdrawals, error: withdrawError } = await client
+			.from("creator_withdrawals")
+			.select("amount, status")
+			.eq("creator_id", creatorId)
+			.in("status", ["pending", "processing", "completed"]);
 
-	if (withdrawError) {
+		if (withdrawError) {
+			console.warn("Creator withdrawals table query warning:", withdrawError);
+		} else {
+			totalWithdrawn = (withdrawals ?? []).reduce(
+				(sum, w) => sum + Number((w as { amount?: number }).amount ?? 0),
+				0,
+			);
+		}
+	} catch {
 		// Table might not exist if migration hasn't run yet in dev
-		console.warn("Creator withdrawals table query warning:", withdrawError);
+		console.warn("Creator withdrawals table not found.");
 	}
-
-	const totalWithdrawn = (withdrawals ?? []).reduce(
-		(sum, w) => sum + Number((w as { amount?: number }).amount ?? 0),
-		0,
-	);
 
 	const availableBalance = Math.max(
 		0,

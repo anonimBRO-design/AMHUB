@@ -87,39 +87,47 @@ export async function notifyFollowersNewPreset(
 	presetId: string,
 	presetTitle: string,
 ): Promise<number> {
-	try {
-		const { data: followers, error } = await client
-			.from("follows")
-			.select("follower_id")
-			.eq("following_id", creatorId)
-			.limit(1000);
-		if (error || !followers || followers.length === 0) return 0;
+	const { data: followers, error } = await client
+		.from("follows")
+		.select("follower_id")
+		.eq("following_id", creatorId)
+		.limit(1000);
+	if (error || !followers || followers.length === 0) return 0;
 
-		const rows = (followers as { follower_id: string }[])
-			.map((f) => f.follower_id)
-			.filter((id) => id && id !== creatorId)
-			.map((followerId) => ({
-				user_id: followerId,
-				actor_id: creatorId,
-				type: "new_preset",
-				preset_id: presetId,
-				message: `merilis preset baru: ${presetTitle}`,
-				is_read: false,
-			}));
+	const followerIds = (followers as { follower_id: string }[])
+		.map((f) => f.follower_id)
+		.filter((id) => id && id !== creatorId);
 
-		if (rows.length === 0) return 0;
+	if (followerIds.length === 0) return 0;
+
+	const BATCH_SIZE = 100;
+	let inserted = 0;
+
+	for (let i = 0; i < followerIds.length; i += BATCH_SIZE) {
+		const batch = followerIds.slice(i, i + BATCH_SIZE);
+		const rows = batch.map((followerId) => ({
+			user_id: followerId,
+			actor_id: creatorId,
+			type: "new_preset",
+			preset_id: presetId,
+			message: `merilis preset baru: ${presetTitle}`,
+			is_read: false,
+		}));
+
 		const { error: insertError } = await client
 			.from("notifications")
 			.insert(rows as never);
 		if (insertError) {
-			console.error("Failed fan-out new_preset notifications:", insertError);
-			return 0;
+			console.error(
+				`Failed fan-out new_preset notifications batch ${i / BATCH_SIZE}:`,
+				insertError,
+			);
+			continue;
 		}
-		return rows.length;
-	} catch (error) {
-		console.error("Error fan-out new_preset notifications:", error);
-		return 0;
+		inserted += batch.length;
 	}
+
+	return inserted;
 }
 
 export async function listNotifications(
@@ -135,23 +143,12 @@ export async function listNotifications(
 			.order("created_at", { ascending: false })
 			.limit(limit);
 
-		if (error) {
-			// Fallback if join relation syntax error
-			const { data: rawData, error: rawError } = await client
-				.from("notifications")
-				.select("*")
-				.eq("user_id", userId)
-				.order("created_at", { ascending: false })
-				.limit(limit);
-
-			if (rawError) return [];
-			return rawData ?? [];
-		}
+		if (error) throw error;
 
 		return data ?? [];
 	} catch (error) {
 		console.error("Failed to list notifications:", error);
-		return [];
+		throw error;
 	}
 }
 

@@ -91,7 +91,6 @@ export async function createPresetOrder(
 		.select("id, order_number, payment_status, license_type")
 		.eq("preset_id", presetId)
 		.eq("buyer_id", buyerId)
-		.eq("payment_status", "paid")
 		.maybeSingle();
 
 	const existingLicense = (

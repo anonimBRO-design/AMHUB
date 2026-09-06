@@ -18,11 +18,11 @@ export async function listUserLikedPresets(
 			.eq("status", "published")
 			.order("created_at", { ascending: false });
 
-		if (error) return [];
+		if (error) throw error;
 		return (data ?? []) as unknown as PresetWithCreator[];
 	} catch (error) {
 		console.error("Failed to list liked presets:", error);
-		return [];
+		throw error;
 	}
 }
 
@@ -93,7 +93,10 @@ export async function unlikePreset(
 		.eq("preset_id", presetId)
 		.eq("user_id", userId);
 
-	if (deleteError) throw deleteError;
+	if (deleteError) {
+		await syncPresetCounter(client, presetId, "preset_likes", "like_count");
+		throw deleteError;
+	}
 
 	await syncPresetCounter(client, presetId, "preset_likes", "like_count");
 

@@ -121,6 +121,13 @@ export function validateFileMetadata(
 		});
 	}
 
+	if (!file.filename || file.filename.trim().length === 0) {
+		throw new ApiError({
+			code: "bad_request",
+			message: "Filename is required.",
+		});
+	}
+
 	if (file.size > constraints.maxBytes) {
 		throw new ApiError({
 			code: "payload_too_large",
@@ -179,6 +186,14 @@ export function validateXmlSafety(xmlContent: string): {
 		};
 	}
 
+	// 1.5 Check for CDATA sections (can bypass DTD checks)
+	if (/<!\[CDATA\[/i.test(xmlContent)) {
+		return {
+			safe: false,
+			reason: "XML contains prohibited CDATA sections.",
+		};
+	}
+
 	// 2. Check for external resource references
 	if (/SYSTEM\s+["']/i.test(xmlContent) || /PUBLIC\s+["']/i.test(xmlContent)) {
 		return {
@@ -217,7 +232,7 @@ const MIME_TO_EXT: Record<string, string> = {
 	"image/webp": "webp",
 	"application/xml": "xml",
 	"text/xml": "xml",
-	"text/plain": "xml",
+	"text/plain": "txt",
 	"video/mp4": "mp4",
 	"video/webm": "webm",
 	"video/quicktime": "mov",

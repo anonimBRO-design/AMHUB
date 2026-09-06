@@ -51,7 +51,7 @@ export async function listRequests(
 			.order("created_at", { ascending: false });
 		if (params.status) query = query.eq("status", params.status);
 		const { data, error } = await query;
-		if (error) return [];
+		if (error) throw error;
 		return (
 			(data ?? []) as unknown as (Omit<CustomRequestWithMeta, "offer_count"> & {
 				offers: { count: number }[];
@@ -61,8 +61,9 @@ export async function listRequests(
 			offers: undefined,
 			offer_count: r.offers?.[0]?.count ?? 0,
 		})) as unknown as CustomRequestWithMeta[];
-	} catch {
-		return [];
+	} catch (error) {
+		console.error("Failed to list requests:", error);
+		throw error;
 	}
 }
 
@@ -295,6 +296,12 @@ export async function decideOffer(
 			message: "Hanya pemilik request yang bisa memutuskan.",
 		});
 	}
+	if (r.status !== "open" && !isStaff) {
+		throw new ApiError({
+			code: "bad_request",
+			message: "Request ini sudah tidak terbuka.",
+		});
+	}
 
 	const { data: offer } = await client
 		.from("request_offers")
@@ -315,26 +322,60 @@ export async function decideOffer(
 	}
 
 	if (action === "accept") {
-		if (r.status !== "open") {
-			throw new ApiError({
-				code: "bad_request",
-				message: "Request ini sudah tidak terbuka.",
-			});
+		// Atomic gate: only one concurrent accept can move the request
+		// open -> in_progress. The loser gets 0 rows back and aborts
+		// before touching any offer.
+		if (!isStaff) {
+			const { data: gated, error: gateError } = await client
+				.from("custom_requests")
+				.update({ status: "in_progress" } as never)
+				.eq("id", requestId)
+				.eq("status", "open")
+				.select("id")
+				.maybeSingle();
+			if (gateError) throw gateError;
+			if (!gated) {
+				throw new ApiError({
+					code: "conflict",
+					message: "Request ini sudah tidak terbuka.",
+				});
+			}
+		} else {
+			await client
+				.from("custom_requests")
+				.update({ status: "in_progress" } as never)
+				.eq("id", requestId);
 		}
-		await client
+		const { data: accepted, error: updateError } = await client
 			.from("request_offers")
 			.update({ status: "accepted" } as never)
-			.eq("id", offerId);
+			.eq("id", offerId)
+			.eq("request_id", requestId)
+			.eq("status", "pending")
+			.select("id")
+			.maybeSingle();
+		if (updateError) throw updateError;
+		if (!accepted) {
+			// Compensation: release the gate so the request doesn't get stuck
+			// in_progress with no accepted offer (e.g. offer withdrawn mid-flight).
+			if (!isStaff) {
+				await client
+					.from("custom_requests")
+					.update({ status: "open" } as never)
+					.eq("id", requestId)
+					.eq("status", "in_progress");
+			}
+			throw new ApiError({
+				code: "conflict",
+				message: "Penawaran sudah tidak valid.",
+			});
+		}
 		await client
 			.from("request_offers")
 			.update({ status: "rejected" } as never)
 			.eq("request_id", requestId)
 			.eq("status", "pending")
 			.neq("id", offerId);
-		await client
-			.from("custom_requests")
-			.update({ status: "in_progress" } as never)
-			.eq("id", requestId);
 		await createNotification(client, {
 			userId: o.creator_id as string,
 			actorId: requesterId,
@@ -342,10 +383,20 @@ export async function decideOffer(
 			message: `menerima penawaranmu Rp ${(o.price ?? 0).toLocaleString("id-ID")}. Segera kerjakan presetnya!`,
 		}).catch(() => null);
 	} else {
-		await client
+		const { data: rejected, error: updateError } = await client
 			.from("request_offers")
 			.update({ status: "rejected" } as never)
-			.eq("id", offerId);
+			.eq("id", offerId)
+			.eq("status", "pending")
+			.select("id")
+			.maybeSingle();
+		if (updateError) throw updateError;
+		if (!rejected) {
+			throw new ApiError({
+				code: "conflict",
+				message: "Penawaran sudah tidak valid.",
+			});
+		}
 	}
 }
 

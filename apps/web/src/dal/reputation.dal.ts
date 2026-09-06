@@ -68,7 +68,9 @@ export async function getCreatorReputation(
 	if (presetIds.length > 0) {
 		const { data: likesData } = await client
 			.from("preset_likes")
-			.select("user_id, users (id, created_at, avatar_url, bio)")
+			.select(
+				"user_id, users (id, created_at, avatar_url, bio, download_count)",
+			)
 			.in("preset_id", presetIds);
 
 		const likeRows = (likesData || []) as unknown as {
@@ -78,26 +80,23 @@ export async function getCreatorReputation(
 				created_at: string;
 				avatar_url: string | null;
 				bio: string | null;
+				download_count?: number;
 			} | null;
 		}[];
 
 		for (const l of likeRows) {
-			if (!l.users) {
-				qualityLikes += 0.5; // fallback
-				continue;
-			}
-			const userSignal: UserActivitySignals = {
-				userId: l.users.id,
-				createdAt: l.users.created_at,
-				hasAvatar: Boolean(l.users.avatar_url),
-				hasBio: Boolean(l.users.bio),
-				downloadCount: 1,
+			const likeUserSignal: UserActivitySignals = {
+				userId: l.user_id,
+				createdAt: l.users?.created_at || new Date().toISOString(),
+				hasAvatar: Boolean(l.users?.avatar_url),
+				hasBio: Boolean(l.users?.bio),
+				downloadCount: l.users?.download_count ?? 0,
 				likeCount: 1,
 				bookmarkCount: 0,
 				presetCount: 0,
 				followingCount: 1,
 			};
-			const evalResult = evaluateFollowerTrust(userSignal);
+			const evalResult = evaluateFollowerTrust(likeUserSignal);
 			qualityLikes += evalResult.weight;
 		}
 	}
@@ -107,7 +106,7 @@ export async function getCreatorReputation(
 	const { data: followersData } = await client
 		.from("follows")
 		.select(
-			"follower_id, users!follows_follower_id_fkey (id, created_at, avatar_url, bio)",
+			"follower_id, users!follows_follower_id_fkey (id, created_at, avatar_url, bio, download_count)",
 		)
 		.eq("following_id", creatorId);
 
@@ -118,6 +117,7 @@ export async function getCreatorReputation(
 			created_at: string;
 			avatar_url: string | null;
 			bio: string | null;
+			download_count?: number;
 		} | null;
 	}[];
 
@@ -126,7 +126,7 @@ export async function getCreatorReputation(
 		createdAt: f.users?.created_at || new Date().toISOString(),
 		hasAvatar: Boolean(f.users?.avatar_url),
 		hasBio: Boolean(f.users?.bio),
-		downloadCount: 1,
+		downloadCount: f.users?.download_count ?? 0,
 		likeCount: 0,
 		bookmarkCount: 0,
 		presetCount: 0,

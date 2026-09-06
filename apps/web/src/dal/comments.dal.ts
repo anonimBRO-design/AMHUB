@@ -59,25 +59,17 @@ export async function listComments(
 			.order("created_at", { ascending: false });
 
 		if (error) {
-			return {
-				items: [],
-				total: 0,
-				offset,
-			};
+			throw error;
 		}
 
 		return {
 			items: comments ?? [],
-			total: count ?? comments?.length ?? 0,
+			total: count ?? 0,
 			offset,
 		};
 	} catch (error) {
 		console.error("Failed to list comments:", error);
-		return {
-			items: [],
-			total: 0,
-			offset,
-		};
+		throw error;
 	}
 }
 
@@ -149,7 +141,11 @@ export async function deleteComment(
 	commentId: string,
 	presetId: string,
 ) {
-	const { error } = await client.from("comments").delete().eq("id", commentId);
+	const { error } = await client
+		.from("comments")
+		.delete()
+		.eq("id", commentId)
+		.eq("preset_id", presetId);
 	if (error) throw error;
 	await syncPresetCounter(client, presetId, "comments", "comment_count");
 }

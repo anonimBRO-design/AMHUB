@@ -11,3 +11,8 @@ export * from "./uploads.dal";
 export * from "./downloads.dal";
 export * from "./orders.dal";
 export * from "./reputation.dal";
+export * from "./challenges.dal";
+export * from "./leaderboard.dal";
+export * from "./requests.dal";
+export * from "./tags.dal";
+export * from "./withdrawals.dal";

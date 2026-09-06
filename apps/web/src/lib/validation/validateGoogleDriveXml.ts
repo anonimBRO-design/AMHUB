@@ -179,8 +179,14 @@ export async function validateGoogleDriveXml(
 	} catch {
 		checks[2] = {
 			...checks[2],
-			status: "success",
-			message: "Google Drive URL format verified",
+			status: "error",
+			message: "Could not verify link reachability. Please try again.",
+		};
+		return {
+			isValid: false,
+			isValidating: false,
+			checks,
+			error: "Could not verify Google Drive link. Please try again.",
 		};
 	}
 

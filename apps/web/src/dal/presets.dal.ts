@@ -410,9 +410,7 @@ export async function createPreset(
 		const insertPayload = {
 			...insertData,
 			slug: currentSlug,
-			// Moderation: every new preset enters the moderation queue. Staff/DB
-			// triggers also enforce this as a backstop.
-			status: "pending",
+			status: insertData.status ?? "pending",
 			creator_id: creatorId,
 		};
 
@@ -425,7 +423,6 @@ export async function createPreset(
 
 		if (rawInsertResult.error) {
 			lastError = rawInsertResult.error;
-			// If unique violation on slug, retry with random suffix
 			if (
 				rawInsertResult.error.code === "23505" &&
 				rawInsertResult.error.message?.includes("slug")
@@ -433,7 +430,8 @@ export async function createPreset(
 				console.warn(
 					`[SLUG COLLISION DETECTED] ${tag} slug ${currentSlug} already exists, retrying with unique suffix...`,
 				);
-				currentSlug = `${insertData.slug.slice(0, 80)}-${Math.random().toString(36).slice(2, 6)}`;
+				const suffix = crypto.randomUUID().slice(0, 8);
+				currentSlug = `${insertData.slug.slice(0, 80)}-${suffix}`;
 				continue;
 			}
 			console.error(`[FINAL RAW INSERT ERROR] ${tag}`, rawInsertResult.error);
@@ -470,7 +468,7 @@ export async function getPresetById(client: DalClient, id: string) {
 		.single();
 
 	if (error) {
-		assertExists(null, "Preset was not found.");
+		throw error;
 	}
 	return assertExists(preset, "Preset was not found.");
 }
@@ -571,11 +569,11 @@ export async function listPublishedPresets(
 
 		const { data, error } = await query;
 
-		if (error) return [];
+		if (error) throw error;
 		return (data ?? []) as unknown as PresetWithCreator[];
 	} catch (error) {
 		console.error("Failed to list published presets:", error);
-		return [];
+		throw error;
 	}
 }
 
@@ -690,20 +688,16 @@ export async function getPresetBySlug(
 	client: DalClient,
 	slug: string,
 ): Promise<PresetWithCreator | null> {
-	try {
-		const { data, error } = await client
-			.from("presets")
-			.select(PRESET_SELECT_WITH_CREATOR)
-			.eq("slug", slug)
-			.eq("status", "published")
-			.maybeSingle();
+	const { data, error } = await client
+		.from("presets")
+		.select(PRESET_SELECT_WITH_CREATOR)
+		.eq("slug", slug)
+		.eq("status", "published")
+		.maybeSingle();
 
-		if (error || !data) return null;
-		return data as unknown as PresetWithCreator;
-	} catch (error) {
-		console.error("Failed to get preset by slug:", error);
-		return null;
-	}
+	if (error) throw error;
+	if (!data) return null;
+	return data as unknown as PresetWithCreator;
 }
 
 export async function listCreatorPresets(
@@ -717,11 +711,11 @@ export async function listCreatorPresets(
 			.eq("creator_id", creatorId)
 			.order("created_at", { ascending: false });
 
-		if (error) return [];
+		if (error) throw error;
 		return (data ?? []) as unknown as PresetWithCreator[];
 	} catch (error) {
 		console.error("Failed to list creator presets:", error);
-		return [];
+		throw error;
 	}
 }
 
@@ -754,12 +748,18 @@ export async function listCreatorPresetsPaginated(
 		// 'draft' / 'pending' -> 'pending'
 		// 'archived' / 'removed' -> 'removed'
 		if (filter.status && filter.status !== "all") {
-			if (filter.status === "draft" || filter.status === "pending") {
-				query = query.eq("status", "pending");
-			} else if (filter.status === "archived" || filter.status === "removed") {
-				query = query.eq("status", "removed");
-			} else if (filter.status === "published") {
+			if (filter.status === "published") {
 				query = query.eq("status", "published");
+			} else if (filter.status === "pending") {
+				query = query.eq("status", "pending");
+			} else if (filter.status === "draft") {
+				query = query.eq("status", "draft");
+			} else if (
+				filter.status === "rejected" ||
+				filter.status === "removed" ||
+				filter.status === "archived"
+			) {
+				query = query.eq("status", "removed");
 			} else {
 				query = query.eq("status", filter.status);
 			}
@@ -792,7 +792,7 @@ export async function listCreatorPresetsPaginated(
 
 		if (error) {
 			console.error("Error listing creator presets paginated:", error);
-			return { items: [], total: 0, page, limit, hasMore: false };
+			throw error;
 		}
 
 		const total = count ?? 0;
@@ -808,7 +808,7 @@ export async function listCreatorPresetsPaginated(
 		};
 	} catch (error) {
 		console.error("Failed to list creator presets paginated:", error);
-		return { items: [], total: 0, page, limit, hasMore: false };
+		throw error;
 	}
 }
 
@@ -1075,10 +1075,12 @@ export async function getCreatorAnalytics(
 
 	const presetIds = presetRows.map((p) => p.id);
 	let totalDownloads = 0;
+	let uniqueDownloads = 0;
 	for (const p of presetRows) {
 		totalDownloads += p.download_count ?? 0;
+		uniqueDownloads +=
+			(p as { unique_download_count?: number }).unique_download_count ?? 0;
 	}
-	const uniqueDownloads = totalDownloads;
 
 	let likesOverTime: { date: string; count: number }[] = [];
 	if (presetIds.length > 0) {

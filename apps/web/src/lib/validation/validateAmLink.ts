@@ -147,14 +147,22 @@ export async function validateAmLink(
 
 	// 2. Check Supported Hostname & classify source
 	const classification = classifyUrl(parsedUrl);
+	const hostname = parsedUrl.hostname.toLowerCase();
+	const isAllowedDomain = ALLOWED_DOMAINS.some(
+		(d) => hostname === d || hostname.endsWith(`.${d}`),
+	);
+	const isXmlPath = parsedUrl.pathname.toLowerCase().endsWith(".xml");
+	const isAlightCreative =
+		hostname === "alightcreative.com" &&
+		parsedUrl.pathname.startsWith("/am/share/");
+
 	const isSupported =
-		classification.sourceType !== "am_link" ||
-		ALLOWED_DOMAINS.some(
-			(d) =>
-				parsedUrl.hostname.toLowerCase() === d ||
-				parsedUrl.hostname.toLowerCase().endsWith(`.${d}`),
-		) ||
-		parsedUrl.pathname.toLowerCase().endsWith(".xml");
+		classification.sourceType === "alight_creative" ||
+		isAllowedDomain ||
+		isXmlPath ||
+		hostname === "alight.link" ||
+		hostname === "am.link" ||
+		hostname === "alightmotion.com";
 
 	if (!isSupported) {
 		checks[1] = {

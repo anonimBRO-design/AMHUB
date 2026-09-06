@@ -153,7 +153,9 @@ export async function recordPresetDownload(
 
 	const currentTotal =
 		(presetData as { download_count?: number } | null)?.download_count ?? 0;
-	const currentUnique = currentTotal;
+	const currentUnique =
+		(presetData as { unique_download_count?: number } | null)
+			?.unique_download_count ?? 0;
 
 	const newTotal = currentTotal + 1;
 	const newUnique = isUnique ? currentUnique + 1 : currentUnique;
@@ -196,11 +198,13 @@ export async function getPresetDownloadStats(
 
 	const p = preset as {
 		download_count?: number;
+		unique_download_count?: number;
 	} | null;
 
 	const total = p?.download_count ?? 0;
+	const unique = p?.unique_download_count ?? 0;
 	return {
 		total,
-		unique: total,
+		unique,
 	};
 }

@@ -3,7 +3,6 @@ import {
 	listNotifications as listNotificationsDal,
 } from "@/dal/notifications.dal";
 import type { PresetHubSupabaseClient } from "@/lib/supabase/client";
-import { cache } from "react";
 
 export async function listNotifications(
 	supabase: PresetHubSupabaseClient,
@@ -12,7 +11,7 @@ export async function listNotifications(
 	return listNotificationsDal(supabase, userId);
 }
 
-export const getUnreadNotificationCount = cache(
-	async (supabase: PresetHubSupabaseClient, userId: string) =>
-		getUnreadNotificationCountDal(supabase, userId),
-);
+export const getUnreadNotificationCount = async (
+	supabase: PresetHubSupabaseClient,
+	userId: string,
+) => getUnreadNotificationCountDal(supabase, userId);

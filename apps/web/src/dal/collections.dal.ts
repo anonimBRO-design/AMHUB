@@ -376,8 +376,8 @@ export async function listCollectionItems(
 			)`,
 		)
 		.eq("collection_id", collectionId)
-		.order("sort_order", { ascending: true })
-		.order("added_at", { ascending: false });
+		.order("added_at", { ascending: false })
+		.order("sort_order", { ascending: true });
 	if (error) throw error;
 	const items = (data ?? []) as unknown as (Omit<
 		CollectionItemWithPreset,

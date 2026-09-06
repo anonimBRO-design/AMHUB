@@ -18,6 +18,15 @@ export async function prepareAvatarUpload(
 	ownerId: string,
 	input: UploadFileInput,
 ) {
+	if (!input.filename || input.filename.trim().length === 0) {
+		throw new Error("Filename is required for avatar upload.");
+	}
+	if (!input.content_type) {
+		throw new Error("Content type is required for avatar upload.");
+	}
+	if (!input.size || input.size <= 0) {
+		throw new Error("File size must be greater than 0.");
+	}
 	return prepareUpload(
 		storageBuckets.avatars,
 		ownerId,
@@ -65,5 +74,7 @@ export async function preparePresetUpload(
 				fileInput,
 				UPLOAD_LIMITS.presetVideo,
 			);
+		default:
+			throw new Error(`Unsupported upload_type: ${input.upload_type}`);
 	}
 }
