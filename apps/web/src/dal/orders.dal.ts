@@ -1,3 +1,4 @@
+import { randomBytes } from "node:crypto";
 import { ApiError } from "@/lib/api/errors";
 import { calculatePresetPayout } from "@/lib/monetization/payout";
 import type { PresetOrder } from "@presethub/types";
@@ -15,11 +16,12 @@ export interface CreateOrderParams {
 }
 
 /**
- * Generates human-readable, unique order number (e.g. ORD-20260816-AB12)
+ * Generates human-readable, unpredictable order number (e.g. ORD-20260816-AB12)
+ * using CSPRNG output so order numbers cannot be enumerated within a date range.
  */
 function generateOrderNumber(): string {
 	const dateStr = new Date().toISOString().slice(0, 10).replace(/-/g, "");
-	const randomSuffix = Math.random().toString(36).substring(2, 6).toUpperCase();
+	const randomSuffix = randomBytes(2).toString("hex").toUpperCase();
 	return `AM-${dateStr}-${randomSuffix}`;
 }
 
@@ -265,11 +267,13 @@ export async function checkUserPresetAccess(
 			price,
 			license,
 		};
-	} catch {
+	} catch (error) {
+		console.error("Failed to check user preset access:", error);
+		// Fail-closed: never grant access on an unexpected database error.
 		return {
-			hasAccess: true,
-			isPaid: false,
-			price: 0,
+			hasAccess: false,
+			isPaid: true,
+			price,
 			license: null,
 		};
 	}

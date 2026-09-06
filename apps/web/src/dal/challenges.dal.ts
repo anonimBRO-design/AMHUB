@@ -235,7 +235,7 @@ export async function voteChallengeEntry(
 
 	const { data: entry } = await client
 		.from("challenge_entries")
-		.select("id")
+		.select("id, creator_id")
 		.eq("challenge_id", challengeId)
 		.eq("preset_id", presetId)
 		.maybeSingle();
@@ -243,6 +243,14 @@ export async function voteChallengeEntry(
 		throw new ApiError({
 			code: "bad_request",
 			message: "Preset tidak terdaftar di challenge ini.",
+		});
+	}
+
+	// Block self-voting: a user cannot vote for their own challenge entry.
+	if ((entry as { creator_id?: string }).creator_id === voterId) {
+		throw new ApiError({
+			code: "bad_request",
+			message: "Kamu tidak bisa memberi vote pada preset milikmu sendiri.",
 		});
 	}
 

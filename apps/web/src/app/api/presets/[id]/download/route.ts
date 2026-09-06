@@ -77,29 +77,65 @@ export async function POST(
 		const userAgentHash = hashUserAgent(request.headers.get("user-agent"));
 
 		// 5. Atomic multi-layer unique download recording
-		const { data: presetDataRaw } = await supabase
+		const { data: presetDataRaw, error: presetFetchError } = await supabase
 			.from("presets")
-			.select("file_url, am_link")
+			.select("file_url, am_link, creator_id, status")
 			.eq("id", presetId)
 			.maybeSingle();
 		const presetData = presetDataRaw as unknown as {
 			file_url: string | null;
 			am_link: string | null;
+			creator_id: string;
+			status: string;
 		} | null;
 
+		if (presetFetchError || !presetData) {
+			throw new ApiError({
+				code: "not_found",
+				message: "Preset tidak ditemukan.",
+			});
+		}
+
+		// Only published presets are downloadable through the public endpoint.
+		if (presetData.status !== "published") {
+			throw new ApiError({
+				code: "not_found",
+				message: "Preset belum tersedia untuk diunduh.",
+			});
+		}
+
 		let downloadUrl: string | undefined = undefined;
-		if (presetData?.file_url) {
+		if (presetData.file_url) {
 			const parsed = parseStoragePath(presetData.file_url);
 			if (parsed) {
+				// CRITICAL: never sign a URL for a storage path the creator does
+				// not own. Otherwise an attacker points file_url at a victim's
+				// private object and downloads paid files for free.
+				const objectOwner = parsed.path.split("/")[0];
+				if (!objectOwner || objectOwner !== presetData.creator_id) {
+					throw new ApiError({
+						code: "forbidden",
+						message: "File preset tidak valid untuk preset ini.",
+					});
+				}
 				try {
 					downloadUrl = await createSignedDownloadUrl(parsed.path);
 				} catch (e) {
 					console.error("Failed to generate signed download URL", e);
+					throw new ApiError({
+						code: "internal_server_error",
+						message: "File preset tidak dapat diakses saat ini.",
+					});
 				}
 			} else {
-				downloadUrl = presetData.file_url;
+				// External file_url is no longer accepted at create time; treat as
+				// invalid defensively.
+				throw new ApiError({
+					code: "forbidden",
+					message: "File preset tidak valid untuk preset ini.",
+				});
 			}
-		} else if (presetData?.am_link) {
+		} else if (presetData.am_link) {
 			downloadUrl = presetData.am_link;
 		}
 

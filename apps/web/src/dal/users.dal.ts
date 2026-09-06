@@ -1,5 +1,6 @@
 import { ApiError } from "@/lib/api/errors";
 import { calculateLevelFromXp } from "@/lib/gamification/xp";
+import { createSupabaseServiceClient } from "@/lib/supabase/server";
 import type { Database, UpdateUserProfileInput, User } from "@presethub/types";
 import { assertExists, handleDuplicateKey } from "./helpers";
 import { createNotification } from "./notifications.dal";
@@ -500,8 +501,17 @@ export async function awardUserXp(
 ): Promise<{ xp: number; level: number; levelUp: boolean } | null> {
 	if (amount <= 0) return null;
 
+	// xp/level are not writable via the authenticated role (column-level RLS),
+	// so writes must go through a privileged service client when available.
+	let writeClient: DalClient = client;
 	try {
-		const { data: user, error } = await client
+		writeClient = createSupabaseServiceClient() as DalClient;
+	} catch {
+		// No service key configured; fall back to caller's client.
+	}
+
+	try {
+		const { data: user, error } = await writeClient
 			.from("users")
 			.select("id, xp, level")
 			.eq("id", userId)
@@ -517,7 +527,7 @@ export async function awardUserXp(
 		const { level: newLevel } = calculateLevelFromXp(newXp);
 		const levelUp = newLevel > currentLevel;
 
-		await client
+		await writeClient
 			.from("users")
 			.update({
 				xp: newXp,

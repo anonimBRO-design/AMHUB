@@ -3,6 +3,9 @@ import type {
 	PresetWithCreator,
 } from "@/data/presets";
 import { normalizeAmVersion } from "@/lib/am-version";
+import { ApiError } from "@/lib/api/errors";
+import { UPLOAD_LIMITS, validateXmlSafety } from "@/lib/api/uploads";
+import { assertSafeExternalUrl } from "@/lib/security/urls";
 import { createSupabaseServiceClient } from "@/lib/supabase/server";
 import type { Database } from "@presethub/types";
 import { assertExists } from "./helpers";
@@ -18,6 +21,48 @@ export const PRESET_SELECT_WITH_CREATOR = `
 	file_type,
 	file_url,
 	am_link,
+	category,
+	difficulty,
+	am_version_min,
+	am_version_max,
+	tags,
+	status,
+	download_count,
+	view_count,
+	unique_download_count,
+	price,
+	is_paid,
+	currency,
+	commercial_price,
+	remixed_from_id,
+	like_count,
+	bookmark_count,
+	comment_count,
+	is_featured,
+	created_at,
+	creator:users!presets_creator_id_fkey (
+		id,
+		username,
+		display_name,
+		avatar_url,
+		is_verified
+	)
+`;
+
+/**
+ * Public-facing preset projection. Excludes the private file_url / am_link
+ * fields so that any server component or API response built on this select can
+ * never leak the actual file locations of a preset to anonymous/unauthorized
+ * callers (paywall bypass vector).
+ */
+export const PRESET_SELECT_PUBLIC = `
+	id,
+	slug,
+	title,
+	description,
+	thumbnail_url,
+	preview_video_url,
+	file_type,
 	category,
 	difficulty,
 	am_version_min,
@@ -88,7 +133,7 @@ export async function listPresets(
 
 	let query = client
 		.from("presets")
-		.select("*", { count: "exact" })
+		.select(PRESET_SELECT_PUBLIC, { count: "exact" })
 		.eq("status", status)
 		.range(offset, to)
 		.order("created_at", { ascending: false });
@@ -141,6 +186,173 @@ async function ensureCategoryExists(categorySlug: string) {
 	}
 }
 
+const SAFE_STORAGE_BUCKETS = new Set([
+	"preset-files",
+	"thumbnails",
+	"preset-videos",
+	"avatars",
+]);
+
+/**
+ * Validates a user-supplied asset reference (storage path or external URL).
+ *
+ * - Storage paths must live in a known bucket and be owned by `creatorId`
+ *   (first path segment). This kills the paywall bypass where a creator points
+ *   file_url at another user's private storage path.
+ * - External URLs must be safe HTTPS (public host, no creds, no weird ports).
+ */
+function assertPresetAssetOwned(
+	urlOrPath: string | null | undefined,
+	creatorId: string,
+	options: { requiredBucket?: string; fieldLabel?: string } = {},
+): void {
+	if (!urlOrPath) return;
+
+	const parsed = parseStoragePath(urlOrPath);
+	const label = options.fieldLabel ?? "URL";
+
+	if (!parsed) {
+		assertSafeExternalUrl(urlOrPath, label);
+		return;
+	}
+
+	if (!SAFE_STORAGE_BUCKETS.has(parsed.bucket)) {
+		throw new ApiError({
+			code: "bad_request",
+			message: `${label} mengarah ke bucket storage yang tidak dikenal.`,
+		});
+	}
+
+	if (options.requiredBucket && parsed.bucket !== options.requiredBucket) {
+		throw new ApiError({
+			code: "bad_request",
+			message: `${label} harus mengarah ke bucket "${options.requiredBucket}".`,
+		});
+	}
+
+	const owner = parsed.path.split("/")[0];
+	if (!owner || owner !== creatorId) {
+		throw new ApiError({
+			code: "bad_request",
+			message: `${label} harus milik akun kamu sendiri.`,
+		});
+	}
+}
+
+function isPng(bytes: Uint8Array): boolean {
+	return (
+		bytes.length >= 8 &&
+		bytes[0] === 0x89 &&
+		bytes[1] === 0x50 &&
+		bytes[2] === 0x4e &&
+		bytes[3] === 0x47
+	);
+}
+
+function isJpeg(bytes: Uint8Array): boolean {
+	return (
+		bytes.length >= 3 &&
+		bytes[0] === 0xff &&
+		bytes[1] === 0xd8 &&
+		bytes[2] === 0xff
+	);
+}
+
+function isWebp(bytes: Uint8Array): boolean {
+	const riff =
+		bytes[0] === 0x52 &&
+		bytes[1] === 0x49 &&
+		bytes[2] === 0x46 &&
+		bytes[3] === 0x46;
+	const webp =
+		bytes[8] === 0x57 &&
+		bytes[9] === 0x45 &&
+		bytes[10] === 0x42 &&
+		bytes[11] === 0x50;
+	return riff && webp;
+}
+
+/**
+ * Server-side content verification of the uploaded preset file. The client may
+ * claim any MIME type / filename; we re-check the real bytes that live in
+ * Storage before the preset can be created.
+ */
+async function verifyPresetFileArtifact(
+	storagePath: string,
+	kind: "xml" | "qr",
+): Promise<void> {
+	const service = createSupabaseServiceClient();
+	const { data, error } = await service.storage
+		.from("preset-files")
+		.download(storagePath);
+
+	if (error || !data) {
+		console.error(
+			`[PRESET FILE VERIFY] Failed to read uploaded artifact "${storagePath}":`,
+			error,
+		);
+		throw new ApiError({
+			code: "bad_request",
+			message:
+				"File preset belum ter-upload ke storage. Silakan upload file terlebih dahulu.",
+		});
+	}
+
+	const bytes = new Uint8Array(await data.arrayBuffer());
+	if (bytes.length === 0) {
+		throw new ApiError({
+			code: "bad_request",
+			message: "File preset kosong (0 bytes).",
+		});
+	}
+
+	const maxBytes =
+		kind === "xml"
+			? UPLOAD_LIMITS.presetXml.maxBytes
+			: UPLOAD_LIMITS.presetQr.maxBytes;
+
+	if (bytes.length > maxBytes) {
+		throw new ApiError({
+			code: "payload_too_large",
+			message: `File preset melebihi batas ${maxBytes / (1024 * 1024)} MB.`,
+		});
+	}
+
+	if (kind === "xml") {
+		const text = new TextDecoder("utf-8").decode(bytes);
+		const safety = validateXmlSafety(text);
+		if (!safety.safe) {
+			throw new ApiError({
+				code: "bad_request",
+				message: `File preset XML ditolak: ${safety.reason ?? "konten tidak aman."}`,
+			});
+		}
+
+		const lower = text.toLowerCase();
+		const looksLikeAmPreset =
+			/<\s*(scene|project|preset)\b/i.test(text) ||
+			lower.includes("alightmotion") ||
+			lower.includes("am-") ||
+			lower.includes("<shape") ||
+			lower.includes("<layer") ||
+			lower.includes("<effect");
+		if (!looksLikeAmPreset) {
+			throw new ApiError({
+				code: "bad_request",
+				message: "File XML bukan struktur preset Alight Motion yang dikenali.",
+			});
+		}
+		return;
+	}
+
+	if (!isPng(bytes) && !isJpeg(bytes) && !isWebp(bytes)) {
+		throw new ApiError({
+			code: "bad_request",
+			message: "File QR harus berupa gambar PNG/JPEG/WebP yang valid.",
+		});
+	}
+}
+
 export async function createPreset(
 	client: DalClient,
 	creatorId: string,
@@ -154,6 +366,39 @@ export async function createPreset(
 		await ensureCategoryExists(data.category);
 	}
 
+	// Security: validate every user-supplied asset reference is either owned by
+	// the creator (storage path) or a safe public HTTPS URL before persisting.
+	// This kills the paywall bypass where file_url points at another user's
+	// private storage object.
+	assertPresetAssetOwned(data.thumbnail_url, creatorId, {
+		fieldLabel: "Thumbnail",
+	});
+	assertPresetAssetOwned(data.preview_video_url, creatorId, {
+		fieldLabel: "Preview video",
+	});
+
+	const parsedFile = data.file_url ? parseStoragePath(data.file_url) : null;
+	if (parsedFile) {
+		assertPresetAssetOwned(data.file_url, creatorId, {
+			requiredBucket: "preset-files",
+			fieldLabel: "File preset",
+		});
+		if (data.file_type === "xml" || data.file_type === "qr") {
+			// Verify the real bytes in storage (content-type / filename from the
+			// client are not trusted).
+			await verifyPresetFileArtifact(
+				parsedFile.path,
+				data.file_type === "xml" ? "xml" : "qr",
+			);
+		}
+	}
+
+	if (data.am_link) {
+		assertPresetAssetOwned(data.am_link, creatorId, {
+			fieldLabel: "Link preset",
+		});
+	}
+
 	const { file_types, ...insertData } = data;
 
 	let currentSlug = insertData.slug;
@@ -165,7 +410,9 @@ export async function createPreset(
 		const insertPayload = {
 			...insertData,
 			slug: currentSlug,
-			status: insertData.status || "published",
+			// Moderation: every new preset enters the moderation queue. Staff/DB
+			// triggers also enforce this as a backstop.
+			status: "pending",
 			creator_id: creatorId,
 		};
 
@@ -218,7 +465,7 @@ export async function createPreset(
 export async function getPresetById(client: DalClient, id: string) {
 	const { data: preset, error } = await client
 		.from("presets")
-		.select("*")
+		.select(PRESET_SELECT_PUBLIC)
 		.eq("id", id)
 		.single();
 
@@ -256,10 +503,13 @@ export async function listPublishedPresets(
 			.range(from, to);
 
 		if (params.search?.trim()) {
-			const term = `%${params.search.trim()}%`;
-			query = query.or(
-				`title.ilike.${term},description.ilike.${term},category.ilike.${term}`,
-			);
+			const cleanTerm = sanitizePostgrestValue(params.search.trim());
+			const term = cleanTerm ? `%${cleanTerm}%` : "";
+			if (term) {
+				query = query.or(
+					`title.ilike.${term},description.ilike.${term},category.ilike.${term}`,
+				);
+			}
 		}
 
 		if (params.category && params.category.toLowerCase() !== "all") {
@@ -516,10 +766,13 @@ export async function listCreatorPresetsPaginated(
 		}
 
 		if (filter.search?.trim()) {
-			const term = `%${filter.search.trim()}%`;
-			query = query.or(
-				`title.ilike.${term},description.ilike.${term},category.ilike.${term}`,
-			);
+			const cleanTerm = sanitizePostgrestValue(filter.search.trim());
+			const term = cleanTerm ? `%${cleanTerm}%` : "";
+			if (term) {
+				query = query.or(
+					`title.ilike.${term},description.ilike.${term},category.ilike.${term}`,
+				);
+			}
 		}
 
 		const sort = filter.sort ?? "newest";
@@ -610,6 +863,18 @@ export async function getCreatorDashboardStats(
 		followerCount: followerCount ?? 0,
 		followingCount: followingCount ?? 0,
 	};
+}
+
+/**
+ * Strips PostgREST filter metacharacters out of user search text so that
+ * `ilike` needles passed through `.or()` cannot inject additional filters
+ * (e.g. `,` or `)` separators, quotes, or escaping backslashes).
+ */
+export function sanitizePostgrestValue(value: string): string {
+	return value
+		.replace(/[\0]/g, "")
+		.replace(/[\\,()'"]/g, "")
+		.trim();
 }
 
 export function parseStoragePath(

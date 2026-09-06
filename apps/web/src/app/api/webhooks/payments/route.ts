@@ -6,7 +6,7 @@ import {
 import { ApiError } from "@/lib/api/errors";
 import { enforceRateLimit } from "@/lib/api/rate-limit";
 import { apiErrorResponse, apiResponse } from "@/lib/api/responses";
-import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { createSupabaseServiceClient } from "@/lib/supabase/server";
 import type { NextRequest } from "next/server";
 import { z } from "zod";
 
@@ -25,6 +25,8 @@ const webhookPayloadSchema = z.object({
 
 /**
  * Verifies authenticity of the webhook caller using environment secret or HMAC signature.
+ * Fail-closed: if no secret is configured the webhook is REJECTED, it never
+ * silently accepts unauthenticated callbacks.
  */
 function verifyWebhookAuthenticity(
 	request: NextRequest,
@@ -33,14 +35,12 @@ function verifyWebhookAuthenticity(
 	const configuredSecret =
 		process.env.PAYMENT_WEBHOOK_SECRET || process.env.PAYMENT_GATEWAY_SECRET;
 
-	// In production, an unset secret is a high-risk security hazard
 	if (!configuredSecret) {
-		if (process.env.NODE_ENV === "production") {
-			console.warn(
-				"[SECURITY WARNING] PAYMENT_WEBHOOK_SECRET is not configured! Webhook verification skipped in development/staging.",
-			);
-		}
-		return true;
+		throw new ApiError({
+			code: "internal_server_error",
+			message:
+				"PAYMENT_WEBHOOK_SECRET is not configured. Webhook verification disabled.",
+		});
 	}
 
 	// 1. Check direct token in headers
@@ -142,12 +142,23 @@ export async function POST(request: NextRequest) {
 		}
 
 		const rawStatus =
-			data.status || data.transaction_status || data.payment_status || "paid";
+			data.status || data.transaction_status || data.payment_status;
+
+		if (!rawStatus) {
+			throw new ApiError({
+				code: "bad_request",
+				message:
+					"Webhook payload must include a payment status (status, transaction_status, or payment_status).",
+			});
+		}
+
 		const paymentStatus = normalizePaymentStatus(rawStatus);
 		const paymentRef =
 			data.payment_reference || data.reference || `WH-${Date.now()}`;
 
-		const supabase = await createSupabaseServerClient();
+		// Service client: the order table is staff-write only via RLS, so the
+		// webhook (which has no user session) must use the privileged client.
+		const supabase = createSupabaseServiceClient();
 
 		// Lookup order by human-readable order_number or UUID id
 		let order = await getOrderByOrderNumber(supabase, orderIdentifier);

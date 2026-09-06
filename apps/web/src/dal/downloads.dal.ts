@@ -1,4 +1,5 @@
 import { XP_REWARDS } from "@/lib/gamification/xp";
+import { createSupabaseServiceClient } from "@/lib/supabase/server";
 import { syncPresetCounter } from "./helpers";
 import { createNotification } from "./notifications.dal";
 import { assertPresetExists } from "./presets.dal";
@@ -157,8 +158,16 @@ export async function recordPresetDownload(
 	const newTotal = currentTotal + 1;
 	const newUnique = isUnique ? currentUnique + 1 : currentUnique;
 
-	// 4. Update preset counters safely
-	await client
+	// 4. Update preset counters safely (download_count is DB-guarded for
+	// non-staff, so writes must use a privileged service client).
+	let counterClient: DalClient = client;
+	try {
+		counterClient = createSupabaseServiceClient() as DalClient;
+	} catch {
+		// No service key in environment; fall back to caller client.
+	}
+
+	await counterClient
 		.from("presets")
 		.update({
 			download_count: newTotal,

@@ -29,13 +29,13 @@ export function getClientIp(request: NextRequest): string {
 /**
  * Generates a one-way HMAC-SHA256 hash of an IP address.
  * Never stores or exposes raw client IPs to the database or public clients.
+ *
+ * Salt resolution: explicit salt > IP_HASH_SALT env > static default.
+ * NOTE: SUPABASE_SERVICE_ROLE_KEY must NOT be used here — reusing the database
+ * service key as a hashing salt weakens it and links hashes to credentials.
  */
 export function hashIp(ip: string, customSalt?: string): string {
-	const salt =
-		customSalt ||
-		process.env.IP_HASH_SALT ||
-		process.env.SUPABASE_SERVICE_ROLE_KEY ||
-		DEFAULT_SALT;
+	const salt = customSalt || process.env.IP_HASH_SALT || DEFAULT_SALT;
 	return createHmac("sha256", salt).update(ip.trim()).digest("hex");
 }
 

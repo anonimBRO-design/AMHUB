@@ -36,3 +36,6 @@ coverage/
 .turbo/
 ```
 .vercel
+
+# Supabase CLI local artifacts
+supabase/.temp/

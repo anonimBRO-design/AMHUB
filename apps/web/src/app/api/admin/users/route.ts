@@ -1,3 +1,4 @@
+import { sanitizePostgrestValue } from "@/dal/presets.dal";
 import { isAdminProfile } from "@/lib/admin";
 import { requireApiProfile } from "@/lib/api/auth";
 import { ApiError } from "@/lib/api/errors";
@@ -69,20 +70,23 @@ export async function GET(request: NextRequest) {
 		let dbQuery = dbClient.from("users").select("*", { count: "exact" });
 
 		if (query) {
-			const matchingEmailUserIds = Array.from(emailMap.entries())
-				.filter(([_, email]) =>
-					email.toLowerCase().includes(query.toLowerCase()),
-				)
-				.map(([id]) => id);
+			const cleanQuery = sanitizePostgrestValue(query);
+			if (cleanQuery) {
+				const matchingEmailUserIds = Array.from(emailMap.entries())
+					.filter(([_, email]) =>
+						email.toLowerCase().includes(cleanQuery.toLowerCase()),
+					)
+					.map(([id]) => id);
 
-			if (matchingEmailUserIds.length > 0) {
-				dbQuery = dbQuery.or(
-					`username.ilike.%${query}%,display_name.ilike.%${query}%,id.in.(${matchingEmailUserIds.join(",")})`,
-				);
-			} else {
-				dbQuery = dbQuery.or(
-					`username.ilike.%${query}%,display_name.ilike.%${query}%`,
-				);
+				if (matchingEmailUserIds.length > 0) {
+					dbQuery = dbQuery.or(
+						`username.ilike.%${cleanQuery}%,display_name.ilike.%${cleanQuery}%,id.in.(${matchingEmailUserIds.join(",")})`,
+					);
+				} else {
+					dbQuery = dbQuery.or(
+						`username.ilike.%${cleanQuery}%,display_name.ilike.%${cleanQuery}%`,
+					);
+				}
 			}
 		}
 

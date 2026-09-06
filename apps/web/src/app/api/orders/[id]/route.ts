@@ -3,6 +3,7 @@ import { requireApiProfile } from "@/lib/api/auth";
 import { ApiError } from "@/lib/api/errors";
 import { apiErrorResponse, apiResponse } from "@/lib/api/responses";
 import { validateJson, validateRouteParams } from "@/lib/api/validation";
+import { createSupabaseServiceClient } from "@/lib/supabase/server";
 import type { NextRequest } from "next/server";
 import { z } from "zod";
 
@@ -71,8 +72,11 @@ export async function PATCH(
 			});
 		}
 
+		// preset_orders is staff-write only via RLS and has no UPDATE grant for
+		// the authenticated role, so privileged writes go through the service client.
+		const serviceClient = createSupabaseServiceClient();
 		const updated = await updateOrderStatus(
-			supabase,
+			serviceClient,
 			id,
 			body.status,
 			body.payment_reference,
