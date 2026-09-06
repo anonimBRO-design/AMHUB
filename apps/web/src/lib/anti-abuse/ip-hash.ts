@@ -1,4 +1,4 @@
-import { createHmac } from "node:crypto";
+import { createHmac } from "crypto";
 import type { NextRequest } from "next/server";
 
 // Fallback salt if APP_SECRET / HASH_SALT is not configured in env

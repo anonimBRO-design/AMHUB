@@ -5,7 +5,6 @@
  * path generation, and filename sanitisation so that route
  * handlers stay thin and share zero duplicated logic.
  */
-import { randomUUID } from "node:crypto";
 import { ApiError } from "@/lib/api/errors";
 import { createSignedUploadUrl } from "@/lib/supabase/storage";
 import { type StorageBucket, storageBuckets } from "@/lib/supabase/storage";
@@ -207,7 +206,7 @@ export function validateXmlSafety(xmlContent: string): {
  */
 export function buildStoragePath(ownerId: string, mimeType: string): string {
 	const ext = mimeTypeToExtension(mimeType);
-	const uuid = randomUUID();
+	const uuid = crypto.randomUUID();
 	return `${ownerId}/${uuid}.${ext}`;
 }
 

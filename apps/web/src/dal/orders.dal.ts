@@ -1,4 +1,4 @@
-import { randomBytes } from "node:crypto";
+import { randomBytes } from "crypto";
 import { ApiError } from "@/lib/api/errors";
 import { calculatePresetPayout } from "@/lib/monetization/payout";
 import type { PresetOrder } from "@presethub/types";
