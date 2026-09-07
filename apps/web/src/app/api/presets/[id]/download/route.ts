@@ -136,7 +136,14 @@ export async function POST(
 				});
 			}
 		} else if (presetData.am_link) {
-			downloadUrl = presetData.am_link;
+			const links = presetData.am_link
+				.split("|")
+				.map((l) => l.trim())
+				.filter(Boolean);
+			downloadUrl =
+				links.find((l) => l.toLowerCase().includes("alight")) ||
+				links[0] ||
+				presetData.am_link;
 		}
 
 		const downloadResult = await recordPresetDownload(supabase, {

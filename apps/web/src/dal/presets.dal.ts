@@ -208,6 +208,18 @@ function assertPresetAssetOwned(
 ): void {
 	if (!urlOrPath) return;
 
+	// Support composite links (e.g. Alight Motion link + Google Drive link delimited by "|")
+	if (urlOrPath.includes("|")) {
+		const parts = urlOrPath.split("|");
+		for (const part of parts) {
+			const trimmed = part.trim();
+			if (trimmed) {
+				assertPresetAssetOwned(trimmed, creatorId, options);
+			}
+		}
+		return;
+	}
+
 	const parsed = parseStoragePath(urlOrPath);
 	const label = options.fieldLabel ?? "URL";
 
@@ -881,31 +893,50 @@ export function parseStoragePath(
 	urlOrPath: string | null | undefined,
 ): { bucket: string; path: string } | null {
 	if (!urlOrPath) return null;
-	const urlMatch = urlOrPath.match(
+	const trimmed = urlOrPath.trim();
+
+	// 1. Supabase Storage URLs (public or authenticated)
+	const urlMatch = trimmed.match(
 		/\/storage\/v1\/object\/(?:public|authenticated)\/([^/]+)\/(.+)$/,
 	);
 	if (urlMatch) {
 		return { bucket: urlMatch[1], path: urlMatch[2] };
 	}
-	if (urlOrPath.startsWith("thumbnails/")) {
+
+	// 2. Any other absolute HTTP/HTTPS URL is an external web URL, NOT a Supabase storage path
+	if (/^https?:\/\//i.test(trimmed)) {
+		return null;
+	}
+
+	// 3. Known bucket prefix paths
+	if (trimmed.startsWith("thumbnails/")) {
 		return {
 			bucket: "thumbnails",
-			path: urlOrPath.slice("thumbnails/".length),
+			path: trimmed.slice("thumbnails/".length),
 		};
 	}
-	if (urlOrPath.startsWith("preset-files/")) {
+	if (trimmed.startsWith("preset-files/")) {
 		return {
 			bucket: "preset-files",
-			path: urlOrPath.slice("preset-files/".length),
+			path: trimmed.slice("preset-files/".length),
 		};
 	}
-	if (urlOrPath.startsWith("avatars/")) {
-		return { bucket: "avatars", path: urlOrPath.slice("avatars/".length) };
-	}
-	if (urlOrPath.includes("/")) {
+	if (trimmed.startsWith("preset-videos/")) {
 		return {
-			bucket: urlOrPath.endsWith(".xml") ? "preset-files" : "thumbnails",
-			path: urlOrPath,
+			bucket: "preset-videos",
+			path: trimmed.slice("preset-videos/".length),
+		};
+	}
+	if (trimmed.startsWith("avatars/")) {
+		return { bucket: "avatars", path: trimmed.slice("avatars/".length) };
+	}
+
+	// 4. Legacy storage paths: `<creatorId>/<filename>`
+	// Must have a slash, cannot have URL protocol or spaces
+	if (trimmed.includes("/") && !trimmed.includes("://") && !trimmed.includes(" ")) {
+		return {
+			bucket: trimmed.endsWith(".xml") ? "preset-files" : "thumbnails",
+			path: trimmed,
 		};
 	}
 	return null;

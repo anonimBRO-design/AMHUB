@@ -77,12 +77,16 @@ export function StickyActionBar({ preset }: StickyActionBarProps) {
 
 	const isLocked = Boolean(preset.isPaid && !preset.hasAccess);
 
+	const primaryAmLink = preset.amLink
+		? preset.amLink.split("|")[0]?.trim() || null
+		: null;
+
 	const handleCopy = async () => {
 		const link = isLocked
 			? typeof window !== "undefined"
 				? window.location.href
 				: ""
-			: preset.amLink || preset.fileUrl || window.location.href;
+			: primaryAmLink || preset.fileUrl || window.location.href;
 		try {
 			await navigator.clipboard.writeText(link);
 			setCopied(true);
@@ -92,7 +96,7 @@ export function StickyActionBar({ preset }: StickyActionBarProps) {
 		}
 	};
 
-	const mainDownloadUrl = preset.amLink || preset.fileUrl || "#";
+	const mainDownloadUrl = primaryAmLink || preset.fileUrl || "#";
 
 	return (
 		<div className="mt-6 p-2.5 rounded-xl bg-[var(--color-bg-surface)] border border-[var(--color-border-subtle)] shadow-lg sm:hidden transition-all">

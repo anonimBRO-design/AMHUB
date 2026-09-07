@@ -337,21 +337,35 @@ export function InstallSection({ preset }: InstallSectionProps) {
 			) : (
 				<>
 					<div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-						{preset.amLink && (
-							<a
-								href={preset.amLink}
-								target="_blank"
-								rel="noopener noreferrer"
-								onClick={(e) =>
-									handleDownload(e, "amLink", preset.amLink || "")
-								}
-								className="inline-flex items-center justify-center gap-2 min-h-[48px] px-5 rounded-lg bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-bold text-sm shadow-lg shadow-emerald-500/25 hover:from-emerald-600 hover:to-teal-600 active:scale-[0.98] transition-all group"
-							>
-								<Zap className="w-4.5 h-4.5 fill-current text-white animate-pulse" />
-								<span>Open in Alight Motion</span>
-								<ExternalLink className="w-4 h-4 opacity-75 group-hover:translate-x-0.5 transition-transform" />
-							</a>
-						)}
+						{preset.amLink &&
+							preset.amLink
+								.split("|")
+								.map((l) => l.trim())
+								.filter(Boolean)
+								.map((link, idx) => {
+									const isGdrive = link
+										.toLowerCase()
+										.includes("drive.google.com");
+									const label = isGdrive
+										? "Buka Google Drive"
+										: "Open in Alight Motion";
+									return (
+										<a
+											key={`${link}-${idx}`}
+											href={link}
+											target="_blank"
+											rel="noopener noreferrer"
+											onClick={(e) =>
+												handleDownload(e, "amLink", link)
+											}
+											className="inline-flex items-center justify-center gap-2 min-h-[48px] px-5 rounded-lg bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-bold text-sm shadow-lg shadow-emerald-500/25 hover:from-emerald-600 hover:to-teal-600 active:scale-[0.98] transition-all group"
+										>
+											<Zap className="w-4.5 h-4.5 fill-current text-white animate-pulse" />
+											<span>{label}</span>
+											<ExternalLink className="w-4 h-4 opacity-75 group-hover:translate-x-0.5 transition-transform" />
+										</a>
+									);
+								})}
 
 						{preset.fileUrl && (
 							<a
