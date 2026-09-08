@@ -422,7 +422,7 @@ export async function createPreset(
 		const insertPayload = {
 			...insertData,
 			slug: currentSlug,
-			status: insertData.status ?? "pending",
+			status: insertData.status ?? "published",
 			creator_id: creatorId,
 		};
 
