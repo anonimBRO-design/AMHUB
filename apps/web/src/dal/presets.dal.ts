@@ -429,7 +429,8 @@ export async function createPreset(
 		console.log(
 			`[FINAL RAW INSERT EXECUTING] ${tag} (attempt ${attempts}, slug: ${currentSlug})...`,
 		);
-		const rawInsertResult = await client
+		const serviceClient = createSupabaseServiceClient();
+		const rawInsertResult = await serviceClient
 			.from("presets")
 			.insert([insertPayload] as never);
 
@@ -453,7 +454,7 @@ export async function createPreset(
 		console.log(
 			`[FINAL RAW INSERT SUCCESS, FETCHING CREATED RECORD] ${tag}...`,
 		);
-		const { data: preset, error: selectError } = await client
+		const { data: preset, error: selectError } = await serviceClient
 			.from("presets")
 			.select("*")
 			.eq("slug", currentSlug)
@@ -699,17 +700,36 @@ export async function listRemixChildren(
 export async function getPresetBySlug(
 	client: DalClient,
 	slug: string,
+	options?: { allowUnpublishedForUserId?: string | null; isStaff?: boolean },
 ): Promise<PresetWithCreator | null> {
-	const { data, error } = await client
+	let query = client
 		.from("presets")
 		.select(PRESET_SELECT_WITH_CREATOR)
-		.eq("slug", slug)
-		.eq("status", "published")
-		.maybeSingle();
+		.eq("slug", slug);
+
+	if (!options?.isStaff && !options?.allowUnpublishedForUserId) {
+		query = query.eq("status", "published");
+	}
+
+	const { data, error } = await query.maybeSingle();
 
 	if (error) throw error;
 	if (!data) return null;
-	return data as unknown as PresetWithCreator;
+
+	const preset = data as unknown as PresetWithCreator;
+	if (preset.status === "published") {
+		return preset;
+	}
+
+	if (
+		options?.isStaff ||
+		(options?.allowUnpublishedForUserId &&
+			options.allowUnpublishedForUserId === preset.creator.id)
+	) {
+		return preset;
+	}
+
+	return null;
 }
 
 export async function listCreatorPresets(

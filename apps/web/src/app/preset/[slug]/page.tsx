@@ -4,7 +4,7 @@ import { getRemixParent, listRemixChildren } from "@/dal/presets.dal";
 import { getFollowerCount } from "@/dal/users.dal";
 import { getPresetBySlug, listPublishedPresets } from "@/data/presets";
 import { mapPresetToCardPreset } from "@/lib/mappers";
-import { getCurrentUser } from "@/lib/supabase/auth";
+import { getCurrentProfile, getCurrentUser } from "@/lib/supabase/auth";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { resolveStorageUrl } from "@/lib/supabase/storage";
 import type { Metadata } from "next";
@@ -43,8 +43,12 @@ export default async function PresetDetailPage({ params }: PageProps) {
 	const { slug } = await params;
 	const supabase = await createSupabaseServerClient();
 	const currentUser = await getCurrentUser();
+	const currentProfile = await getCurrentProfile();
 
-	const rawPreset = await getPresetBySlug(supabase, slug);
+	const rawPreset = await getPresetBySlug(supabase, slug, {
+		allowUnpublishedForUserId: currentUser?.id,
+		isStaff: currentProfile?.is_staff,
+	});
 	if (!rawPreset) {
 		notFound();
 	}

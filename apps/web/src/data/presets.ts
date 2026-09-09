@@ -61,8 +61,9 @@ export async function listPublishedPresets(
 export async function getPresetBySlug(
 	supabase: PresetHubSupabaseClient,
 	slug: string,
+	options?: { allowUnpublishedForUserId?: string | null; isStaff?: boolean },
 ) {
-	return getPresetBySlugDal(supabase, slug);
+	return getPresetBySlugDal(supabase, slug, options);
 }
 
 export async function listCreatorPresets(
