@@ -740,6 +740,7 @@ export async function listCreatorPresets(
 		const { data, error } = await client
 			.from("presets")
 			.select(PRESET_SELECT_WITH_CREATOR)
+			.eq("status", "published")
 			.eq("creator_id", creatorId)
 			.order("created_at", { ascending: false });
 
