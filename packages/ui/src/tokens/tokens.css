@@ -106,15 +106,15 @@
 	--tracking-mono: 0;
 
 	/* ─── BORDER RADIUS ───────────────────────────────────────── */
-	/* Modern sleek soft-squared corners (Discord / Linear / Raycast aesthetic) */
+	/* Modern sleek soft-squared corners (Apple macOS / iOS aesthetic) */
 	--radius-none: 0px;
-	--radius-xs: 2px;
-	--radius-sm: 4px;
-	--radius-md: 6px;
-	--radius-lg: 8px;
-	--radius-xl: 10px;
-	--radius-2xl: 12px;
-	--radius-3xl: 14px;
+	--radius-xs: 4px;
+	--radius-sm: 6px;
+	--radius-md: 10px;
+	--radius-lg: 14px;
+	--radius-xl: 18px;
+	--radius-2xl: 24px;
+	--radius-3xl: 32px;
 	--radius-full: 9999px; /* retained for circular avatars/indicators */
 
 	/* ─── SHADOWS & ELEVATION ─────────────────────────────────── */

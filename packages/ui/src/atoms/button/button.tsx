@@ -5,7 +5,7 @@ import * as React from "react";
 import { cn } from "../../lib/utils";
 
 const buttonVariants = cva(
-	"inline-flex items-center justify-center rounded-[var(--radius-md)] text-[var(--font-size-label-md)] font-medium transition-all duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--shadow-focus)] disabled:opacity-40 disabled:pointer-events-none ring-offset-background select-none",
+	"inline-flex items-center justify-center rounded-[var(--radius-lg)] text-[var(--font-size-label-md)] font-medium transition-all duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--shadow-focus)] disabled:opacity-40 disabled:pointer-events-none ring-offset-background select-none",
 	{
 		variants: {
 			variant: {
@@ -22,10 +22,10 @@ const buttonVariants = cva(
 				link: "text-[var(--color-text-accent)] underline-offset-4 hover:underline",
 			},
 			size: {
-				sm: "min-h-[36px] px-3 py-1.5 text-[var(--font-size-label-sm)] rounded-[var(--radius-sm)]",
-				md: "min-h-[44px] px-4 py-2 text-[var(--font-size-label-md)] rounded-[var(--radius-md)]",
-				lg: "min-h-[48px] px-6 py-3 text-[var(--font-size-label-lg)] rounded-[var(--radius-lg)]",
-				icon: "min-h-[40px] min-w-[40px] p-2 rounded-[var(--radius-md)]",
+				sm: "min-h-[36px] px-3 py-1.5 text-[var(--font-size-label-sm)] rounded-[var(--radius-md)]",
+				md: "min-h-[44px] px-4 py-2 text-[var(--font-size-label-md)] rounded-[var(--radius-lg)]",
+				lg: "min-h-[48px] px-6 py-3 text-[var(--font-size-label-lg)] rounded-[var(--radius-xl)]",
+				icon: "min-h-[40px] min-w-[40px] p-2 rounded-[var(--radius-lg)]",
 			},
 		},
 		defaultVariants: {

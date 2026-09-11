@@ -445,7 +445,7 @@ h6,
 	backdrop-filter: blur(var(--glass-blur, 16px));
 	-webkit-backdrop-filter: blur(var(--glass-blur, 16px));
 	border: 1px solid var(--glass-border);
-	border-radius: 18px;
+	border-radius: var(--radius-xl);
 	transition: all 0.28s cubic-bezier(0.25, 1, 0.5, 1);
 }
 .ios-card:hover {
