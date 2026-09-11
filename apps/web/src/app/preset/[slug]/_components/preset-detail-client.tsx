@@ -68,7 +68,7 @@ export function PresetDetailClient({
 	};
 
 	return (
-		<div className="space-y-6 pb-24 sm:pb-12 max-w-5xl mx-auto px-4 sm:px-0">
+		<div className="space-y-6 pb-24 sm:pb-12 max-w-7xl mx-auto px-4 sm:px-6">
 			{/* Back Button & Category Breadcrumb Bar */}
 			<div className="flex items-center justify-between pt-1">
 				<button
