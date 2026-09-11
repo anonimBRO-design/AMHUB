@@ -330,7 +330,18 @@ export const PresetCard = React.forwardRef<HTMLDivElement, PresetCardProps>(
 							muted={isMuted}
 							loop
 							playsInline
+							preload="auto"
 							className="absolute inset-0 h-full w-full object-contain transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-[1.02]"
+							onError={(e) => {
+								console.error("Video playback error:", e);
+								const video = e.currentTarget;
+								// If video fails to load/play (e.g. codec issue), fallback to thumbnail
+								if (video) {
+									video.style.display = "none";
+									const img = video.parentElement?.querySelector("img");
+									if (img) img.style.display = "block";
+								}
+							}}
 						/>
 					) : (
 						<img
