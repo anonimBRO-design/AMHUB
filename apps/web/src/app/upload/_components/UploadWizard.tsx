@@ -130,7 +130,8 @@ export function UploadWizard() {
 	const [amVersionMin, setAmVersionMin] = useState("");
 	const [amVersionMax, setAmVersionMax] = useState("");
 	const [remixFrom, setRemixFrom] = useState("");
-	const [enableSocialLock, setEnableSocialLock] = useState(true);
+	const [enableSocialLock, setEnableSocialLock] = useState(false);
+	const [hasReviewedStep4, setHasReviewedStep4] = useState(false);
 	const [tiktokSoundTitle, setTiktokSoundTitle] = useState("");
 	const [tiktokSoundUrl, setTiktokSoundUrl] = useState("");
 	const [sultanPackUrl, setSultanPackUrl] = useState("");
@@ -271,13 +272,23 @@ export function UploadWizard() {
 						(commercialPrice >= price && !Number.isNaN(commercialPrice))))),
 	);
 
-	const isStep4Valid = true;
+	const hasBoosterConfigured = Boolean(
+		enableSocialLock ||
+			tiktokSoundTitle.trim() ||
+			tiktokSoundUrl.trim() ||
+			sultanPackUrl.trim(),
+	);
+
+	const isStep4Valid = hasBoosterConfigured || hasReviewedStep4;
 
 	const isStep5Valid =
-		isStep1Valid && isStep2Valid && isStep3Valid && isStep4Valid;
+		isStep1Valid && isStep2Valid && isStep3Valid && currentStep === 5;
 
 	const handleNextStep = () => {
 		setError(null);
+		if (currentStep === 4) {
+			setHasReviewedStep4(true);
+		}
 		if (currentStep < 5) {
 			setCurrentStep((prev) => prev + 1);
 		}
@@ -745,6 +756,9 @@ export function UploadWizard() {
 				}}
 				onStepClick={(step) => {
 					setError(null);
+					if (currentStep === 4 || step === 5) {
+						setHasReviewedStep4(true);
+					}
 					setCurrentStep(step);
 				}}
 			/>
