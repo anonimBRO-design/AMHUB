@@ -144,7 +144,40 @@ export async function recordPresetDownload(
 		}
 	}
 
-	// 3. Fetch current preset counters
+	// 3. Increment counters via SECURITY DEFINER RPC (bypasses RLS atomically for anon/guests)
+	try {
+		type RpcDownloadResult = {
+			total_downloads: number;
+			unique_downloads: number;
+		};
+		const { data: rpcData, error: rpcError } = await (
+			client.rpc as unknown as (
+				fn: string,
+				args: Record<string, unknown>,
+			) => Promise<{
+				data: RpcDownloadResult[] | RpcDownloadResult | null;
+				error: unknown;
+			}>
+		)("increment_preset_download", {
+			p_preset_id: presetId,
+			p_is_unique: isUnique,
+		});
+
+		if (!rpcError && rpcData) {
+			const res = Array.isArray(rpcData) ? rpcData[0] : rpcData;
+			if (res && typeof res.total_downloads === "number") {
+				return {
+					isUnique,
+					totalDownloads: res.total_downloads,
+					uniqueDownloads: res.unique_downloads ?? (isUnique ? 1 : 0),
+				};
+			}
+		}
+	} catch (rpcErr) {
+		console.warn("[recordPresetDownload] RPC error, falling back:", rpcErr);
+	}
+
+	// 4. Fetch current preset counters (fallback)
 	const { data: presetData } = await client
 		.from("presets")
 		.select("download_count")
@@ -160,7 +193,7 @@ export async function recordPresetDownload(
 	const newTotal = currentTotal + 1;
 	const newUnique = isUnique ? currentUnique + 1 : currentUnique;
 
-	// 4. Update preset counters safely (download_count is DB-guarded for
+	// 5. Update preset counters safely (download_count is DB-guarded for
 	// non-staff, so writes must use a privileged service client).
 	let counterClient: DalClient = client;
 	try {
@@ -182,6 +215,7 @@ export async function recordPresetDownload(
 		uniqueDownloads: newUnique,
 	};
 }
+
 
 /**
  * Gets unique download stats for a preset or creator.

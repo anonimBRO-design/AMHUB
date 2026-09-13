@@ -111,20 +111,21 @@ export function Hero({ preset, currentUserId }: HeroProps) {
 	useEffect(() => {
 		if (!preset.id) return;
 		const key = `am_view_${preset.id}`;
-		if (sessionStorage.getItem(key)) return;
-		sessionStorage.setItem(key, "1");
+		if (typeof window !== "undefined" && window.sessionStorage?.getItem(key)) return;
 
 		fetch(`/api/presets/${preset.id}/view`, { method: "POST" })
 			.then((res) => res.json())
 			.then((resData) => {
-				if (resData?.data?.view_count !== undefined) {
-					setViewCount(resData.data.view_count);
-				} else {
-					setViewCount((prev) => prev + 1);
+				const count = resData?.data?.view_count;
+				if (typeof count === "number" && count > 0) {
+					try {
+						sessionStorage.setItem(key, "1");
+					} catch {}
+					setViewCount(count);
 				}
 			})
-			.catch(() => {
-				setViewCount((prev) => prev + 1);
+			.catch((err) => {
+				console.error("[Hero] Error recording view count:", err);
 			});
 	}, [preset.id]);
 

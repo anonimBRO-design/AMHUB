@@ -1226,20 +1226,55 @@ export async function incrementPresetView(
 	presetId: string,
 ): Promise<number> {
 	try {
-		const { data: current } = await client
+		// 1. Try atomic SECURITY DEFINER RPC (bypasses RLS safely for guests/anon)
+		const { data: rpcCount, error: rpcError } = await (
+			client.rpc as unknown as (
+				fn: string,
+				args: Record<string, unknown>,
+			) => Promise<{ data: number | null; error: unknown }>
+		)("increment_preset_view", {
+			p_preset_id: presetId,
+		});
+
+		if (!rpcError && typeof rpcCount === "number" && rpcCount > 0) {
+			return rpcCount;
+		}
+
+		if (rpcError) {
+			console.warn(
+				"[incrementPresetView] RPC failed or not yet deployed in Supabase, attempting fallback:",
+				rpcError,
+			);
+		}
+
+		// 2. Fallback: Privileged service client or caller client
+		let counterClient: DalClient = client;
+		try {
+			counterClient = createSupabaseServiceClient();
+		} catch {
+			counterClient = client;
+		}
+
+		const { data: current } = await counterClient
 			.from("presets")
 			.select("view_count")
 			.eq("id", presetId)
 			.maybeSingle();
 
 		if (current) {
-			const newCount =
-				((current as { view_count?: number }).view_count || 0) + 1;
-			await client
+			const currentCount =
+				(current as { view_count?: number }).view_count || 0;
+			const newCount = currentCount + 1;
+			const { data: updated, error: updateError } = await counterClient
 				.from("presets")
 				.update({ view_count: newCount } as never)
-				.eq("id", presetId);
-			return newCount;
+				.eq("id", presetId)
+				.select("view_count")
+				.maybeSingle();
+
+			if (!updateError && updated) {
+				return (updated as { view_count?: number }).view_count ?? newCount;
+			}
 		}
 		return 0;
 	} catch (e) {
@@ -1247,3 +1282,4 @@ export async function incrementPresetView(
 		return 0;
 	}
 }
+
