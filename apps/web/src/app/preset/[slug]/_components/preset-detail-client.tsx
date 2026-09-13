@@ -4,6 +4,7 @@ import type { PresetCardPreset } from "@presethub/ui";
 import { ArrowLeft, Sparkles } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { CommentSection } from "./CommentSection";
 import { CreatorCard } from "./CreatorCard";
 import { DescriptionSection } from "./DescriptionSection";
@@ -58,6 +59,9 @@ export function PresetDetailClient({
   remixChildrenTotal = 0,
 }: PresetDetailClientProps) {
   const router = useRouter();
+  const [liveCommentCount, setLiveCommentCount] = useState(
+    Math.max(preset.commentCount ?? 0, comments.length),
+  );
 
   const handleBack = () => {
     if (typeof window !== "undefined" && window.history.length > 1) {
@@ -95,7 +99,10 @@ export function PresetDetailClient({
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start">
         {/* LEFT COLUMN: Sticky Media Showcase (Video + Reaction Bar + Quick Counters) */}
         <div className="lg:col-span-5 xl:col-span-5 lg:sticky lg:top-6 self-start w-full">
-          <Hero preset={preset} currentUserId={currentUserId} />
+          <Hero
+            preset={{ ...preset, commentCount: liveCommentCount }}
+            currentUserId={currentUserId}
+          />
         </div>
 
         {/* RIGHT COLUMN: Conversion Hub, Creator & Description */}
@@ -137,7 +144,7 @@ export function PresetDetailClient({
             uniqueDownloads={preset.uniqueDownloadCount}
             likes={preset.likeCount ?? 0}
             bookmarks={preset.bookmarkCount ?? 0}
-            comments={preset.commentCount ?? 0}
+            comments={liveCommentCount}
           />
           <TagList preset={preset} />
         </div>
@@ -153,7 +160,8 @@ export function PresetDetailClient({
         <CommentSection
           presetId={preset.id}
           initialComments={comments}
-          commentCount={comments.length || preset.commentCount}
+          commentCount={liveCommentCount}
+          onCommentCountChange={setLiveCommentCount}
         />
       </div>
 

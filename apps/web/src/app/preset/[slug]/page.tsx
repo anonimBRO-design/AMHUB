@@ -108,8 +108,14 @@ export default async function PresetDetailPage({ params }: PageProps) {
 	const hasAccess = accessResult.hasAccess;
 
 	const cardPreset = mapPresetToCardPreset(rawPreset);
+	const realCommentCount = Math.max(
+		cardPreset.commentCount ?? 0,
+		commentsRes.total ?? 0,
+		(commentsRes.items ?? []).length,
+	);
 	const presetForDetail = {
 		...cardPreset,
+		commentCount: realCommentCount,
 		fileType: rawPreset.file_type,
 		// SENSITIVE SECURITY FIX: Only expose fileUrl and amLink if user has access / free
 		fileUrl: hasAccess ? rawPreset.file_url : null,

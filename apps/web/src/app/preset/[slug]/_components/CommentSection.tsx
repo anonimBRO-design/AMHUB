@@ -20,12 +20,14 @@ interface CommentSectionProps {
 	presetId: string;
 	initialComments?: CommentItem[];
 	commentCount?: number;
+	onCommentCountChange?: (count: number) => void;
 }
 
 export function CommentSection({
 	presetId,
 	initialComments = [],
 	commentCount = 0,
+	onCommentCountChange,
 }: CommentSectionProps) {
 	const [comments, setComments] = useState<CommentItem[]>(initialComments);
 	const [newComment, setNewComment] = useState("");
@@ -52,7 +54,11 @@ export function CommentSection({
 			},
 		};
 
-		setComments((prev) => [optimisticComment, ...prev]);
+		setComments((prev) => {
+			const updated = [optimisticComment, ...prev];
+			onCommentCountChange?.(updated.length);
+			return updated;
+		});
 		setNewComment("");
 
 		try {
@@ -79,14 +85,22 @@ export function CommentSection({
 			posthog.capture("preset_comment_posted", { preset_id: presetId });
 		} catch (error) {
 			console.error("Failed to post comment", error);
-			setComments((prev) => prev.filter((c) => c.id !== optimisticId));
+			setComments((prev) => {
+				const reverted = prev.filter((c) => c.id !== optimisticId);
+				onCommentCountChange?.(reverted.length);
+				return reverted;
+			});
 		} finally {
 			setIsSubmitting(false);
 		}
 	};
 
 	const handleDeleteComment = async (commentId: string) => {
-		setComments((prev) => prev.filter((c) => c.id !== commentId));
+		setComments((prev) => {
+			const updated = prev.filter((c) => c.id !== commentId);
+			onCommentCountChange?.(updated.length);
+			return updated;
+		});
 
 		try {
 			const res = await fetch(`/api/comments/${commentId}`, {
