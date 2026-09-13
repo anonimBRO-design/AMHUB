@@ -2,6 +2,7 @@
 
 import { useAuth } from "@/context/AuthContext";
 import { useLanguage } from "@/i18n";
+import Link from "next/link";
 import {
 	Check,
 	ChevronDown,
@@ -527,6 +528,38 @@ export function InstallSection({ preset }: InstallSectionProps) {
 							</button>
 						)}
 					</div>
+
+					{/* Jasa Joki / Custom Edit Card */}
+					{preset.creator && (
+						<div className="p-4 rounded-xl bg-gradient-to-r from-cyan-500/10 via-blue-500/5 to-indigo-500/10 border border-cyan-500/30 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-sm">
+							<div className="space-y-1">
+								<div className="flex items-center gap-1.5">
+									<span className="text-base">💼</span>
+									<h4 className="text-xs sm:text-sm font-bold text-[var(--color-text-primary)]">
+										{language === "id"
+											? "Mau Video Mirip Ini Tapi Pake Foto/Lagu Sendiri?"
+											: "Want a Custom Edit Like This?"}
+									</h4>
+									<span className="px-1.5 py-0.5 rounded text-[10px] font-extrabold bg-cyan-500/20 text-cyan-400 border border-cyan-500/30">
+										{language === "id" ? "JASA JOKI EDIT" : "COMMISSION"}
+									</span>
+								</div>
+								<p className="text-xs text-[var(--color-text-secondary)] max-w-md leading-relaxed">
+									{language === "id"
+										? `Mager ngedit sendiri? Sewa @${preset.creator.username} buat bikinin video custom ultah, cinematic motor, atau jedag-jedug sesuai sound TikTok pilihan lu!`
+										: `Too busy to edit? Hire @${preset.creator.username} to craft a custom Alight Motion edit for your favorite TikTok sound!`}
+								</p>
+							</div>
+
+							<Link
+								href={`/requests?creator=${encodeURIComponent(preset.creator.username)}`}
+								className="inline-flex items-center gap-1.5 py-2 px-3.5 rounded-lg bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-extrabold text-xs shadow-md shadow-cyan-500/20 active:scale-95 transition-all shrink-0 cursor-pointer"
+							>
+								<Sparkles className="w-3.5 h-3.5 fill-current" />
+								<span>{language === "id" ? "Order Jasa Joki" : "Hire Creator"}</span>
+							</Link>
+						</div>
+					)}
 
 					{/* Compact Direct Link & QR Code Utility Bar */}
 					{linkToCopy && (

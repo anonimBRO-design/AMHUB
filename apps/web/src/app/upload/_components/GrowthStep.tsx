@@ -167,12 +167,33 @@ export function GrowthStep({
 				/>
 			</div>
 
+			{/* 4. Jasa Joki / Commission Edit */}
+			<div className="p-4 rounded-2xl bg-[var(--color-bg-base)] border border-cyan-500/20 space-y-2">
+				<div className="flex items-center justify-between gap-3">
+					<div className="flex items-center gap-2.5">
+						<span className="text-base">💼</span>
+						<div>
+							<div className="flex items-center gap-2">
+								<span className="text-xs font-bold text-[var(--color-text-primary)]">
+									Jasa Joki / Commission Edit Preset
+								</span>
+								<span className="px-2 py-0.5 rounded text-[10px] font-extrabold uppercase bg-cyan-500/20 text-cyan-400 border border-cyan-500/30">
+									OTOMATIS AKTIF ✨
+								</span>
+							</div>
+							<span className="block text-[11px] text-[var(--color-text-secondary)] mt-0.5 leading-relaxed">
+								Tombol <strong>&quot;Order Jasa Joki&quot;</strong> otomatis dipasang di halaman preset lu. Pengunjung yang mager ngedit bisa langsung klik buat sewa lu bikin preset custom via sistem <strong className="text-cyan-400 font-mono">/requests</strong> AMHUB!
+							</span>
+						</div>
+					</div>
+				</div>
+			</div>
+
 			{/* Info callout */}
 			<div className="p-3.5 rounded-2xl bg-indigo-500/5 border border-indigo-500/15 text-[11px] text-[var(--color-text-secondary)] leading-relaxed">
 				<span className="font-bold text-indigo-400">💡 Tips:</span> Semua
-				field di step ini bersifat opsional. Tapi kalau diisi, preset lu bisa
-				lebih gampang ditemuin dan viral di TikTok. Social Lock bantu naikin
-				follower, Paket Sultan bantu naikin cuan!
+				field di step ini fleksibel. Social Lock bantu naikin follower akunmu,
+				sound TikTok bantu naikin views, dan Paket Sultan + Jasa Joki bantu naikin cuan riil!
 			</div>
 		</div>
 	);

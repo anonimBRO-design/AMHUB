@@ -295,6 +295,10 @@ export function ReviewStep({
 									<span className="font-bold text-amber-400">Tersedia 💎</span>
 								</div>
 							)}
+							<div className="flex items-center justify-between">
+								<span className="text-[var(--color-text-secondary)]">Jasa Joki / Commission Edit</span>
+								<span className="font-bold text-cyan-400">Aktif Otomatis 💼</span>
+							</div>
 						</div>
 					</div>
 				</div>
