@@ -27,6 +27,7 @@ interface ReviewStepProps {
 	remixFrom?: string | null;
 	amVersionMin?: string | null;
 	amVersionMax?: string | null;
+	aspectRatios?: string[];
 	enableSocialLock?: boolean;
 	tiktokSoundTitle?: string;
 	tiktokSoundUrl?: string;
@@ -50,6 +51,7 @@ export function ReviewStep({
 	remixFrom = null,
 	amVersionMin = null,
 	amVersionMax = null,
+	aspectRatios = ["9:16"],
 	enableSocialLock = true,
 	tiktokSoundTitle = "",
 	tiktokSoundUrl = "",
@@ -176,6 +178,17 @@ export function ReviewStep({
 						</span>
 						<span className="font-bold text-[var(--color-text-primary)] capitalize">
 							{difficulty}
+						</span>
+					</div>
+
+					<div className="p-3 rounded-2xl bg-[var(--color-bg-surface)] border border-[var(--color-border-subtle)] space-y-1">
+						<span className="text-[var(--color-text-tertiary)] block text-[10px] font-bold uppercase">
+							Rasio Layar
+						</span>
+						<span className="font-bold text-cyan-400">
+							{aspectRatios && aspectRatios.length > 0
+								? aspectRatios.join(", ")
+								: "9:16"}
 						</span>
 					</div>
 

@@ -177,6 +177,7 @@ export interface Database {
 					am_version_min: Nullable<string>;
 					am_version_max: Nullable<string>;
 					device_support: DeviceSupport[];
+					aspect_ratios: string[];
 					download_count: number;
 					unique_download_count: number;
 					price: number;
@@ -215,6 +216,7 @@ export interface Database {
 					am_version_min?: Nullable<string>;
 					am_version_max?: Nullable<string>;
 					device_support?: DeviceSupport[];
+					aspect_ratios?: string[];
 					download_count?: number;
 					unique_download_count?: number;
 					price?: number;

@@ -11,6 +11,7 @@ import {
 	Info,
 	Layers,
 	Layers3,
+	Ratio,
 	Smartphone,
 	Sparkles,
 	Volume2,
@@ -27,6 +28,8 @@ interface DetailsStepProps {
 	onCategoryChange: (category: string) => void;
 	difficulty: "beginner" | "intermediate" | "advanced";
 	onDifficultyChange: (diff: "beginner" | "intermediate" | "advanced") => void;
+	aspectRatios: string[];
+	onAspectRatiosChange: (ratios: string[]) => void;
 	isPaid: boolean;
 	onIsPaidChange: (isPaid: boolean) => void;
 	price: number;
@@ -40,6 +43,13 @@ interface DetailsStepProps {
 	remixFrom: string;
 	onRemixFromChange: (value: string) => void;
 }
+
+export const ASPECT_RATIOS = [
+	{ id: "9:16", label: "Vertikal (TikTok/Reels)" },
+	{ id: "16:9", label: "Horizontal (YouTube)" },
+	{ id: "1:1", label: "Persegi (Square IG)" },
+	{ id: "4:5", label: "Potret (Feed IG)" },
+];
 
 const CATEGORIES = [
 	{ id: "jj", label: "JJ", icon: Zap },
@@ -70,6 +80,8 @@ export function DetailsStep({
 	onCategoryChange,
 	difficulty,
 	onDifficultyChange,
+	aspectRatios,
+	onAspectRatiosChange,
 	isPaid,
 	onIsPaidChange,
 	price,
@@ -444,6 +456,73 @@ export function DetailsStep({
 						);
 					})}
 				</div>
+			</div>
+
+			{/* Aspect Ratio Selector (Multi-Select) */}
+			<div className="space-y-2">
+				<div className="flex items-center justify-between">
+					<span className="block text-xs font-bold uppercase tracking-wider text-[var(--color-text-secondary)]">
+						Rasio Layar (Aspect Ratio) *
+					</span>
+					<span className="text-[11px] font-semibold text-[var(--color-interactive-primary)]">
+						Bisa pilih lebih dari 1
+					</span>
+				</div>
+				<div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+					{ASPECT_RATIOS.map((ratio) => {
+						const isSelected = aspectRatios.includes(ratio.id);
+						return (
+							<button
+								key={ratio.id}
+								type="button"
+								onClick={() => {
+									if (isSelected) {
+										if (aspectRatios.length > 1) {
+											onAspectRatiosChange(
+												aspectRatios.filter((r) => r !== ratio.id),
+											);
+										}
+									} else {
+										onAspectRatiosChange([...aspectRatios, ratio.id]);
+									}
+								}}
+								className={`p-3 rounded-2xl border text-left transition-all active:scale-95 relative flex flex-col justify-between min-h-[72px] ${
+									isSelected
+										? "bg-[var(--color-interactive-primary)]/15 border-[var(--color-interactive-primary)] ring-1 ring-[var(--color-interactive-primary)] text-[var(--color-text-primary)] shadow-sm"
+										: "bg-[var(--color-bg-base)] border-[var(--color-border-subtle)] hover:border-[var(--color-border-strong)] text-[var(--color-text-secondary)]"
+								}`}
+							>
+								<div className="flex items-center justify-between w-full">
+									<div className="flex items-center gap-1.5">
+										<Ratio
+											className={`w-3.5 h-3.5 ${
+												isSelected
+													? "text-[var(--color-interactive-primary)]"
+													: "text-[var(--color-text-tertiary)]"
+											}`}
+										/>
+										<span className="text-xs font-bold">{ratio.id}</span>
+									</div>
+									<div
+										className={`w-4 h-4 rounded-md flex items-center justify-center transition-colors ${
+											isSelected
+												? "bg-[var(--color-interactive-primary)] text-white"
+												: "border border-[var(--color-border-strong)]"
+										}`}
+									>
+										{isSelected && <Check className="w-3 h-3" />}
+									</div>
+								</div>
+								<span className="text-[10px] font-medium text-[var(--color-text-tertiary)] mt-1.5 line-clamp-1">
+									{ratio.label}
+								</span>
+							</button>
+						);
+					})}
+				</div>
+				<p className="text-[11px] text-[var(--color-text-tertiary)]">
+					Pilih satu atau beberapa rasio kanvas yang cocok untuk preset ini (default: 9:16 untuk vertikal).
+				</p>
 			</div>
 
 			{/* Alight Motion Version Support */}

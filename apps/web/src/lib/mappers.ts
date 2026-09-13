@@ -13,25 +13,14 @@ export { formatCategory } from "@/lib/format-category";
 export function mapPresetToCardPreset(
 	preset: PresetWithCreator,
 ): PresetCardPreset {
+	const presetAny = preset as Record<string, unknown>;
+	const ratiosArr = Array.isArray(presetAny.aspect_ratios)
+		? (presetAny.aspect_ratios as string[])
+		: undefined;
 	const rawAspect =
-		(
-			preset as {
-				aspect_ratio?: string;
-				aspectRatio?: string;
-				aspect_ratios?: string[];
-			}
-		).aspect_ratio ||
-		(
-			preset as {
-				aspect_ratio?: string;
-				aspectRatio?: string;
-				aspect_ratios?: string[];
-			}
-		).aspectRatio ||
-		(Array.isArray((preset as { aspect_ratios?: string[] }).aspect_ratios) &&
-		(preset as { aspect_ratios?: string[] }).aspect_ratios!.length > 0
-			? (preset as { aspect_ratios?: string[] }).aspect_ratios![0]
-			: undefined);
+		(ratiosArr && ratiosArr.length > 0 ? ratiosArr[0] : undefined) ??
+		(presetAny.aspect_ratio as string | undefined) ??
+		(presetAny.aspectRatio as string | undefined);
 
 	return {
 		id: preset.id,

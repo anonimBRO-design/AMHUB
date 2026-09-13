@@ -130,6 +130,7 @@ export function UploadWizard() {
 	const [amVersionMin, setAmVersionMin] = useState("");
 	const [amVersionMax, setAmVersionMax] = useState("");
 	const [remixFrom, setRemixFrom] = useState("");
+	const [aspectRatios, setAspectRatios] = useState<string[]>(["9:16"]);
 	const [enableSocialLock, setEnableSocialLock] = useState(false);
 	const [hasReviewedStep4, setHasReviewedStep4] = useState(false);
 	const [tiktokSoundTitle, setTiktokSoundTitle] = useState("");
@@ -663,9 +664,10 @@ export function UploadWizard() {
 					currency: "IDR",
 					commercial_price:
 						isPaid && commercialPrice >= price ? commercialPrice : 0,
-					am_version_min: normalizeAmVersion(amVersionMin) ?? undefined,
+						am_version_min: normalizeAmVersion(amVersionMin) ?? undefined,
 					am_version_max: normalizeAmVersion(amVersionMax) ?? undefined,
 					remixed_from: remixFrom.trim() || undefined,
+					aspect_ratios: aspectRatios,
 				}),
 			});
 
@@ -810,6 +812,8 @@ export function UploadWizard() {
 						onCategoryChange={setCategory}
 						difficulty={difficulty}
 						onDifficultyChange={setDifficulty}
+						aspectRatios={aspectRatios}
+						onAspectRatiosChange={setAspectRatios}
 						isPaid={isPaid}
 						onIsPaidChange={setIsPaid}
 						price={price}
@@ -860,6 +864,7 @@ export function UploadWizard() {
 						tiktokSoundTitle={tiktokSoundTitle}
 						tiktokSoundUrl={tiktokSoundUrl}
 						sultanPackUrl={sultanPackUrl}
+						aspectRatios={aspectRatios}
 					/>
 				)}
 			</div>

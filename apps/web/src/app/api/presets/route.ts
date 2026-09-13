@@ -48,6 +48,7 @@ const createPresetSchema = z
 		device_support: z
 			.array(z.enum(["android", "ios", "both"]))
 			.default(["both"]),
+		aspect_ratios: z.array(z.string()).min(1).default(["9:16"]),
 	})
 	.superRefine((data, ctx) => {
 		if (
