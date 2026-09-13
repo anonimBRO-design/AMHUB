@@ -1,3 +1,4 @@
+import { formatCategory } from "@/lib/format-category";
 import { type PresetCardPreset, PresetGrid } from "@presethub/ui";
 import { Layers } from "lucide-react";
 
@@ -9,6 +10,8 @@ interface RelatedPresetsProps {
 export function RelatedPresets({ presets, category }: RelatedPresetsProps) {
 	if (!presets || presets.length === 0) return null;
 
+	const formattedCat = formatCategory(category);
+
 	return (
 		<section className="space-y-4 pt-4">
 			<div className="flex items-center justify-between px-1">
@@ -17,11 +20,7 @@ export function RelatedPresets({ presets, category }: RelatedPresetsProps) {
 						<Layers className="w-4 h-4" />
 					</div>
 					<h2 className="text-lg sm:text-xl font-bold tracking-tight text-[var(--color-text-primary)]">
-						More{" "}
-						{category
-							? `${category.charAt(0).toUpperCase() + category.slice(1)} `
-							: ""}
-						Presets
+						More {formattedCat ? `${formattedCat} ` : ""}Presets
 					</h2>
 				</div>
 			</div>

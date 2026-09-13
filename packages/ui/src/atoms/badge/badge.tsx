@@ -100,6 +100,35 @@ const styleMap: Record<string, Record<string, string>> = {
 	},
 };
 
+const categoryLabels: Record<string, string> = {
+	jj: "JJ",
+	"jj-tipis": "JJ Tipis",
+	"jj tipis": "JJ Tipis",
+	"jj-melar": "JJ Kenyat-Kenyot",
+	"jj melar": "JJ Kenyat-Kenyot",
+	"jj-belah": "JJ Belah",
+	"jj belah": "JJ Belah",
+	"jj-abstract": "JJ Abstract",
+	"jj abstract": "JJ Abstract",
+	"jj-db": "JJ DB",
+	"jj db": "JJ DB",
+	"jj-mekdi": "JJ Mekdi",
+	"jj mekdi": "JJ Mekdi",
+	"jj-kenyal": "JJ Kenyal",
+	"jj kenyal": "JJ Kenyal",
+	velocity: "Velocity",
+	transition: "Transition",
+	color: "Color",
+	anime: "Anime",
+	gaming: "Gaming",
+	lyric: "Lyric",
+	"3d": "3D",
+	am: "AM",
+	xml: "XML",
+	slowmo: "Slowmo",
+	other: "Other",
+};
+
 export const Badge = ({
 	variant,
 	value,
@@ -110,12 +139,21 @@ export const Badge = ({
 	const val = String(value).toLowerCase();
 	const variantStyles = styleMap[variant]?.[val] || "";
 
+	let displayValue = value;
+	if (variant === "category" && typeof value === "string") {
+		if (categoryLabels[val]) {
+			displayValue = categoryLabels[val];
+		} else if (val.startsWith("jj-") || val.startsWith("jj ")) {
+			displayValue = "JJ " + value.slice(3).replace(/-/g, " ");
+		}
+	}
+
 	return (
 		<span
 			className={cn(badgeVariants({ variant, size }), variantStyles, className)}
 		>
 			{Icon && <Icon className="mr-1 h-3 w-3" />}
-			{value}
+			{displayValue}
 		</span>
 	);
 };

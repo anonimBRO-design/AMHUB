@@ -1,6 +1,7 @@
 "use client";
 
 import { useAuth } from "@/context/AuthContext";
+import { formatCategory } from "@/lib/format-category";
 import type { PresetCardPreset } from "@presethub/ui";
 import {
 	BadgeCheck,
@@ -61,7 +62,7 @@ export function MobilePresetView({ preset }: MobilePresetViewProps) {
 				{/* Top Badges */}
 				<div className="absolute top-4 left-4 right-4 flex justify-between items-start pointer-events-none">
 					<span className="bg-black/60 backdrop-blur rounded-full text-sm font-semibold text-white px-3 py-1.5">
-						{preset.category}
+						{formatCategory(preset.category)}
 					</span>
 				</div>
 

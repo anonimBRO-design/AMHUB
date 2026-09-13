@@ -1,7 +1,10 @@
 import type { PresetWithCreator } from "@/data/presets";
 import { formatAmVersion } from "@/lib/am-version";
+import { formatCategory } from "@/lib/format-category";
 import { resolveStorageUrl } from "@/lib/supabase/storage";
 import type { PresetCardPreset } from "@presethub/ui";
+
+export { formatCategory } from "@/lib/format-category";
 
 /**
  * Maps a DAL PresetWithCreator to the UI PresetCardPreset shape.
@@ -37,7 +40,7 @@ export function mapPresetToCardPreset(
 		description: preset.description ?? undefined,
 		thumbnailUrl: resolveStorageUrl(preset.thumbnail_url, "thumbnails") ?? "",
 		previewVideoUrl: resolveStorageUrl(preset.preview_video_url, "preset-videos") ?? undefined,
-		category: preset.category,
+		category: formatCategory(preset.category),
 		difficulty: preset.difficulty as "beginner" | "intermediate" | "advanced",
 		amVersionMin: formatAmVersion(preset.am_version_min) ?? undefined,
 		amVersionMax: formatAmVersion(preset.am_version_max) ?? undefined,

@@ -1,5 +1,6 @@
 "use client";
 
+import { formatCategory } from "@/lib/format-category";
 import {
 	Calendar,
 	ChevronLeft,
@@ -249,8 +250,8 @@ export function MyPresetsManager({ initialPresets }: MyPresetsManagerProps) {
 											<Calendar className="w-3.5 h-3.5" />
 											{new Date(preset.created_at).toLocaleDateString()}
 										</span>
-										<span className="capitalize px-2 py-0.5 rounded-lg bg-[var(--color-bg-base)] text-[var(--color-text-secondary)] font-bold text-[10px]">
-											{preset.category}
+										<span className="px-2 py-0.5 rounded-lg bg-[var(--color-bg-base)] text-[var(--color-text-secondary)] font-bold text-[10px]">
+											{formatCategory(preset.category)}
 										</span>
 									</div>
 

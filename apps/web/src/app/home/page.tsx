@@ -1,5 +1,6 @@
 import { listPublishedPresets } from "@/data/presets";
 import { listPopularCreators } from "@/data/users";
+import { formatCategory } from "@/lib/format-category";
 import { mapPresetToCardPreset } from "@/lib/mappers";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { resolveStorageUrl } from "@/lib/supabase/storage";
@@ -142,7 +143,7 @@ export default async function HomePage({ searchParams }: HomePageProps) {
 					searchQuery
 						? `Results for "${searchQuery}"`
 						: category
-							? `${category.charAt(0).toUpperCase() + category.slice(1)} Presets`
+							? `${formatCategory(category)} Presets`
 							: "Trending Presets"
 				}
 			/>

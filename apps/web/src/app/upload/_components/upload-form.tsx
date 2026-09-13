@@ -1,5 +1,6 @@
 "use client";
 
+import { formatCategory } from "@/lib/format-category";
 import { Button, Input } from "@presethub/ui";
 import { useRouter } from "next/navigation";
 import { type ChangeEvent, type FormEvent, useState } from "react";
@@ -320,7 +321,7 @@ export function UploadForm() {
 						>
 							{CATEGORIES.map((cat) => (
 								<option key={cat} value={cat}>
-									{cat.charAt(0).toUpperCase() + cat.slice(1)}
+									{formatCategory(cat)}
 								</option>
 							))}
 						</select>

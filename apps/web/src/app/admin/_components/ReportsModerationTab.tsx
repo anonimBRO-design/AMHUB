@@ -1,5 +1,6 @@
 "use client";
 
+import { formatCategory } from "@/lib/format-category";
 import {
 	AlertCircle,
 	AlertTriangle,
@@ -344,8 +345,8 @@ export function ReportsModerationTab() {
 
 										{/* Type & Category */}
 										<td className="py-3 px-3">
-											<div className="font-semibold text-cyan-300 capitalize">
-												{preset.category}
+											<div className="font-semibold text-cyan-300">
+												{formatCategory(preset.category)}
 											</div>
 											<div className="text-[10px] text-[var(--color-text-tertiary)] uppercase mt-0.5">
 												{preset.file_type} {preset.is_paid && "• BERBAYAR"}

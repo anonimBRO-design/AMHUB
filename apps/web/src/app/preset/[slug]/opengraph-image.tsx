@@ -1,4 +1,5 @@
 import { getPresetBySlug } from "@/data/presets";
+import { formatCategory } from "@/lib/format-category";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { resolveStorageUrl } from "@/lib/supabase/storage";
 import { ImageResponse } from "next/og";
@@ -21,7 +22,7 @@ export default async function Image({
 	const preset = await getPresetBySlug(supabase, slug);
 
 	const title = preset?.title || "Alight Motion Preset";
-	const category = preset?.category || "XML Preset";
+	const category = formatCategory(preset?.category) || "XML Preset";
 	const creatorName = preset?.creator?.display_name || "AMHUB Creator";
 	const creatorUsername = preset?.creator?.username || "creator";
 	const downloads = preset?.download_count || 0;

@@ -1,5 +1,6 @@
 "use client";
 
+import { formatCategory } from "@/lib/format-category";
 import { RotateCcw, SearchX } from "lucide-react";
 import { useRouter } from "next/navigation";
 
@@ -29,7 +30,7 @@ export function EmptyState({ searchQuery, category }: EmptyStateProps) {
 					{searchQuery
 						? `We couldn't find any presets matching "${searchQuery}".`
 						: category
-							? `No presets available in the "${category}" category right now.`
+							? `No presets available in the "${formatCategory(category)}" category right now.`
 							: "No presets match your current filter selection."}
 				</p>
 			</div>

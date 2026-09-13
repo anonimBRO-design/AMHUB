@@ -1,5 +1,6 @@
 "use client";
 
+import { formatCategory } from "@/lib/format-category";
 import type { PresetCardPreset } from "@presethub/ui";
 import { ArrowLeft, Sparkles } from "lucide-react";
 import Link from "next/link";
@@ -89,8 +90,8 @@ export function PresetDetailClient({
             Explore
           </Link>
           <span>/</span>
-          <span className="text-[var(--color-interactive-primary)] font-semibold capitalize">
-            {preset.category}
+          <span className="text-[var(--color-interactive-primary)] font-semibold">
+            {formatCategory(preset.category)}
           </span>
         </div>
       </div>
@@ -110,9 +111,9 @@ export function PresetDetailClient({
           {/* Preset Title & Category Header */}
           <div className="space-y-2">
             <div className="flex items-center gap-2">
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-[var(--color-interactive-primary)]/15 text-[var(--color-interactive-primary)] border border-[var(--color-interactive-primary)]/30 capitalize tracking-wide">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-[var(--color-interactive-primary)]/15 text-[var(--color-interactive-primary)] border border-[var(--color-interactive-primary)]/30 tracking-wide">
                 <Sparkles className="w-3.5 h-3.5" />
-                {preset.category}
+                {formatCategory(preset.category)}
               </span>
               <span className="text-xs font-semibold text-[var(--color-text-tertiary)] uppercase tracking-wider">
                 Alight Motion Preset

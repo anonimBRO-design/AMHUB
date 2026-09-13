@@ -1,5 +1,6 @@
 "use client";
 
+import { formatCategory } from "@/lib/format-category";
 import type { PresetCardPreset } from "@presethub/ui";
 import { PresetGrid } from "@presethub/ui";
 import { Compass, Sparkles } from "lucide-react";
@@ -113,7 +114,7 @@ export function ExploreClient({ presets }: ExploreClientProps) {
 						{searchQuery
 							? `Results for "${searchQuery}"`
 							: category
-								? `${category.charAt(0).toUpperCase() + category.slice(1)} Presets`
+								? `${formatCategory(category)} Presets`
 								: "All Presets"}
 					</h2>
 				</div>

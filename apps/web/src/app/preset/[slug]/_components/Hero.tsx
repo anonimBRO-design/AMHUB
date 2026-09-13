@@ -1,6 +1,7 @@
 "use client";
 
 import { useAuth } from "@/context/AuthContext";
+import { formatCategory } from "@/lib/format-category";
 import {
 	Bookmark,
 	Download,
@@ -281,7 +282,7 @@ export function Hero({ preset, currentUserId }: HeroProps) {
 							{preset.fileType || "XML"}
 						</span>
 						<span className="px-2.5 py-1 rounded-md text-[10px] sm:text-xs font-semibold tracking-wider bg-[var(--color-interactive-primary)] text-white shadow-md">
-							{preset.category}
+							{formatCategory(preset.category)}
 						</span>
 						<span className="px-2.5 py-1 rounded-md text-[10px] sm:text-xs font-semibold capitalize bg-white/10 backdrop-blur-md text-white border border-white/10">
 							{preset.difficulty}

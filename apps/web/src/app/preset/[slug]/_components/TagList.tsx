@@ -1,3 +1,4 @@
+import { formatCategory } from "@/lib/format-category";
 import {
 	Calendar,
 	CheckCircle2,
@@ -50,7 +51,7 @@ export function TagList({ preset }: TagListProps) {
 		{
 			icon: Layers,
 			label: "Kategori",
-			value: preset.category,
+			value: formatCategory(preset.category),
 			color: "text-cyan-400",
 		},
 		{
@@ -111,7 +112,7 @@ export function TagList({ preset }: TagListProps) {
 						>
 							<Icon className={`w-4.5 h-4.5 ${spec.color} shrink-0`} />
 							<div className="min-w-0">
-								<span className="block text-sm font-bold text-[var(--color-text-primary)] capitalize truncate">
+								<span className="block text-sm font-bold text-[var(--color-text-primary)] truncate">
 									{spec.value}
 								</span>
 								<span className="block text-[10px] text-[var(--color-text-tertiary)] uppercase font-semibold">

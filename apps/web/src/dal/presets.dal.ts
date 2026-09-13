@@ -4,6 +4,7 @@ import type {
 } from "@/data/presets";
 import { normalizeAmVersion } from "@/lib/am-version";
 import { ApiError } from "@/lib/api/errors";
+import { formatCategory } from "@/lib/format-category";
 import { UPLOAD_LIMITS, validateXmlSafety } from "@/lib/api/uploads";
 import { assertSafeExternalUrl } from "@/lib/security/urls";
 import { createSupabaseServiceClient } from "@/lib/supabase/server";
@@ -174,7 +175,7 @@ async function ensureCategoryExists(categorySlug: string) {
 		console.log(
 			`[CATEGORIES] Auto-populating missing category '${categorySlug}' in DB via service client...`,
 		);
-		const label = categorySlug.charAt(0).toUpperCase() + categorySlug.slice(1);
+		const label = formatCategory(categorySlug);
 		const { error: insErr } = await serviceClient
 			.from("categories")
 			.insert([{ slug: categorySlug, label, is_active: true }] as never);
