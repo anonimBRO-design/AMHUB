@@ -1,5 +1,6 @@
 "use client";
 
+import { useLanguage } from "@/i18n";
 import { resolveStorageUrl } from "@/lib/supabase/storage-url";
 import { GitFork, History } from "lucide-react";
 import Link from "next/link";
@@ -24,6 +25,7 @@ interface RemixCardProps {
 }
 
 export function RemixCard({ parent, remixes, totalChildren }: RemixCardProps) {
+	const { t } = useLanguage();
 	if (!parent && remixes.length === 0) return null;
 
 	return (
@@ -34,10 +36,10 @@ export function RemixCard({ parent, remixes, totalChildren }: RemixCardProps) {
 				</div>
 				<div>
 					<h2 className="text-base sm:text-lg font-bold text-[var(--color-text-primary)]">
-						Riwayat Remix
+						{t.presetDetail.remixTitle}
 					</h2>
 					<p className="text-xs text-[var(--color-text-secondary)]">
-						Atribusi otomatis ke kreator asli
+						{t.presetDetail.remixSubtitle}
 					</p>
 				</div>
 			</div>
@@ -65,7 +67,7 @@ export function RemixCard({ parent, remixes, totalChildren }: RemixCardProps) {
 					<div className="min-w-0">
 						<p className="text-[10px] uppercase font-bold tracking-wider text-[var(--color-text-tertiary)] flex items-center gap-1">
 							<History className="w-3 h-3" />
-							Remix dari
+							{t.presetDetail.remixFrom}
 						</p>
 						<p className="text-sm font-bold text-[var(--color-text-primary)] group-hover:text-[var(--color-interactive-primary)] truncate transition-colors">
 							{parent.title}
@@ -80,7 +82,7 @@ export function RemixCard({ parent, remixes, totalChildren }: RemixCardProps) {
 			{remixes.length > 0 && (
 				<div className="space-y-2.5">
 					<p className="text-xs font-bold text-[var(--color-text-secondary)]">
-						Diremix {totalChildren} kali
+						{t.presetDetail.remixCount.replace("{count}", String(totalChildren))}
 					</p>
 					<div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
 						{remixes.map((child) => (

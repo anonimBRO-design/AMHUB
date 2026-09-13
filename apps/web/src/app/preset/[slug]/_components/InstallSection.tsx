@@ -1,6 +1,7 @@
 "use client";
 
 import { useAuth } from "@/context/AuthContext";
+import { useLanguage } from "@/i18n";
 import {
 	Check,
 	ChevronDown,
@@ -41,6 +42,7 @@ interface InstallSectionProps {
 
 export function InstallSection({ preset }: InstallSectionProps) {
 	const { requireAuth } = useAuth();
+	const { t, language } = useLanguage();
 	const [copied, setCopied] = useState(false);
 	const [shared, setShared] = useState(false);
 	const [showGuide, setShowGuide] = useState(false);
@@ -167,7 +169,7 @@ export function InstallSection({ preset }: InstallSectionProps) {
 	};
 
 	const handlePurchase = async () => {
-		if (!requireAuth(undefined, "Login untuk membeli preset ini")) return;
+		if (!requireAuth(undefined, t.presetDetail.signInToPurchase)) return;
 		setIsOrdering(true);
 		setOrderError(null);
 		try {
@@ -203,13 +205,13 @@ export function InstallSection({ preset }: InstallSectionProps) {
 					</div>
 					<div>
 						<h2 className="text-base sm:text-lg font-bold text-[var(--color-text-primary)] flex items-center gap-1.5">
-							<span>Download & Import</span>
+							<span>{t.presetDetail.downloadAndImport}</span>
 							<span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-extrabold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
 								1-TAP
 							</span>
 						</h2>
 						<p className="text-xs text-[var(--color-text-secondary)]">
-							Instant Project Import to Alight Motion
+							{t.presetDetail.instantProjectImport}
 						</p>
 					</div>
 				</div>
@@ -219,17 +221,22 @@ export function InstallSection({ preset }: InstallSectionProps) {
 					</span>
 					{!isLocked && preset.isPaid && preset.license && (
 						<span className="px-2.5 py-1 rounded-md text-xs font-bold tracking-wider bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">
-							Lisensi:{" "}
-							{preset.license === "commercial" ? "Komersial" : "Personal"}
+							{t.presetDetail.license}:{" "}
+							{preset.license === "commercial"
+								? t.presetDetail.licenseCommercial
+								: t.presetDetail.licensePersonal}
 						</span>
 					)}
 					{preset.isPaid && (preset.price ?? 0) > 0 ? (
 						<span className="px-2.5 py-1 rounded-md text-xs font-extrabold tracking-wider bg-amber-400 text-amber-950 shadow-md">
-							Rp {(preset.price ?? 0).toLocaleString("id-ID")}
+							Rp{" "}
+							{(preset.price ?? 0).toLocaleString(
+								language === "id" ? "id-ID" : "en-US",
+							)}
 						</span>
 					) : (
 						<span className="px-2.5 py-1 rounded-md text-xs font-extrabold tracking-wider bg-emerald-500/90 text-white shadow-md">
-							GRATIS
+							{t.presetDetail.freeBadge}
 						</span>
 					)}
 				</div>
@@ -240,16 +247,15 @@ export function InstallSection({ preset }: InstallSectionProps) {
 					<Smartphone className="w-4 h-4 text-cyan-400 shrink-0 mt-0.5" />
 					<div className="text-xs">
 						<p className="font-bold text-[var(--color-text-primary)]">
-							Kompatibilitas:{" "}
+							{t.presetDetail.compatibility}{" "}
 							{preset.amVersionMin && preset.amVersionMax
 								? `AM ${preset.amVersionMin} – ${preset.amVersionMax}`
 								: preset.amVersionMin
-									? `AM ${preset.amVersionMin} atau lebih baru`
-									: `Hingga AM ${preset.amVersionMax}`}
+									? t.presetDetail.amOrNewer.replace("{version}", preset.amVersionMin)
+									: t.presetDetail.upToAm.replace("{version}", preset.amVersionMax || "")}
 						</p>
 						<p className="text-[var(--color-text-secondary)] mt-0.5">
-							Pastikan versi Alight Motion kamu sesuai agar preset bisa diimport
-							tanpa error.
+							{t.presetDetail.compatibilityNotice}
 						</p>
 					</div>
 				</div>
@@ -263,11 +269,10 @@ export function InstallSection({ preset }: InstallSectionProps) {
 					</div>
 					<div>
 						<h3 className="text-sm font-bold text-[var(--color-text-primary)]">
-							Preset Berbayar Eksklusif
+							{t.presetDetail.exclusivePaid}
 						</h3>
 						<p className="text-xs text-[var(--color-text-secondary)] max-w-md mx-auto mt-0.5">
-							Beli sekarang untuk langsung membuka akses download file XML, QR
-							Code, dan link import Alight Motion.
+							{t.presetDetail.paidNotice}
 						</p>
 					</div>
 
@@ -287,13 +292,13 @@ export function InstallSection({ preset }: InstallSectionProps) {
 								}`}
 							>
 								<span className="block text-[11px] font-bold text-[var(--color-text-primary)]">
-									Personal
+									{t.presetDetail.personalLicense}
 								</span>
 								<span className="block text-[10px] text-[var(--color-text-secondary)] mt-0.5">
-									Proyek pribadi
+									{t.presetDetail.personalLicenseDesc}
 								</span>
 								<span className="block text-xs font-extrabold text-amber-400 mt-1">
-									Rp {(preset.price ?? 0).toLocaleString("id-ID")}
+									Rp {(preset.price ?? 0).toLocaleString(language === "id" ? "id-ID" : "en-US")}
 								</span>
 							</button>
 							<button
@@ -306,13 +311,13 @@ export function InstallSection({ preset }: InstallSectionProps) {
 								}`}
 							>
 								<span className="block text-[11px] font-bold text-[var(--color-text-primary)]">
-									Komersial
+									{t.presetDetail.commercialLicense}
 								</span>
 								<span className="block text-[10px] text-[var(--color-text-secondary)] mt-0.5">
-									Konten monetisasi
+									{t.presetDetail.commercialLicenseDesc}
 								</span>
 								<span className="block text-xs font-extrabold text-cyan-400 mt-1">
-									Rp {(preset.commercialPrice ?? 0).toLocaleString("id-ID")}
+									Rp {(preset.commercialPrice ?? 0).toLocaleString(language === "id" ? "id-ID" : "en-US")}
 								</span>
 							</button>
 						</div>
@@ -331,8 +336,8 @@ export function InstallSection({ preset }: InstallSectionProps) {
 						)}
 						<span>
 							{isOrdering
-								? "Memproses Order..."
-								: `Beli ${effectiveLicense === "commercial" ? "Komersial" : "Sekarang"} • Rp ${effectivePrice.toLocaleString("id-ID")}`}
+								? t.presetDetail.processingOrder
+								: `${effectiveLicense === "commercial" ? t.presetDetail.buyCommercial : t.presetDetail.buyNow} • Rp ${effectivePrice.toLocaleString(language === "id" ? "id-ID" : "en-US")}`}
 						</span>
 					</button>
 				</div>
@@ -349,8 +354,8 @@ export function InstallSection({ preset }: InstallSectionProps) {
 										.toLowerCase()
 										.includes("drive.google.com");
 									const label = isGdrive
-										? "Buka Google Drive"
-										: "Open in Alight Motion";
+										? t.presetDetail.openGoogleDrive
+										: t.presetDetail.openInAm;
 									return (
 										<a
 											key={`${link}-${idx}`}
@@ -383,7 +388,7 @@ export function InstallSection({ preset }: InstallSectionProps) {
 								) : (
 									<FileCode className="w-4.5 h-4.5 text-emerald-400" />
 								)}
-								<span>Download {preset.fileType?.toUpperCase() || "File"}</span>
+								<span>{t.presetDetail.downloadXml.replace("{type}", preset.fileType?.toUpperCase() || "File")}</span>
 							</a>
 						)}
 					</div>
@@ -394,14 +399,14 @@ export function InstallSection({ preset }: InstallSectionProps) {
 							{/* Direct Link Box */}
 							<div className="p-3.5 rounded-xl bg-[var(--color-bg-base)]/60 border border-[var(--color-border-subtle)]/60 flex flex-col justify-between space-y-2">
 								<div className="flex items-center justify-between text-xs font-semibold text-[var(--color-text-secondary)]">
-									<span>Direct Import Link / URL</span>
+									<span>{t.presetDetail.directImportLink}</span>
 									<button
 										type="button"
 										onClick={handleShare}
 										className="inline-flex items-center gap-1 text-[var(--color-interactive-primary)] hover:underline text-[11px]"
 									>
 										<Share2 className="w-3 h-3" />
-										<span>{shared ? "Shared!" : "Share"}</span>
+										<span>{shared ? t.presetDetail.shared : t.presetDetail.share}</span>
 									</button>
 								</div>
 								<div className="flex items-center gap-1.5 p-1 rounded-lg bg-[var(--color-bg-surface)] border border-[var(--color-border-subtle)]">
@@ -416,12 +421,12 @@ export function InstallSection({ preset }: InstallSectionProps) {
 										{copied ? (
 											<>
 												<Check className="w-3 h-3 text-emerald-400" />
-												<span className="text-emerald-400">Copied</span>
+												<span className="text-emerald-400">{t.presetDetail.copied}</span>
 											</>
 										) : (
 											<>
 												<Copy className="w-3 h-3" />
-												<span>Copy</span>
+												<span>{t.presetDetail.copy}</span>
 											</>
 										)}
 									</button>
@@ -442,10 +447,10 @@ export function InstallSection({ preset }: InstallSectionProps) {
 									</div>
 									<div className="text-left min-w-0">
 										<p className="text-xs font-bold text-[var(--color-text-primary)]">
-											Scan QR Code
+											{t.presetDetail.scanQrTitle}
 										</p>
 										<p className="text-[10px] text-[var(--color-text-secondary)] mt-0.5 leading-snug">
-											Buka AM &gt; scan gambar untuk import otomatis.
+											{t.presetDetail.scanQrDesc}
 										</p>
 									</div>
 								</div>
@@ -461,10 +466,10 @@ export function InstallSection({ preset }: InstallSectionProps) {
 									</div>
 									<div className="text-left min-w-0">
 										<p className="text-xs font-bold text-[var(--color-text-primary)]">
-											Import via HP
+											{t.presetDetail.importMobileTitle}
 										</p>
 										<p className="text-[10px] text-[var(--color-text-secondary)] mt-0.5 leading-snug">
-											Scan QR pakai HP untuk membuka link import langsung di Alight Motion.
+											{t.presetDetail.importMobileDesc}
 										</p>
 									</div>
 								</div>
@@ -483,9 +488,9 @@ export function InstallSection({ preset }: InstallSectionProps) {
 				>
 					<div className="flex items-center gap-2">
 						<Smartphone className="w-4 h-4 text-sky-400" />
-						<span>Cara Pasang Preset di Alight Motion</span>
+						<span>{t.presetDetail.quickGuideTitle}</span>
 						<span className="text-[10px] font-normal text-[var(--color-text-tertiary)] hidden sm:inline">
-							(Panduan Cepat)
+							{t.presetDetail.quickGuideBadge}
 						</span>
 					</div>
 					<ChevronDown
@@ -497,25 +502,23 @@ export function InstallSection({ preset }: InstallSectionProps) {
 
 				{showGuide && (
 					<div className="px-4 pb-3.5 pt-1 border-t border-[var(--color-border-subtle)]/40">
-						<ol className="list-decimal list-inside text-xs text-[var(--color-text-secondary)] space-y-1.5 leading-relaxed pl-1">
-							<li>
-								Tekan tombol <strong>Open in Alight Motion</strong> di HP kamu.
-							</li>
-							<li>
-								Jika download file <strong>XML</strong>: Buka Alight Motion &gt;
-								Project &gt; Import XML.
-							</li>
-							<li>
-								Jika pakai <strong>Preset Link 5MB</strong>: Klik link di atas,
-								Alight Motion akan otomatis mendownload aset project.
-							</li>
-							{preset.fileType === "qr" && (
-								<li>
-									Jika file <strong>QR Code</strong>: Scan gambar QR di atas
-									langsung dari Alight Motion untuk import otomatis.
-								</li>
-							)}
-						</ol>
+						<div className="space-y-2 text-xs text-[var(--color-text-secondary)] leading-relaxed pl-1">
+							<div className="space-y-0.5">
+								<p className="font-bold text-[var(--color-text-primary)]">
+									{t.presetDetail.guideStep1Title}
+								</p>
+								<p>{t.presetDetail.guideStep1Desc}</p>
+							</div>
+							<div className="space-y-0.5 pt-1">
+								<p className="font-bold text-[var(--color-text-primary)]">
+									{t.presetDetail.guideStep2Title}
+								</p>
+								<p>{t.presetDetail.guideStep2Desc}</p>
+							</div>
+							<div className="p-2 rounded-lg bg-[var(--color-bg-surface)] border border-[var(--color-border-subtle)] text-[11px] text-[var(--color-text-tertiary)] mt-2">
+								{t.presetDetail.guideTip}
+							</div>
+						</div>
 					</div>
 				)}
 			</div>

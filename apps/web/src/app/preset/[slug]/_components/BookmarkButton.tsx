@@ -1,6 +1,7 @@
 "use client";
 
 import { useAuth } from "@/context/AuthContext";
+import { useLanguage } from "@/i18n";
 import { Bookmark } from "lucide-react";
 import posthog from "posthog-js";
 import { useState } from "react";
@@ -20,13 +21,14 @@ export function BookmarkButton({
 	onBookmark,
 	onBookmarkChange,
 }: BookmarkButtonProps) {
+	const { t } = useLanguage();
 	const [isBookmarked, setIsBookmarked] = useState(initialBookmarked);
 	const [currentCount, setCurrentCount] = useState(count ?? 0);
 	const [isLoading, setIsLoading] = useState(false);
 	const { requireAuth } = useAuth();
 
 	const handleToggle = async () => {
-		if (!requireAuth(undefined, "Sign in to bookmark presets")) return;
+		if (!requireAuth(undefined, t.presetDetail.signInToBookmark)) return;
 		setIsLoading(true);
 		const nextState = !isBookmarked;
 		setIsBookmarked(nextState);
@@ -61,7 +63,11 @@ export function BookmarkButton({
 			type="button"
 			onClick={handleToggle}
 			disabled={isLoading}
-			aria-label={isBookmarked ? "Remove bookmark" : "Bookmark preset"}
+			aria-label={
+				isBookmarked
+					? t.presetDetail.removeBookmark
+					: t.presetDetail.bookmarkPreset
+			}
 			className={`inline-flex items-center justify-center gap-1.5 min-h-[42px] px-3.5 rounded-lg border transition-all duration-200 active:scale-95 shadow-sm font-body ${
 				isBookmarked
 					? "bg-amber-500/15 text-amber-400 border-amber-500/30"

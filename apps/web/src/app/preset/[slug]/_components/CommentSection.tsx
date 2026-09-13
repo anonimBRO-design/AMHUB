@@ -1,6 +1,7 @@
 "use client";
 
 import { useAuth } from "@/context/AuthContext";
+import { useLanguage } from "@/i18n";
 import { MessageSquare, Send, Trash2 } from "lucide-react";
 import posthog from "posthog-js";
 import { useState } from "react";
@@ -29,6 +30,7 @@ export function CommentSection({
 	commentCount = 0,
 	onCommentCountChange,
 }: CommentSectionProps) {
+	const { t, language } = useLanguage();
 	const [comments, setComments] = useState<CommentItem[]>(initialComments);
 	const [newComment, setNewComment] = useState("");
 	const [isSubmitting, setIsSubmitting] = useState(false);
@@ -37,7 +39,7 @@ export function CommentSection({
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
 		if (!newComment.trim()) return;
-		if (!requireAuth(undefined, "Sign in to leave a comment")) return;
+		if (!requireAuth(undefined, t.presetDetail.signInToComment)) return;
 
 		setIsSubmitting(true);
 
@@ -124,10 +126,10 @@ export function CommentSection({
 				</div>
 				<div>
 					<h2 className="text-base sm:text-lg font-bold text-[var(--color-text-primary)]">
-						Komentar
+						{t.presetDetail.communityDiscussion}
 					</h2>
 					<p className="text-xs text-[var(--color-text-secondary)]">
-						{comments.length || commentCount} Komentar
+						{t.presetDetail.commentsCountHeader.replace("{count}", String(comments.length || commentCount))}
 					</p>
 				</div>
 			</div>
@@ -138,13 +140,14 @@ export function CommentSection({
 					type="text"
 					value={newComment}
 					onChange={(e) => setNewComment(e.target.value)}
-					placeholder="Tulis komentar atau tanya preset ini..."
-					aria-label="Add a comment"
+					placeholder={t.presetDetail.commentPlaceholder}
+					aria-label={t.presetDetail.sendComment}
 					className="flex-1 min-h-[42px] px-3.5 rounded-lg bg-[var(--color-bg-base)] border border-[var(--color-border-subtle)] text-xs sm:text-sm text-[var(--color-text-primary)] placeholder:text-[var(--color-text-tertiary)] focus:outline-none focus:border-[var(--color-interactive-primary)]"
 				/>
 				<button
 					type="submit"
 					disabled={isSubmitting || !newComment.trim()}
+					aria-label={t.presetDetail.sendComment}
 					className="inline-flex items-center justify-center min-h-[42px] px-4 rounded-lg bg-[var(--color-interactive-primary)] text-white font-bold text-xs disabled:opacity-50 hover:bg-[var(--color-interactive-primary-hover)] active:scale-95 transition-all shrink-0"
 				>
 					<Send className="w-4 h-4" />
@@ -183,14 +186,17 @@ export function CommentSection({
 
 									<div className="flex items-center gap-2">
 										<span className="text-[10px] text-[var(--color-text-tertiary)]">
-											{new Date(comment.createdAt).toLocaleDateString()}
+											{new Date(comment.createdAt).toLocaleDateString(
+												language === "id" ? "id-ID" : "en-US",
+											)}
 										</span>
 										{isOwnComment && (
 											<button
 												type="button"
 												onClick={() => handleDeleteComment(comment.id)}
 												className="text-[var(--color-text-tertiary)] hover:text-rose-400 p-1 rounded-md transition-colors"
-												title="Delete comment"
+												title={t.presetDetail.deleteComment}
+												aria-label={t.presetDetail.deleteComment}
 											>
 												<Trash2 className="w-3.5 h-3.5" />
 											</button>
@@ -207,10 +213,10 @@ export function CommentSection({
 					<div className="p-8 text-center rounded-lg bg-[var(--color-bg-base)]/40 border border-white/[0.05] space-y-2">
 						<MessageSquare className="w-6 h-6 text-cyan-400 mx-auto opacity-50" />
 						<p className="text-xs font-bold text-[var(--color-text-primary)]">
-							Belum ada komentar
+							{t.presetDetail.beFirstComment}
 						</p>
 						<p className="text-[11px] text-[var(--color-text-tertiary)]">
-							Jadilah editor pertama yang memberikan ulasan atau pertanyaan!
+							{t.presetDetail.beFirstCommentDesc}
 						</p>
 					</div>
 				)}

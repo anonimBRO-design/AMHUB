@@ -1,6 +1,7 @@
 "use client";
 
 import { useAuth } from "@/context/AuthContext";
+import { useLanguage } from "@/i18n";
 import {
 	AlignLeft,
 	Calendar,
@@ -140,6 +141,7 @@ export function DescriptionSection({
 }: DescriptionSectionProps) {
 	const router = useRouter();
 	const { currentUser } = useAuth();
+	const { t, language } = useLanguage();
 	const [isExpanded, setIsExpanded] = useState(false);
 	const [description, setDescription] = useState(preset.description || "");
 	const [isEditing, setIsEditing] = useState(false);
@@ -195,12 +197,24 @@ export function DescriptionSection({
 	};
 
 	const formattedDate = preset.createdAt
-		? new Date(preset.createdAt).toLocaleDateString("id-ID", {
-				day: "numeric",
-				month: "short",
-				year: "numeric",
-			})
+		? new Date(preset.createdAt).toLocaleDateString(
+				language === "id" ? "id-ID" : "en-US",
+				{
+					day: "numeric",
+					month: "short",
+					year: "numeric",
+				},
+			)
 		: null;
+
+	const difficultyMap: Record<string, string> = {
+		beginner: language === "id" ? "Pemula" : "Beginner",
+		intermediate: language === "id" ? "Menengah" : "Intermediate",
+		advanced: language === "id" ? "Mahir" : "Advanced",
+	};
+	const difficultyLabel =
+		(preset.difficulty && difficultyMap[preset.difficulty.toLowerCase()]) ||
+		t.presetDetail.allLevels;
 
 	return (
 		<section className="p-5 sm:p-6 rounded-xl bg-[var(--color-bg-surface)] border border-[var(--color-border-subtle)] space-y-5 shadow-lg relative">
@@ -212,10 +226,10 @@ export function DescriptionSection({
 					</div>
 					<div>
 						<h2 className="text-base sm:text-lg font-bold text-[var(--color-text-primary)]">
-							Deskripsi & Detail Preset
+							{t.presetDetail.descriptionTitle}
 						</h2>
 						<p className="text-xs text-[var(--color-text-secondary)]">
-							Informasi cara pakai dan catatan dari creator
+							{t.presetDetail.descriptionSubtitle}
 						</p>
 					</div>
 				</div>
@@ -224,7 +238,7 @@ export function DescriptionSection({
 					{saveSuccess && (
 						<span className="inline-flex items-center gap-1 text-xs font-bold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-1 rounded-md animate-fade-in">
 							<Check className="w-3.5 h-3.5" />
-							<span>Tersimpan!</span>
+							<span>{t.presetDetail.saved}</span>
 						</span>
 					)}
 
@@ -238,7 +252,7 @@ export function DescriptionSection({
 							className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-[var(--color-bg-elevated)] hover:bg-[var(--color-border-subtle)] text-[var(--color-text-primary)] hover:text-white border border-[var(--color-border-subtle)] text-xs font-bold transition-all active:scale-95 shadow-sm"
 						>
 							<Edit3 className="w-3.5 h-3.5 text-cyan-400" />
-							<span>Edit Deskripsi</span>
+							<span>{t.presetDetail.editDescription}</span>
 						</button>
 					)}
 				</div>
@@ -250,7 +264,7 @@ export function DescriptionSection({
 					<Ratio className="w-4 h-4 text-cyan-400 shrink-0" />
 					<div>
 						<span className="block text-[10px] text-[var(--color-text-tertiary)] uppercase font-semibold">
-							Rasio Layar
+							{t.presetDetail.aspectRatio}
 						</span>
 						<span className="font-bold text-[var(--color-text-primary)]">
 							{preset.aspectRatio || "9:16 (Vertical)"}
@@ -262,10 +276,10 @@ export function DescriptionSection({
 					<Layers className="w-4 h-4 text-emerald-400 shrink-0" />
 					<div>
 						<span className="block text-[10px] text-[var(--color-text-tertiary)] uppercase font-semibold">
-							Kesulitan
+							{t.presetDetail.difficulty}
 						</span>
-						<span className="font-bold text-[var(--color-text-primary)] capitalize">
-							{preset.difficulty || "Semua Tingkat"}
+						<span className="font-bold text-[var(--color-text-primary)]">
+							{difficultyLabel}
 						</span>
 					</div>
 				</div>
@@ -274,7 +288,7 @@ export function DescriptionSection({
 					<FileCode className="w-4 h-4 text-blue-400 shrink-0" />
 					<div>
 						<span className="block text-[10px] text-[var(--color-text-tertiary)] uppercase font-semibold">
-							Format File
+							{t.presetDetail.fileFormat}
 						</span>
 						<span className="font-bold text-[var(--color-text-primary)] uppercase">
 							{preset.fileType || "XML Project"}
@@ -287,7 +301,7 @@ export function DescriptionSection({
 						<Smartphone className="w-4 h-4 text-cyan-400 shrink-0" />
 						<div>
 							<span className="block text-[10px] text-[var(--color-text-tertiary)] uppercase font-semibold">
-								Versi AM
+								{t.presetDetail.amVersion}
 							</span>
 							<span className="font-bold text-[var(--color-text-primary)] font-mono">
 								{preset.amVersionMin && preset.amVersionMax
@@ -303,7 +317,7 @@ export function DescriptionSection({
 						<Calendar className="w-4 h-4 text-amber-400 shrink-0" />
 						<div>
 							<span className="block text-[10px] text-[var(--color-text-tertiary)] uppercase font-semibold">
-								Diupload
+								{t.presetDetail.uploadedOn}
 							</span>
 							<span className="font-bold text-[var(--color-text-primary)]">
 								{formattedDate}
@@ -318,21 +332,21 @@ export function DescriptionSection({
 				<div className="space-y-3 p-4 rounded-lg bg-[var(--color-bg-base)] border border-cyan-500/30 shadow-inner">
 					<div className="flex items-center justify-between text-xs text-[var(--color-text-tertiary)]">
 						<span className="font-semibold text-[var(--color-text-primary)]">
-							Ubah Deskripsi Preset
+							{t.presetDetail.editDescriptionTitle}
 						</span>
 						<span
 							className={
 								editValue.length > 1800 ? "text-amber-400 font-bold" : ""
 							}
 						>
-							{editValue.length} / 2000 karakter
+							{t.presetDetail.characters.replace("{count}", String(editValue.length))}
 						</span>
 					</div>
 
 					<textarea
 						value={editValue}
 						onChange={(e) => setEditValue(e.target.value)}
-						placeholder="Tulis deskripsi preset, credit lagu/sound, font yang dipakai, atau tips impor ke Alight Motion... (Gunakan **tebal**, - bullet, atau @username)"
+						placeholder={t.presetDetail.editDescriptionPlaceholder}
 						rows={6}
 						maxLength={2000}
 						className="w-full p-3.5 rounded-lg bg-[var(--color-bg-surface)] border border-[var(--color-border-subtle)] text-xs sm:text-sm text-[var(--color-text-primary)] placeholder-[var(--color-text-tertiary)] focus:outline-none focus:border-[var(--color-interactive-primary)] resize-y leading-relaxed font-sans"
@@ -353,7 +367,7 @@ export function DescriptionSection({
 							disabled={isSaving}
 							className="px-4 py-2 rounded-lg bg-[var(--color-bg-elevated)] text-xs font-semibold text-[var(--color-text-secondary)] hover:text-white transition-colors"
 						>
-							Batal
+							{t.common.cancel}
 						</button>
 						<button
 							type="button"
@@ -364,12 +378,12 @@ export function DescriptionSection({
 							{isSaving ? (
 								<>
 									<div className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-									<span>Menyimpan...</span>
+									<span>{t.common.saving}</span>
 								</>
 							) : (
 								<>
 									<Check className="w-4 h-4" />
-									<span>Simpan Perubahan</span>
+									<span>{t.presetDetail.saveChanges}</span>
 								</>
 							)}
 						</button>
@@ -388,7 +402,7 @@ export function DescriptionSection({
 							</div>
 						) : (
 							<div className="p-4 rounded-lg bg-[var(--color-bg-base)] text-center text-xs text-[var(--color-text-tertiary)] italic">
-								Creator belum menambahkan deskripsi untuk preset ini.
+								{t.presetDetail.noDescription}
 							</div>
 						)}
 
@@ -406,12 +420,12 @@ export function DescriptionSection({
 							>
 								{isExpanded ? (
 									<>
-										<span>Tampilkan Lebih Sedikit</span>
+										<span>{t.common.showLess}</span>
 										<ChevronUp className="w-3.5 h-3.5" />
 									</>
 								) : (
 									<>
-										<span>Baca Selengkapnya</span>
+										<span>{t.common.seeMore}</span>
 										<ChevronDown className="w-3.5 h-3.5" />
 									</>
 								)}

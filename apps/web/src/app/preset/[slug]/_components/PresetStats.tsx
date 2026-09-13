@@ -1,5 +1,6 @@
 "use client";
 
+import { useLanguage } from "@/i18n";
 import {
 	Activity,
 	Bookmark,
@@ -20,10 +21,6 @@ interface PresetStatsProps {
 	comments: number;
 }
 
-function formatCount(n: number): string {
-	return n.toLocaleString("id-ID");
-}
-
 function formatPercent(numerator: number, denominator: number): string {
 	if (!denominator || denominator <= 0) return "0%";
 	const pct = (numerator / denominator) * 100;
@@ -38,30 +35,36 @@ export function PresetStats({
 	bookmarks,
 	comments,
 }: PresetStatsProps) {
+	const { t, language } = useLanguage();
+
+	const formatCount = (n: number): string => {
+		return n.toLocaleString(language === "id" ? "id-ID" : "en-US");
+	};
+
 	const cells = [
-		{ icon: Eye, label: "Dilihat", value: views, color: "text-sky-400" },
+		{ icon: Eye, label: t.presetDetail.statViews, value: views, color: "text-sky-400" },
 		{
 			icon: Download,
-			label: "Diunduh",
+			label: t.presetDetail.statDownloads,
 			value: downloads,
 			color: "text-emerald-400",
 		},
 		{
 			icon: Users,
-			label: "Pengunduh Unik",
+			label: t.presetDetail.statUniqueDownloads,
 			value: uniqueDownloads ?? downloads,
 			color: "text-teal-400",
 		},
-		{ icon: Heart, label: "Suka", value: likes, color: "text-rose-400" },
+		{ icon: Heart, label: t.presetDetail.statLikes, value: likes, color: "text-rose-400" },
 		{
 			icon: Bookmark,
-			label: "Disimpan",
+			label: t.presetDetail.statBookmarks,
 			value: bookmarks,
 			color: "text-amber-400",
 		},
 		{
 			icon: MessageSquare,
-			label: "Komentar",
+			label: t.presetDetail.statComments,
 			value: comments,
 			color: "text-blue-400",
 		},
@@ -78,10 +81,10 @@ export function PresetStats({
 				</div>
 				<div>
 					<h2 className="text-base sm:text-lg font-bold text-[var(--color-text-primary)]">
-						Statistik Preset
+						{t.presetDetail.statsTitle}
 					</h2>
 					<p className="text-xs text-[var(--color-text-secondary)]">
-						Performa preset ini di AMHUB
+						{t.presetDetail.statsSubtitle}
 					</p>
 				</div>
 			</div>
@@ -111,14 +114,14 @@ export function PresetStats({
 			<div className="flex flex-wrap items-center gap-x-5 gap-y-1.5 pt-1 text-xs">
 				<span className="inline-flex items-center gap-1.5 text-[var(--color-text-secondary)]">
 					<Percent className="w-3.5 h-3.5 text-cyan-400" />
-					Engagement:{" "}
+					{t.presetDetail.statEngagement}{" "}
 					<strong className="text-[var(--color-text-primary)]">
 						{engagementRate}
 					</strong>
 				</span>
 				<span className="inline-flex items-center gap-1.5 text-[var(--color-text-secondary)]">
 					<Download className="w-3.5 h-3.5 text-emerald-400" />
-					Konversi unduh:{" "}
+					{t.presetDetail.statDownloadConversion}{" "}
 					<strong className="text-[var(--color-text-primary)]">
 						{downloadRate}
 					</strong>

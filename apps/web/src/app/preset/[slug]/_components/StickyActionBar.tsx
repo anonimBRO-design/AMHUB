@@ -1,6 +1,7 @@
 "use client";
 
 import { useAuth } from "@/context/AuthContext";
+import { useLanguage } from "@/i18n";
 import {
 	Bookmark,
 	Check,
@@ -29,6 +30,7 @@ interface StickyActionBarProps {
 }
 
 export function StickyActionBar({ preset }: StickyActionBarProps) {
+	const { t, language } = useLanguage();
 	const { requireAuth } = useAuth();
 	const [isLiked, setIsLiked] = useState(preset.isLiked ?? false);
 	const [isBookmarked, setIsBookmarked] = useState(
@@ -37,7 +39,7 @@ export function StickyActionBar({ preset }: StickyActionBarProps) {
 	const [copied, setCopied] = useState(false);
 
 	const handleLikeToggle = async () => {
-		if (!requireAuth(undefined, "Sign in to like presets")) return;
+		if (!requireAuth(undefined, t.presetDetail.signInToLike)) return;
 		const nextState = !isLiked;
 		setIsLiked(nextState);
 
@@ -56,7 +58,7 @@ export function StickyActionBar({ preset }: StickyActionBarProps) {
 	};
 
 	const handleBookmarkToggle = async () => {
-		if (!requireAuth(undefined, "Sign in to bookmark presets")) return;
+		if (!requireAuth(undefined, t.presetDetail.signInToBookmark)) return;
 		const nextState = !isBookmarked;
 		setIsBookmarked(nextState);
 
@@ -113,7 +115,12 @@ export function StickyActionBar({ preset }: StickyActionBarProps) {
 					>
 						<Lock className="w-4 h-4" />
 						<span>
-							Beli Preset • Rp {(preset.price ?? 0).toLocaleString("id-ID")}
+							{t.presetDetail.buyPresetFor.replace(
+								"{price}",
+								`Rp ${(preset.price ?? 0).toLocaleString(
+									language === "id" ? "id-ID" : "en-US",
+								)}`,
+							)}
 						</span>
 					</button>
 				) : (
@@ -129,7 +136,11 @@ export function StickyActionBar({ preset }: StickyActionBarProps) {
 						) : (
 							<Download className="w-4 h-4" />
 						)}
-						<span>{preset.amLink ? "Open Link" : "Download XML"}</span>
+						<span>
+							{preset.amLink
+								? t.presetDetail.openInAm
+								: t.presetDetail.downloadXml.replace("{type}", "XML")}
+						</span>
 					</a>
 				)}
 
@@ -137,7 +148,7 @@ export function StickyActionBar({ preset }: StickyActionBarProps) {
 				<button
 					type="button"
 					onClick={handleCopy}
-					aria-label="Copy import link"
+					aria-label={t.presetDetail.directImportLink}
 					className="inline-flex items-center justify-center min-h-[44px] min-w-[44px] rounded-lg bg-[var(--color-bg-elevated)] text-[var(--color-text-secondary)] border border-[var(--color-border-subtle)] active:scale-95 transition-all"
 				>
 					{copied ? (
@@ -151,7 +162,9 @@ export function StickyActionBar({ preset }: StickyActionBarProps) {
 				<button
 					type="button"
 					onClick={handleLikeToggle}
-					aria-label={isLiked ? "Unlike preset" : "Like preset"}
+					aria-label={
+						isLiked ? t.presetDetail.unlikePreset : t.presetDetail.likePreset
+					}
 					className={`inline-flex items-center justify-center min-h-[44px] min-w-[44px] rounded-lg border active:scale-95 transition-all ${
 						isLiked
 							? "bg-rose-500/10 text-rose-400 border-rose-500/30"
@@ -167,7 +180,11 @@ export function StickyActionBar({ preset }: StickyActionBarProps) {
 				<button
 					type="button"
 					onClick={handleBookmarkToggle}
-					aria-label={isBookmarked ? "Remove bookmark" : "Bookmark preset"}
+					aria-label={
+						isBookmarked
+							? t.presetDetail.removeBookmark
+							: t.presetDetail.bookmarkPreset
+					}
 					className={`inline-flex items-center justify-center min-h-[44px] min-w-[44px] rounded-lg border active:scale-95 transition-all ${
 						isBookmarked
 							? "bg-amber-500/10 text-amber-400 border-amber-500/30"
@@ -190,7 +207,7 @@ export function StickyActionBar({ preset }: StickyActionBarProps) {
 							if (inputElem) inputElem.focus();
 						}
 					}}
-					aria-label="View comments"
+					aria-label={t.presetDetail.viewComments}
 					className="inline-flex items-center justify-center min-h-[44px] min-w-[44px] rounded-lg bg-[var(--color-bg-elevated)] text-[var(--color-text-secondary)] border border-[var(--color-border-subtle)] hover:text-blue-400 active:scale-95 transition-all"
 				>
 					<MessageSquare className="w-4 h-4" />

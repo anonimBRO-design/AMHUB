@@ -211,6 +211,205 @@ export const en = {
 		posting: "Posting...",
 		noComments: "No comments yet. Be the first to share your thoughts!",
 		similarPresets: "Similar Presets",
+
+		// Navigation & Header
+		back: "Back",
+		explore: "Explore",
+		alightMotionPreset: "Alight Motion Preset",
+		morePresets: "More {category} Presets",
+
+		// Creator Card
+		editProfile: "Edit Profile",
+		follow: "Follow",
+		following: "Following",
+		signInToFollow: "Sign in to follow creators",
+		supportCreator: "Support Creator (Saweria / Trakteer)",
+		fans: "Fans",
+		presets: "Presets",
+
+		// Hero / Media Toolbar
+		views: "Views",
+		downloads: "Downloads",
+		likes: "Likes",
+		comments: "Comments",
+		share: "Share",
+		report: "Report Preset",
+		deletePreset: "Delete Preset",
+		deleteConfirmTitle: "Delete this preset?",
+		deleteConfirmDesc:
+			"This action cannot be undone. The preset and all associated files will be permanently removed.",
+		deleting: "Deleting...",
+		deleteButton: "Delete",
+		cancel: "Cancel",
+
+		// Install & Download
+		downloadAndImport: "Download & Import",
+		instantProjectImport: "Instant Project Import to Alight Motion",
+		freeBadge: "FREE",
+		signInToPurchase: "Sign in to purchase this preset",
+		openInAm: "Open in Alight Motion",
+		openGoogleDrive: "Open Google Drive",
+		downloadXml: "Download {type}",
+		directImportLink: "Direct Import Link / URL",
+		shared: "Shared!",
+		copy: "Copy",
+		copied: "Copied!",
+		scanQrTitle: "Scan QR Code",
+		scanQrDesc: "Open AM > scan image for automatic import.",
+		importMobileTitle: "Import via Mobile",
+		importMobileDesc:
+			"Scan QR with mobile device to open import link directly in Alight Motion.",
+		quickGuideTitle: "How to Install Presets in Alight Motion",
+		quickGuideBadge: "(Quick Guide)",
+		guideStep1Title: "1. Direct Import via AM Link (Automatic & Fastest)",
+		guideStep1Desc:
+			'Click the "Open in Alight Motion" button above or copy the direct URL. Alight Motion will automatically open and prompt you to import the project.',
+		guideStep2Title: "2. Manual XML File Import (For All AM Versions)",
+		guideStep2Desc:
+			"Download the .xml file, open your file manager (ZArchiver / Files), select the .xml file > Share / Send to Alight Motion.",
+		guideTip:
+			"Tip: If the sound is missing or silent, check the preset description for the original TikTok / audio link.",
+		compatibility: "Compatibility:",
+		amOrNewer: "AM {version} or newer",
+		upToAm: "Up to AM {version}",
+		compatibilityNotice:
+			"Ensure your Alight Motion version matches so the preset imports without errors.",
+
+		// Paid / Monetization
+		exclusivePaid: "Exclusive Paid Preset",
+		paidNotice:
+			"Buy now to unlock instant access to XML files, QR codes, and Alight Motion import links.",
+		personalLicense: "Personal",
+		personalLicenseDesc: "Personal projects",
+		commercialLicense: "Commercial",
+		commercialLicenseDesc: "Monetized content",
+		buyNow: "Buy Now",
+		buyCommercial: "Buy Commercial",
+		processingOrder: "Processing Order...",
+
+		// Description Section
+		descriptionTitle: "Description & Preset Details",
+		descriptionSubtitle: "Usage guide and notes from the creator",
+		noDescription: "No description provided for this preset.",
+		editDescription: "Edit Description",
+		editDescriptionTitle: "Edit Preset Description",
+		editDescriptionPlaceholder:
+			"Write preset description, music credits, fonts used, or Alight Motion tips... (Use **bold**, - bullets, or @username)",
+		characters: "{count} / 2000 characters",
+		saveChanges: "Save Changes",
+		saving: "Saving...",
+		saved: "Saved!",
+		uploadedOn: "Uploaded",
+
+		// Specifications & License
+		specsTitle: "Specifications & License",
+		specsSubtitle: "Technical details of the Alight Motion asset",
+		category: "Category",
+		aspectRatio: "Aspect Ratio",
+		fileFormat: "File Format",
+		difficulty: "Difficulty",
+		amVersion: "AM Version",
+		license: "License",
+		licensePersonal: "Personal Use",
+		licenseFree: "Free Use & Edit",
+		licenseCommercial: "Commercial License",
+		allLevels: "All Levels",
+		released: "Released:",
+		verifiedByAmhub: "Verified by AMHUB",
+
+		// Performance Stats
+		statsTitle: "Preset Statistics",
+		statsSubtitle: "Performance of this preset on AMHUB",
+		statViews: "Views",
+		statDownloads: "Downloads",
+		statUniqueDownloads: "Unique Downloaders",
+		statLikes: "Likes",
+		statBookmarks: "Saved",
+		statComments: "Comments",
+		statEngagement: "Engagement:",
+		statDownloadConversion: "Download Conversion:",
+
+		// Remix History
+		remixTitle: "Remix History",
+		remixSubtitle: "Automatic attribution to the original creator",
+		remixFrom: "Remix of",
+		remixCount: "Remixed {count} times",
+
+		// Community Discussion / Comments
+		communityDiscussion: "Community Discussion",
+		commentsCountHeader: "{count} Comments",
+		commentPlaceholder: "Write a comment or ask about this preset...",
+		sendComment: "Send Comment",
+		beFirstComment: "No comments yet",
+		beFirstCommentDesc:
+			"Be the first editor to leave a review or ask a question!",
+		deleteComment: "Delete comment",
+		signInToComment: "Sign in to leave a comment",
+
+		// Additional Interactions & Modals
+		signInToLike: "Sign in to like presets",
+		signInToBookmark: "Sign in to bookmark presets",
+		signInToReport: "Sign in to report this preset",
+		unlikePreset: "Unlike preset",
+		likePreset: "Like preset",
+		removeBookmark: "Remove bookmark",
+		bookmarkPreset: "Bookmark preset",
+		viewComments: "View comments",
+		sharePreset: "Share preset",
+		shareText: 'Check out "{title}" Alight Motion preset on AMHUB!',
+		buyPresetFor: "Buy Preset • {price}",
+
+		// Report Modal
+		reportPresetTitle: "Report Preset",
+		reportReasonLabel: "Reason for reporting",
+		reportReasonReupload: "Reupload / Copyright",
+		reportReasonReuploadDesc:
+			"This preset was stolen or reuploaded without original creator's permission.",
+		reportReasonBroken: "Broken Link / File",
+		reportReasonBrokenDesc:
+			"The Alight Motion link is broken or the XML file cannot be imported.",
+		reportReasonNsfw: "Inappropriate Content",
+		reportReasonNsfwDesc: "Contains NSFW, explicit images, text, or media.",
+		reportReasonSpam: "Spam / Misleading",
+		reportReasonSpamDesc:
+			"Fake title or thumbnail does not match preset contents.",
+		reportReasonOther: "Other",
+		reportReasonOtherDesc:
+			"Other issues violating AMHUB community guidelines.",
+		reportDetailsLabel: "Additional Details (Optional)",
+		reportDetailsPlaceholder:
+			"Provide the original link or supporting information...",
+		reportSubmitting: "Submitting...",
+		reportSubmit: "Submit Report",
+		reportSuccessTitle: "Report Submitted!",
+		reportSuccessDesc:
+			"Thank you for helping keep the AMHUB community safe and clean.",
+
+		// Checkout & Payment Modal
+		checkoutTitle: "Checkout Preset",
+		checkoutSubtitle: "Complete payment to unlock preset link & files",
+		orderNumber: "Order No:",
+		paymentSuccessTitle: "Payment Successful!",
+		paymentSuccessDesc:
+			"Preset unlocked and ready to download / import now.",
+		openAndDownloadPreset: "Open & Download Preset",
+		payQrisTitle: "QRIS (All E-Wallets)",
+		payTransferTitle: "Manual / Bank",
+		scanQrisNational: "Scan via National QRIS",
+		scanQrisSupportedWallets:
+			"Open GoPay, OVO, DANA, BCA Mobile, Livin', or ShopeePay",
+		bankTransfer: "Bank Transfer:",
+		accountNumber: "Account Number:",
+		accountName: "Account Name:",
+		exactTransferNotice: "Ensure exact transfer amount: {amount}",
+		checkingPayment: "Checking Payment...",
+		checkPaymentStatus: "Check Payment Status",
+		autoDetectPaymentNotice:
+			"Automatically detects payment status within seconds.",
+		paymentVerified: "Payment successfully verified!",
+		waitingForPayment: "Waiting for payment to be completed.",
+		paymentNotDetectedYet:
+			"Payment not detected yet. Please try again shortly.",
 	},
 	bookmarks: {
 		title: "Your Bookmarks",

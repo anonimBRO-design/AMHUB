@@ -1,6 +1,7 @@
 "use client";
 
 import { useAuth } from "@/context/AuthContext";
+import { useLanguage } from "@/i18n";
 import { AlertTriangle, CheckCircle2, Flag, X } from "lucide-react";
 import { useState } from "react";
 
@@ -11,41 +12,13 @@ interface ReportPresetModalProps {
 	onClose: () => void;
 }
 
-const REPORT_REASONS = [
-	{
-		id: "reupload",
-		label: "Reupload / Hak Cipta",
-		description:
-			"Preset ini diambil atau diunggah ulang tanpa izin pembuat asli.",
-	},
-	{
-		id: "broken",
-		label: "Link / File Rusak",
-		description: "Link Alight Motion mati, atau file XML tidak bisa di-import.",
-	},
-	{
-		id: "nsfw",
-		label: "Konten Tidak Pantas",
-		description: "Mengandung gambar, teks, atau media tidak senonoh.",
-	},
-	{
-		id: "spam",
-		label: "Spam / Menyesatkan",
-		description: "Judul atau thumbnail palsu tidak sesuai dengan isi preset.",
-	},
-	{
-		id: "other",
-		label: "Lainnya",
-		description: "Masalah lain yang melanggar ketentuan komunitas AMHUB.",
-	},
-];
-
 export function ReportPresetModal({
 	presetId,
 	presetTitle,
 	isOpen,
 	onClose,
 }: ReportPresetModalProps) {
+	const { t } = useLanguage();
 	const { requireAuth } = useAuth();
 	const [reason, setReason] = useState("reupload");
 	const [details, setDetails] = useState("");
@@ -53,11 +26,39 @@ export function ReportPresetModal({
 	const [isSuccess, setIsSuccess] = useState(false);
 	const [error, setError] = useState<string | null>(null);
 
+	const reportReasons = [
+		{
+			id: "reupload",
+			label: t.presetDetail.reportReasonReupload,
+			description: t.presetDetail.reportReasonReuploadDesc,
+		},
+		{
+			id: "broken",
+			label: t.presetDetail.reportReasonBroken,
+			description: t.presetDetail.reportReasonBrokenDesc,
+		},
+		{
+			id: "nsfw",
+			label: t.presetDetail.reportReasonNsfw,
+			description: t.presetDetail.reportReasonNsfwDesc,
+		},
+		{
+			id: "spam",
+			label: t.presetDetail.reportReasonSpam,
+			description: t.presetDetail.reportReasonSpamDesc,
+		},
+		{
+			id: "other",
+			label: t.presetDetail.reportReasonOther,
+			description: t.presetDetail.reportReasonOtherDesc,
+		},
+	];
+
 	if (!isOpen) return null;
 
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
-		if (!requireAuth(undefined, "Masuk untuk melaporkan preset")) return;
+		if (!requireAuth(undefined, t.presetDetail.signInToReport)) return;
 
 		setIsLoading(true);
 		setError(null);
@@ -107,7 +108,7 @@ export function ReportPresetModal({
 						</div>
 						<div>
 							<h3 className="text-base font-bold text-[var(--color-text-primary)]">
-								Laporkan Preset
+								{t.presetDetail.reportPresetTitle}
 							</h3>
 							<p className="text-xs text-[var(--color-text-secondary)] truncate max-w-[240px]">
 								{presetTitle}
@@ -131,21 +132,20 @@ export function ReportPresetModal({
 							<CheckCircle2 className="w-6 h-6" />
 						</div>
 						<h4 className="text-base font-bold text-[var(--color-text-primary)]">
-							Laporan Terkirim!
+							{t.presetDetail.reportSuccessTitle}
 						</h4>
 						<p className="text-xs text-[var(--color-text-secondary)] max-w-xs mx-auto">
-							Terima kasih atas kontribusimu menjaga komunitas AMHUB tetap aman
-							dan berkualitas.
+							{t.presetDetail.reportSuccessDesc}
 						</p>
 					</div>
 				) : (
 					<form onSubmit={handleSubmit} className="space-y-4">
 						<div className="space-y-2">
 							<label className="block text-xs font-bold text-[var(--color-text-primary)]">
-								Alasan Pelaporan
+								{t.presetDetail.reportReasonLabel}
 							</label>
 							<div className="space-y-1.5">
-								{REPORT_REASONS.map((r) => (
+								{reportReasons.map((r) => (
 									<label
 										key={r.id}
 										className={`flex items-start gap-3 p-2.5 rounded-lg border cursor-pointer transition-all ${
@@ -177,12 +177,12 @@ export function ReportPresetModal({
 
 						<div className="space-y-1.5">
 							<label className="block text-xs font-bold text-[var(--color-text-primary)]">
-								Detail Tambahan (Opsional)
+								{t.presetDetail.reportDetailsLabel}
 							</label>
 							<textarea
 								value={details}
 								onChange={(e) => setDetails(e.target.value)}
-								placeholder="Sebutkan link asli atau keterangan pendukung..."
+								placeholder={t.presetDetail.reportDetailsPlaceholder}
 								rows={3}
 								maxLength={500}
 								className="w-full px-3.5 py-2.5 rounded-lg bg-[var(--color-bg-base)] border border-[var(--color-border-subtle)] text-xs text-[var(--color-text-primary)] placeholder-[var(--color-text-tertiary)] focus:outline-none focus:border-rose-500/50 resize-none font-sans"
@@ -203,14 +203,16 @@ export function ReportPresetModal({
 								disabled={isLoading}
 								className="flex-1 min-h-[42px] rounded-lg bg-[var(--color-bg-elevated)] border border-[var(--color-border-subtle)] text-xs font-bold text-[var(--color-text-primary)] hover:bg-[var(--color-bg-base)] transition-colors"
 							>
-								Batal
+								{t.common.cancel}
 							</button>
 							<button
 								type="submit"
 								disabled={isLoading}
 								className="flex-1 min-h-[42px] rounded-lg bg-rose-500 hover:bg-rose-600 text-white text-xs font-bold transition-all active:scale-95 shadow-md shadow-rose-500/25 flex items-center justify-center gap-2"
 							>
-								{isLoading ? "Mengirim..." : "Kirim Laporan"}
+								{isLoading
+									? t.presetDetail.reportSubmitting
+									: t.presetDetail.reportSubmit}
 							</button>
 						</div>
 					</form>

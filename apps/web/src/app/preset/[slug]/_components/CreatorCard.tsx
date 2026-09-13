@@ -1,6 +1,7 @@
 "use client";
 
 import { useAuth } from "@/context/AuthContext";
+import { useLanguage } from "@/i18n";
 import {
 	CheckCircle2,
 	Coffee,
@@ -34,6 +35,7 @@ interface CreatorCardProps {
 }
 
 export function CreatorCard({ creator }: CreatorCardProps) {
+	const { t } = useLanguage();
 	const { currentUser, requireAuth } = useAuth();
 	const isOwnProfile = Boolean(
 		currentUser &&
@@ -51,7 +53,7 @@ export function CreatorCard({ creator }: CreatorCardProps) {
 
 	const handleFollowToggle = async () => {
 		if (isOwnProfile) return;
-		if (!requireAuth(undefined, "Sign in to follow creators")) return;
+		if (!requireAuth(undefined, t.presetDetail.signInToFollow)) return;
 		setIsLoading(true);
 		const nextState = !isFollowing;
 		setIsFollowing(nextState);
@@ -124,7 +126,7 @@ export function CreatorCard({ creator }: CreatorCardProps) {
 						href="/settings/profile"
 						className="inline-flex items-center justify-center gap-1.5 min-h-[40px] px-3.5 rounded-lg text-xs font-bold bg-[var(--color-bg-elevated)] text-[var(--color-text-secondary)] border border-[var(--color-border-subtle)] hover:text-[var(--color-text-primary)] hover:border-[var(--color-border-strong)] transition-all active:scale-95 shrink-0"
 					>
-						<span>Edit Profile</span>
+						<span>{t.presetDetail.editProfile}</span>
 					</Link>
 				) : (
 					<button
@@ -140,12 +142,12 @@ export function CreatorCard({ creator }: CreatorCardProps) {
 						{isFollowing ? (
 							<>
 								<UserCheck className="w-4 h-4 text-emerald-400" />
-								<span>Following</span>
+								<span>{t.presetDetail.following}</span>
 							</>
 						) : (
 							<>
 								<UserPlus className="w-4 h-4" />
-								<span>Follow</span>
+								<span>{t.presetDetail.follow}</span>
 							</>
 						)}
 					</button>
@@ -154,12 +156,12 @@ export function CreatorCard({ creator }: CreatorCardProps) {
 
 			{/* Creator Stats Row */}
 			<div className="flex items-center justify-between pt-3 text-xs border-t border-[var(--color-border-subtle)]/60 text-[var(--color-text-secondary)] font-medium font-body">
-				<span>{creator.presetCount ?? 0} Presets</span>
+				<span>{creator.presetCount ?? 0} {t.presetDetail.presets}</span>
 				<span className="font-semibold text-cyan-400">
 					{followerCount > 1000
 						? `${(followerCount / 1000).toFixed(1)}K`
 						: followerCount}{" "}
-					Fans
+					{t.presetDetail.fans}
 				</span>
 			</div>
 
@@ -179,7 +181,7 @@ export function CreatorCard({ creator }: CreatorCardProps) {
 						className="flex items-center justify-center gap-2 w-full py-2.5 px-4 rounded-lg bg-amber-400/10 hover:bg-amber-400/20 text-amber-400 border border-amber-400/30 text-xs font-bold transition-all active:scale-95"
 					>
 						<Coffee className="w-4 h-4 text-amber-400" />
-						<span>Dukung Creator (Saweria / Trakteer)</span>
+						<span>{t.presetDetail.supportCreator}</span>
 						<ExternalLink className="w-3.5 h-3.5 opacity-70" />
 					</a>
 				</div>

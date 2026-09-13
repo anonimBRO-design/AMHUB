@@ -1,3 +1,6 @@
+"use client";
+
+import { useLanguage } from "@/i18n";
 import { formatCategory } from "@/lib/format-category";
 import { type PresetCardPreset, PresetGrid } from "@presethub/ui";
 import { Layers } from "lucide-react";
@@ -8,9 +11,13 @@ interface RelatedPresetsProps {
 }
 
 export function RelatedPresets({ presets, category }: RelatedPresetsProps) {
+	const { t } = useLanguage();
 	if (!presets || presets.length === 0) return null;
 
 	const formattedCat = formatCategory(category);
+	const sectionTitle = formattedCat
+		? t.presetDetail.morePresets.replace("{category}", formattedCat)
+		: t.presetDetail.morePresets.replace("{category}", "").replace(/\s+/g, " ").trim();
 
 	return (
 		<section className="space-y-4 pt-4">
@@ -20,7 +27,7 @@ export function RelatedPresets({ presets, category }: RelatedPresetsProps) {
 						<Layers className="w-4 h-4" />
 					</div>
 					<h2 className="text-lg sm:text-xl font-bold tracking-tight text-[var(--color-text-primary)]">
-						More {formattedCat ? `${formattedCat} ` : ""}Presets
+						{sectionTitle}
 					</h2>
 				</div>
 			</div>

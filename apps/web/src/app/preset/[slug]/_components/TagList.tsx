@@ -1,3 +1,4 @@
+import { useLanguage } from "@/i18n";
 import { formatCategory } from "@/lib/format-category";
 import {
 	Calendar,
@@ -26,13 +27,20 @@ interface TagListProps {
 }
 
 export function TagList({ preset }: TagListProps) {
+	const { t, language } = useLanguage();
+
 	const createdDateFormatted = preset.createdAt
-		? new Date(preset.createdAt).toLocaleDateString("id-ID", {
-				month: "short",
-				day: "numeric",
-				year: "numeric",
-			})
-		: "Baru saja";
+		? new Date(preset.createdAt).toLocaleDateString(
+				language === "id" ? "id-ID" : "en-US",
+				{
+					month: "short",
+					day: "numeric",
+					year: "numeric",
+				},
+			)
+		: language === "id"
+			? "Baru saja"
+			: "Just now";
 
 	const amVersionLabel = preset.amVersionMin
 		? preset.amVersionMax
@@ -42,45 +50,54 @@ export function TagList({ preset }: TagListProps) {
 
 	const licenseLabel =
 		preset.license === "commercial"
-			? "Komersial"
+			? t.presetDetail.licenseCommercial
 			: preset.isPaid
-				? "Personal Use"
-				: "Free Use & Edit";
+				? t.presetDetail.licensePersonal
+				: t.presetDetail.licenseFree;
+
+	const difficultyMap: Record<string, string> = {
+		beginner: language === "id" ? "Pemula" : "Beginner",
+		intermediate: language === "id" ? "Menengah" : "Intermediate",
+		advanced: language === "id" ? "Mahir" : "Advanced",
+	};
+	const difficultyLabel =
+		(preset.difficulty && difficultyMap[preset.difficulty.toLowerCase()]) ||
+		t.presetDetail.allLevels;
 
 	const specs = [
 		{
 			icon: Layers,
-			label: "Kategori",
+			label: t.presetDetail.category,
 			value: formatCategory(preset.category),
 			color: "text-cyan-400",
 		},
 		{
 			icon: Ratio,
-			label: "Rasio Layar",
+			label: t.presetDetail.aspectRatio,
 			value: preset.aspectRatio || "9:16",
 			color: "text-emerald-400",
 		},
 		{
 			icon: FileCode,
-			label: "Format File",
+			label: t.presetDetail.fileFormat,
 			value: (preset.fileType || "XML").toUpperCase(),
 			color: "text-blue-400",
 		},
 		{
 			icon: Sparkles,
-			label: "Kesulitan",
-			value: preset.difficulty || "Semua Tingkat",
+			label: t.presetDetail.difficulty,
+			value: difficultyLabel,
 			color: "text-purple-400",
 		},
 		{
 			icon: Smartphone,
-			label: "Versi AM",
+			label: t.presetDetail.amVersion,
 			value: amVersionLabel,
 			color: "text-sky-400",
 		},
 		{
 			icon: Shield,
-			label: "Lisensi",
+			label: t.presetDetail.license,
 			value: licenseLabel,
 			color: preset.isPaid ? "text-amber-400" : "text-emerald-400",
 		},
@@ -94,10 +111,10 @@ export function TagList({ preset }: TagListProps) {
 				</div>
 				<div>
 					<h2 className="text-base sm:text-lg font-bold text-[var(--color-text-primary)]">
-						Spesifikasi & Lisensi
+						{t.presetDetail.specsTitle}
 					</h2>
 					<p className="text-xs text-[var(--color-text-secondary)]">
-						Rincian teknis aset Alight Motion
+						{t.presetDetail.specsSubtitle}
 					</p>
 				</div>
 			</div>
@@ -127,7 +144,7 @@ export function TagList({ preset }: TagListProps) {
 			<div className="flex flex-wrap items-center gap-x-5 gap-y-1.5 pt-1 text-xs">
 				<span className="inline-flex items-center gap-1.5 text-[var(--color-text-secondary)]">
 					<Calendar className="w-3.5 h-3.5 text-amber-400" />
-					Rilis:{" "}
+					{t.presetDetail.released}{" "}
 					<strong className="text-[var(--color-text-primary)]">
 						{createdDateFormatted}
 					</strong>
@@ -136,7 +153,7 @@ export function TagList({ preset }: TagListProps) {
 					<CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
 					Status:{" "}
 					<strong className="text-[var(--color-text-primary)]">
-						Verified Preset
+						{t.presetDetail.verifiedByAmhub}
 					</strong>
 				</span>
 			</div>

@@ -1,5 +1,6 @@
 "use client";
 
+import { useLanguage } from "@/i18n";
 import { formatCategory } from "@/lib/format-category";
 import type { PresetCardPreset } from "@presethub/ui";
 import { ArrowLeft, Sparkles } from "lucide-react";
@@ -60,6 +61,7 @@ export function PresetDetailClient({
   remixChildrenTotal = 0,
 }: PresetDetailClientProps) {
   const router = useRouter();
+  const { t } = useLanguage();
   const [liveCommentCount, setLiveCommentCount] = useState(
     Math.max(preset.commentCount ?? 0, comments.length),
   );
@@ -82,12 +84,12 @@ export function PresetDetailClient({
           className="inline-flex items-center gap-2 px-4 py-2 rounded-2xl bg-[var(--color-bg-surface)] hover:bg-[var(--color-bg-elevated)] border border-[var(--color-border-subtle)] hover:border-[var(--color-border-strong)] text-xs font-bold text-[var(--color-text-secondary)] hover:text-white transition-all active:scale-95 shadow-sm"
         >
           <ArrowLeft className="w-4 h-4" />
-          <span>Back</span>
+          <span>{t.presetDetail.back}</span>
         </button>
 
         <div className="flex items-center gap-2 text-xs text-[var(--color-text-tertiary)]">
           <Link href="/explore" className="hover:text-white transition-colors">
-            Explore
+            {t.presetDetail.explore}
           </Link>
           <span>/</span>
           <span className="text-[var(--color-interactive-primary)] font-semibold">
@@ -116,7 +118,7 @@ export function PresetDetailClient({
                 {formatCategory(preset.category)}
               </span>
               <span className="text-xs font-semibold text-[var(--color-text-tertiary)] uppercase tracking-wider">
-                Alight Motion Preset
+                {t.presetDetail.alightMotionPreset}
               </span>
             </div>
             <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black tracking-tight text-[var(--color-text-primary)] leading-tight">

@@ -214,6 +214,206 @@ export const id: Translations = {
 		posting: "Mengirim...",
 		noComments: "Belum ada komentar. Jadilah yang pertama memberikan pendapat!",
 		similarPresets: "Preset Serupa",
+
+		// Navigation & Header
+		back: "Kembali",
+		explore: "Jelajahi",
+		alightMotionPreset: "Preset Alight Motion",
+		morePresets: "Preset {category} Lainnya",
+
+		// Creator Card
+		editProfile: "Edit Profil",
+		follow: "Ikuti",
+		following: "Mengikuti",
+		signInToFollow: "Masuk untuk mengikuti kreator",
+		supportCreator: "Dukung Kreator (Saweria / Trakteer)",
+		fans: "Penggemar",
+		presets: "Preset",
+
+		// Hero / Media Toolbar
+		views: "Dilihat",
+		downloads: "Diunduh",
+		likes: "Suka",
+		comments: "Komentar",
+		share: "Bagikan",
+		report: "Laporkan Preset",
+		deletePreset: "Hapus Preset",
+		deleteConfirmTitle: "Hapus preset ini?",
+		deleteConfirmDesc:
+			"Tindakan ini tidak dapat dibatalkan. Preset beserta seluruh file terkait akan dihapus secara permanen.",
+		deleting: "Menghapus...",
+		deleteButton: "Hapus",
+		cancel: "Batal",
+
+		// Install & Download
+		downloadAndImport: "Unduh & Impor",
+		instantProjectImport: "Impor Proyek Langsung ke Alight Motion",
+		freeBadge: "GRATIS",
+		signInToPurchase: "Masuk untuk membeli preset ini",
+		openInAm: "Buka di Alight Motion",
+		openGoogleDrive: "Buka Google Drive",
+		downloadXml: "Unduh {type}",
+		directImportLink: "Tautan Impor Langsung / URL",
+		shared: "Dibagikan!",
+		copy: "Salin",
+		copied: "Tersalin!",
+		scanQrTitle: "Pindai Kode QR",
+		scanQrDesc: "Buka AM > pindai gambar untuk impor otomatis.",
+		importMobileTitle: "Impor via Ponsel",
+		importMobileDesc:
+			"Pindai QR pakai ponsel untuk membuka tautan impor langsung di Alight Motion.",
+		quickGuideTitle: "Cara Pasang Preset di Alight Motion",
+		quickGuideBadge: "(Panduan Cepat)",
+		guideStep1Title: "1. Impor Langsung via Tautan AM (Otomatis & Tercepat)",
+		guideStep1Desc:
+			'Klik tombol "Buka di Alight Motion" di atas atau salin tautan langsung. Alight Motion akan otomatis terbuka dan meminta konfirmasi impor proyek.',
+		guideStep2Title: "2. Impor Manual File XML (Untuk Semua Versi AM)",
+		guideStep2Desc:
+			"Unduh file .xml, buka pengelola file (ZArchiver / Files), pilih file .xml > Bagikan / Kirim ke Alight Motion.",
+		guideTip:
+			"Tips: Jika sound/lagu hilang atau hening, periksa deskripsi preset untuk tautan sound TikTok / audio aslinya.",
+		compatibility: "Kompatibilitas:",
+		amOrNewer: "AM {version} atau lebih baru",
+		upToAm: "Hingga AM {version}",
+		compatibilityNotice:
+			"Pastikan versi Alight Motion kamu sesuai agar preset bisa diimpor tanpa error.",
+
+		// Paid / Monetization
+		exclusivePaid: "Preset Berbayar Eksklusif",
+		paidNotice:
+			"Beli sekarang untuk langsung membuka akses unduh file XML, Kode QR, dan tautan impor Alight Motion.",
+		personalLicense: "Personal",
+		personalLicenseDesc: "Proyek pribadi",
+		commercialLicense: "Komersial",
+		commercialLicenseDesc: "Konten monetisasi",
+		buyNow: "Beli Sekarang",
+		buyCommercial: "Beli Komersial",
+		processingOrder: "Memproses Pesanan...",
+
+		// Description Section
+		descriptionTitle: "Deskripsi & Detail Preset",
+		descriptionSubtitle: "Panduan pemakaian dan catatan dari kreator",
+		noDescription: "Tidak ada deskripsi yang disertakan untuk preset ini.",
+		editDescription: "Edit Deskripsi",
+		editDescriptionTitle: "Ubah Deskripsi Preset",
+		editDescriptionPlaceholder:
+			"Tulis deskripsi preset, credit lagu/sound, font yang dipakai, atau tips impor ke Alight Motion... (Gunakan **tebal**, - bullet, atau @username)",
+		characters: "{count} / 2000 karakter",
+		saveChanges: "Simpan Perubahan",
+		saving: "Menyimpan...",
+		saved: "Tersimpan!",
+		uploadedOn: "Diunggah",
+
+		// Specifications & License
+		specsTitle: "Spesifikasi & Lisensi",
+		specsSubtitle: "Rincian teknis aset Alight Motion",
+		category: "Kategori",
+		aspectRatio: "Rasio Layar",
+		fileFormat: "Format File",
+		difficulty: "Tingkat Kesulitan",
+		amVersion: "Versi AM",
+		license: "Lisensi",
+		licensePersonal: "Penggunaan Pribadi",
+		licenseFree: "Gratis Pakai & Edit",
+		licenseCommercial: "Lisensi Komersial",
+		allLevels: "Semua Tingkat",
+		released: "Rilis:",
+		verifiedByAmhub: "Terverifikasi AMHUB",
+
+		// Performance Stats
+		statsTitle: "Statistik Preset",
+		statsSubtitle: "Performa preset ini di AMHUB",
+		statViews: "Dilihat",
+		statDownloads: "Diunduh",
+		statUniqueDownloads: "Pengunduh Unik",
+		statLikes: "Suka",
+		statBookmarks: "Disimpan",
+		statComments: "Komentar",
+		statEngagement: "Keterlibatan:",
+		statDownloadConversion: "Konversi Unduhan:",
+
+		// Remix History
+		remixTitle: "Riwayat Remix",
+		remixSubtitle: "Atribusi otomatis ke kreator asli",
+		remixFrom: "Remix dari",
+		remixCount: "Diremix {count} kali",
+
+		// Community Discussion / Comments
+		communityDiscussion: "Diskusi Komunitas",
+		commentsCountHeader: "{count} Komentar",
+		commentPlaceholder: "Tulis komentar atau tanya tentang preset ini...",
+		sendComment: "Kirim Komentar",
+		beFirstComment: "Belum ada komentar",
+		beFirstCommentDesc:
+			"Jadilah editor pertama yang memberikan ulasan atau pertanyaan!",
+		deleteComment: "Hapus komentar",
+		signInToComment: "Masuk untuk menulis komentar",
+
+		// Additional Interactions & Modals
+		signInToLike: "Masuk untuk menyukai preset",
+		signInToBookmark: "Masuk untuk menyimpan preset",
+		signInToReport: "Masuk untuk melaporkan preset",
+		unlikePreset: "Batal menyukai preset",
+		likePreset: "Sukai preset",
+		removeBookmark: "Hapus dari simpanan",
+		bookmarkPreset: "Simpan preset",
+		viewComments: "Lihat komentar",
+		sharePreset: "Bagikan preset",
+		shareText: 'Lihat preset Alight Motion "{title}" di AMHUB!',
+		buyPresetFor: "Beli Preset • {price}",
+
+		// Report Modal
+		reportPresetTitle: "Laporkan Preset",
+		reportReasonLabel: "Alasan Pelaporan",
+		reportReasonReupload: "Reupload / Hak Cipta",
+		reportReasonReuploadDesc:
+			"Preset ini diambil atau diunggah ulang tanpa izin pembuat asli.",
+		reportReasonBroken: "Link / File Rusak",
+		reportReasonBrokenDesc:
+			"Link Alight Motion mati, atau file XML tidak bisa di-import.",
+		reportReasonNsfw: "Konten Tidak Pantas",
+		reportReasonNsfwDesc: "Mengandung gambar, teks, atau media tidak senonoh.",
+		reportReasonSpam: "Spam / Menyesatkan",
+		reportReasonSpamDesc:
+			"Judul atau thumbnail palsu tidak sesuai dengan isi preset.",
+ 		reportReasonOther: "Lainnya",
+		reportReasonOtherDesc:
+			"Masalah lain yang melanggar ketentuan komunitas AMHUB.",
+		reportDetailsLabel: "Detail Tambahan (Opsional)",
+		reportDetailsPlaceholder:
+			"Sebutkan link asli atau keterangan pendukung...",
+		reportSubmitting: "Mengirim...",
+		reportSubmit: "Kirim Laporan",
+		reportSuccessTitle: "Laporan Terkirim!",
+		reportSuccessDesc:
+			"Terima kasih atas kontribusimu menjaga komunitas AMHUB tetap aman dan berkualitas.",
+
+		// Checkout & Payment Modal
+		checkoutTitle: "Checkout Preset",
+		checkoutSubtitle:
+			"Selesaikan pembayaran untuk membuka link & file preset",
+		orderNumber: "No. Order:",
+		paymentSuccessTitle: "Pembayaran Berhasil!",
+		paymentSuccessDesc:
+			"Preset langsung terbuka dan siap kamu unduh / import sekarang.",
+		openAndDownloadPreset: "Buka & Download Preset",
+		payQrisTitle: "QRIS (Semua E-Wallet)",
+		payTransferTitle: "Manual / Bank",
+		scanQrisNational: "Scan via QRIS Nasional",
+		scanQrisSupportedWallets:
+			"Buka GoPay, OVO, DANA, BCA Mobile, Livin', atau ShopeePay",
+		bankTransfer: "Bank Transfer:",
+		accountNumber: "Nomor Rekening:",
+		accountName: "Atas Nama:",
+		exactTransferNotice: "Pastikan nominal transfer sesuai: {amount}",
+		checkingPayment: "Mengecek Pembayaran...",
+		checkPaymentStatus: "Cek Status Pembayaran",
+		autoDetectPaymentNotice:
+			"Otomatis mendeteksi status pembayaran dalam hitungan detik.",
+		paymentVerified: "Pembayaran berhasil diverifikasi!",
+		waitingForPayment: "Menunggu pembayaran diselesaikan.",
+		paymentNotDetectedYet:
+			"Belum mendeteksi pembayaran. Coba lagi beberapa saat.",
 	},
 	bookmarks: {
 		title: "Tanda Buku Anda",

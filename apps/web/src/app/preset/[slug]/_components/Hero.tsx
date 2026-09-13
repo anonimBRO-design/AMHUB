@@ -1,6 +1,7 @@
 "use client";
 
 import { useAuth } from "@/context/AuthContext";
+import { useLanguage } from "@/i18n";
 import { formatCategory } from "@/lib/format-category";
 import {
 	Bookmark,
@@ -60,6 +61,7 @@ interface HeroProps {
 
 export function Hero({ preset, currentUserId }: HeroProps) {
 	const router = useRouter();
+	const { t } = useLanguage();
 	const [showDeleteDialog, setShowDeleteDialog] = useState(false);
 	const [showReportModal, setShowReportModal] = useState(false);
 	const [isDeleting, setIsDeleting] = useState(false);
@@ -133,7 +135,7 @@ export function Hero({ preset, currentUserId }: HeroProps) {
 	}, [isMuted]);
 
 	const handleLikeToggle = async () => {
-		if (!requireAuth(undefined, "Sign in to like presets")) return;
+		if (!requireAuth(undefined, t.presetDetail.signInToLike)) return;
 		const nextState = !isLiked;
 		setIsLiked(nextState);
 		setLikeCount((prev) => (nextState ? prev + 1 : Math.max(0, prev - 1)));
@@ -394,7 +396,11 @@ export function Hero({ preset, currentUserId }: HeroProps) {
 						<button
 							type="button"
 							onClick={handleLikeToggle}
-							aria-label={isLiked ? "Unlike preset" : "Like preset"}
+							aria-label={
+								isLiked
+									? t.presetDetail.unlikePreset
+									: t.presetDetail.likePreset
+							}
 							className={`flex-1 inline-flex items-center justify-center gap-1.5 min-h-[42px] px-3.5 rounded-xl border transition-all active:scale-95 shadow-sm font-semibold text-xs ${
 								isLiked
 									? "bg-rose-500/15 text-rose-400 border-rose-500/30"
@@ -432,7 +438,7 @@ export function Hero({ preset, currentUserId }: HeroProps) {
 									if (inputElem) inputElem.focus();
 								}
 							}}
-							aria-label="Lihat Komentar"
+							aria-label={t.presetDetail.comments}
 							className="inline-flex items-center justify-center min-h-[42px] px-3.5 rounded-xl border transition-all active:scale-95 shadow-sm bg-blue-500/10 text-blue-400 border-blue-500/25 hover:bg-blue-500/20 hover:border-blue-500/40"
 						>
 							<MessageSquare className="w-4 h-4 fill-blue-400/20 text-blue-400" />
@@ -448,8 +454,8 @@ export function Hero({ preset, currentUserId }: HeroProps) {
 						<button
 							type="button"
 							onClick={() => setShowReportModal(true)}
-							aria-label="Laporkan Preset"
-							title="Laporkan Preset"
+							aria-label={t.presetDetail.report}
+							title={t.presetDetail.report}
 							className="inline-flex items-center justify-center min-h-[42px] min-w-[42px] rounded-xl border transition-all active:scale-95 shadow-sm bg-[var(--color-bg-surface)] text-[var(--color-text-tertiary)] border-[var(--color-border-subtle)] hover:text-rose-400 hover:border-rose-500/30 hover:bg-rose-500/10"
 						>
 							<Flag className="w-4 h-4" />
@@ -460,8 +466,8 @@ export function Hero({ preset, currentUserId }: HeroProps) {
 						<button
 							type="button"
 							onClick={() => setShowDeleteDialog(true)}
-							title="Delete Preset"
-							aria-label="Delete Preset"
+							title={t.presetDetail.deletePreset}
+							aria-label={t.presetDetail.deletePreset}
 							className="inline-flex items-center justify-center min-h-[42px] min-w-[42px] rounded-xl border transition-all active:scale-95 shadow-sm bg-rose-500/10 text-rose-400 border-rose-500/20 hover:bg-rose-500/20"
 						>
 							<Trash2 className="w-4 h-4" />
@@ -476,7 +482,7 @@ export function Hero({ preset, currentUserId }: HeroProps) {
 						<span className="font-bold text-[var(--color-text-primary)]">
 							{viewCount}
 						</span>
-						<span className="text-[11px] text-[var(--color-text-tertiary)]">Views</span>
+						<span className="text-[11px] text-[var(--color-text-tertiary)]">{t.presetDetail.views}</span>
 					</div>
 					<span className="text-[var(--color-border-subtle)]">•</span>
 					<div className="flex items-center gap-1.5 text-emerald-400">
@@ -484,7 +490,7 @@ export function Hero({ preset, currentUserId }: HeroProps) {
 						<span className="font-bold text-[var(--color-text-primary)]">
 							{downloadCount}
 						</span>
-						<span className="text-[11px] text-[var(--color-text-tertiary)]">Downloads</span>
+						<span className="text-[11px] text-[var(--color-text-tertiary)]">{t.presetDetail.downloads}</span>
 					</div>
 					<span className="text-[var(--color-border-subtle)]">•</span>
 					<div className="flex items-center gap-1.5 text-rose-400">
@@ -492,7 +498,7 @@ export function Hero({ preset, currentUserId }: HeroProps) {
 						<span className="font-bold text-[var(--color-text-primary)]">
 							{likeCount}
 						</span>
-						<span className="text-[11px] text-[var(--color-text-tertiary)]">Likes</span>
+						<span className="text-[11px] text-[var(--color-text-tertiary)]">{t.presetDetail.likes}</span>
 					</div>
 				</div>
 			</div>
@@ -508,11 +514,10 @@ export function Hero({ preset, currentUserId }: HeroProps) {
 					>
 						<div className="space-y-2">
 							<h3 className="text-lg font-bold text-[var(--color-text-primary)]">
-								Delete this preset?
+								{t.presetDetail.deleteConfirmTitle}
 							</h3>
 							<p className="text-sm text-[var(--color-text-secondary)]">
-								This action cannot be undone. The preset and all associated
-								files will be permanently removed.
+								{t.presetDetail.deleteConfirmDesc}
 							</p>
 						</div>
 						<div className="flex items-center gap-3 pt-2">
@@ -522,7 +527,7 @@ export function Hero({ preset, currentUserId }: HeroProps) {
 								disabled={isDeleting}
 								className="flex-1 min-h-[42px] rounded-lg bg-[var(--color-bg-elevated)] border border-[var(--color-border-subtle)] text-sm font-semibold text-[var(--color-text-primary)] hover:bg-[var(--color-bg-base)] transition-colors disabled:opacity-50"
 							>
-								Cancel
+								{t.presetDetail.cancel}
 							</button>
 							<button
 								type="button"
@@ -551,10 +556,10 @@ export function Hero({ preset, currentUserId }: HeroProps) {
 												d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
 											/>
 										</svg>
-										<span>Deleting...</span>
+										<span>{t.presetDetail.deleting}</span>
 									</>
 								) : (
-									<span>Delete</span>
+									<span>{t.presetDetail.deleteButton}</span>
 								)}
 							</button>
 						</div>

@@ -1,5 +1,6 @@
 "use client";
 
+import { useLanguage } from "@/i18n";
 import {
 	AlertCircle,
 	ArrowRight,
@@ -51,6 +52,7 @@ export function PresetPaymentModal({
 	initialOrder,
 	onPaymentSuccess,
 }: PresetPaymentModalProps) {
+	const { t, language } = useLanguage();
 	const [order, setOrder] = useState<PresetOrderItem | null>(
 		initialOrder || null,
 	);
@@ -71,7 +73,7 @@ export function PresetPaymentModal({
 
 		try {
 			const res = await fetch(`/api/orders/${order.id}`);
-			if (!res.ok) throw new Error("Gagal memeriksa status order");
+			if (!res.ok) throw new Error("Failed to check order status");
 			const json = await res.json();
 			const currentOrder = json?.data as PresetOrderItem;
 
@@ -79,20 +81,20 @@ export function PresetPaymentModal({
 				setOrder(currentOrder);
 				if (currentOrder.payment_status === "paid") {
 					setIsSuccess(true);
-					setStatusMessage("Pembayaran berhasil diverifikasi!");
+					setStatusMessage(t.presetDetail.paymentVerified);
 					setTimeout(() => {
 						onPaymentSuccess();
 					}, 1800);
 				} else {
-					setStatusMessage("Menunggu pembayaran diselesaikan.");
+					setStatusMessage(t.presetDetail.waitingForPayment);
 				}
 			}
 		} catch (err) {
-			setStatusMessage("Belum mendeteksi pembayaran. Coba lagi beberapa saat.");
+			setStatusMessage(t.presetDetail.paymentNotDetectedYet);
 		} finally {
 			setIsCheckingStatus(false);
 		}
-	}, [order?.id, isSuccess, onPaymentSuccess]);
+	}, [order?.id, isSuccess, onPaymentSuccess, t]);
 
 	useEffect(() => {
 		if (!isOpen || !order?.id || isSuccess) return;
@@ -138,10 +140,10 @@ export function PresetPaymentModal({
 						</div>
 						<div>
 							<h3 className="text-base font-bold text-[var(--color-text-primary)]">
-								Checkout Preset
+								{t.presetDetail.checkoutTitle}
 							</h3>
 							<p className="text-xs text-[var(--color-text-secondary)]">
-								Selesaikan pembayaran untuk membuka link & file preset
+								{t.presetDetail.checkoutSubtitle}
 							</p>
 						</div>
 					</div>
@@ -154,14 +156,17 @@ export function PresetPaymentModal({
 							{preset.title}
 						</span>
 						<span className="font-bold text-cyan-400">
-							Rp {preset.price.toLocaleString("id-ID")}
+							Rp{" "}
+							{preset.price.toLocaleString(
+								language === "id" ? "id-ID" : "en-US",
+							)}
 						</span>
 					</div>
 
 					{order && (
 						<div className="pt-2 border-t border-[var(--color-border-subtle)] flex items-center justify-between text-[11px]">
 							<span className="text-[var(--color-text-tertiary)]">
-								No. Order:
+								{t.presetDetail.orderNumber}
 							</span>
 							<button
 								type="button"
@@ -187,10 +192,10 @@ export function PresetPaymentModal({
 						</div>
 						<div>
 							<h4 className="text-base font-bold text-white">
-								Pembayaran Berhasil!
+								{t.presetDetail.paymentSuccessTitle}
 							</h4>
 							<p className="text-xs text-[var(--color-text-secondary)] mt-1">
-								Preset langsung terbuka dan siap kamu unduh / import sekarang.
+								{t.presetDetail.paymentSuccessDesc}
 							</p>
 						</div>
 						<div className="pt-2">
@@ -200,7 +205,7 @@ export function PresetPaymentModal({
 								className="w-full py-2.5 rounded-xl text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-500 transition-colors flex items-center justify-center gap-1.5"
 							>
 								<Download className="w-4 h-4" />
-								Buka & Download Preset
+								{t.presetDetail.openAndDownloadPreset}
 							</button>
 						</div>
 					</div>
@@ -218,7 +223,7 @@ export function PresetPaymentModal({
 								}`}
 							>
 								<QrCode className="w-4 h-4 text-cyan-400" />
-								QRIS (Semua E-Wallet)
+								{t.presetDetail.payQrisTitle}
 							</button>
 							<button
 								type="button"
@@ -230,7 +235,7 @@ export function PresetPaymentModal({
 								}`}
 							>
 								<CreditCard className="w-4 h-4 text-cyan-400" />
-								Manual / Bank
+								{t.presetDetail.payTransferTitle}
 							</button>
 						</div>
 
@@ -340,10 +345,10 @@ export function PresetPaymentModal({
 								</div>
 								<div className="space-y-1">
 									<div className="text-xs font-bold text-[var(--color-text-primary)]">
-										Scan via QRIS Nasional
+										{t.presetDetail.scanQrisNational}
 									</div>
 									<p className="text-[11px] text-[var(--color-text-secondary)]">
-										Buka GoPay, OVO, DANA, BCA Mobile, Livin', atau ShopeePay
+										{t.presetDetail.scanQrisSupportedWallets}
 									</p>
 								</div>
 							</div>
@@ -351,7 +356,7 @@ export function PresetPaymentModal({
 							<div className="p-4 rounded-xl bg-[var(--color-bg-elevated)] border border-[var(--color-border-subtle)] space-y-3 text-xs">
 								<div className="flex items-center justify-between pb-2 border-b border-[var(--color-border-subtle)]">
 									<span className="text-[var(--color-text-secondary)]">
-										Bank Transfer:
+										{t.presetDetail.bankTransfer}
 									</span>
 									<span className="font-bold text-[var(--color-text-primary)]">
 										BCA / Mandiri
@@ -359,7 +364,7 @@ export function PresetPaymentModal({
 								</div>
 								<div className="flex items-center justify-between">
 									<span className="text-[var(--color-text-secondary)]">
-										Nomor Rekening:
+										{t.presetDetail.accountNumber}
 									</span>
 									<button
 										type="button"
@@ -376,15 +381,21 @@ export function PresetPaymentModal({
 								</div>
 								<div className="flex items-center justify-between">
 									<span className="text-[var(--color-text-secondary)]">
-										Atas Nama:
+										{t.presetDetail.accountName}
 									</span>
 									<span className="font-semibold text-[var(--color-text-primary)]">
 										AMHUB INDONESIA
 									</span>
 								</div>
 								<p className="text-[10px] text-[var(--color-text-tertiary)] pt-1">
-									Pastikan nominal transfer sesuai:{" "}
-									<strong>Rp {preset.price.toLocaleString("id-ID")}</strong>
+									{t.presetDetail.exactTransferNotice.split("{amount}")[0]}
+									<strong>
+										Rp{" "}
+										{preset.price.toLocaleString(
+											language === "id" ? "id-ID" : "en-US",
+										)}
+									</strong>
+									{t.presetDetail.exactTransferNotice.split("{amount}")[1] || ""}
 								</p>
 							</div>
 						)}
@@ -407,18 +418,18 @@ export function PresetPaymentModal({
 								{isCheckingStatus ? (
 									<>
 										<Loader2 className="w-4 h-4 animate-spin" />
-										Mengecek Pembayaran...
+										{t.presetDetail.checkingPayment}
 									</>
 								) : (
 									<>
 										<RefreshCw className="w-4 h-4" />
-										Cek Status Pembayaran
+										{t.presetDetail.checkPaymentStatus}
 									</>
 								)}
 							</button>
 
 							<p className="text-[10px] text-center text-[var(--color-text-tertiary)]">
-								Otomatis mendeteksi status pembayaran dalam hitungan detik.
+								{t.presetDetail.autoDetectPaymentNotice}
 							</p>
 						</div>
 					</>
