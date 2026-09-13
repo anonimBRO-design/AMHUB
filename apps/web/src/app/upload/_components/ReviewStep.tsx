@@ -101,9 +101,9 @@ export function ReviewStep({
 						/>
 					) : (
 						<div className="flex flex-col items-center justify-center gap-2 p-6 text-center text-[var(--color-text-secondary)]">
-							<Film className="w-10 h-10 stroke-[1.5] text-cyan-400/60" />
-							<span className="text-xs font-semibold">
-								No video preview (Default cover will be used)
+							<Film className="w-10 h-10 stroke-[1.5] text-rose-400/60" />
+							<span className="text-xs font-semibold text-rose-400">
+								Belum ada video preview (Wajib di-upload di Step 2)
 							</span>
 						</div>
 					)}

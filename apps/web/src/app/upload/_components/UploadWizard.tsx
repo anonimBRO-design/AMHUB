@@ -200,7 +200,17 @@ export function UploadWizard() {
 			};
 		}
 
-		// 2. Check Step 3: Preset Details
+		// 2. Check Step 2: Preview Video (WAJIB)
+		if (!previewVideoFile) {
+			return {
+				valid: false,
+				targetStep: 2,
+				error:
+					"Preview video wajib di-upload di Step 2! Silakan upload file video preview preset Alight Motion kamu.",
+			};
+		}
+
+		// 3. Check Step 3: Preset Details
 		if (!title.trim()) {
 			return {
 				valid: false,
@@ -238,6 +248,28 @@ export function UploadWizard() {
 
 		return { valid: true, targetStep: 4, error: "" };
 	};
+
+	const isStep1Valid = Boolean(
+		selectedFileTypes.length > 0 &&
+			validation.isValid &&
+			(!selectedFileTypes.includes("xml") || presetFile) &&
+			(!selectedFileTypes.includes("link") || amLink.trim()) &&
+			(!selectedFileTypes.includes("gdrive") || gdriveLink.trim()),
+	);
+
+	const isStep2Valid = Boolean(previewVideoFile);
+
+	const isStep3Valid = Boolean(
+		title.trim().length > 0 &&
+			isAmVersionRangeValid() &&
+			(!isPaid ||
+				(price >= 1000 &&
+					!Number.isNaN(price) &&
+					(commercialPrice === 0 ||
+						(commercialPrice >= price && !Number.isNaN(commercialPrice))))),
+	);
+
+	const isStep4Valid = isStep1Valid && isStep2Valid && isStep3Valid;
 
 	const handleNextStep = () => {
 		setError(null);
@@ -699,6 +731,12 @@ export function UploadWizard() {
 				currentStep={currentStep}
 				totalSteps={WIZARD_STEPS.length}
 				steps={WIZARD_STEPS}
+				completedSteps={{
+					1: isStep1Valid,
+					2: isStep2Valid,
+					3: isStep3Valid,
+					4: isStep4Valid,
+				}}
 				onStepClick={(step) => {
 					setError(null);
 					setCurrentStep(step);

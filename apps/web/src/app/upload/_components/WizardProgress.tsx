@@ -4,6 +4,7 @@ interface WizardProgressProps {
 	currentStep: number;
 	totalSteps: number;
 	steps: Array<{ num: number; label: string }>;
+	completedSteps?: Record<number, boolean>;
 	onStepClick?: (step: number) => void;
 }
 
@@ -11,9 +12,11 @@ export function WizardProgress({
 	currentStep,
 	totalSteps,
 	steps,
+	completedSteps,
 	onStepClick,
 }: WizardProgressProps) {
-	const progressPercent = Math.round((currentStep / totalSteps) * 100);
+	const completedCount = steps.filter((s) => Boolean(completedSteps?.[s.num])).length;
+	const progressPercent = Math.round((completedCount / totalSteps) * 100);
 
 	return (
 		<div className="space-y-3">
@@ -23,7 +26,7 @@ export function WizardProgress({
 					Step {currentStep} of {totalSteps}
 				</span>
 				<span className="text-[var(--color-interactive-primary)] font-bold">
-					{progressPercent}% Completed
+					{completedCount} / {totalSteps} Selesai ({progressPercent}%)
 				</span>
 			</div>
 
@@ -31,14 +34,14 @@ export function WizardProgress({
 			<div className="w-full h-1.5 rounded-full bg-[var(--color-bg-elevated)] overflow-hidden">
 				<div
 					className="h-full bg-gradient-to-r from-[var(--color-interactive-primary)] to-cyan-400 transition-all duration-300 ease-out"
-					style={{ width: `${progressPercent}%` }}
+					style={{ width: `${Math.max(8, progressPercent)}%` }}
 				/>
 			</div>
 
 			{/* Steps Chips Bar - Clickable for free navigation */}
 			<div className="flex items-center justify-between gap-1 overflow-x-auto scrollbar-none py-1 text-xs font-semibold select-none">
 				{steps.map((s) => {
-					const isDone = currentStep > s.num;
+					const isDone = Boolean(completedSteps?.[s.num]);
 					const isCurrent = currentStep === s.num;
 
 					return (
@@ -55,9 +58,11 @@ export function WizardProgress({
 							}`}
 						>
 							{isDone ? (
-								<Check className="w-3.5 h-3.5 text-emerald-400" />
+								<Check className={`w-3.5 h-3.5 ${isCurrent ? "text-white" : "text-emerald-400"}`} />
 							) : (
-								<span className="text-[11px] font-mono">{s.num}</span>
+								<span className={`text-[11px] font-mono ${isCurrent ? "text-white" : "text-[var(--color-text-secondary)]"}`}>
+									{s.num}
+								</span>
 							)}
 							<span className="text-xs whitespace-nowrap">{s.label}</span>
 						</button>

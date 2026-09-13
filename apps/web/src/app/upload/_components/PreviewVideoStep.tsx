@@ -60,11 +60,16 @@ export function PreviewVideoStep({
 	return (
 		<div className="space-y-6">
 			<div className="space-y-1">
-				<h3 className="text-base font-bold text-[var(--color-text-primary)]">
-					Upload Preview Video (Optional)
-				</h3>
+				<div className="flex items-center gap-2">
+					<h3 className="text-base font-bold text-[var(--color-text-primary)]">
+						Upload Preview Video
+					</h3>
+					<span className="px-2 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider bg-rose-500/20 text-rose-400 border border-rose-500/30">
+						Wajib
+					</span>
+				</div>
 				<p className="text-xs text-[var(--color-text-secondary)]">
-					Add a short demo video of your Alight Motion preset.
+					Wajib upload video demo singkat hasil preset Alight Motion lu biar calon downloader bisa liat hasilnya secara nyata.
 				</p>
 			</div>
 
