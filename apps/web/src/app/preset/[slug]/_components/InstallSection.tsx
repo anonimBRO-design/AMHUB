@@ -15,12 +15,15 @@ import {
 	Share2,
 	ShoppingBag,
 	Smartphone,
+	Sparkles,
+	UserPlus,
 	Zap,
 } from "lucide-react";
 import posthog from "posthog-js";
 import { useState } from "react";
 import QRCode from "react-qr-code";
 import { type PresetOrderItem, PresetPaymentModal } from "./PresetPaymentModal";
+import { TipCreatorModal } from "./TipCreatorModal";
 
 interface InstallSectionProps {
 	preset: {
@@ -37,11 +40,18 @@ interface InstallSectionProps {
 		amVersionMax?: string | null;
 		commercialPrice?: number | null;
 		license?: "personal" | "commercial" | null;
+		creator?: {
+			id?: string;
+			username: string;
+			displayName: string;
+			avatarUrl?: string | null;
+			isFollowing?: boolean;
+		};
 	};
 }
 
 export function InstallSection({ preset }: InstallSectionProps) {
-	const { requireAuth } = useAuth();
+	const { currentUser, requireAuth } = useAuth();
 	const { t, language } = useLanguage();
 	const [copied, setCopied] = useState(false);
 	const [shared, setShared] = useState(false);
@@ -56,7 +66,28 @@ export function InstallSection({ preset }: InstallSectionProps) {
 		"personal" | "commercial"
 	>("personal");
 
+	const isOwnPreset = Boolean(
+		currentUser &&
+			preset.creator &&
+			(currentUser.id === preset.creator.id ||
+				currentUser.username.toLowerCase() ===
+					preset.creator.username.toLowerCase()),
+	);
+	const [isFollowingCreator, setIsFollowingCreator] = useState(
+		Boolean(preset.creator?.isFollowing || isOwnPreset),
+	);
+	const [isFollowBypassed, setIsFollowBypassed] = useState(false);
+	const [isFollowLoading, setIsFollowLoading] = useState(false);
+	const [showSultanTipModal, setShowSultanTipModal] = useState(false);
+
 	const isLocked = Boolean(preset.isPaid && !preset.hasAccess);
+	const isFreePreset = !preset.isPaid || (preset.price ?? 0) === 0;
+	const isSocialLocked =
+		isFreePreset &&
+		Boolean(preset.creator?.username) &&
+		!isOwnPreset &&
+		!isFollowingCreator &&
+		!isFollowBypassed;
 	const commercialOffered = (preset.commercialPrice ?? 0) > 0;
 	const effectiveLicense =
 		selectedLicense === "commercial" && commercialOffered
@@ -193,6 +224,33 @@ export function InstallSection({ preset }: InstallSectionProps) {
 			setOrderError(msg);
 		} finally {
 			setIsOrdering(false);
+		}
+	};
+
+	const handleFollowAndUnlock = async () => {
+		if (!preset.creator?.username) {
+			setIsFollowBypassed(true);
+			return;
+		}
+		if (!requireAuth(undefined, t.presetDetail.signInToFollow)) return;
+
+		setIsFollowLoading(true);
+		try {
+			const res = await fetch(`/api/users/${preset.creator.username}/follow`, {
+				method: "POST",
+			});
+			if (!res.ok) throw new Error("Failed to follow");
+			setIsFollowingCreator(true);
+			setIsFollowBypassed(true);
+			posthog.capture("creator_followed_via_social_lock", {
+				creator_username: preset.creator.username,
+				preset_id: preset.id,
+			});
+		} catch (err) {
+			console.error("Follow error", err);
+			setIsFollowBypassed(true);
+		} finally {
+			setIsFollowLoading(false);
 		}
 	};
 
@@ -341,6 +399,51 @@ export function InstallSection({ preset }: InstallSectionProps) {
 						</span>
 					</button>
 				</div>
+			) : isSocialLocked ? (
+				<div className="p-5 rounded-2xl bg-gradient-to-br from-indigo-500/10 via-purple-500/5 to-cyan-500/10 border border-indigo-500/30 text-center space-y-3.5 shadow-md">
+					<div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-indigo-500/20 text-indigo-400 border border-indigo-500/30 shadow-inner">
+						<UserPlus className="w-6 h-6" />
+					</div>
+					<div className="space-y-1">
+						<div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
+							<span>⚡ {t.presetDetail.socialLockBadge}</span>
+						</div>
+						<h3 className="text-base font-bold text-[var(--color-text-primary)]">
+							{t.presetDetail.socialLockTitle.replace("{username}", preset.creator?.username || "Kreator")}
+						</h3>
+						<p className="text-xs text-[var(--color-text-secondary)] max-w-md mx-auto">
+							{t.presetDetail.socialLockDesc}
+						</p>
+					</div>
+
+					<div className="pt-1 flex flex-col sm:flex-row items-center justify-center gap-2.5">
+						<button
+							type="button"
+							onClick={handleFollowAndUnlock}
+							disabled={isFollowLoading}
+							className="w-full sm:w-auto inline-flex items-center justify-center gap-2 min-h-[46px] px-7 rounded-xl bg-gradient-to-r from-indigo-500 via-purple-500 to-cyan-500 hover:from-indigo-600 hover:to-cyan-600 text-white font-extrabold text-xs shadow-lg shadow-indigo-500/25 active:scale-95 transition-all cursor-pointer disabled:opacity-50"
+						>
+							{isFollowLoading ? (
+								<Loader2 className="w-4 h-4 animate-spin text-white" />
+							) : (
+								<UserPlus className="w-4 h-4" />
+							)}
+							<span>
+								{t.presetDetail.followAndUnlock.replace("{username}", preset.creator?.username || "Kreator")}
+							</span>
+						</button>
+					</div>
+
+					<div>
+						<button
+							type="button"
+							onClick={() => setIsFollowBypassed(true)}
+							className="text-[11px] text-[var(--color-text-tertiary)] hover:text-[var(--color-text-secondary)] underline transition-colors cursor-pointer"
+						>
+							{t.presetDetail.skipAndDownload}
+						</button>
+					</div>
+				</div>
 			) : (
 				<>
 					<div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -390,6 +493,35 @@ export function InstallSection({ preset }: InstallSectionProps) {
 								)}
 								<span>{t.presetDetail.downloadXml.replace("{type}", preset.fileType?.toUpperCase() || "File")}</span>
 							</a>
+						)}
+					</div>
+
+					{/* Paket Sultan Upsell Card */}
+					<div className="p-4 rounded-xl bg-gradient-to-r from-amber-500/10 via-amber-500/5 to-orange-500/10 border border-amber-500/30 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-sm">
+						<div className="space-y-1">
+							<div className="flex items-center gap-1.5">
+								<span className="text-base">💎</span>
+								<h4 className="text-xs sm:text-sm font-bold text-[var(--color-text-primary)]">
+									{t.presetDetail.sultanPackTitle}
+								</h4>
+								<span className="px-1.5 py-0.5 rounded text-[10px] font-extrabold bg-amber-500/20 text-amber-400 border border-amber-500/30">
+									HEMAT WAKTU
+								</span>
+							</div>
+							<p className="text-xs text-[var(--color-text-secondary)] max-w-md leading-relaxed">
+								{t.presetDetail.sultanPackDesc}
+							</p>
+						</div>
+
+						{preset.creator && (
+							<button
+								type="button"
+								onClick={() => setShowSultanTipModal(true)}
+								className="inline-flex items-center gap-1.5 py-2 px-3.5 rounded-lg bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-slate-950 font-extrabold text-xs shadow-md shadow-amber-500/20 active:scale-95 transition-all shrink-0 cursor-pointer"
+							>
+								<Sparkles className="w-3.5 h-3.5 fill-current" />
+								<span>{t.presetDetail.sultanPackCta}</span>
+							</button>
 						)}
 					</div>
 
@@ -539,6 +671,16 @@ export function InstallSection({ preset }: InstallSectionProps) {
 						setIsPaymentModalOpen(false);
 						window.location.reload();
 					}}
+				/>
+			)}
+
+			{preset.creator && (
+				<TipCreatorModal
+					isOpen={showSultanTipModal}
+					onClose={() => setShowSultanTipModal(false)}
+					creator={preset.creator}
+					initialAmount={5000}
+					defaultMessage={`Halo @${preset.creator.username}, saya mau minta Paket Sultan (All-in-One HD assets) untuk preset: ${preset.title}`}
 				/>
 			)}
 		</section>

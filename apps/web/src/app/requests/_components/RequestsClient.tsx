@@ -2,10 +2,10 @@
 
 import { useAuth } from "@/context/AuthContext";
 import type { CustomRequestWithMeta } from "@/dal/requests.dal";
-import { Inbox, Plus, X } from "lucide-react";
+import { Inbox, Plus, Sparkles, X } from "lucide-react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
 
 const STATUS_TABS = [
 	{ id: "open", label: "Terbuka" },
@@ -27,17 +27,39 @@ export function RequestsClient({
 	initialRequests: CustomRequestWithMeta[];
 }) {
 	const router = useRouter();
+	const searchParams = useSearchParams();
+	const targetCreator = searchParams.get("creator");
 	const { requireAuth } = useAuth();
 	const [tab, setTab] = useState<StatusTab>("open");
 	const [requests, setRequests] = useState(initialRequests);
 	const [loading, setLoading] = useState(false);
-	const [showForm, setShowForm] = useState(false);
-	const [title, setTitle] = useState("");
-	const [description, setDescription] = useState("");
-	const [budgetMin, setBudgetMin] = useState("");
-	const [budgetMax, setBudgetMax] = useState("");
+	const [showForm, setShowForm] = useState(Boolean(targetCreator));
+	const [title, setTitle] = useState(
+		targetCreator ? `Request Custom Preset untuk @${targetCreator}` : "",
+	);
+	const [description, setDescription] = useState(
+		targetCreator
+			? `Halo @${targetCreator}, saya mau request edit / preset custom Alight Motion:\n\n- Konsep / Lagu: \n- Gaya Transisi: \n- Catatan Khusus: `
+			: "",
+	);
+	const [budgetMin, setBudgetMin] = useState(targetCreator ? "5000" : "");
+	const [budgetMax, setBudgetMax] = useState(targetCreator ? "25000" : "");
 	const [submitting, setSubmitting] = useState(false);
 	const [error, setError] = useState<string | null>(null);
+
+	useEffect(() => {
+		if (targetCreator) {
+			setShowForm(true);
+			setTitle((prev) => prev || `Request Custom Preset untuk @${targetCreator}`);
+			setDescription(
+				(prev) =>
+					prev ||
+					`Halo @${targetCreator}, saya mau request edit / preset custom Alight Motion:\n\n- Konsep / Lagu: \n- Gaya Transisi: \n- Catatan Khusus: `,
+			);
+			setBudgetMin((prev) => prev || "5000");
+			setBudgetMax((prev) => prev || "25000");
+		}
+	}, [targetCreator]);
 
 	const loadTab = async (next: StatusTab) => {
 		setTab(next);
@@ -135,6 +157,15 @@ export function RequestsClient({
 			{/* Create form */}
 			{showForm && (
 				<div className="p-5 sm:p-6 rounded-2xl bg-[var(--color-bg-surface)] border border-[var(--color-border-subtle)] space-y-4">
+					{targetCreator && (
+						<div className="p-3.5 rounded-xl bg-cyan-500/10 border border-cyan-500/30 flex items-center gap-2.5 text-xs text-cyan-400">
+							<Sparkles className="w-4 h-4 shrink-0" />
+							<div>
+								<p className="font-bold">Order Joki Edit / Request Khusus untuk @{targetCreator}</p>
+								<p className="text-[11px] text-[var(--color-text-secondary)]">Kreator ini akan diprioritaskan saat melihat dan memberi penawaran pada request kamu.</p>
+							</div>
+						</div>
+					)}
 					<div className="space-y-1.5">
 						<label
 							htmlFor="request-title"

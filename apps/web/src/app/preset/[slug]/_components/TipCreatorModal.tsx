@@ -20,6 +20,8 @@ interface TipCreatorModalProps {
 		displayName: string;
 		avatarUrl?: string | null;
 	};
+	initialAmount?: number;
+	defaultMessage?: string;
 }
 
 const TIP_TIERS = [
@@ -32,13 +34,22 @@ export function TipCreatorModal({
 	isOpen,
 	onClose,
 	creator,
+	initialAmount = 2000,
+	defaultMessage = "",
 }: TipCreatorModalProps) {
 	const { t, language } = useLanguage();
-	const [selectedAmount, setSelectedAmount] = useState<number>(2000);
+	const [selectedAmount, setSelectedAmount] = useState<number>(initialAmount);
 	const [customAmount, setCustomAmount] = useState<string>("");
-	const [message, setMessage] = useState<string>("");
+	const [message, setMessage] = useState<string>(defaultMessage);
 	const [step, setStep] = useState<"select" | "qris" | "success">("select");
 	const [isSubmitting, setIsSubmitting] = useState(false);
+
+	React.useEffect(() => {
+		if (isOpen) {
+			if (initialAmount) setSelectedAmount(initialAmount);
+			if (defaultMessage) setMessage(defaultMessage);
+		}
+	}, [isOpen, initialAmount, defaultMessage]);
 
 	if (!isOpen) return null;
 

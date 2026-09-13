@@ -1,6 +1,7 @@
 import { listRequests } from "@/dal/requests.dal";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { RequestsClient } from "./_components/RequestsClient";
 
 export const metadata: Metadata = {
@@ -16,5 +17,9 @@ export default async function RequestsPage() {
 	const supabase = await createSupabaseServerClient();
 	const requests = await listRequests(supabase, { status: "open", limit: 30 });
 
-	return <RequestsClient initialRequests={requests} />;
+	return (
+		<Suspense fallback={<div className="max-w-4xl mx-auto py-12 text-center text-xs text-[var(--color-text-secondary)]">Memuat requests...</div>}>
+			<RequestsClient initialRequests={requests} />
+		</Suspense>
+	);
 }

@@ -449,6 +449,23 @@ export const en = {
 		tipSuccessDesc: "Thank you for supporting AMHUB creators!",
 		traktirKreator: "Tip Creator",
 		minTipNotice: "Minimum tip is Rp 1.000",
+
+		// Joki / Commission Edit
+		orderJokiEdit: "Order Custom Edit / Request from Creator",
+
+		// Social Lock (Follow to Unlock)
+		socialLockBadge: "Social Lock • Follow to Unlock",
+		socialLockTitle: "Follow @{username} to Unlock Free Download",
+		socialLockDesc:
+			"Support the creator with a 1-click follow on AMHUB to instantly unlock the download link!",
+		followAndUnlock: "Follow @{username} & Unlock Download",
+		skipAndDownload: "or skip and download directly",
+
+		// Paket Sultan (All-in-One HD Asset Pack)
+		sultanPackTitle: "Sultan All-in-One Asset Pack",
+		sultanPackDesc:
+			"Want zero hassle? Get the full package: XML + 320kbps HD Audio + Font Pack (.ttf/.otf) + 4K No-Watermark Footage straight from creator!",
+		sultanPackCta: "Request Sultan Pack (Rp 5.000)",
 	},
 	bookmarks: {
 		title: "Your Bookmarks",

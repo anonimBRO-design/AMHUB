@@ -453,6 +453,23 @@ export const id: Translations = {
 		tipSuccessDesc: "Terima kasih banyak sudah mendukung kreator AMHUB!",
 		traktirKreator: "Traktir Kreator",
 		minTipNotice: "Minimal sawer Rp 1.000",
+
+		// Joki / Commission Edit
+		orderJokiEdit: "Order Jasa Edit / Request Custom ke Kreator",
+
+		// Social Lock (Follow to Unlock)
+		socialLockBadge: "Social Lock • Follow to Unlock",
+		socialLockTitle: "Follow @{username} untuk Download Gratis",
+		socialLockDesc:
+			"Dukung kreator dengan 1 klik follow di AMHUB untuk membuka tombol unduh XML/link secara otomatis!",
+		followAndUnlock: "Follow @{username} & Buka Download",
+		skipAndDownload: "atau lewati & download tanpa follow",
+
+		// Paket Sultan (All-in-One HD Asset Pack)
+		sultanPackTitle: "Paket Sultan All-in-One",
+		sultanPackDesc:
+			"Mau serba instan tanpa repot? Dapatkan file XML + Sound HD 320kbps + Font Pack (.ttf/.otf) + Mentahan Video 4K No Watermark langsung dari kreator!",
+		sultanPackCta: "Minta Paket Sultan (Rp 5.000)",
 	},
 	bookmarks: {
 		title: "Tanda Buku Anda",
