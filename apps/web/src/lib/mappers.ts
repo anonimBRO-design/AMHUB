@@ -48,7 +48,10 @@ export function mapPresetToCardPreset(
 		downloadCount: preset.download_count,
 		uniqueDownloadCount: preset.unique_download_count ?? undefined,
 		likeCount: preset.like_count,
-		commentCount: preset.comment_count,
+		commentCount:
+			typeof (preset as any).comments?.[0]?.count === "number"
+				? (preset as any).comments[0].count
+				: (preset.comment_count ?? 0),
 		viewCount: preset.view_count,
 		bookmarkCount: (preset as { bookmark_count?: number }).bookmark_count ?? 0,
 		creator: {

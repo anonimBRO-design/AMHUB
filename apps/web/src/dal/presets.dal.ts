@@ -39,6 +39,7 @@ export const PRESET_SELECT_WITH_CREATOR = `
 	like_count,
 	bookmark_count,
 	comment_count,
+	comments(count),
 	is_featured,
 	created_at,
 	creator:users!presets_creator_id_fkey (
@@ -81,6 +82,7 @@ export const PRESET_SELECT_PUBLIC = `
 	like_count,
 	bookmark_count,
 	comment_count,
+	comments(count),
 	is_featured,
 	created_at,
 	creator:users!presets_creator_id_fkey (

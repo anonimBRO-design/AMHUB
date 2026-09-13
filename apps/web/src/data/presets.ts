@@ -38,6 +38,7 @@ export type PresetWithCreator = {
 	like_count: number;
 	bookmark_count: number;
 	comment_count: number;
+	comments?: { count: number }[];
 	tags?: string[];
 	status?: string;
 	is_featured: boolean;
