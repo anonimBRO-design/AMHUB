@@ -33,7 +33,7 @@ export function TagList({ preset }: TagListProps) {
 				</div>
 			</div>
 
-			<div className="grid grid-cols-2 gap-2.5 text-xs">
+			<div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 text-xs">
 				<div className="p-3 rounded-xl bg-[var(--color-bg-base)]/70 border border-[var(--color-border-subtle)]/60 space-y-1">
 					<span className="text-[var(--color-text-tertiary)] flex items-center gap-1.5 text-[10px] uppercase font-semibold">
 						<Layers className="w-3.5 h-3.5 text-cyan-400" /> Kategori

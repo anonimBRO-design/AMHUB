@@ -91,14 +91,14 @@ export function PresetDetailClient({
         </div>
       </div>
 
-      {/* Main 2-Column Responsive Layout */}
+      {/* Top 2-Column Responsive Layout: Media Left + Core Details & Description Right */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start">
         {/* LEFT COLUMN: Sticky Media Showcase (Video + Reaction Bar + Quick Counters) */}
         <div className="lg:col-span-5 xl:col-span-5 lg:sticky lg:top-6 self-start w-full">
           <Hero preset={preset} currentUserId={currentUserId} />
         </div>
 
-        {/* RIGHT COLUMN: Conversion Hub, Info & Discussion */}
+        {/* RIGHT COLUMN: Conversion Hub, Creator & Description */}
         <div className="lg:col-span-7 xl:col-span-7 space-y-6 w-full min-w-0">
           {/* Preset Title & Category Header */}
           <div className="space-y-2">
@@ -122,36 +122,39 @@ export function PresetDetailClient({
           {/* Primary CTA: Download & Import Section */}
           <InstallSection preset={preset} />
 
-          {/* Bento Grid: Performance Stats & Technical Specs side-by-side */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-stretch">
-            <PresetStats
-              views={preset.viewCount ?? 0}
-              downloads={preset.downloadCount ?? 0}
-              uniqueDownloads={preset.uniqueDownloadCount}
-              likes={preset.likeCount ?? 0}
-              bookmarks={preset.bookmarkCount ?? 0}
-              comments={preset.commentCount ?? 0}
-            />
-            <TagList preset={preset} />
-          </div>
-
-          {/* Preset Description */}
+          {/* Preset Description - Ditukar ke atas berdampingan dengan video */}
           <DescriptionSection preset={preset} currentUserId={currentUserId} />
-
-          {/* Remix Card (if any) */}
-          <RemixCard
-            parent={remixParent}
-            remixes={remixChildren}
-            totalChildren={remixChildrenTotal}
-          />
-
-          {/* Comments Discussion Section */}
-          <CommentSection
-            presetId={preset.id}
-            initialComments={comments}
-            commentCount={comments.length || preset.commentCount}
-          />
         </div>
+      </div>
+
+      {/* FULL-WIDTH EXPANDED SECTIONS: Memenuhi seluruh ruang kosong di bawah video */}
+      <div className="space-y-6 pt-2">
+        {/* Bento Grid: Performance Stats & Technical Specs (Full Width) */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-stretch">
+          <PresetStats
+            views={preset.viewCount ?? 0}
+            downloads={preset.downloadCount ?? 0}
+            uniqueDownloads={preset.uniqueDownloadCount}
+            likes={preset.likeCount ?? 0}
+            bookmarks={preset.bookmarkCount ?? 0}
+            comments={preset.commentCount ?? 0}
+          />
+          <TagList preset={preset} />
+        </div>
+
+        {/* Remix Card (if any) */}
+        <RemixCard
+          parent={remixParent}
+          remixes={remixChildren}
+          totalChildren={remixChildrenTotal}
+        />
+
+        {/* Comments Discussion Section - Panjang penuh selebar layar! */}
+        <CommentSection
+          presetId={preset.id}
+          initialComments={comments}
+          commentCount={comments.length || preset.commentCount}
+        />
       </div>
 
       <RelatedPresets presets={relatedPresets} category={preset.category} />
