@@ -414,6 +414,45 @@ export const id: Translations = {
 		waitingForPayment: "Menunggu pembayaran diselesaikan.",
 		paymentNotDetectedYet:
 			"Belum mendeteksi pembayaran. Coba lagi beberapa saat.",
+
+		// XML Asset Inspector
+		inspectorTitle: "Inspeksi Aset & Font XML",
+		inspectorSubtitle: "Font, efek, dan rincian layer dalam preset ini",
+		fontsRequired: "Font yang Digunakan",
+		fontsRequiredDesc: "Pasang font ini agar tampilan teks tidak berubah",
+		effectsUsed: "Efek AM yang Digunakan",
+		effectsUsedDesc: "Efek utama penggerak animasi preset ini",
+		layerBreakdown: "Komposisi Layer",
+		downloadFont: "Cari Font",
+		noFontsDetected: "Tidak ada font eksternal (menggunakan font standar)",
+		noEffectsDetected: "Transisi & keyframe standar",
+		inspectingXml: "Menganalisis aset preset...",
+		lockedInspectorNotice:
+			"Buka kunci preset ini untuk melihat daftar lengkap font, efek, dan hierarki layer.",
+		shapes: "Bentuk",
+		texts: "Teks",
+		mediaItems: "Media",
+		audios: "Audio",
+
+		// TikTok Sound & Music Matcher
+		soundtrackTitle: "Soundtrack & Audio",
+		soundtrackSubtitle: "Musik dan sound yang dipakai di preset ini",
+		useOnTiktok: "Gunakan Sound di TikTok",
+		originalAudio: "Sound Track Asli",
+		audioTrackDetected: "Trek audio tersinkronisasi",
+
+		// Micro-Tipping Modal
+		tipCreatorTitle: "Traktir Kreator",
+		tipCreatorSubtitle:
+			"Beri apresiasi kreator dengan saweran kilat via QRIS",
+		tipAmountEsTeh: "Rp 2.000 (Es Teh)",
+		tipAmountKopi: "Rp 5.000 (Kopi)",
+		tipAmountMakan: "Rp 10.000 (Gorengan)",
+		tipCustom: "Nominal Bebas",
+		tipSuccessTitle: "Dukungan Terkirim!",
+		tipSuccessDesc: "Terima kasih banyak sudah mendukung kreator AMHUB!",
+		traktirKreator: "Traktir Kreator",
+		minTipNotice: "Minimal sawer Rp 1.000",
 	},
 	bookmarks: {
 		title: "Tanda Buku Anda",

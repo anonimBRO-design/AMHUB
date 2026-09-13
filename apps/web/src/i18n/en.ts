@@ -410,6 +410,45 @@ export const en = {
 		waitingForPayment: "Waiting for payment to be completed.",
 		paymentNotDetectedYet:
 			"Payment not detected yet. Please try again shortly.",
+
+		// XML Asset Inspector
+		inspectorTitle: "XML Asset & Font Inspector",
+		inspectorSubtitle: "Fonts, effects, and layer details inside this preset",
+		fontsRequired: "Fonts Used",
+		fontsRequiredDesc: "Install these fonts so text styles render accurately",
+		effectsUsed: "AM Effects Used",
+		effectsUsedDesc: "Key effects powering this preset animation",
+		layerBreakdown: "Layer Breakdown",
+		downloadFont: "Search Font",
+		noFontsDetected: "No external fonts detected (uses standard fonts)",
+		noEffectsDetected: "Standard transitions & keyframes",
+		inspectingXml: "Inspecting preset assets...",
+		lockedInspectorNotice:
+			"Unlock this preset to view the full list of fonts, effects, and layer hierarchy.",
+		shapes: "Shapes",
+		texts: "Texts",
+		mediaItems: "Media",
+		audios: "Audio",
+
+		// TikTok Sound & Music Matcher
+		soundtrackTitle: "Soundtrack & Audio",
+		soundtrackSubtitle: "Music and audio used in this preset",
+		useOnTiktok: "Use Sound on TikTok",
+		originalAudio: "Original Sound Track",
+		audioTrackDetected: "Audio track synchronized",
+
+		// Micro-Tipping Modal
+		tipCreatorTitle: "Tip Creator",
+		tipCreatorSubtitle:
+			"Support this creator with a quick tip via instant QRIS",
+		tipAmountEsTeh: "Rp 2.000 (Iced Tea)",
+		tipAmountKopi: "Rp 5.000 (Coffee)",
+		tipAmountMakan: "Rp 10.000 (Snack)",
+		tipCustom: "Custom Amount",
+		tipSuccessTitle: "Support Sent!",
+		tipSuccessDesc: "Thank you for supporting AMHUB creators!",
+		traktirKreator: "Tip Creator",
+		minTipNotice: "Minimum tip is Rp 1.000",
 	},
 	bookmarks: {
 		title: "Your Bookmarks",

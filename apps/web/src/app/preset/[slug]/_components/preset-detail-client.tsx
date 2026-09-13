@@ -15,8 +15,10 @@ import { InstallSection } from "./InstallSection";
 import { PresetStats } from "./PresetStats";
 import { RelatedPresets } from "./RelatedPresets";
 import { RemixCard, type RemixNodeData } from "./RemixCard";
+import { SoundtrackCard } from "./SoundtrackCard";
 import { StickyActionBar } from "./StickyActionBar";
 import { TagList } from "./TagList";
+import { XmlAssetInspector } from "./XmlAssetInspector";
 
 interface CommentItem {
   id: string;
@@ -101,10 +103,14 @@ export function PresetDetailClient({
       {/* Top 2-Column Responsive Layout: Media Left + Core Details & Description Right */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start">
         {/* LEFT COLUMN: Sticky Media Showcase (Video + Reaction Bar + Quick Counters) */}
-        <div className="lg:col-span-5 xl:col-span-5 lg:sticky lg:top-6 self-start w-full">
+        <div className="lg:col-span-5 xl:col-span-5 lg:sticky lg:top-6 self-start w-full space-y-4">
           <Hero
             preset={{ ...preset, commentCount: liveCommentCount }}
             currentUserId={currentUserId}
+          />
+          <SoundtrackCard
+            presetTitle={preset.title}
+            category={preset.category}
           />
         </div>
 
@@ -151,6 +157,13 @@ export function PresetDetailClient({
           />
           <TagList preset={preset} />
         </div>
+
+        {/* XML Asset & Font Inspector (Full Width) */}
+        <XmlAssetInspector
+          fileUrl={preset.fileUrl}
+          isLocked={preset.isPaid && !preset.hasAccess}
+          category={preset.category}
+        />
 
         {/* Remix Card (if any) */}
         <RemixCard

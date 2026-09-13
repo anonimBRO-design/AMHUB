@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
+import { TipCreatorModal } from "./TipCreatorModal";
 
 interface CreatorCardProps {
 	creator: {
@@ -50,6 +51,7 @@ export function CreatorCard({ creator }: CreatorCardProps) {
 		creator.followerCount ?? 0,
 	);
 	const [isLoading, setIsLoading] = useState(false);
+	const [showTipModal, setShowTipModal] = useState(false);
 
 	const handleFollowToggle = async () => {
 		if (isOwnProfile) return;
@@ -171,21 +173,38 @@ export function CreatorCard({ creator }: CreatorCardProps) {
 				</p>
 			)}
 
-			{/* Tipping / Saweria Action */}
-			{donationUrl && (
-				<div className="pt-2">
-					<a
-						href={donationUrl}
-						target="_blank"
-						rel="noopener noreferrer"
-						className="flex items-center justify-center gap-2 w-full py-2.5 px-4 rounded-lg bg-amber-400/10 hover:bg-amber-400/20 text-amber-400 border border-amber-400/30 text-xs font-bold transition-all active:scale-95"
+			{/* Tipping & Support Action */}
+			{!isOwnProfile && (
+				<div className="pt-2 flex items-center gap-2">
+					<button
+						type="button"
+						onClick={() => setShowTipModal(true)}
+						className="flex-1 flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-lg bg-gradient-to-r from-amber-400/15 to-orange-400/15 hover:from-amber-400/25 hover:to-orange-400/25 text-amber-400 border border-amber-400/30 text-xs font-bold transition-all active:scale-95 shadow-sm cursor-pointer"
 					>
 						<Coffee className="w-4 h-4 text-amber-400" />
-						<span>{t.presetDetail.supportCreator}</span>
-						<ExternalLink className="w-3.5 h-3.5 opacity-70" />
-					</a>
+						<span>{t.presetDetail.traktirKreator}</span>
+					</button>
+
+					{donationUrl && (
+						<a
+							href={donationUrl}
+							target="_blank"
+							rel="noopener noreferrer"
+							title={t.presetDetail.supportCreator}
+							className="flex items-center justify-center gap-1 min-h-[38px] px-3 rounded-lg bg-[var(--color-bg-elevated)] hover:bg-[var(--color-bg-base)] text-[var(--color-text-secondary)] hover:text-amber-300 border border-[var(--color-border-subtle)] text-xs font-semibold transition-all active:scale-95 shrink-0"
+						>
+							<span className="text-[11px]">SociaBuzz / Saweria</span>
+							<ExternalLink className="w-3 h-3 opacity-60" />
+						</a>
+					)}
 				</div>
 			)}
+
+			<TipCreatorModal
+				isOpen={showTipModal}
+				onClose={() => setShowTipModal(false)}
+				creator={creator}
+			/>
 		</div>
 	);
 }
