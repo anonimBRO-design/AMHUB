@@ -21,6 +21,7 @@ import posthog from "posthog-js";
 import { type FormEvent, useState } from "react";
 import { DetailsStep } from "./DetailsStep";
 import { FilePicker } from "./FilePicker";
+import { GrowthStep } from "./GrowthStep";
 import { PreviewVideoStep } from "./PreviewVideoStep";
 import { ReviewStep } from "./ReviewStep";
 import { WizardProgress } from "./WizardProgress";
@@ -29,7 +30,8 @@ const WIZARD_STEPS = [
 	{ num: 1, label: "Format & File" },
 	{ num: 2, label: "Preview Video" },
 	{ num: 3, label: "Preset Details" },
-	{ num: 4, label: "Review & Publish" },
+	{ num: 4, label: "Growth & Booster" },
+	{ num: 5, label: "Review & Publish" },
 ];
 
 async function extractThumbnailFromVideo(
@@ -246,7 +248,7 @@ export function UploadWizard() {
 			};
 		}
 
-		return { valid: true, targetStep: 4, error: "" };
+		return { valid: true, targetStep: 5, error: "" };
 	};
 
 	const isStep1Valid = Boolean(
@@ -269,11 +271,14 @@ export function UploadWizard() {
 						(commercialPrice >= price && !Number.isNaN(commercialPrice))))),
 	);
 
-	const isStep4Valid = isStep1Valid && isStep2Valid && isStep3Valid;
+	const isStep4Valid = true;
+
+	const isStep5Valid =
+		isStep1Valid && isStep2Valid && isStep3Valid && isStep4Valid;
 
 	const handleNextStep = () => {
 		setError(null);
-		if (currentStep < 4) {
+		if (currentStep < 5) {
 			setCurrentStep((prev) => prev + 1);
 		}
 	};
@@ -736,6 +741,7 @@ export function UploadWizard() {
 					2: isStep2Valid,
 					3: isStep3Valid,
 					4: isStep4Valid,
+					5: isStep5Valid,
 				}}
 				onStepClick={(step) => {
 					setError(null);
@@ -802,6 +808,12 @@ export function UploadWizard() {
 						onAmVersionMaxChange={setAmVersionMax}
 						remixFrom={remixFrom}
 						onRemixFromChange={setRemixFrom}
+					/>
+				)}
+
+				{currentStep === 4 && (
+					<GrowthStep
+						isPaid={isPaid}
 						enableSocialLock={enableSocialLock}
 						onEnableSocialLockChange={setEnableSocialLock}
 						tiktokSoundTitle={tiktokSoundTitle}
@@ -813,7 +825,7 @@ export function UploadWizard() {
 					/>
 				)}
 
-				{currentStep === 4 && (
+				{currentStep === 5 && (
 					<ReviewStep
 						title={title}
 						description={description}
@@ -855,7 +867,7 @@ export function UploadWizard() {
 						<div />
 					)}
 
-					{currentStep < 4 ? (
+					{currentStep < 5 ? (
 						<button
 							type="button"
 							onClick={handleNextStep}
