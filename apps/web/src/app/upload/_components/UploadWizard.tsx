@@ -151,68 +151,98 @@ export function UploadWizard() {
 		error: null,
 	});
 
-	const isNextStepDisabled = () => {
-		if (currentStep === 1) {
-			return (
-				!validation.isValid ||
-				validation.isValidating ||
-				selectedFileTypes.length === 0
-			);
+	// Comprehensive validation across all steps - triggered only on final publish
+	const validateAllSteps = (): {
+		valid: boolean;
+		targetStep: number;
+		error: string;
+	} => {
+		// 1. Check Step 1: Format & File
+		if (selectedFileTypes.length === 0) {
+			return {
+				valid: false,
+				targetStep: 1,
+				error:
+					"Pilih minimal satu format sumber preset di Step 1 (XML File, AM Link, atau Google Drive).",
+			};
 		}
-		if (currentStep === 3) {
-			return (
-				!title.trim() ||
-				(isPaid && (price < 1000 || Number.isNaN(price))) ||
-				(isPaid &&
-					commercialPrice > 0 &&
-					(commercialPrice < price || Number.isNaN(commercialPrice))) ||
-				!isAmVersionRangeValid()
-			);
+		if (selectedFileTypes.includes("xml") && !presetFile) {
+			return {
+				valid: false,
+				targetStep: 1,
+				error:
+					"File XML Alight Motion belum di-upload di Step 1. Silakan pilih atau drag & drop file XML kamu.",
+			};
 		}
-		return false;
+		if (selectedFileTypes.includes("link") && !amLink.trim()) {
+			return {
+				valid: false,
+				targetStep: 1,
+				error:
+					"Tautan Alight Motion (AM Link) belum diisi di Step 1. Silakan masukkan link Alight Creative kamu.",
+			};
+		}
+		if (selectedFileTypes.includes("gdrive") && !gdriveLink.trim()) {
+			return {
+				valid: false,
+				targetStep: 1,
+				error:
+					"Link Google Drive belum diisi di Step 1. Silakan masukkan link Google Drive XML kamu.",
+			};
+		}
+		if (!validation.isValid) {
+			return {
+				valid: false,
+				targetStep: 1,
+				error:
+					validation.error ||
+					"Validasi file atau tautan preset di Step 1 belum lengkap atau belum valid.",
+			};
+		}
+
+		// 2. Check Step 3: Preset Details
+		if (!title.trim()) {
+			return {
+				valid: false,
+				targetStep: 3,
+				error: "Judul preset wajib diisi di Step 3!",
+			};
+		}
+		if (isPaid && (price < 1000 || Number.isNaN(price))) {
+			return {
+				valid: false,
+				targetStep: 3,
+				error: "Harga preset berbayar minimal Rp 1.000 di Step 3!",
+			};
+		}
+		if (
+			isPaid &&
+			commercialPrice > 0 &&
+			(commercialPrice < price || Number.isNaN(commercialPrice))
+		) {
+			return {
+				valid: false,
+				targetStep: 3,
+				error:
+					"Harga lisensi komersial harus lebih besar atau sama dengan harga personal di Step 3!",
+			};
+		}
+		if (!isAmVersionRangeValid()) {
+			return {
+				valid: false,
+				targetStep: 3,
+				error:
+					"Format versi Alight Motion tidak valid di Step 3 (contoh: 5.0.5)!",
+			};
+		}
+
+		return { valid: true, targetStep: 4, error: "" };
 	};
 
 	const handleNextStep = () => {
 		setError(null);
-		if (currentStep === 1) {
-			if (selectedFileTypes.length === 0) {
-				setError("Please select at least one preset source.");
-				return;
-			}
-			if (!validation.isValid) {
-				setError(
-					validation.error ||
-						"Please complete asset validation for all selected sources.",
-				);
-				return;
-			}
-			setCurrentStep(2);
-		} else if (currentStep === 2) {
-			setCurrentStep(3);
-		} else if (currentStep === 3) {
-			if (!title.trim()) {
-				setError("Title is required.");
-				return;
-			}
-			if (isPaid && (price < 1000 || Number.isNaN(price))) {
-				setError("Harga preset berbayar minimal Rp 1.000.");
-				return;
-			}
-			if (
-				isPaid &&
-				commercialPrice > 0 &&
-				(commercialPrice < price || Number.isNaN(commercialPrice))
-			) {
-				setError("Harga lisensi komersial minimal sama dengan harga personal.");
-				return;
-			}
-			if (!isAmVersionRangeValid()) {
-				setError(
-					"Versi Alight Motion tidak valid. Gunakan format angka (cth. 5.0.5) dan pastikan versi maksimal >= versi minimal.",
-				);
-				return;
-			}
-			setCurrentStep(4);
+		if (currentStep < 4) {
+			setCurrentStep((prev) => prev + 1);
 		}
 	};
 
@@ -393,14 +423,24 @@ export function UploadWizard() {
 
 	const handlePublish = async (e: FormEvent) => {
 		e.preventDefault();
-		setIsLoading(true);
-		setUploadProgress(0);
 		setError(null);
 
-		try {
-			if (selectedFileTypes.length === 0) {
-				throw new Error("Please select at least one preset source.");
+		// Comprehensive check: If anything is incomplete, navigate back to that step and show notification
+		const check = validateAllSteps();
+		if (!check.valid) {
+			setCurrentStep(check.targetStep);
+			setError(check.error);
+			setIsLoading(false);
+			if (typeof window !== "undefined") {
+				window.scrollTo({ top: 0, behavior: "smooth" });
 			}
+			return;
+		}
+
+		setIsLoading(true);
+		setUploadProgress(0);
+
+		try {
 			let uploadedThumbnailUrl: string | undefined = undefined;
 			let uploadedPreviewVideoUrl: string | undefined = undefined;
 			let finalFileUrl: string | undefined = undefined;
@@ -659,13 +699,22 @@ export function UploadWizard() {
 				currentStep={currentStep}
 				totalSteps={WIZARD_STEPS.length}
 				steps={WIZARD_STEPS}
+				onStepClick={(step) => {
+					setError(null);
+					setCurrentStep(step);
+				}}
 			/>
 
 			{/* Error Alert Banner */}
 			{error && (
-				<div className="flex items-center gap-3 p-4 rounded-2xl bg-rose-500/10 border border-rose-500/20 text-rose-400 text-xs font-semibold">
-					<AlertCircle className="w-5 h-5 shrink-0" />
-					<p className="flex-1">{error}</p>
+				<div className="flex items-center gap-3 p-4 rounded-2xl bg-rose-500/15 border-2 border-rose-500/40 text-rose-300 text-xs font-bold shadow-lg">
+					<AlertCircle className="w-5 h-5 shrink-0 text-rose-400" />
+					<div className="flex-1 space-y-0.5">
+						<p className="text-[11px] font-extrabold uppercase tracking-wider text-rose-400">
+							⚠️ Isi Bagian Ini Terlebih Dahulu:
+						</p>
+						<p className="text-white text-xs">{error}</p>
+					</div>
 				</div>
 			)}
 
@@ -772,8 +821,7 @@ export function UploadWizard() {
 						<button
 							type="button"
 							onClick={handleNextStep}
-							disabled={isNextStepDisabled()}
-							className="inline-flex items-center justify-center gap-2 min-h-[48px] px-6 rounded-2xl bg-[var(--color-interactive-primary)] text-white font-bold text-xs shadow-lg shadow-[var(--color-interactive-primary)]/20 hover:bg-[var(--color-interactive-primary-hover)] active:scale-95 transition-all disabled:opacity-40 disabled:cursor-not-allowed ml-auto"
+							className="inline-flex items-center justify-center gap-2 min-h-[48px] px-6 rounded-2xl bg-[var(--color-interactive-primary)] text-white font-bold text-xs shadow-lg shadow-[var(--color-interactive-primary)]/20 hover:bg-[var(--color-interactive-primary-hover)] active:scale-95 transition-all cursor-pointer ml-auto"
 						>
 							<span>Next Step</span>
 							<ArrowRight className="w-4 h-4" />

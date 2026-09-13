@@ -4,12 +4,14 @@ interface WizardProgressProps {
 	currentStep: number;
 	totalSteps: number;
 	steps: Array<{ num: number; label: string }>;
+	onStepClick?: (step: number) => void;
 }
 
 export function WizardProgress({
 	currentStep,
 	totalSteps,
 	steps,
+	onStepClick,
 }: WizardProgressProps) {
 	const progressPercent = Math.round((currentStep / totalSteps) * 100);
 
@@ -20,7 +22,7 @@ export function WizardProgress({
 				<span>
 					Step {currentStep} of {totalSteps}
 				</span>
-				<span className="text-[var(--color-interactive-primary)]">
+				<span className="text-[var(--color-interactive-primary)] font-bold">
 					{progressPercent}% Completed
 				</span>
 			</div>
@@ -33,21 +35,23 @@ export function WizardProgress({
 				/>
 			</div>
 
-			{/* Steps Chips Bar */}
+			{/* Steps Chips Bar - Clickable for free navigation */}
 			<div className="flex items-center justify-between gap-1 overflow-x-auto scrollbar-none py-1 text-xs font-semibold select-none">
 				{steps.map((s) => {
 					const isDone = currentStep > s.num;
 					const isCurrent = currentStep === s.num;
 
 					return (
-						<div
+						<button
 							key={s.num}
-							className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl border transition-all shrink-0 ${
+							type="button"
+							onClick={() => onStepClick?.(s.num)}
+							className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl border transition-all shrink-0 cursor-pointer active:scale-95 ${
 								isCurrent
 									? "bg-[var(--color-interactive-primary)] text-white border-[var(--color-interactive-primary)] shadow-md"
 									: isDone
-										? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
-										: "bg-[var(--color-bg-surface)] text-[var(--color-text-tertiary)] border-[var(--color-border-subtle)]"
+										? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20 hover:bg-emerald-500/20"
+										: "bg-[var(--color-bg-surface)] text-[var(--color-text-secondary)] border-[var(--color-border-subtle)] hover:border-[var(--color-border-strong)] hover:text-white"
 							}`}
 						>
 							{isDone ? (
@@ -56,7 +60,7 @@ export function WizardProgress({
 								<span className="text-[11px] font-mono">{s.num}</span>
 							)}
 							<span className="text-xs whitespace-nowrap">{s.label}</span>
-						</div>
+						</button>
 					);
 				})}
 			</div>
