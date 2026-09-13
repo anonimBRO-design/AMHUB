@@ -67,7 +67,7 @@ export function mapPresetToCardPreset(
 			(preset as any).isBookmarked ?? (preset as any).is_bookmarked,
 		),
 		createdAt: preset.created_at,
-		aspectRatio: rawAspect ?? "16:9",
+		aspectRatio: rawAspect ?? "9:16",
 		price: preset.price ?? 0,
 		isPaid: Boolean(preset.is_paid && (preset.price ?? 0) > 0),
 		currency: preset.currency || "IDR",
