@@ -40,6 +40,8 @@ interface InstallSectionProps {
 		amVersionMax?: string | null;
 		commercialPrice?: number | null;
 		license?: "personal" | "commercial" | null;
+		socialLockEnabled?: boolean;
+		sultanPackUrl?: string | null;
 		creator?: {
 			id?: string;
 			username: string;
@@ -84,6 +86,7 @@ export function InstallSection({ preset }: InstallSectionProps) {
 	const isFreePreset = !preset.isPaid || (preset.price ?? 0) === 0;
 	const isSocialLocked =
 		isFreePreset &&
+		preset.socialLockEnabled !== false &&
 		Boolean(preset.creator?.username) &&
 		!isOwnPreset &&
 		!isFollowingCreator &&

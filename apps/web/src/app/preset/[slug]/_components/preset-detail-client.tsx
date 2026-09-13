@@ -2,6 +2,7 @@
 
 import { useLanguage } from "@/i18n";
 import { formatCategory } from "@/lib/format-category";
+import { parsePresetMetadata } from "@/lib/preset-metadata";
 import type { PresetCardPreset } from "@presethub/ui";
 import { ArrowLeft, Sparkles } from "lucide-react";
 import Link from "next/link";
@@ -39,6 +40,7 @@ interface PresetDetailClientProps {
     isLiked?: boolean;
     isBookmarked?: boolean;
     hasAccess?: boolean;
+    tags?: string[];
     creator: PresetCardPreset["creator"] & {
       followerCount?: number;
       presetCount?: number;
@@ -67,6 +69,7 @@ export function PresetDetailClient({
   const [liveCommentCount, setLiveCommentCount] = useState(
     Math.max(preset.commentCount ?? 0, comments.length),
   );
+  const meta = parsePresetMetadata(preset.description, preset.tags);
 
   const handleBack = () => {
     if (typeof window !== "undefined" && window.history.length > 1) {
@@ -111,6 +114,8 @@ export function PresetDetailClient({
           <SoundtrackCard
             presetTitle={preset.title}
             category={preset.category}
+            soundTitle={meta.soundTitle}
+            tiktokUrl={meta.tiktokUrl}
           />
         </div>
 
@@ -136,10 +141,22 @@ export function PresetDetailClient({
           <CreatorCard creator={preset.creator} />
 
           {/* Primary CTA: Download & Import Section */}
-          <InstallSection preset={preset} />
+          <InstallSection
+            preset={{
+              ...preset,
+              socialLockEnabled: meta.socialLockEnabled,
+              sultanPackUrl: meta.sultanPackUrl,
+            }}
+          />
 
           {/* Preset Description - Ditukar ke atas berdampingan dengan video */}
-          <DescriptionSection preset={preset} currentUserId={currentUserId} />
+          <DescriptionSection
+            preset={{
+              ...preset,
+              description: meta.cleanDescription,
+            }}
+            currentUserId={currentUserId}
+          />
         </div>
       </div>
 

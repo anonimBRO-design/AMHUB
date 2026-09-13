@@ -128,6 +128,10 @@ export function UploadWizard() {
 	const [amVersionMin, setAmVersionMin] = useState("");
 	const [amVersionMax, setAmVersionMax] = useState("");
 	const [remixFrom, setRemixFrom] = useState("");
+	const [enableSocialLock, setEnableSocialLock] = useState(true);
+	const [tiktokSoundTitle, setTiktokSoundTitle] = useState("");
+	const [tiktokSoundUrl, setTiktokSoundUrl] = useState("");
+	const [sultanPackUrl, setSultanPackUrl] = useState("");
 
 	const isAmVersionRangeValid = () => {
 		const normalizedMin = normalizeAmVersion(amVersionMin);
@@ -516,7 +520,35 @@ export function UploadWizard() {
 				? resolveStorageUrl(finalFileUrl, "preset-files") || finalFileUrl
 				: undefined;
 
-			// 4. Create Preset record
+			// 4. Build rich description embedding sound & sultan pack tags
+			let finalDescription = description.trim();
+			const extraNotes: string[] = [];
+
+			if (tiktokSoundTitle.trim()) {
+				extraNotes.push(`🎵 Sound: ${tiktokSoundTitle.trim()}`);
+			}
+			if (tiktokSoundUrl.trim()) {
+				extraNotes.push(`🔗 TikTok Sound: ${tiktokSoundUrl.trim()}`);
+			}
+			if (sultanPackUrl.trim()) {
+				extraNotes.push(`💎 Paket Sultan: ${sultanPackUrl.trim()}`);
+			}
+			if (!enableSocialLock && !isPaid) {
+				extraNotes.push(`<!-- amhub:no-social-lock -->`);
+			}
+
+			if (extraNotes.length > 0) {
+				finalDescription = finalDescription
+					? `${finalDescription}\n\n${extraNotes.join("\n")}`
+					: extraNotes.join("\n");
+			}
+
+			const tagsPayload: string[] = [];
+			if (!enableSocialLock && !isPaid) {
+				tagsPayload.push("no-social-lock");
+			}
+
+			// Create Preset record
 			const slug = `${title
 				.toLowerCase()
 				.replace(/[^a-z0-9]+/g, "-")
@@ -528,7 +560,8 @@ export function UploadWizard() {
 				body: JSON.stringify({
 					slug,
 					title,
-					description: description.trim() || undefined,
+					description: finalDescription || undefined,
+					tags: tagsPayload,
 					thumbnail_url: resolvedThumbnailUrl,
 					preview_video_url: resolvedPreviewVideoUrl,
 					file_type: primaryFileType,
@@ -682,6 +715,14 @@ export function UploadWizard() {
 						onAmVersionMaxChange={setAmVersionMax}
 						remixFrom={remixFrom}
 						onRemixFromChange={setRemixFrom}
+						enableSocialLock={enableSocialLock}
+						onEnableSocialLockChange={setEnableSocialLock}
+						tiktokSoundTitle={tiktokSoundTitle}
+						onTiktokSoundTitleChange={setTiktokSoundTitle}
+						tiktokSoundUrl={tiktokSoundUrl}
+						onTiktokSoundUrlChange={setTiktokSoundUrl}
+						sultanPackUrl={sultanPackUrl}
+						onSultanPackUrlChange={setSultanPackUrl}
 					/>
 				)}
 
@@ -702,6 +743,10 @@ export function UploadWizard() {
 						isPaid={isPaid}
 						price={isPaid ? price : 0}
 						commercialPrice={isPaid ? commercialPrice : 0}
+						enableSocialLock={enableSocialLock}
+						tiktokSoundTitle={tiktokSoundTitle}
+						tiktokSoundUrl={tiktokSoundUrl}
+						sultanPackUrl={sultanPackUrl}
 					/>
 				)}
 			</div>

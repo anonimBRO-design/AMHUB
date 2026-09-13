@@ -27,6 +27,10 @@ interface ReviewStepProps {
 	remixFrom?: string | null;
 	amVersionMin?: string | null;
 	amVersionMax?: string | null;
+	enableSocialLock?: boolean;
+	tiktokSoundTitle?: string;
+	tiktokSoundUrl?: string;
+	sultanPackUrl?: string;
 }
 
 export function ReviewStep({
@@ -46,6 +50,10 @@ export function ReviewStep({
 	remixFrom = null,
 	amVersionMin = null,
 	amVersionMax = null,
+	enableSocialLock = true,
+	tiktokSoundTitle = "",
+	tiktokSoundUrl = "",
+	sultanPackUrl = "",
 }: ReviewStepProps) {
 	const thumbnailPreviewUrl = thumbnailFile
 		? URL.createObjectURL(thumbnailFile)
@@ -254,6 +262,37 @@ export function ReviewStep({
 									<span className="font-mono text-[11px] text-[var(--color-text-tertiary)] truncate max-w-[180px]">
 										{gdriveLink || "Google Drive Link"}
 									</span>
+								</div>
+							)}
+						</div>
+					</div>
+
+					{/* Growth & Extra Monetization Settings */}
+					<div className="col-span-2 sm:col-span-3 space-y-2 p-3 rounded-2xl bg-[var(--color-bg-surface)] border border-[var(--color-border-subtle)]">
+						<span className="text-[var(--color-text-tertiary)] block text-[10px] font-bold uppercase">
+							Growth & Monetization Settings
+						</span>
+						<div className="space-y-1.5 text-xs">
+							{!isPaid && (
+								<div className="flex items-center justify-between">
+									<span className="text-[var(--color-text-secondary)]">Wajib Follow (Social Lock)</span>
+									<span className={`font-bold ${enableSocialLock ? "text-indigo-400" : "text-[var(--color-text-tertiary)]"}`}>
+										{enableSocialLock ? "Aktif 🔒" : "Nonaktif"}
+									</span>
+								</div>
+							)}
+							{tiktokSoundTitle && (
+								<div className="flex items-center justify-between">
+									<span className="text-[var(--color-text-secondary)]">Sound TikTok</span>
+									<span className="font-bold text-cyan-400 truncate max-w-[180px]">
+										{tiktokSoundTitle}
+									</span>
+								</div>
+							)}
+							{sultanPackUrl && (
+								<div className="flex items-center justify-between">
+									<span className="text-[var(--color-text-secondary)]">Paket Sultan (Mentahan Full)</span>
+									<span className="font-bold text-amber-400">Tersedia 💎</span>
 								</div>
 							)}
 						</div>

@@ -130,6 +130,7 @@ export default async function PresetDetailPage({ params }: PageProps) {
 			(rawPreset as { aspect_ratios?: string[]; aspectRatios?: string[] })
 				.aspectRatios ||
 			undefined,
+		tags: (rawPreset as { tags?: string[] }).tags || [],
 		isLiked: Boolean(likeRecord),
 		isBookmarked: Boolean(bookmarkRecord),
 		creator: {
