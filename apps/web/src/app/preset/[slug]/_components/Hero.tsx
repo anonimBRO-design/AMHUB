@@ -222,15 +222,20 @@ export function Hero({ preset, currentUserId }: HeroProps) {
 	};
 
 	return (
-		<section className="space-y-6">
+		<section className="relative w-full flex flex-col items-center">
+			{/* Ambient Glow Halo behind video */}
+			<div
+				className="absolute -inset-3 sm:-inset-6 rounded-3xl opacity-35 blur-3xl pointer-events-none -z-10 bg-gradient-to-tr from-cyan-500/20 via-[var(--color-interactive-primary)]/20 to-purple-500/15 transition-opacity duration-700"
+			/>
+
 			{/* Custom Mobile & Desktop Unified Video Player Container */}
-			<div className="relative w-full flex justify-center items-start py-2">
+			<div className="relative w-full flex justify-center items-start">
 				<div
 					ref={containerRef}
 					onMouseMove={triggerControlsVisibility}
 					onTouchStart={triggerControlsVisibility}
 					onClick={togglePlayPause}
-					className="relative w-full max-w-[400px] aspect-[9/16] overflow-hidden rounded-xl bg-[var(--color-bg-base)] border border-[var(--color-border-subtle)] shadow-2xl group shrink-0 cursor-pointer select-none"
+					className="relative w-full max-w-[420px] aspect-[9/16] overflow-hidden rounded-2xl bg-[var(--color-bg-base)] border border-[var(--color-border-subtle)] shadow-2xl group shrink-0 cursor-pointer select-none"
 				>
 					{preset.previewVideoUrl ? (
 						<video
@@ -380,26 +385,16 @@ export function Hero({ preset, currentUserId }: HeroProps) {
 				</div>
 			</div>
 
-			{/* Title, Actions & Stats (Outside Video Box) */}
-			<div className="space-y-4 px-1">
-				<div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
-					<div className="space-y-2 flex-1 min-w-0">
-						<div className="flex items-center gap-2 text-xs font-bold text-[var(--color-interactive-primary)] uppercase tracking-wider">
-							<Sparkles className="w-4 h-4" />
-							<span>Alight Motion Preset</span>
-						</div>
-						<h1 className="text-2xl sm:text-4xl font-extrabold tracking-tight text-[var(--color-text-primary)] leading-tight">
-							{preset.title}
-						</h1>
-					</div>
-
-					{/* Primary Preset Actions (Like, Bookmark, Share) */}
-					<div className="flex items-center gap-2 shrink-0 pt-1">
+			{/* Media Reactions & Quick Info Toolbar (Directly beneath video) */}
+			<div className="w-full max-w-[420px] pt-3.5 space-y-2.5">
+				<div className="flex items-center justify-between gap-1.5 sm:gap-2">
+					<div className="flex items-center gap-1.5 sm:gap-2 flex-1">
+						{/* Like Button */}
 						<button
 							type="button"
 							onClick={handleLikeToggle}
 							aria-label={isLiked ? "Unlike preset" : "Like preset"}
-							className={`inline-flex items-center gap-2 min-h-[42px] px-3.5 rounded-lg border transition-all active:scale-95 shadow-sm font-body ${
+							className={`flex-1 inline-flex items-center justify-center gap-1.5 min-h-[42px] px-3.5 rounded-xl border transition-all active:scale-95 shadow-sm font-semibold text-xs ${
 								isLiked
 									? "bg-rose-500/15 text-rose-400 border-rose-500/30"
 									: "bg-[var(--color-bg-surface)] text-[var(--color-text-primary)] border-[var(--color-border-subtle)] hover:bg-[var(--color-bg-elevated)] hover:border-[var(--color-border-strong)]"
@@ -410,9 +405,10 @@ export function Hero({ preset, currentUserId }: HeroProps) {
 									isLiked ? "fill-rose-500 text-rose-500" : ""
 								}`}
 							/>
-							<span className="text-xs font-bold">{likeCount}</span>
+							<span>{likeCount}</span>
 						</button>
 
+						{/* Bookmark Button */}
 						<BookmarkButton
 							presetId={preset.id}
 							initialBookmarked={preset.isBookmarked}
@@ -424,7 +420,7 @@ export function Hero({ preset, currentUserId }: HeroProps) {
 							}}
 						/>
 
-						{/* Comment Button (Smooth Scroll to Comments) */}
+						{/* Comment Scroll Button */}
 						<button
 							type="button"
 							onClick={() => {
@@ -436,14 +432,15 @@ export function Hero({ preset, currentUserId }: HeroProps) {
 								}
 							}}
 							aria-label="Lihat Komentar"
-							className="inline-flex items-center gap-2 min-h-[42px] px-3.5 rounded-lg border transition-all active:scale-95 shadow-sm font-body bg-blue-500/10 text-blue-400 border-blue-500/25 hover:bg-blue-500/20 hover:border-blue-500/40"
+							className="inline-flex items-center justify-center min-h-[42px] px-3.5 rounded-xl border transition-all active:scale-95 shadow-sm bg-blue-500/10 text-blue-400 border-blue-500/25 hover:bg-blue-500/20 hover:border-blue-500/40"
 						>
 							<MessageSquare className="w-4 h-4 fill-blue-400/20 text-blue-400" />
-							<span className="text-xs font-bold">
+							<span className="text-xs font-bold ml-1.5">
 								{preset.commentCount ?? 0}
 							</span>
 						</button>
 
+						{/* Share Button */}
 						<ShareButton title={preset.title} />
 
 						{/* Report Preset Button */}
@@ -452,62 +449,49 @@ export function Hero({ preset, currentUserId }: HeroProps) {
 							onClick={() => setShowReportModal(true)}
 							aria-label="Laporkan Preset"
 							title="Laporkan Preset"
-							className="inline-flex items-center justify-center min-h-[42px] min-w-[42px] px-3 rounded-lg border transition-all active:scale-95 shadow-sm bg-[var(--color-bg-surface)] text-[var(--color-text-tertiary)] border-[var(--color-border-subtle)] hover:text-rose-400 hover:border-rose-500/30 hover:bg-rose-500/10"
+							className="inline-flex items-center justify-center min-h-[42px] min-w-[42px] rounded-xl border transition-all active:scale-95 shadow-sm bg-[var(--color-bg-surface)] text-[var(--color-text-tertiary)] border-[var(--color-border-subtle)] hover:text-rose-400 hover:border-rose-500/30 hover:bg-rose-500/10"
 						>
 							<Flag className="w-4 h-4" />
 						</button>
 					</div>
-				</div>
 
-				{isOwner && (
-					<div className="flex items-center gap-2 pt-1">
+					{isOwner && (
 						<button
 							type="button"
 							onClick={() => setShowDeleteDialog(true)}
-							className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg bg-rose-500/10 text-rose-400 border border-rose-500/20 hover:bg-rose-500/20 transition-all text-xs font-semibold"
+							title="Delete Preset"
+							aria-label="Delete Preset"
+							className="inline-flex items-center justify-center min-h-[42px] min-w-[42px] rounded-xl border transition-all active:scale-95 shadow-sm bg-rose-500/10 text-rose-400 border-rose-500/20 hover:bg-rose-500/20"
 						>
-							<Trash2 className="w-3.5 h-3.5" />
-							<span>Delete Preset</span>
+							<Trash2 className="w-4 h-4" />
 						</button>
-					</div>
-				)}
+					)}
+				</div>
 
-				{/* Mobile & Desktop Stats Pills */}
-				<div className="flex flex-wrap items-center gap-4 pt-1 text-xs font-medium text-[var(--color-text-secondary)]">
-					<div className="flex items-center gap-1.5 text-rose-400">
-						<Heart className="w-4 h-4 fill-rose-400/20" />
-						<span className="font-bold text-[var(--color-text-primary)]">
-							{likeCount}
-						</span>{" "}
-						Likes
-					</div>
-					<div className="flex items-center gap-1.5 text-amber-400">
-						<Bookmark className="w-4 h-4 fill-amber-400/20" />
-						<span className="font-bold text-[var(--color-text-primary)]">
-							{bookmarkCount}
-						</span>{" "}
-						Bookmarks
-					</div>
-					<div className="flex items-center gap-1.5 text-blue-400">
-						<MessageSquare className="w-4 h-4 fill-blue-400/20" />
-						<span className="font-bold text-[var(--color-text-primary)]">
-							{preset.commentCount ?? 0}
-						</span>{" "}
-						Comments
-					</div>
-					<div className="flex items-center gap-1.5 text-emerald-400">
-						<Download className="w-4 h-4" />
-						<span className="font-bold text-[var(--color-text-primary)]">
-							{downloadCount}
-						</span>{" "}
-						Downloads
-					</div>
-					<div className="flex items-center gap-1.5 text-blue-400">
-						<Eye className="w-4 h-4" />
+				{/* Quick Stat Bar (Compact) */}
+				<div className="flex items-center justify-around py-2.5 px-3 rounded-xl bg-[var(--color-bg-surface)] border border-[var(--color-border-subtle)] text-xs font-medium text-[var(--color-text-secondary)] shadow-sm">
+					<div className="flex items-center gap-1.5 text-sky-400">
+						<Eye className="w-3.5 h-3.5" />
 						<span className="font-bold text-[var(--color-text-primary)]">
 							{viewCount}
-						</span>{" "}
-						Views
+						</span>
+						<span className="text-[11px] text-[var(--color-text-tertiary)]">Views</span>
+					</div>
+					<span className="text-[var(--color-border-subtle)]">•</span>
+					<div className="flex items-center gap-1.5 text-emerald-400">
+						<Download className="w-3.5 h-3.5" />
+						<span className="font-bold text-[var(--color-text-primary)]">
+							{downloadCount}
+						</span>
+						<span className="text-[11px] text-[var(--color-text-tertiary)]">Downloads</span>
+					</div>
+					<span className="text-[var(--color-border-subtle)]">•</span>
+					<div className="flex items-center gap-1.5 text-rose-400">
+						<Heart className="w-3.5 h-3.5" />
+						<span className="font-bold text-[var(--color-text-primary)]">
+							{likeCount}
+						</span>
+						<span className="text-[11px] text-[var(--color-text-tertiary)]">Likes</span>
 					</div>
 				</div>
 			</div>

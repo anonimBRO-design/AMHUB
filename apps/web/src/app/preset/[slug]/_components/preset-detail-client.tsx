@@ -1,7 +1,7 @@
 "use client";
 
 import type { PresetCardPreset } from "@presethub/ui";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Sparkles } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { CommentSection } from "./CommentSection";
@@ -91,33 +91,65 @@ export function PresetDetailClient({
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
-        <div className="lg:col-span-2 space-y-6">
+      {/* Main 2-Column Responsive Layout */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start">
+        {/* LEFT COLUMN: Sticky Media Showcase (Video + Reaction Bar + Quick Counters) */}
+        <div className="lg:col-span-5 xl:col-span-5 lg:sticky lg:top-6 self-start w-full">
           <Hero preset={preset} currentUserId={currentUserId} />
-          <InstallSection preset={preset} />
-          <DescriptionSection preset={preset} currentUserId={currentUserId} />
-          <CommentSection
-            presetId={preset.id}
-            initialComments={comments}
-            commentCount={comments.length || preset.commentCount}
-          />
         </div>
 
-        <div className="space-y-6">
+        {/* RIGHT COLUMN: Conversion Hub, Info & Discussion */}
+        <div className="lg:col-span-7 xl:col-span-7 space-y-6 w-full min-w-0">
+          {/* Preset Title & Category Header */}
+          <div className="space-y-2">
+            <div className="flex items-center gap-2">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-[var(--color-interactive-primary)]/15 text-[var(--color-interactive-primary)] border border-[var(--color-interactive-primary)]/30 capitalize tracking-wide">
+                <Sparkles className="w-3.5 h-3.5" />
+                {preset.category}
+              </span>
+              <span className="text-xs font-semibold text-[var(--color-text-tertiary)] uppercase tracking-wider">
+                Alight Motion Preset
+              </span>
+            </div>
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black tracking-tight text-[var(--color-text-primary)] leading-tight">
+              {preset.title}
+            </h1>
+          </div>
+
+          {/* Creator Profile Card */}
           <CreatorCard creator={preset.creator} />
-          <PresetStats
-            views={preset.viewCount ?? 0}
-            downloads={preset.downloadCount ?? 0}
-            uniqueDownloads={preset.uniqueDownloadCount}
-            likes={preset.likeCount ?? 0}
-            bookmarks={preset.bookmarkCount ?? 0}
-            comments={preset.commentCount ?? 0}
-          />
-          <TagList preset={preset} />
+
+          {/* Primary CTA: Download & Import Section */}
+          <InstallSection preset={preset} />
+
+          {/* Bento Grid: Performance Stats & Technical Specs side-by-side */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-stretch">
+            <PresetStats
+              views={preset.viewCount ?? 0}
+              downloads={preset.downloadCount ?? 0}
+              uniqueDownloads={preset.uniqueDownloadCount}
+              likes={preset.likeCount ?? 0}
+              bookmarks={preset.bookmarkCount ?? 0}
+              comments={preset.commentCount ?? 0}
+            />
+            <TagList preset={preset} />
+          </div>
+
+          {/* Preset Description */}
+          <DescriptionSection preset={preset} currentUserId={currentUserId} />
+
+          {/* Remix Card (if any) */}
           <RemixCard
             parent={remixParent}
             remixes={remixChildren}
             totalChildren={remixChildrenTotal}
+          />
+
+          {/* Comments Discussion Section */}
+          <CommentSection
+            presetId={preset.id}
+            initialComments={comments}
+            commentCount={comments.length || preset.commentCount}
           />
         </div>
       </div>

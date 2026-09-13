@@ -71,7 +71,7 @@ export function PresetStats({
 	const downloadRate = formatPercent(uniqueDownloads ?? downloads, views);
 
 	return (
-		<section className="p-5 sm:p-6 rounded-xl bg-[var(--color-bg-surface)] border border-[var(--color-border-subtle)] space-y-4 shadow-lg">
+		<section className="p-5 sm:p-6 rounded-xl bg-[var(--color-bg-surface)] border border-[var(--color-border-subtle)] space-y-4 shadow-lg flex flex-col justify-between">
 			<div className="flex items-center gap-2.5">
 				<div className="p-2 rounded-lg bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">
 					<Activity className="w-5 h-5" />
