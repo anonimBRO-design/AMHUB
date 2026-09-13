@@ -25,11 +25,12 @@ BEGIN
 END;
 $$;
 
--- Grant execute permissions to all roles (anon, authenticated, service_role)
-GRANT EXECUTE ON FUNCTION public.increment_preset_view(uuid) TO anon, authenticated, service_role;
+-- Grant execute permissions to authenticated users and service_role only (guests/anon excluded)
+REVOKE EXECUTE ON FUNCTION public.increment_preset_view(uuid) FROM anon;
+GRANT EXECUTE ON FUNCTION public.increment_preset_view(uuid) TO authenticated, service_role;
 
 COMMENT ON FUNCTION public.increment_preset_view(uuid) IS
-  'Atomically increments view_count for a preset. Runs as SECURITY DEFINER so anonymous guests can record views safely.';
+  'Atomically increments view_count for a preset. Runs as SECURITY DEFINER for authenticated users only (guests/incognito are excluded).';
 
 -- 2. Function: increment_preset_download
 CREATE OR REPLACE FUNCTION public.increment_preset_download(

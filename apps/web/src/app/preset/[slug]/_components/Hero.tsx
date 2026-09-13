@@ -107,10 +107,10 @@ export function Hero({ preset, currentUserId }: HeroProps) {
 	const controlsTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 	const { requireAuth } = useAuth();
 
-	// Auto-track and record preset view on mount
+	// Auto-track and record preset view on mount (only for authenticated users, ignore guest/incognito)
 	useEffect(() => {
-		if (!preset.id) return;
-		const key = `am_view_${preset.id}`;
+		if (!preset.id || !currentUserId) return;
+		const key = `am_view_${preset.id}_${currentUserId}`;
 		if (typeof window !== "undefined" && window.sessionStorage?.getItem(key)) return;
 
 		fetch(`/api/presets/${preset.id}/view`, { method: "POST" })
@@ -127,7 +127,7 @@ export function Hero({ preset, currentUserId }: HeroProps) {
 			.catch((err) => {
 				console.error("[Hero] Error recording view count:", err);
 			});
-	}, [preset.id]);
+	}, [preset.id, currentUserId]);
 
 	useEffect(() => {
 		if (videoRef.current) {

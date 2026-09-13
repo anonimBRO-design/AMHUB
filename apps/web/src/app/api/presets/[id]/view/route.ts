@@ -1,7 +1,7 @@
 import { incrementPresetView } from "@/dal/presets.dal";
+import { getApiUser } from "@/lib/api/auth";
 import { apiErrorResponse, apiResponse } from "@/lib/api/responses";
 import { validateRouteParams } from "@/lib/api/validation";
-import { createSupabaseServerClient } from "@/lib/supabase/server";
 import type { NextRequest } from "next/server";
 import { z } from "zod";
 
@@ -18,8 +18,21 @@ export async function POST(
 			await params,
 			routeParamsSchema,
 		);
-		const supabase = await createSupabaseServerClient();
-		const newCount = await incrementPresetView(supabase, presetId);
+
+		// Jangan tambahkan view jika user adalah guest / incognito (belum login)
+		const authContext = await getApiUser();
+		if (!authContext?.user?.id) {
+			return apiResponse({
+				success: false,
+				preset_id: presetId,
+				message: "Guest and incognito views are not counted.",
+			});
+		}
+
+		const newCount = await incrementPresetView(
+			authContext.supabase,
+			presetId,
+		);
 
 		return apiResponse({
 			success: true,
@@ -30,3 +43,4 @@ export async function POST(
 		return apiErrorResponse(error);
 	}
 }
+
