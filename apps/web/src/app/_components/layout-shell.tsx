@@ -140,7 +140,10 @@ function LayoutShellInner({
 							}
 							bottomNav={null}
 						>
-							{children}
+							{/* Keep the final content reachable above the fixed navigation dock. */}
+							<div className="pb-[calc(5.5rem+env(safe-area-inset-bottom))] sm:pb-[calc(7rem+env(safe-area-inset-bottom))]">
+								{children}
+							</div>
 						</AppLayoutTemplate>
 
 						{/* macOS-style Responsive Floating Dock — Single navigation across mobile and desktop */}
