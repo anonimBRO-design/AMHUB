@@ -17,7 +17,10 @@ export function RelatedPresets({ presets, category }: RelatedPresetsProps) {
 	const formattedCat = formatCategory(category);
 	const sectionTitle = formattedCat
 		? t.presetDetail.morePresets.replace("{category}", formattedCat)
-		: t.presetDetail.morePresets.replace("{category}", "").replace(/\s+/g, " ").trim();
+		: t.presetDetail.morePresets
+				.replace("{category}", "")
+				.replace(/\s+/g, " ")
+				.trim();
 
 	return (
 		<section className="space-y-4 pt-4">

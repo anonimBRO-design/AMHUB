@@ -28,7 +28,8 @@ export function mapPresetToCardPreset(
 		title: preset.title,
 		description: preset.description ?? undefined,
 		thumbnailUrl: resolveStorageUrl(preset.thumbnail_url, "thumbnails") ?? "",
-		previewVideoUrl: resolveStorageUrl(preset.preview_video_url, "preset-videos") ?? undefined,
+		previewVideoUrl:
+			resolveStorageUrl(preset.preview_video_url, "preset-videos") ?? undefined,
 		category: formatCategory(preset.category),
 		difficulty: preset.difficulty as "beginner" | "intermediate" | "advanced",
 		amVersionMin: formatAmVersion(preset.am_version_min) ?? undefined,

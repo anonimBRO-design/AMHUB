@@ -4,39 +4,23 @@ import { useAuth } from "@/context/AuthContext";
 import { useLanguage } from "@/i18n";
 import {
 	AlignLeft,
-	Calendar,
 	Check,
-	CheckCircle2,
 	ChevronDown,
 	ChevronUp,
 	Edit3,
 	ExternalLink,
-	Eye,
-	FileCode,
-	Layers,
-	Ratio,
-	Smartphone,
-	Sparkles,
-	X,
-	Zap,
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 
 interface DescriptionSectionProps {
 	preset: {
 		id: string;
-		title: string;
+		title?: string;
 		description?: string | null;
-		category: string;
-		difficulty: "beginner" | "intermediate" | "advanced";
-		fileType?: string;
-		amVersionMin?: string | null;
-		amVersionMax?: string | null;
-		aspectRatio?: string;
-		createdAt?: string;
-		creator: {
+		category?: string;
+		creator?: {
 			id?: string;
 			username?: string;
 			displayName?: string;
@@ -141,7 +125,7 @@ export function DescriptionSection({
 }: DescriptionSectionProps) {
 	const router = useRouter();
 	const { currentUser } = useAuth();
-	const { t, language } = useLanguage();
+	const { t } = useLanguage();
 	const [isExpanded, setIsExpanded] = useState(false);
 	const [description, setDescription] = useState(preset.description || "");
 	const [isEditing, setIsEditing] = useState(false);
@@ -196,28 +180,8 @@ export function DescriptionSection({
 		}
 	};
 
-	const formattedDate = preset.createdAt
-		? new Date(preset.createdAt).toLocaleDateString(
-				language === "id" ? "id-ID" : "en-US",
-				{
-					day: "numeric",
-					month: "short",
-					year: "numeric",
-				},
-			)
-		: null;
-
-	const difficultyMap: Record<string, string> = {
-		beginner: language === "id" ? "Pemula" : "Beginner",
-		intermediate: language === "id" ? "Menengah" : "Intermediate",
-		advanced: language === "id" ? "Mahir" : "Advanced",
-	};
-	const difficultyLabel =
-		(preset.difficulty && difficultyMap[preset.difficulty.toLowerCase()]) ||
-		t.presetDetail.allLevels;
-
 	return (
-		<section className="p-5 sm:p-6 rounded-xl bg-[var(--color-bg-surface)] border border-[var(--color-border-subtle)] space-y-5 shadow-lg relative">
+		<section className="p-5 sm:p-6 rounded-xl bg-[var(--color-bg-surface)] border border-[var(--color-border-subtle)] space-y-4 shadow-lg relative">
 			{/* Header with Title & Edit Action */}
 			<div className="flex items-center justify-between gap-3">
 				<div className="flex items-center gap-2.5">
@@ -258,75 +222,6 @@ export function DescriptionSection({
 				</div>
 			</div>
 
-			{/* Quick Specification Metadata Badges */}
-			<div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 p-3 rounded-lg bg-[var(--color-bg-base)]/70 border border-[var(--color-border-subtle)]/60 text-xs">
-				<div className="flex items-center gap-2 px-2 py-1">
-					<Ratio className="w-4 h-4 text-cyan-400 shrink-0" />
-					<div>
-						<span className="block text-[10px] text-[var(--color-text-tertiary)] uppercase font-semibold">
-							{t.presetDetail.aspectRatio}
-						</span>
-						<span className="font-bold text-[var(--color-text-primary)]">
-							{preset.aspectRatio || "9:16 (Vertical)"}
-						</span>
-					</div>
-				</div>
-
-				<div className="flex items-center gap-2 px-2 py-1">
-					<Layers className="w-4 h-4 text-emerald-400 shrink-0" />
-					<div>
-						<span className="block text-[10px] text-[var(--color-text-tertiary)] uppercase font-semibold">
-							{t.presetDetail.difficulty}
-						</span>
-						<span className="font-bold text-[var(--color-text-primary)]">
-							{difficultyLabel}
-						</span>
-					</div>
-				</div>
-
-				<div className="flex items-center gap-2 px-2 py-1">
-					<FileCode className="w-4 h-4 text-blue-400 shrink-0" />
-					<div>
-						<span className="block text-[10px] text-[var(--color-text-tertiary)] uppercase font-semibold">
-							{t.presetDetail.fileFormat}
-						</span>
-						<span className="font-bold text-[var(--color-text-primary)] uppercase">
-							{preset.fileType || "XML Project"}
-						</span>
-					</div>
-				</div>
-
-				{(preset.amVersionMin || preset.amVersionMax) && (
-					<div className="flex items-center gap-2 px-2 py-1">
-						<Smartphone className="w-4 h-4 text-cyan-400 shrink-0" />
-						<div>
-							<span className="block text-[10px] text-[var(--color-text-tertiary)] uppercase font-semibold">
-								{t.presetDetail.amVersion}
-							</span>
-							<span className="font-bold text-[var(--color-text-primary)] font-mono">
-								{preset.amVersionMin && preset.amVersionMax
-									? `${preset.amVersionMin} – ${preset.amVersionMax}`
-									: (preset.amVersionMin ?? preset.amVersionMax)}
-							</span>
-						</div>
-					</div>
-				)}
-
-				{formattedDate && (
-					<div className="flex items-center gap-2 px-2 py-1">
-						<Calendar className="w-4 h-4 text-amber-400 shrink-0" />
-						<div>
-							<span className="block text-[10px] text-[var(--color-text-tertiary)] uppercase font-semibold">
-								{t.presetDetail.uploadedOn}
-							</span>
-							<span className="font-bold text-[var(--color-text-primary)]">
-								{formattedDate}
-							</span>
-						</div>
-					</div>
-				)}
-			</div>
-
 			{/* Main Description Body / Edit Mode */}
 			{isEditing ? (
 				<div className="space-y-3 p-4 rounded-lg bg-[var(--color-bg-base)] border border-cyan-500/30 shadow-inner">
@@ -339,7 +234,10 @@ export function DescriptionSection({
 								editValue.length > 1800 ? "text-amber-400 font-bold" : ""
 							}
 						>
-							{t.presetDetail.characters.replace("{count}", String(editValue.length))}
+							{t.presetDetail.characters.replace(
+								"{count}",
+								String(editValue.length),
+							)}
 						</span>
 					</div>
 

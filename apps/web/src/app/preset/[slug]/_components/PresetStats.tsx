@@ -42,7 +42,12 @@ export function PresetStats({
 	};
 
 	const cells = [
-		{ icon: Eye, label: t.presetDetail.statViews, value: views, color: "text-sky-400" },
+		{
+			icon: Eye,
+			label: t.presetDetail.statViews,
+			value: views,
+			color: "text-sky-400",
+		},
 		{
 			icon: Download,
 			label: t.presetDetail.statDownloads,
@@ -55,7 +60,12 @@ export function PresetStats({
 			value: uniqueDownloads ?? downloads,
 			color: "text-teal-400",
 		},
-		{ icon: Heart, label: t.presetDetail.statLikes, value: likes, color: "text-rose-400" },
+		{
+			icon: Heart,
+			label: t.presetDetail.statLikes,
+			value: likes,
+			color: "text-rose-400",
+		},
 		{
 			icon: Bookmark,
 			label: t.presetDetail.statBookmarks,

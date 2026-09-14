@@ -291,7 +291,7 @@ export const id: Translations = {
 		processingOrder: "Memproses Pesanan...",
 
 		// Description Section
-		descriptionTitle: "Deskripsi & Detail Preset",
+		descriptionTitle: "Deskripsi & Catatan Kreator",
 		descriptionSubtitle: "Panduan pemakaian dan catatan dari kreator",
 		noDescription: "Tidak ada deskripsi yang disertakan untuk preset ini.",
 		editDescription: "Edit Deskripsi",
@@ -376,12 +376,11 @@ export const id: Translations = {
 		reportReasonSpam: "Spam / Menyesatkan",
 		reportReasonSpamDesc:
 			"Judul atau thumbnail palsu tidak sesuai dengan isi preset.",
- 		reportReasonOther: "Lainnya",
+		reportReasonOther: "Lainnya",
 		reportReasonOtherDesc:
 			"Masalah lain yang melanggar ketentuan komunitas AMHUB.",
 		reportDetailsLabel: "Detail Tambahan (Opsional)",
-		reportDetailsPlaceholder:
-			"Sebutkan link asli atau keterangan pendukung...",
+		reportDetailsPlaceholder: "Sebutkan link asli atau keterangan pendukung...",
 		reportSubmitting: "Mengirim...",
 		reportSubmit: "Kirim Laporan",
 		reportSuccessTitle: "Laporan Terkirim!",
@@ -390,8 +389,7 @@ export const id: Translations = {
 
 		// Checkout & Payment Modal
 		checkoutTitle: "Checkout Preset",
-		checkoutSubtitle:
-			"Selesaikan pembayaran untuk membuka link & file preset",
+		checkoutSubtitle: "Selesaikan pembayaran untuk membuka link & file preset",
 		orderNumber: "No. Order:",
 		paymentSuccessTitle: "Pembayaran Berhasil!",
 		paymentSuccessDesc:
@@ -443,8 +441,7 @@ export const id: Translations = {
 
 		// Micro-Tipping Modal
 		tipCreatorTitle: "Traktir Kreator",
-		tipCreatorSubtitle:
-			"Beri apresiasi kreator dengan saweran kilat via QRIS",
+		tipCreatorSubtitle: "Beri apresiasi kreator dengan saweran kilat via QRIS",
 		tipAmountEsTeh: "Rp 2.000 (Es Teh)",
 		tipAmountKopi: "Rp 5.000 (Kopi)",
 		tipAmountMakan: "Rp 10.000 (Gorengan)",

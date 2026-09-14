@@ -216,7 +216,6 @@ export async function recordPresetDownload(
 	};
 }
 
-
 /**
  * Gets unique download stats for a preset or creator.
  */

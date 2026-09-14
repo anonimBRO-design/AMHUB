@@ -129,7 +129,10 @@ export function CommentSection({
 						{t.presetDetail.communityDiscussion}
 					</h2>
 					<p className="text-xs text-[var(--color-text-secondary)]">
-						{t.presetDetail.commentsCountHeader.replace("{count}", String(comments.length || commentCount))}
+						{t.presetDetail.commentsCountHeader.replace(
+							"{count}",
+							String(comments.length || commentCount),
+						)}
 					</p>
 				</div>
 			</div>

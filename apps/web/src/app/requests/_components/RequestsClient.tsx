@@ -50,7 +50,9 @@ export function RequestsClient({
 	useEffect(() => {
 		if (targetCreator) {
 			setShowForm(true);
-			setTitle((prev) => prev || `Request Custom Preset untuk @${targetCreator}`);
+			setTitle(
+				(prev) => prev || `Request Custom Preset untuk @${targetCreator}`,
+			);
 			setDescription(
 				(prev) =>
 					prev ||
@@ -161,8 +163,13 @@ export function RequestsClient({
 						<div className="p-3.5 rounded-xl bg-cyan-500/10 border border-cyan-500/30 flex items-center gap-2.5 text-xs text-cyan-400">
 							<Sparkles className="w-4 h-4 shrink-0" />
 							<div>
-								<p className="font-bold">Order Joki Edit / Request Khusus untuk @{targetCreator}</p>
-								<p className="text-[11px] text-[var(--color-text-secondary)]">Kreator ini akan diprioritaskan saat melihat dan memberi penawaran pada request kamu.</p>
+								<p className="font-bold">
+									Order Joki Edit / Request Khusus untuk @{targetCreator}
+								</p>
+								<p className="text-[11px] text-[var(--color-text-secondary)]">
+									Kreator ini akan diprioritaskan saat melihat dan memberi
+									penawaran pada request kamu.
+								</p>
 							</div>
 						</div>
 					)}

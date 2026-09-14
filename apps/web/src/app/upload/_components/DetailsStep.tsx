@@ -521,7 +521,8 @@ export function DetailsStep({
 					})}
 				</div>
 				<p className="text-[11px] text-[var(--color-text-tertiary)]">
-					Pilih satu atau beberapa rasio kanvas yang cocok untuk preset ini (default: 9:16 untuk vertikal).
+					Pilih satu atau beberapa rasio kanvas yang cocok untuk preset ini
+					(default: 9:16 untuk vertikal).
 				</p>
 			</div>
 
@@ -611,4 +612,3 @@ export function DetailsStep({
 		</div>
 	);
 }
-

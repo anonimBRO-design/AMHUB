@@ -127,7 +127,10 @@ export function TipCreatorModal({
 								>
 									<span className="text-xl block mb-1">{tier.icon}</span>
 									<span className="block text-xs font-bold text-[var(--color-text-primary)]">
-										Rp {tier.amount.toLocaleString(language === "id" ? "id-ID" : "en-US")}
+										Rp{" "}
+										{tier.amount.toLocaleString(
+											language === "id" ? "id-ID" : "en-US",
+										)}
 									</span>
 									<span className="block text-[10px] text-[var(--color-text-tertiary)] mt-0.5">
 										{t.presetDetail[tier.labelKey]}
@@ -214,7 +217,14 @@ export function TipCreatorModal({
 
 								<rect x="36" y="8" width="6" height="6" fill="#000" />
 								<rect x="48" y="20" width="6" height="6" fill="#000" />
-								<rect x="36" y="36" width="28" height="28" rx="4" fill="#F59E0B" />
+								<rect
+									x="36"
+									y="36"
+									width="28"
+									height="28"
+									rx="4"
+									fill="#F59E0B"
+								/>
 								<path
 									d="M44 50L48 54L56 44"
 									stroke="#fff"

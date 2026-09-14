@@ -288,7 +288,7 @@ export const en = {
 		processingOrder: "Processing Order...",
 
 		// Description Section
-		descriptionTitle: "Description & Preset Details",
+		descriptionTitle: "Description & Creator Notes",
 		descriptionSubtitle: "Usage guide and notes from the creator",
 		noDescription: "No description provided for this preset.",
 		editDescription: "Edit Description",
@@ -374,8 +374,7 @@ export const en = {
 		reportReasonSpamDesc:
 			"Fake title or thumbnail does not match preset contents.",
 		reportReasonOther: "Other",
-		reportReasonOtherDesc:
-			"Other issues violating AMHUB community guidelines.",
+		reportReasonOtherDesc: "Other issues violating AMHUB community guidelines.",
 		reportDetailsLabel: "Additional Details (Optional)",
 		reportDetailsPlaceholder:
 			"Provide the original link or supporting information...",
@@ -390,8 +389,7 @@ export const en = {
 		checkoutSubtitle: "Complete payment to unlock preset link & files",
 		orderNumber: "Order No:",
 		paymentSuccessTitle: "Payment Successful!",
-		paymentSuccessDesc:
-			"Preset unlocked and ready to download / import now.",
+		paymentSuccessDesc: "Preset unlocked and ready to download / import now.",
 		openAndDownloadPreset: "Open & Download Preset",
 		payQrisTitle: "QRIS (All E-Wallets)",
 		payTransferTitle: "Manual / Bank",

@@ -29,10 +29,7 @@ export async function POST(
 			});
 		}
 
-		const newCount = await incrementPresetView(
-			authContext.supabase,
-			presetId,
-		);
+		const newCount = await incrementPresetView(authContext.supabase, presetId);
 
 		return apiResponse({
 			success: true,
@@ -43,4 +40,3 @@ export async function POST(
 		return apiErrorResponse(error);
 	}
 }
-

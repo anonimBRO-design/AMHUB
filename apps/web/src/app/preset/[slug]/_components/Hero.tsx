@@ -111,7 +111,8 @@ export function Hero({ preset, currentUserId }: HeroProps) {
 	useEffect(() => {
 		if (!preset.id || !currentUserId) return;
 		const key = `am_view_${preset.id}_${currentUserId}`;
-		if (typeof window !== "undefined" && window.sessionStorage?.getItem(key)) return;
+		if (typeof window !== "undefined" && window.sessionStorage?.getItem(key))
+			return;
 
 		fetch(`/api/presets/${preset.id}/view`, { method: "POST" })
 			.then((res) => res.json())
@@ -228,9 +229,7 @@ export function Hero({ preset, currentUserId }: HeroProps) {
 	return (
 		<section className="relative w-full flex flex-col items-center">
 			{/* Ambient Glow Halo behind video */}
-			<div
-				className="absolute -inset-3 sm:-inset-6 rounded-3xl opacity-35 blur-3xl pointer-events-none -z-10 bg-gradient-to-tr from-cyan-500/20 via-[var(--color-interactive-primary)]/20 to-purple-500/15 transition-opacity duration-700"
-			/>
+			<div className="absolute -inset-3 sm:-inset-6 rounded-3xl opacity-35 blur-3xl pointer-events-none -z-10 bg-gradient-to-tr from-cyan-500/20 via-[var(--color-interactive-primary)]/20 to-purple-500/15 transition-opacity duration-700" />
 
 			{/* Custom Mobile & Desktop Unified Video Player Container */}
 			<div className="relative w-full flex justify-center items-start">
@@ -483,7 +482,9 @@ export function Hero({ preset, currentUserId }: HeroProps) {
 						<span className="font-bold text-[var(--color-text-primary)]">
 							{viewCount}
 						</span>
-						<span className="text-[11px] text-[var(--color-text-tertiary)]">{t.presetDetail.views}</span>
+						<span className="text-[11px] text-[var(--color-text-tertiary)]">
+							{t.presetDetail.views}
+						</span>
 					</div>
 					<span className="text-[var(--color-border-subtle)]">•</span>
 					<div className="flex items-center gap-1.5 text-emerald-400">
@@ -491,7 +492,9 @@ export function Hero({ preset, currentUserId }: HeroProps) {
 						<span className="font-bold text-[var(--color-text-primary)]">
 							{downloadCount}
 						</span>
-						<span className="text-[11px] text-[var(--color-text-tertiary)]">{t.presetDetail.downloads}</span>
+						<span className="text-[11px] text-[var(--color-text-tertiary)]">
+							{t.presetDetail.downloads}
+						</span>
 					</div>
 					<span className="text-[var(--color-border-subtle)]">•</span>
 					<div className="flex items-center gap-1.5 text-rose-400">
@@ -499,7 +502,9 @@ export function Hero({ preset, currentUserId }: HeroProps) {
 						<span className="font-bold text-[var(--color-text-primary)]">
 							{likeCount}
 						</span>
-						<span className="text-[11px] text-[var(--color-text-tertiary)]">{t.presetDetail.likes}</span>
+						<span className="text-[11px] text-[var(--color-text-tertiary)]">
+							{t.presetDetail.likes}
+						</span>
 					</div>
 				</div>
 			</div>

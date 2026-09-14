@@ -1,7 +1,16 @@
 "use client";
 
 import { useLanguage } from "@/i18n";
-import { Check, Copy, ExternalLink, Music, Pause, Play, Sparkles, Volume2 } from "lucide-react";
+import {
+	Check,
+	Copy,
+	ExternalLink,
+	Music,
+	Pause,
+	Play,
+	Sparkles,
+	Volume2,
+} from "lucide-react";
 import { useRef, useState } from "react";
 
 interface SoundtrackCardProps {

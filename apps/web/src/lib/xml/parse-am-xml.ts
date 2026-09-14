@@ -105,7 +105,8 @@ export function parseAlightMotionXml(xmlContent: string): AmXmlMetadata {
 		}
 	}
 
-	const propFontRegex = /<property[^>]*name=["']font["'][^>]*value=["']([^"']+)["']/gi;
+	const propFontRegex =
+		/<property[^>]*name=["']font["'][^>]*value=["']([^"']+)["']/gi;
 	while ((match = propFontRegex.exec(xmlContent)) !== null) {
 		const font = match[1]?.trim();
 		if (font && !font.startsWith("http") && font.length > 1) {
@@ -137,11 +138,15 @@ export function parseAlightMotionXml(xmlContent: string): AmXmlMetadata {
 	const mediaMatches = xmlContent.match(/<media\b/gi);
 	if (mediaMatches) mediaLayers = mediaMatches.length;
 
-	const audioMatches = xmlContent.match(/<audio\b|<media[^>]*type=["']audio["']/gi);
+	const audioMatches = xmlContent.match(
+		/<audio\b|<media[^>]*type=["']audio["']/gi,
+	);
 	if (audioMatches) audioLayers = audioMatches.length;
 
 	const layerMatches = xmlContent.match(/<(?:layer|shape|text|media)\b/gi);
-	totalLayers = layerMatches ? layerMatches.length : shapeLayers + textLayers + mediaLayers;
+	totalLayers = layerMatches
+		? layerMatches.length
+		: shapeLayers + textLayers + mediaLayers;
 
 	// Format fonts
 	const fonts = Array.from(rawFonts).map((font) => {

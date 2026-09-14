@@ -395,7 +395,8 @@ export function PresetPaymentModal({
 											language === "id" ? "id-ID" : "en-US",
 										)}
 									</strong>
-									{t.presetDetail.exactTransferNotice.split("{amount}")[1] || ""}
+									{t.presetDetail.exactTransferNotice.split("{amount}")[1] ||
+										""}
 								</p>
 							</div>
 						)}

@@ -664,7 +664,7 @@ export function UploadWizard() {
 					currency: "IDR",
 					commercial_price:
 						isPaid && commercialPrice >= price ? commercialPrice : 0,
-						am_version_min: normalizeAmVersion(amVersionMin) ?? undefined,
+					am_version_min: normalizeAmVersion(amVersionMin) ?? undefined,
 					am_version_max: normalizeAmVersion(amVersionMax) ?? undefined,
 					remixed_from: remixFrom.trim() || undefined,
 					aspect_ratios: aspectRatios,

@@ -69,7 +69,8 @@ export function PreviewVideoStep({
 					</span>
 				</div>
 				<p className="text-xs text-[var(--color-text-secondary)]">
-					Wajib upload video demo singkat hasil preset Alight Motion lu biar calon downloader bisa liat hasilnya secara nyata.
+					Wajib upload video demo singkat hasil preset Alight Motion lu biar
+					calon downloader bisa liat hasilnya secara nyata.
 				</p>
 			</div>
 

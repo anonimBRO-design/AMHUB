@@ -15,7 +15,9 @@ export function WizardProgress({
 	completedSteps,
 	onStepClick,
 }: WizardProgressProps) {
-	const completedCount = steps.filter((s) => Boolean(completedSteps?.[s.num])).length;
+	const completedCount = steps.filter((s) =>
+		Boolean(completedSteps?.[s.num]),
+	).length;
 	const progressPercent = Math.round((completedCount / totalSteps) * 100);
 
 	return (
@@ -58,9 +60,13 @@ export function WizardProgress({
 							}`}
 						>
 							{isDone ? (
-								<Check className={`w-3.5 h-3.5 ${isCurrent ? "text-white" : "text-emerald-400"}`} />
+								<Check
+									className={`w-3.5 h-3.5 ${isCurrent ? "text-white" : "text-emerald-400"}`}
+								/>
 							) : (
-								<span className={`text-[11px] font-mono ${isCurrent ? "text-white" : "text-[var(--color-text-secondary)]"}`}>
+								<span
+									className={`text-[11px] font-mono ${isCurrent ? "text-white" : "text-[var(--color-text-secondary)]"}`}
+								>
 									{s.num}
 								</span>
 							)}

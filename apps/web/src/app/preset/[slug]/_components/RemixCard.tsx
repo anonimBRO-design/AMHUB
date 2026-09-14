@@ -82,7 +82,10 @@ export function RemixCard({ parent, remixes, totalChildren }: RemixCardProps) {
 			{remixes.length > 0 && (
 				<div className="space-y-2.5">
 					<p className="text-xs font-bold text-[var(--color-text-secondary)]">
-						{t.presetDetail.remixCount.replace("{count}", String(totalChildren))}
+						{t.presetDetail.remixCount.replace(
+							"{count}",
+							String(totalChildren),
+						)}
 					</p>
 					<div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
 						{remixes.map((child) => (

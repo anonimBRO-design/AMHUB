@@ -1,7 +1,10 @@
 "use client";
 
 import { useLanguage } from "@/i18n";
-import { type AmXmlMetadata, parseAlightMotionXml } from "@/lib/xml/parse-am-xml";
+import {
+	type AmXmlMetadata,
+	parseAlightMotionXml,
+} from "@/lib/xml/parse-am-xml";
 import {
 	Code2,
 	ExternalLink,

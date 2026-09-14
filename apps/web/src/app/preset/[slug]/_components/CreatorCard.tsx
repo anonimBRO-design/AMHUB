@@ -158,7 +158,9 @@ export function CreatorCard({ creator }: CreatorCardProps) {
 
 			{/* Creator Stats Row */}
 			<div className="flex items-center justify-between pt-3 text-xs border-t border-[var(--color-border-subtle)]/60 text-[var(--color-text-secondary)] font-medium font-body">
-				<span>{creator.presetCount ?? 0} {t.presetDetail.presets}</span>
+				<span>
+					{creator.presetCount ?? 0} {t.presetDetail.presets}
+				</span>
 				<span className="font-semibold text-cyan-400">
 					{followerCount > 1000
 						? `${(followerCount / 1000).toFixed(1)}K`

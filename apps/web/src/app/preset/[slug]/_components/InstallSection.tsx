@@ -313,8 +313,14 @@ export function InstallSection({ preset }: InstallSectionProps) {
 							{preset.amVersionMin && preset.amVersionMax
 								? `AM ${preset.amVersionMin} – ${preset.amVersionMax}`
 								: preset.amVersionMin
-									? t.presetDetail.amOrNewer.replace("{version}", preset.amVersionMin)
-									: t.presetDetail.upToAm.replace("{version}", preset.amVersionMax || "")}
+									? t.presetDetail.amOrNewer.replace(
+											"{version}",
+											preset.amVersionMin,
+										)
+									: t.presetDetail.upToAm.replace(
+											"{version}",
+											preset.amVersionMax || "",
+										)}
 						</p>
 						<p className="text-[var(--color-text-secondary)] mt-0.5">
 							{t.presetDetail.compatibilityNotice}
@@ -360,7 +366,10 @@ export function InstallSection({ preset }: InstallSectionProps) {
 									{t.presetDetail.personalLicenseDesc}
 								</span>
 								<span className="block text-xs font-extrabold text-amber-400 mt-1">
-									Rp {(preset.price ?? 0).toLocaleString(language === "id" ? "id-ID" : "en-US")}
+									Rp{" "}
+									{(preset.price ?? 0).toLocaleString(
+										language === "id" ? "id-ID" : "en-US",
+									)}
 								</span>
 							</button>
 							<button
@@ -379,7 +388,10 @@ export function InstallSection({ preset }: InstallSectionProps) {
 									{t.presetDetail.commercialLicenseDesc}
 								</span>
 								<span className="block text-xs font-extrabold text-cyan-400 mt-1">
-									Rp {(preset.commercialPrice ?? 0).toLocaleString(language === "id" ? "id-ID" : "en-US")}
+									Rp{" "}
+									{(preset.commercialPrice ?? 0).toLocaleString(
+										language === "id" ? "id-ID" : "en-US",
+									)}
 								</span>
 							</button>
 						</div>
@@ -413,7 +425,10 @@ export function InstallSection({ preset }: InstallSectionProps) {
 							<span>⚡ {t.presetDetail.socialLockBadge}</span>
 						</div>
 						<h3 className="text-base font-bold text-[var(--color-text-primary)]">
-							{t.presetDetail.socialLockTitle.replace("{username}", preset.creator?.username || "Kreator")}
+							{t.presetDetail.socialLockTitle.replace(
+								"{username}",
+								preset.creator?.username || "Kreator",
+							)}
 						</h3>
 						<p className="text-xs text-[var(--color-text-secondary)] max-w-md mx-auto">
 							{t.presetDetail.socialLockDesc}
@@ -433,7 +448,10 @@ export function InstallSection({ preset }: InstallSectionProps) {
 								<UserPlus className="w-4 h-4" />
 							)}
 							<span>
-								{t.presetDetail.followAndUnlock.replace("{username}", preset.creator?.username || "Kreator")}
+								{t.presetDetail.followAndUnlock.replace(
+									"{username}",
+									preset.creator?.username || "Kreator",
+								)}
 							</span>
 						</button>
 					</div>
@@ -469,9 +487,7 @@ export function InstallSection({ preset }: InstallSectionProps) {
 											href={link}
 											target="_blank"
 											rel="noopener noreferrer"
-											onClick={(e) =>
-												handleDownload(e, "amLink", link)
-											}
+											onClick={(e) => handleDownload(e, "amLink", link)}
 											className="inline-flex items-center justify-center gap-2 min-h-[48px] px-5 rounded-lg bg-gradient-to-r from-emerald-500 to-teal-500 text-white font-bold text-sm shadow-lg shadow-emerald-500/25 hover:from-emerald-600 hover:to-teal-600 active:scale-[0.98] transition-all group"
 										>
 											<Zap className="w-4.5 h-4.5 fill-current text-white animate-pulse" />
@@ -495,7 +511,12 @@ export function InstallSection({ preset }: InstallSectionProps) {
 								) : (
 									<FileCode className="w-4.5 h-4.5 text-emerald-400" />
 								)}
-								<span>{t.presetDetail.downloadXml.replace("{type}", preset.fileType?.toUpperCase() || "File")}</span>
+								<span>
+									{t.presetDetail.downloadXml.replace(
+										"{type}",
+										preset.fileType?.toUpperCase() || "File",
+									)}
+								</span>
 							</a>
 						)}
 					</div>
@@ -556,7 +577,9 @@ export function InstallSection({ preset }: InstallSectionProps) {
 								className="inline-flex items-center gap-1.5 py-2 px-3.5 rounded-lg bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-extrabold text-xs shadow-md shadow-cyan-500/20 active:scale-95 transition-all shrink-0 cursor-pointer"
 							>
 								<Sparkles className="w-3.5 h-3.5 fill-current" />
-								<span>{language === "id" ? "Order Jasa Joki" : "Hire Creator"}</span>
+								<span>
+									{language === "id" ? "Order Jasa Joki" : "Hire Creator"}
+								</span>
 							</Link>
 						</div>
 					)}
@@ -574,7 +597,9 @@ export function InstallSection({ preset }: InstallSectionProps) {
 										className="inline-flex items-center gap-1 text-[var(--color-interactive-primary)] hover:underline text-[11px]"
 									>
 										<Share2 className="w-3 h-3" />
-										<span>{shared ? t.presetDetail.shared : t.presetDetail.share}</span>
+										<span>
+											{shared ? t.presetDetail.shared : t.presetDetail.share}
+										</span>
 									</button>
 								</div>
 								<div className="flex items-center gap-1.5 p-1 rounded-lg bg-[var(--color-bg-surface)] border border-[var(--color-border-subtle)]">
@@ -589,7 +614,9 @@ export function InstallSection({ preset }: InstallSectionProps) {
 										{copied ? (
 											<>
 												<Check className="w-3 h-3 text-emerald-400" />
-												<span className="text-emerald-400">{t.presetDetail.copied}</span>
+												<span className="text-emerald-400">
+													{t.presetDetail.copied}
+												</span>
 											</>
 										) : (
 											<>

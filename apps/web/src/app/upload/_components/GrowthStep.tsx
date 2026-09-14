@@ -182,7 +182,11 @@ export function GrowthStep({
 								</span>
 							</div>
 							<span className="block text-[11px] text-[var(--color-text-secondary)] mt-0.5 leading-relaxed">
-								Tombol <strong>&quot;Order Jasa Joki&quot;</strong> otomatis dipasang di halaman preset lu. Pengunjung yang mager ngedit bisa langsung klik buat sewa lu bikin preset custom via sistem <strong className="text-cyan-400 font-mono">/requests</strong> AMHUB!
+								Tombol <strong>&quot;Order Jasa Joki&quot;</strong> otomatis
+								dipasang di halaman preset lu. Pengunjung yang mager ngedit bisa
+								langsung klik buat sewa lu bikin preset custom via sistem{" "}
+								<strong className="text-cyan-400 font-mono">/requests</strong>{" "}
+								AMHUB!
 							</span>
 						</div>
 					</div>
@@ -191,9 +195,10 @@ export function GrowthStep({
 
 			{/* Info callout */}
 			<div className="p-3.5 rounded-2xl bg-indigo-500/5 border border-indigo-500/15 text-[11px] text-[var(--color-text-secondary)] leading-relaxed">
-				<span className="font-bold text-indigo-400">💡 Tips:</span> Semua
-				field di step ini fleksibel. Social Lock bantu naikin follower akunmu,
-				sound TikTok bantu naikin views, dan Paket Sultan + Jasa Joki bantu naikin cuan riil!
+				<span className="font-bold text-indigo-400">💡 Tips:</span> Semua field
+				di step ini fleksibel. Social Lock bantu naikin follower akunmu, sound
+				TikTok bantu naikin views, dan Paket Sultan + Jasa Joki bantu naikin
+				cuan riil!
 			</div>
 		</div>
 	);

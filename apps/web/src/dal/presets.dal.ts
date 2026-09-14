@@ -957,7 +957,11 @@ export function parseStoragePath(
 
 	// 4. Legacy storage paths: `<creatorId>/<filename>`
 	// Must have a slash, cannot have URL protocol or spaces
-	if (trimmed.includes("/") && !trimmed.includes("://") && !trimmed.includes(" ")) {
+	if (
+		trimmed.includes("/") &&
+		!trimmed.includes("://") &&
+		!trimmed.includes(" ")
+	) {
 		return {
 			bucket: trimmed.endsWith(".xml") ? "preset-files" : "thumbnails",
 			path: trimmed,
@@ -1262,8 +1266,7 @@ export async function incrementPresetView(
 			.maybeSingle();
 
 		if (current) {
-			const currentCount =
-				(current as { view_count?: number }).view_count || 0;
+			const currentCount = (current as { view_count?: number }).view_count || 0;
 			const newCount = currentCount + 1;
 			const { data: updated, error: updateError } = await counterClient
 				.from("presets")
@@ -1282,4 +1285,3 @@ export async function incrementPresetView(
 		return 0;
 	}
 }
-

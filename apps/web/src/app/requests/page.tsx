@@ -18,7 +18,13 @@ export default async function RequestsPage() {
 	const requests = await listRequests(supabase, { status: "open", limit: 30 });
 
 	return (
-		<Suspense fallback={<div className="max-w-4xl mx-auto py-12 text-center text-xs text-[var(--color-text-secondary)]">Memuat requests...</div>}>
+		<Suspense
+			fallback={
+				<div className="max-w-4xl mx-auto py-12 text-center text-xs text-[var(--color-text-secondary)]">
+					Memuat requests...
+				</div>
+			}
+		>
 			<RequestsClient initialRequests={requests} />
 		</Suspense>
 	);
