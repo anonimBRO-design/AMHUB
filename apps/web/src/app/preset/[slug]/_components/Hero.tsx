@@ -22,7 +22,7 @@ import {
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import posthog from "posthog-js";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { BookmarkButton } from "./BookmarkButton";
 import { ReportPresetModal } from "./ReportPresetModal";
 import { ShareButton } from "./ShareButton";
@@ -112,6 +112,27 @@ export function Hero({ preset, currentUserId }: HeroProps) {
 	const controlsTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 	const { requireAuth } = useAuth();
 
+	// The graded video is the playback master. The muted, raw layer is only
+	// mounted for comparison, so explicitly keep its media clock in step rather
+	// than letting its own `autoPlay` timeline drift independently.
+	const syncCompareVideo = useCallback(() => {
+		const mainVideo = videoRef.current;
+		const rawVideo = compareVideoRef.current;
+		if (!mainVideo || !rawVideo || rawVideo.readyState < 1) return;
+
+		if (Math.abs(rawVideo.currentTime - mainVideo.currentTime) > 0.08) {
+			rawVideo.currentTime = mainVideo.currentTime;
+		}
+		rawVideo.playbackRate = mainVideo.playbackRate;
+	}, []);
+
+	const playCompareVideo = useCallback(() => {
+		const rawVideo = compareVideoRef.current;
+		if (!rawVideo) return;
+		syncCompareVideo();
+		rawVideo.play().catch(() => {});
+	}, [syncCompareVideo]);
+
 	const handleCompareMove = (clientX: number) => {
 		if (!containerRef.current) return;
 		const rect = containerRef.current.getBoundingClientRect();
@@ -149,6 +170,18 @@ export function Hero({ preset, currentUserId }: HeroProps) {
 		}
 	}, [isMuted]);
 
+	useEffect(() => {
+		if (!isCompareMode) {
+			compareVideoRef.current?.pause();
+			return;
+		}
+
+		syncCompareVideo();
+		if (videoRef.current && !videoRef.current.paused) {
+			playCompareVideo();
+		}
+	}, [isCompareMode, playCompareVideo, syncCompareVideo]);
+
 	const handleLikeToggle = async () => {
 		if (!requireAuth(undefined, t.presetDetail.signInToLike)) return;
 		const nextState = !isLiked;
@@ -176,6 +209,7 @@ export function Hero({ preset, currentUserId }: HeroProps) {
 		if (videoRef.current) {
 			setCurrentTime(videoRef.current.currentTime);
 			setDuration(videoRef.current.duration || 0);
+			syncCompareVideo();
 		}
 	};
 
@@ -187,6 +221,7 @@ export function Hero({ preset, currentUserId }: HeroProps) {
 			Math.min(1, (e.clientX - rect.left) / rect.width),
 		);
 		videoRef.current.currentTime = clickPos * duration;
+		syncCompareVideo();
 		setCurrentTime(clickPos * duration);
 	};
 
@@ -197,10 +232,8 @@ export function Hero({ preset, currentUserId }: HeroProps) {
 		}
 		if (videoRef.current.paused) {
 			videoRef.current.play().catch(() => {});
-			setIsPlayingVideo(true);
 		} else {
 			videoRef.current.pause();
-			setIsPlayingVideo(false);
 		}
 	};
 
@@ -263,8 +296,14 @@ export function Hero({ preset, currentUserId }: HeroProps) {
 							loop
 							onTimeUpdate={handleTimeUpdate}
 							onLoadedMetadata={handleTimeUpdate}
-							onPlay={() => setIsPlayingVideo(true)}
-							onPause={() => setIsPlayingVideo(false)}
+							onPlay={() => {
+								setIsPlayingVideo(true);
+								playCompareVideo();
+							}}
+							onPause={() => {
+								setIsPlayingVideo(false);
+								compareVideoRef.current?.pause();
+							}}
 							className="absolute inset-0 w-full h-full object-contain bg-black"
 						/>
 					) : preset.thumbnailUrl ? (
@@ -310,7 +349,13 @@ export function Hero({ preset, currentUserId }: HeroProps) {
 										muted
 										playsInline
 										loop
-										autoPlay
+										preload="metadata"
+										onLoadedMetadata={() => {
+											syncCompareVideo();
+											if (videoRef.current && !videoRef.current.paused) {
+												playCompareVideo();
+											}
+										}}
 									/>
 								) : (
 									<img
