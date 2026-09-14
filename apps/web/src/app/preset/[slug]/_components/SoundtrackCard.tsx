@@ -2,6 +2,7 @@
 
 import { useLanguage } from "@/i18n";
 import {
+	Activity,
 	Check,
 	Copy,
 	ExternalLink,
@@ -121,6 +122,52 @@ export function SoundtrackCard({
 							<Copy className="w-3.5 h-3.5" />
 						)}
 					</button>
+				</div>
+			</div>
+
+			{/* JJ Beat Waveform & Rhythm Visualizer */}
+			<div className="p-2.5 rounded-lg bg-[var(--color-bg-base)]/70 border border-[var(--color-border-subtle)]/60 space-y-1.5">
+				<div className="flex items-center justify-between text-[10px] text-[var(--color-text-tertiary)] font-mono font-semibold">
+					<span className="flex items-center gap-1 text-pink-400">
+						<Activity className="w-3 h-3 animate-pulse" />
+						<span>{t.presetDetail.waveformBpm} (~128 BPM)</span>
+					</span>
+					<span className="text-amber-400 font-bold flex items-center gap-1">
+						<span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-ping inline-block" />
+						{t.presetDetail.beatMarkers} (5 Drop)
+					</span>
+				</div>
+
+				{/* Visual Waveform Bars with Beat Markers */}
+				<div className="relative h-8 flex items-end justify-between gap-0.5 px-1 py-1 rounded bg-[var(--color-bg-surface)]/50 overflow-hidden">
+					{/* Beat Drop Points Overlay (Yellow Glow Points) */}
+					<div className="absolute inset-0 pointer-events-none">
+						{[18, 36, 54, 72, 90].map((pct, idx) => (
+							<div
+								key={idx}
+								style={{ left: `${pct}%` }}
+								className="absolute top-0 bottom-0 w-px bg-amber-400/30 flex flex-col justify-between items-center"
+							>
+								<div className="w-1.5 h-1.5 -translate-x-[2px] rounded-full bg-amber-400 shadow-[0_0_6px_#f59e0b]" />
+							</div>
+						))}
+					</div>
+
+					{/* Amplitude Bars */}
+					{[
+						35, 65, 45, 80, 100, 50, 75, 90, 100, 60, 45, 85, 95, 100, 55, 40,
+						80, 95, 65, 45, 90, 100, 80, 40,
+					].map((h, i) => (
+						<div
+							key={i}
+							style={{ height: `${isPlaying ? Math.max(25, h * 0.9) : h}%` }}
+							className={`w-full rounded-sm transition-all duration-150 ${
+								[4, 8, 12, 17, 21].includes(i)
+									? "bg-gradient-to-t from-pink-500 to-amber-400"
+									: "bg-pink-500/40 hover:bg-pink-500/70"
+							}`}
+						/>
+					))}
 				</div>
 			</div>
 

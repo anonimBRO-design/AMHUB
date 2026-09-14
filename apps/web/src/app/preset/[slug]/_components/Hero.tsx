@@ -14,6 +14,7 @@ import {
 	MoreHorizontal,
 	Pause,
 	Play,
+	SlidersHorizontal,
 	Sparkles,
 	Trash2,
 	Volume2,
@@ -102,10 +103,22 @@ export function Hero({ preset, currentUserId }: HeroProps) {
 	const [duration, setDuration] = useState(0);
 	const [showControls, setShowControls] = useState(true);
 	const [hasTrackedDownload, setHasTrackedDownload] = useState(false);
+	const [isCompareMode, setIsCompareMode] = useState(false);
+	const [comparePosition, setComparePosition] = useState(50);
+	const [isDraggingCompare, setIsDraggingCompare] = useState(false);
 	const videoRef = useRef<HTMLVideoElement>(null);
+	const compareVideoRef = useRef<HTMLVideoElement>(null);
 	const containerRef = useRef<HTMLDivElement>(null);
 	const controlsTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 	const { requireAuth } = useAuth();
+
+	const handleCompareMove = (clientX: number) => {
+		if (!containerRef.current) return;
+		const rect = containerRef.current.getBoundingClientRect();
+		const x = Math.max(0, Math.min(rect.width, clientX - rect.left));
+		const percent = Math.round((x / rect.width) * 100);
+		setComparePosition(Math.max(5, Math.min(95, percent)));
+	};
 
 	// Auto-track and record preset view on mount (only for authenticated users, ignore guest/incognito)
 	useEffect(() => {
@@ -269,6 +282,65 @@ export function Hero({ preset, currentUserId }: HeroProps) {
 					{/* Subtle Gradient Overlays */}
 					<div className="absolute inset-0 bg-gradient-to-b from-black/50 via-transparent to-black/70 pointer-events-none" />
 
+					{/* Before / After Split Slider Overlay */}
+					{isCompareMode && (
+						<div
+							className="absolute inset-0 z-15 select-none cursor-ew-resize overflow-hidden"
+							onPointerDown={(e) => {
+								e.preventDefault();
+								setIsDraggingCompare(true);
+								handleCompareMove(e.clientX);
+							}}
+							onPointerMove={(e) => {
+								if (isDraggingCompare) handleCompareMove(e.clientX);
+							}}
+							onPointerUp={() => setIsDraggingCompare(false)}
+							onPointerCancel={() => setIsDraggingCompare(false)}
+						>
+							{/* Left: Raw / Neutral simulation */}
+							<div
+								className="absolute inset-0 overflow-hidden pointer-events-none"
+								style={{ clipPath: `inset(0 ${100 - comparePosition}% 0 0)` }}
+							>
+								{preset.previewVideoUrl ? (
+									<video
+										ref={compareVideoRef}
+										src={preset.previewVideoUrl}
+										className="w-full h-full object-contain filter saturate-50 contrast-90 brightness-95 bg-black"
+										muted
+										playsInline
+										loop
+										autoPlay
+									/>
+								) : (
+									<img
+										src={preset.thumbnailUrl}
+										alt="Before"
+										className="w-full h-full object-contain filter saturate-50 contrast-90 brightness-95 bg-black"
+									/>
+								)}
+								<div className="absolute top-14 left-4 px-2.5 py-1 rounded-md bg-black/80 backdrop-blur-md text-[10px] font-extrabold text-amber-400 border border-amber-500/30 tracking-wider uppercase">
+									{t.presetDetail.compareRaw}
+								</div>
+							</div>
+
+							{/* Right: After / Preset Badge */}
+							<div className="absolute top-14 right-4 px-2.5 py-1 rounded-md bg-black/80 backdrop-blur-md text-[10px] font-extrabold text-cyan-400 border border-cyan-500/30 pointer-events-none tracking-wider uppercase">
+								{t.presetDetail.compareGraded}
+							</div>
+
+							{/* Divider Line & Handle */}
+							<div
+								className="absolute top-0 bottom-0 w-0.5 bg-white shadow-2xl pointer-events-none"
+								style={{ left: `${comparePosition}%` }}
+							>
+								<div className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2 w-8 h-8 rounded-full bg-white text-slate-900 flex items-center justify-center shadow-lg border-2 border-cyan-500">
+									<SlidersHorizontal className="w-3.5 h-3.5 text-cyan-600" />
+								</div>
+							</div>
+						</div>
+					)}
+
 					{/* Center Play/Pause Indicator (Shown when paused or hovered) */}
 					{!isPlayingVideo && preset.previewVideoUrl && (
 						<div className="absolute inset-0 flex items-center justify-center pointer-events-none">
@@ -348,8 +420,27 @@ export function Hero({ preset, currentUserId }: HeroProps) {
 									</span>
 								</div>
 
-								{/* Right: Sound Toggle + Fullscreen */}
+								{/* Right: Compare Mode + Sound Toggle + Fullscreen */}
 								<div className="flex items-center gap-1.5">
+									<button
+										type="button"
+										onClick={(e) => {
+											e.stopPropagation();
+											setIsCompareMode(!isCompareMode);
+										}}
+										className={`p-2 rounded-xl backdrop-blur-md text-white transition-all flex items-center gap-1.5 active:scale-90 ${
+											isCompareMode
+												? "bg-cyan-500 text-white shadow-lg shadow-cyan-500/30 ring-2 ring-white/50"
+												: "bg-black/40 hover:bg-black/60"
+										}`}
+										title={t.presetDetail.compareMode}
+										aria-label={t.presetDetail.compareMode}
+									>
+										<SlidersHorizontal className="w-4 h-4" />
+										<span className="text-[10px] font-bold hidden md:inline">
+											{isCompareMode ? "NORMAL" : "BEFORE / AFTER"}
+										</span>
+									</button>
 									<button
 										type="button"
 										onClick={toggleMute}

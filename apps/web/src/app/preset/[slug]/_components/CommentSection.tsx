@@ -2,7 +2,14 @@
 
 import { useAuth } from "@/context/AuthContext";
 import { useLanguage } from "@/i18n";
-import { MessageSquare, Send, Trash2 } from "lucide-react";
+import {
+	ExternalLink,
+	MessageSquare,
+	Send,
+	Sparkles,
+	Trash2,
+	Video,
+} from "lucide-react";
 import posthog from "posthog-js";
 import { useState } from "react";
 
@@ -24,6 +31,19 @@ interface CommentSectionProps {
 	onCommentCountChange?: (count: number) => void;
 }
 
+function parseCommentContent(content: string) {
+	const showcaseMatch = content.match(
+		/(https?:\/\/(?:www\.|vm\.|vt\.)?tiktok\.com\/[^\s]+|https?:\/\/(?:www\.)?(?:youtube\.com|youtu\.be)\/[^\s]+)/i,
+	);
+	return {
+		hasShowcase: Boolean(showcaseMatch),
+		showcaseUrl: showcaseMatch ? showcaseMatch[1] : null,
+		cleanText: content
+			.replace(/🎬\s*Showcase:\s*https?:\/\/[^\s]+/i, "")
+			.trim(),
+	};
+}
+
 export function CommentSection({
 	presetId,
 	initialComments = [],
@@ -33,6 +53,8 @@ export function CommentSection({
 	const { t, language } = useLanguage();
 	const [comments, setComments] = useState<CommentItem[]>(initialComments);
 	const [newComment, setNewComment] = useState("");
+	const [showcaseUrl, setShowcaseUrl] = useState("");
+	const [showShowcaseInput, setShowShowcaseInput] = useState(false);
 	const [isSubmitting, setIsSubmitting] = useState(false);
 	const { currentUser, requireAuth } = useAuth();
 
@@ -43,10 +65,14 @@ export function CommentSection({
 
 		setIsSubmitting(true);
 
+		const finalContent = showcaseUrl.trim()
+			? `${newComment.trim()}\n\n🎬 Showcase: ${showcaseUrl.trim()}`
+			: newComment.trim();
+
 		const optimisticId = `temp-${Date.now()}`;
 		const optimisticComment: CommentItem = {
 			id: optimisticId,
-			content: newComment,
+			content: finalContent,
 			createdAt: new Date().toISOString(),
 			user: {
 				username: currentUser?.username || "me",
@@ -62,6 +88,8 @@ export function CommentSection({
 			return updated;
 		});
 		setNewComment("");
+		setShowcaseUrl("");
+		setShowShowcaseInput(false);
 
 		try {
 			const response = await fetch(`/api/presets/${presetId}/comments`, {
@@ -138,23 +166,49 @@ export function CommentSection({
 			</div>
 
 			{/* Add Comment Input */}
-			<form onSubmit={handleSubmit} className="flex gap-2">
-				<input
-					type="text"
-					value={newComment}
-					onChange={(e) => setNewComment(e.target.value)}
-					placeholder={t.presetDetail.commentPlaceholder}
-					aria-label={t.presetDetail.sendComment}
-					className="flex-1 min-h-[42px] px-3.5 rounded-lg bg-[var(--color-bg-base)] border border-[var(--color-border-subtle)] text-xs sm:text-sm text-[var(--color-text-primary)] placeholder:text-[var(--color-text-tertiary)] focus:outline-none focus:border-[var(--color-interactive-primary)]"
-				/>
-				<button
-					type="submit"
-					disabled={isSubmitting || !newComment.trim()}
-					aria-label={t.presetDetail.sendComment}
-					className="inline-flex items-center justify-center min-h-[42px] px-4 rounded-lg bg-[var(--color-interactive-primary)] text-white font-bold text-xs disabled:opacity-50 hover:bg-[var(--color-interactive-primary-hover)] active:scale-95 transition-all shrink-0"
-				>
-					<Send className="w-4 h-4" />
-				</button>
+			<form onSubmit={handleSubmit} className="space-y-2">
+				<div className="flex gap-2">
+					<input
+						type="text"
+						value={newComment}
+						onChange={(e) => setNewComment(e.target.value)}
+						placeholder={t.presetDetail.commentPlaceholder}
+						aria-label={t.presetDetail.sendComment}
+						className="flex-1 min-h-[42px] px-3.5 rounded-lg bg-[var(--color-bg-base)] border border-[var(--color-border-subtle)] text-xs sm:text-sm text-[var(--color-text-primary)] placeholder:text-[var(--color-text-tertiary)] focus:outline-none focus:border-[var(--color-interactive-primary)]"
+					/>
+					<button
+						type="submit"
+						disabled={isSubmitting || !newComment.trim()}
+						aria-label={t.presetDetail.sendComment}
+						className="inline-flex items-center justify-center min-h-[42px] px-4 rounded-lg bg-[var(--color-interactive-primary)] text-white font-bold text-xs disabled:opacity-50 hover:bg-[var(--color-interactive-primary-hover)] active:scale-95 transition-all shrink-0"
+					>
+						<Send className="w-4 h-4" />
+					</button>
+				</div>
+
+				<div className="flex items-center justify-between text-xs">
+					<button
+						type="button"
+						onClick={() => setShowShowcaseInput(!showShowcaseInput)}
+						className="inline-flex items-center gap-1.5 text-[11px] font-semibold text-pink-400 hover:text-pink-300 transition-colors"
+					>
+						<Video className="w-3.5 h-3.5" />
+						<span>{t.presetDetail.showcaseToggle}</span>
+					</button>
+				</div>
+
+				{showShowcaseInput && (
+					<div className="p-2.5 rounded-lg bg-[var(--color-bg-base)] border border-pink-500/30 flex items-center gap-2 animate-fade-in">
+						<Video className="w-4 h-4 text-pink-400 shrink-0" />
+						<input
+							type="url"
+							value={showcaseUrl}
+							onChange={(e) => setShowcaseUrl(e.target.value)}
+							placeholder="https://www.tiktok.com/@username/video/... (atau YouTube)"
+							className="flex-1 bg-transparent text-xs text-[var(--color-text-primary)] placeholder:text-[var(--color-text-tertiary)] focus:outline-none font-mono"
+						/>
+					</div>
+				)}
 			</form>
 
 			{/* Comments List */}
@@ -163,11 +217,16 @@ export function CommentSection({
 					comments.map((comment) => {
 						const isOwnComment =
 							currentUser && currentUser.username === comment.user.username;
+						const {
+							hasShowcase,
+							showcaseUrl: commentShowcaseUrl,
+							cleanText,
+						} = parseCommentContent(comment.content);
 
 						return (
 							<div
 								key={comment.id}
-								className="p-3.5 rounded-lg bg-[var(--color-bg-base)] border border-[var(--color-border-subtle)]/60 space-y-1.5"
+								className="p-3.5 rounded-lg bg-[var(--color-bg-base)] border border-[var(--color-border-subtle)]/60 space-y-2"
 							>
 								<div className="flex items-center justify-between">
 									<div className="flex items-center gap-2">
@@ -185,6 +244,12 @@ export function CommentSection({
 										<span className="text-xs font-bold text-[var(--color-text-primary)]">
 											{comment.user.displayName}
 										</span>
+										{hasShowcase && (
+											<span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-gradient-to-r from-pink-500/20 to-amber-500/20 text-pink-300 border border-pink-500/30 tracking-wide">
+												<Sparkles className="w-3 h-3 text-amber-400" />
+												{t.presetDetail.showcaseBadge}
+											</span>
+										)}
 									</div>
 
 									<div className="flex items-center gap-2">
@@ -207,8 +272,23 @@ export function CommentSection({
 									</div>
 								</div>
 								<p className="text-xs text-[var(--color-text-secondary)] leading-relaxed pl-7">
-									{comment.content}
+									{cleanText || comment.content}
 								</p>
+
+								{hasShowcase && commentShowcaseUrl && (
+									<div className="pl-7 pt-0.5">
+										<a
+											href={commentShowcaseUrl}
+											target="_blank"
+											rel="noopener noreferrer"
+											className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-pink-500/10 hover:bg-pink-500/20 text-pink-400 hover:text-pink-300 border border-pink-500/20 text-xs font-bold transition-all active:scale-95 group"
+										>
+											<Video className="w-3.5 h-3.5" />
+											<span>{t.presetDetail.watchShowcase}</span>
+											<ExternalLink className="w-3 h-3 opacity-70 group-hover:translate-x-0.5 transition-transform" />
+										</a>
+									</div>
+								)}
 							</div>
 						);
 					})

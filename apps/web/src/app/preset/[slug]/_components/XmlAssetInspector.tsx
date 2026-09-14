@@ -6,7 +6,10 @@ import {
 	parseAlightMotionXml,
 } from "@/lib/xml/parse-am-xml";
 import {
+	Check,
 	Code2,
+	Copy,
+	Download,
 	ExternalLink,
 	Eye,
 	FileText,
@@ -36,6 +39,19 @@ export function XmlAssetInspector({
 	const [metadata, setMetadata] = useState<AmXmlMetadata | null>(null);
 	const [isLoading, setIsLoading] = useState(false);
 	const [error, setError] = useState<string | null>(null);
+	const [copiedFonts, setCopiedFonts] = useState(false);
+
+	const handleCopyFonts = async () => {
+		if (!metadata?.fonts.length) return;
+		const text = metadata.fonts.map((f) => f.cleanName).join("\n");
+		try {
+			await navigator.clipboard.writeText(text);
+			setCopiedFonts(true);
+			setTimeout(() => setCopiedFonts(false), 2000);
+		} catch (e) {
+			console.error("Failed to copy fonts", e);
+		}
+	};
 
 	useEffect(() => {
 		if (isLocked || !fileUrl) return;
@@ -167,16 +183,38 @@ export function XmlAssetInspector({
 					<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
 						{/* Fonts Required Box */}
 						<div className="p-4 rounded-xl bg-[var(--color-bg-base)]/50 border border-[var(--color-border-subtle)] space-y-3">
-							<div className="flex items-center justify-between">
+							<div className="flex items-center justify-between gap-2">
 								<div className="flex items-center gap-2">
 									<Type className="w-4 h-4 text-emerald-400" />
 									<h3 className="text-xs font-bold text-[var(--color-text-primary)]">
 										{t.presetDetail.fontsRequired}
 									</h3>
 								</div>
-								<span className="text-[10px] text-[var(--color-text-tertiary)]">
-									{metadata.fonts.length} font
-								</span>
+								<div className="flex items-center gap-2">
+									{metadata.fonts.length > 0 && (
+										<button
+											type="button"
+											onClick={handleCopyFonts}
+											className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-[var(--color-bg-elevated)] hover:bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-[11px] font-bold transition-all active:scale-95"
+											title="Salin semua nama font ke clipboard"
+										>
+											{copiedFonts ? (
+												<>
+													<Check className="w-3 h-3 text-emerald-400" />
+													<span>{t.presetDetail.fontsCopied}</span>
+												</>
+											) : (
+												<>
+													<Copy className="w-3 h-3" />
+													<span>{t.presetDetail.copyAllFonts}</span>
+												</>
+											)}
+										</button>
+									)}
+									<span className="text-[10px] text-[var(--color-text-tertiary)] bg-[var(--color-bg-surface)] px-2 py-0.5 rounded-full border border-[var(--color-border-subtle)]">
+										{metadata.fonts.length} font
+									</span>
+								</div>
 							</div>
 							<p className="text-[11px] text-[var(--color-text-tertiary)]">
 								{t.presetDetail.fontsRequiredDesc}
@@ -184,21 +222,33 @@ export function XmlAssetInspector({
 
 							{metadata.fonts.length > 0 ? (
 								<div className="flex flex-wrap gap-2 pt-1">
-									{metadata.fonts.map((font) => (
-										<a
-											key={font.name}
-											href={font.searchUrl}
-											target="_blank"
-											rel="noopener noreferrer"
-											title={`${t.presetDetail.downloadFont}: ${font.cleanName}`}
-											className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[var(--color-bg-elevated)] hover:bg-emerald-500/15 text-xs font-bold text-[var(--color-text-secondary)] hover:text-emerald-300 border border-[var(--color-border-subtle)] hover:border-emerald-500/40 transition-all active:scale-95 group"
-										>
-											<span className="truncate max-w-[150px]">
-												{font.cleanName}
-											</span>
-											<Search className="w-3 h-3 opacity-60 group-hover:opacity-100 text-emerald-400" />
-										</a>
-									))}
+									{metadata.fonts.map((font) => {
+										const targetUrl = font.directUrl || font.searchUrl;
+										return (
+											<a
+												key={font.name}
+												href={targetUrl}
+												target="_blank"
+												rel="noopener noreferrer"
+												title={`${t.presetDetail.downloadFont}: ${font.cleanName}`}
+												className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[var(--color-bg-elevated)] hover:bg-emerald-500/15 text-xs font-bold text-[var(--color-text-secondary)] hover:text-emerald-300 border border-[var(--color-border-subtle)] hover:border-emerald-500/40 transition-all active:scale-95 group"
+											>
+												<span className="truncate max-w-[140px]">
+													{font.cleanName}
+												</span>
+												{font.isGoogleFont ? (
+													<span className="text-[9px] px-1.5 py-0.2 rounded bg-emerald-500/20 text-emerald-300 uppercase tracking-tight font-extrabold">
+														GF
+													</span>
+												) : (
+													<span className="text-[9px] px-1.5 py-0.2 rounded bg-sky-500/20 text-sky-300 uppercase tracking-tight font-extrabold">
+														WEB
+													</span>
+												)}
+												<ExternalLink className="w-3 h-3 opacity-60 group-hover:opacity-100 text-emerald-400 ml-0.5" />
+											</a>
+										);
+									})}
 								</div>
 							) : (
 								<div className="p-2.5 rounded-lg bg-[var(--color-bg-surface)] text-[11px] text-[var(--color-text-tertiary)] italic">

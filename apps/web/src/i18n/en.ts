@@ -345,6 +345,9 @@ export const en = {
 			"Be the first editor to leave a review or ask a question!",
 		deleteComment: "Delete comment",
 		signInToComment: "Sign in to leave a comment",
+		showcaseBadge: "Editor Showcase",
+		showcaseToggle: "Attach TikTok / Video Proof",
+		watchShowcase: "Watch Edit on TikTok",
 
 		// Additional Interactions & Modals
 		signInToLike: "Sign in to like presets",
@@ -427,6 +430,15 @@ export const en = {
 		texts: "Texts",
 		mediaItems: "Media",
 		audios: "Audio",
+		copyAllFonts: "Copy All Font Names",
+		fontsCopied: "Font list copied!",
+		googleFontTag: "Google Font",
+		dafontTag: "DaFont / Web",
+		compareMode: "Compare Before / After",
+		compareRaw: "Raw (Before)",
+		compareGraded: "Preset (After)",
+		waveformBpm: "JJ Rhythm & Beat",
+		beatMarkers: "Beat Markers",
 
 		// TikTok Sound & Music Matcher
 		soundtrackTitle: "Soundtrack & Audio",

@@ -9,6 +9,8 @@ export interface AmXmlMetadata {
 		name: string;
 		cleanName: string;
 		searchUrl: string;
+		isGoogleFont?: boolean;
+		directUrl?: string;
 	}[];
 	effects: {
 		id: string;
@@ -148,15 +150,62 @@ export function parseAlightMotionXml(xmlContent: string): AmXmlMetadata {
 		? layerMatches.length
 		: shapeLayers + textLayers + mediaLayers;
 
+	const GOOGLE_FONTS_SET = new Set([
+		"roboto",
+		"montserrat",
+		"poppins",
+		"opensans",
+		"lato",
+		"inter",
+		"oswald",
+		"raleway",
+		"playfairdisplay",
+		"nunito",
+		"rubik",
+		"bebasneue",
+		"anton",
+		"kanit",
+		"ubuntu",
+		"teko",
+		"syne",
+		"bangers",
+		"righteous",
+		"russoone",
+		"bungee",
+		"permanentmarker",
+		"abrilfatface",
+		"cinzel",
+		"archivoblack",
+		"pacifico",
+		"satisfy",
+		"dancingscript",
+		"lobster",
+		"caveat",
+		"comfortaa",
+		"quicksand",
+		"barlow",
+		"firamono",
+		"sourcecodepro",
+		"merriweather",
+		"lora",
+	]);
+
 	// Format fonts
 	const fonts = Array.from(rawFonts).map((font) => {
 		const cleanName = font
 			.replace(/[-_]/g, " ")
 			.replace(/([a-z])([A-Z])/g, "$1 $2")
 			.trim();
+		const normalized = cleanName.toLowerCase().replace(/[^a-z0-9]/g, "");
+		const isGoogleFont = GOOGLE_FONTS_SET.has(normalized);
+
 		return {
 			name: font,
 			cleanName,
+			isGoogleFont,
+			directUrl: isGoogleFont
+				? `https://fonts.google.com/specimen/${encodeURIComponent(cleanName.replace(/\s+/g, "+"))}`
+				: `https://www.dafont.com/search.php?q=${encodeURIComponent(cleanName)}`,
 			searchUrl: `https://www.google.com/search?q=${encodeURIComponent(
 				`download font "${cleanName}" dafont`,
 			)}`,

@@ -348,6 +348,9 @@ export const id: Translations = {
 			"Jadilah editor pertama yang memberikan ulasan atau pertanyaan!",
 		deleteComment: "Hapus komentar",
 		signInToComment: "Masuk untuk menulis komentar",
+		showcaseBadge: "Hasil Editan",
+		showcaseToggle: "Tautkan Hasil TikTok / Video",
+		watchShowcase: "Tonton Hasil di TikTok",
 
 		// Additional Interactions & Modals
 		signInToLike: "Masuk untuk menyukai preset",
@@ -431,6 +434,15 @@ export const id: Translations = {
 		texts: "Teks",
 		mediaItems: "Media",
 		audios: "Audio",
+		copyAllFonts: "Salin Semua Font",
+		fontsCopied: "Nama font berhasil disalin!",
+		googleFontTag: "Google Font",
+		dafontTag: "DaFont / Web",
+		compareMode: "Bandingkan (Before / After)",
+		compareRaw: "Mentahan (Before)",
+		compareGraded: "Preset (After)",
+		waveformBpm: "Ritme & Beat JJ",
+		beatMarkers: "Titik Beat",
 
 		// TikTok Sound & Music Matcher
 		soundtrackTitle: "Soundtrack & Audio",
